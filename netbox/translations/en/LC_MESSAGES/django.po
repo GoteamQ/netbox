@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-25 05:07+0000\n"
+"POT-Creation-Date: 2025-07-29 05:09+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2018,7 +2018,7 @@ msgstr ""
 msgid "Swapped terminations for circuit {circuit}."
 msgstr ""
 
-#: netbox/core/api/views.py:51
+#: netbox/core/api/views.py:50
 msgid "This user does not have permission to synchronize this data source."
 msgstr ""
 
@@ -2749,7 +2749,7 @@ msgid ""
 "enqueue() cannot be called with values for both schedule_at and immediate."
 msgstr ""
 
-#: netbox/core/signals.py:125
+#: netbox/core/signals.py:131
 #, python-brace-format
 msgid "Deletion is prevented by a protection rule: {message}"
 msgstr ""
@@ -2914,7 +2914,7 @@ msgstr ""
 msgid "No workers found"
 msgstr ""
 
-#: netbox/core/utils.py:84 netbox/core/utils.py:150 netbox/core/views.py:398
+#: netbox/core/utils.py:84 netbox/core/utils.py:150 netbox/core/views.py:393
 #, python-brace-format
 msgid "Job {job_id} not found"
 msgstr ""
@@ -2924,51 +2924,51 @@ msgstr ""
 msgid "Job {id} not found."
 msgstr ""
 
-#: netbox/core/views.py:89
+#: netbox/core/views.py:84
 #, python-brace-format
 msgid "Queued job #{id} to sync {datasource}"
 msgstr ""
 
-#: netbox/core/views.py:334
+#: netbox/core/views.py:329
 #, python-brace-format
 msgid "Restored configuration revision #{id}"
 msgstr ""
 
-#: netbox/core/views.py:437
+#: netbox/core/views.py:432
 #, python-brace-format
 msgid "Job {id} has been deleted."
 msgstr ""
 
-#: netbox/core/views.py:439
+#: netbox/core/views.py:434
 #, python-brace-format
 msgid "Error deleting job {id}: {error}"
 msgstr ""
 
-#: netbox/core/views.py:448
+#: netbox/core/views.py:443
 #, python-brace-format
 msgid "Job {id} has been re-enqueued."
 msgstr ""
 
-#: netbox/core/views.py:457
+#: netbox/core/views.py:452
 #, python-brace-format
 msgid "Job {id} has been enqueued."
 msgstr ""
 
-#: netbox/core/views.py:466
+#: netbox/core/views.py:461
 #, python-brace-format
 msgid "Job {id} has been stopped."
 msgstr ""
 
-#: netbox/core/views.py:468
+#: netbox/core/views.py:463
 #, python-brace-format
 msgid "Failed to stop job {id}"
 msgstr ""
 
-#: netbox/core/views.py:603
+#: netbox/core/views.py:598
 msgid "Plugins catalog could not be loaded"
 msgstr ""
 
-#: netbox/core/views.py:639
+#: netbox/core/views.py:634
 #, python-brace-format
 msgid "Plugin {name} not found"
 msgstr ""
