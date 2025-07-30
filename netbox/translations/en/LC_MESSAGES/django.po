@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-07-29 05:09+0000\n"
+"POT-Creation-Date: 2025-07-30 05:08+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -8176,7 +8176,7 @@ msgstr ""
 
 #: netbox/extras/forms/bulk_edit.py:155 netbox/extras/forms/bulk_edit.py:354
 #: netbox/extras/forms/filtersets.py:192 netbox/extras/forms/filtersets.py:470
-#: netbox/extras/models/mixins.py:100
+#: netbox/extras/models/mixins.py:101
 msgid "MIME type"
 msgstr ""
 
@@ -9055,51 +9055,51 @@ msgstr ""
 msgid "dashboards"
 msgstr ""
 
-#: netbox/extras/models/mixins.py:85
+#: netbox/extras/models/mixins.py:86
 msgid "template code"
 msgstr ""
 
-#: netbox/extras/models/mixins.py:86
+#: netbox/extras/models/mixins.py:87
 msgid "Jinja template code."
 msgstr ""
 
-#: netbox/extras/models/mixins.py:89
+#: netbox/extras/models/mixins.py:90
 msgid "environment parameters"
 msgstr ""
 
-#: netbox/extras/models/mixins.py:94
+#: netbox/extras/models/mixins.py:95
 #, python-brace-format
 msgid ""
 "Any <a href=\"{url}\">additional parameters</a> to pass when constructing "
 "the Jinja environment"
 msgstr ""
 
-#: netbox/extras/models/mixins.py:101
+#: netbox/extras/models/mixins.py:102
 #, python-brace-format
 msgid "Defaults to <code>{default}</code>"
 msgstr ""
 
-#: netbox/extras/models/mixins.py:106
+#: netbox/extras/models/mixins.py:107
 msgid "Filename to give to the rendered export file"
 msgstr ""
 
-#: netbox/extras/models/mixins.py:109
+#: netbox/extras/models/mixins.py:110
 msgid "file extension"
 msgstr ""
 
-#: netbox/extras/models/mixins.py:112
+#: netbox/extras/models/mixins.py:113
 msgid "Extension to append to the rendered filename"
 msgstr ""
 
-#: netbox/extras/models/mixins.py:115
+#: netbox/extras/models/mixins.py:116
 msgid "as attachment"
 msgstr ""
 
-#: netbox/extras/models/mixins.py:117
+#: netbox/extras/models/mixins.py:118
 msgid "Download file as attachment"
 msgstr ""
 
-#: netbox/extras/models/mixins.py:124
+#: netbox/extras/models/mixins.py:125
 #, python-brace-format
 msgid "{class_name} must implement a get_context() method."
 msgstr ""
