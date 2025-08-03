@@ -261,6 +261,7 @@ class PrefixFilter(ContactFilterMixin, ScopedFilterMixin, TenancyFilterMixin, Pr
             q |= Q(prefix__net_contains=query)
         return q
 
+
 @strawberry_django.filter_type(models.RIR, lookups=True)
 class RIRFilter(OrganizationalModelFilterMixin):
     is_private: FilterLookup[bool] | None = strawberry_django.filter_field()
