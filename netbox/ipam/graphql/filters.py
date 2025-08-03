@@ -238,6 +238,15 @@ class PrefixFilter(ContactFilterMixin, ScopedFilterMixin, TenancyFilterMixin, Pr
     is_pool: FilterLookup[bool] | None = strawberry_django.filter_field()
     mark_utilized: FilterLookup[bool] | None = strawberry_django.filter_field()
 
+    @strawberry_django.filter_field()
+    def contains(self, value: list[str], prefix) -> Q:
+        if not value:
+            return Q()
+        q = Q()
+        for subnet in value:
+            query = str(netaddr.IPNetwork(subnet.strip()).cidr)
+            q |= Q(prefix__net_contains=query)
+        return q
 
 @strawberry_django.filter_type(models.RIR, lookups=True)
 class RIRFilter(OrganizationalModelFilterMixin):
