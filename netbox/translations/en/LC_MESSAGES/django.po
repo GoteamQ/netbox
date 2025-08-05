@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-02 05:04+0000\n"
+"POT-Creation-Date: 2025-08-05 05:08+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -8035,33 +8035,37 @@ msgstr ""
 msgid "RSS Feed"
 msgstr ""
 
-#: netbox/extras/dashboard/widgets.py:314
+#: netbox/extras/dashboard/widgets.py:315
 msgid "Embed an RSS feed from an external website."
 msgstr ""
 
-#: netbox/extras/dashboard/widgets.py:321
+#: netbox/extras/dashboard/widgets.py:322
 msgid "Feed URL"
 msgstr ""
 
-#: netbox/extras/dashboard/widgets.py:325
+#: netbox/extras/dashboard/widgets.py:326
 msgid "Requires external connection"
 msgstr ""
 
-#: netbox/extras/dashboard/widgets.py:331
+#: netbox/extras/dashboard/widgets.py:332
 msgid "The maximum number of objects to display"
 msgstr ""
 
-#: netbox/extras/dashboard/widgets.py:336
+#: netbox/extras/dashboard/widgets.py:337
 msgid "How long to stored the cached content (in seconds)"
 msgstr ""
 
-#: netbox/extras/dashboard/widgets.py:393 netbox/templates/account/base.html:10
+#: netbox/extras/dashboard/widgets.py:343
+msgid "Timeout value for fetching the feed (in seconds)"
+msgstr ""
+
+#: netbox/extras/dashboard/widgets.py:400 netbox/templates/account/base.html:10
 #: netbox/templates/account/bookmarks.html:7
 #: netbox/templates/inc/user_menu.html:43
 msgid "Bookmarks"
 msgstr ""
 
-#: netbox/extras/dashboard/widgets.py:397
+#: netbox/extras/dashboard/widgets.py:404
 msgid "Show your personal bookmarks"
 msgstr ""
 
