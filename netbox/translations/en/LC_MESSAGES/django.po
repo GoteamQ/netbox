@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-08-05 05:08+0000\n"
+"POT-Creation-Date: 2025-08-07 05:08+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -543,9 +543,9 @@ msgstr ""
 #: netbox/templates/extras/dashboard/widget_add.html:14
 #: netbox/templates/extras/eventrule.html:21
 #: netbox/templates/extras/exporttemplate.html:19
+#: netbox/templates/extras/inc/script_list_content.html:33
 #: netbox/templates/extras/notificationgroup.html:20
 #: netbox/templates/extras/savedfilter.html:17
-#: netbox/templates/extras/script_list.html:46
 #: netbox/templates/extras/tableconfig.html:17
 #: netbox/templates/extras/tag.html:20 netbox/templates/extras/webhook.html:17
 #: netbox/templates/generic/bulk_import.html:120
@@ -796,7 +796,7 @@ msgstr ""
 #: netbox/templates/dcim/powerfeed.html:36
 #: netbox/templates/dcim/poweroutlet.html:40 netbox/templates/dcim/rack.html:41
 #: netbox/templates/dcim/site.html:43
-#: netbox/templates/extras/script_list.html:48
+#: netbox/templates/extras/inc/script_list_content.html:35
 #: netbox/templates/ipam/ipaddress.html:37
 #: netbox/templates/ipam/iprange.html:61 netbox/templates/ipam/prefix.html:69
 #: netbox/templates/ipam/vlan.html:48
@@ -1767,9 +1767,9 @@ msgstr ""
 #: netbox/templates/extras/customlink.html:13
 #: netbox/templates/extras/eventrule.html:13
 #: netbox/templates/extras/exporttemplate.html:15
+#: netbox/templates/extras/inc/script_list_content.html:32
 #: netbox/templates/extras/notificationgroup.html:14
 #: netbox/templates/extras/savedfilter.html:13
-#: netbox/templates/extras/script_list.html:45
 #: netbox/templates/extras/tableconfig.html:13
 #: netbox/templates/extras/tag.html:14 netbox/templates/extras/webhook.html:13
 #: netbox/templates/ipam/asnrange.html:15
@@ -3977,7 +3977,7 @@ msgstr ""
 #: netbox/dcim/forms/bulk_create.py:40 netbox/extras/forms/filtersets.py:443
 #: netbox/extras/forms/model_forms.py:649
 #: netbox/extras/forms/model_forms.py:701 netbox/netbox/forms/base.py:86
-#: netbox/netbox/forms/mixins.py:91 netbox/netbox/tables/columns.py:486
+#: netbox/netbox/forms/mixins.py:91 netbox/netbox/tables/columns.py:490
 #: netbox/templates/circuits/inc/circuit_termination.html:32
 #: netbox/templates/generic/bulk_edit.html:65
 #: netbox/templates/inc/panels/tags.html:5
@@ -9716,7 +9716,7 @@ msgstr ""
 msgid "Error deleting widget: "
 msgstr ""
 
-#: netbox/extras/views.py:1349
+#: netbox/extras/views.py:1356
 msgid "Unable to run script: RQ worker process not running."
 msgstr ""
 
@@ -12108,12 +12108,12 @@ msgstr ""
 msgid "Toggle all"
 msgstr ""
 
-#: netbox/netbox/tables/columns.py:307
+#: netbox/netbox/tables/columns.py:311
 #: netbox/templates/inc/table_controls_htmx.html:35
 msgid "Toggle Dropdown"
 msgstr ""
 
-#: netbox/netbox/tables/columns.py:580 netbox/templates/core/job.html:53
+#: netbox/netbox/tables/columns.py:584 netbox/templates/core/job.html:53
 msgid "Error"
 msgstr ""
 
@@ -12539,7 +12539,7 @@ msgstr ""
 #: netbox/templates/circuits/inc/circuit_termination_fields.html:37
 #: netbox/templates/dcim/inc/panels/inventory_items.html:32
 #: netbox/templates/dcim/powerpanel.html:56
-#: netbox/templates/extras/script_list.html:30
+#: netbox/templates/extras/inc/script_list_content.html:16
 #: netbox/templates/generic/object_edit.html:47
 #: netbox/templates/ipam/inc/ipaddress_edit_header.html:7
 #: netbox/templates/ipam/inc/panels/fhrp_groups.html:43
@@ -12554,7 +12554,7 @@ msgstr ""
 #: netbox/templates/circuits/inc/circuit_termination.html:23
 #: netbox/templates/dcim/inc/panels/inventory_items.html:37
 #: netbox/templates/dcim/powerpanel.html:66
-#: netbox/templates/extras/script_list.html:35
+#: netbox/templates/extras/inc/script_list_content.html:21
 #: netbox/templates/generic/bulk_delete.html:20
 #: netbox/templates/generic/bulk_delete.html:66
 #: netbox/templates/generic/object_delete.html:19
@@ -14079,7 +14079,7 @@ msgid "Output"
 msgstr ""
 
 #: netbox/templates/extras/htmx/script_result.html:61
-#: netbox/templates/extras/object_render_config.html:60
+#: netbox/templates/extras/object_render_config.html:59
 msgid "Download"
 msgstr ""
 
@@ -14089,6 +14089,44 @@ msgstr ""
 
 #: netbox/templates/extras/inc/result_pending.html:6
 msgid "Results pending"
+msgstr ""
+
+#: netbox/templates/extras/inc/script_list_content.html:34
+msgid "Last Run"
+msgstr ""
+
+#: netbox/templates/extras/inc/script_list_content.html:49
+msgid "Script is no longer present in the source file"
+msgstr ""
+
+#: netbox/templates/extras/inc/script_list_content.html:62
+msgid "Never"
+msgstr ""
+
+#: netbox/templates/extras/inc/script_list_content.html:75
+msgid "Run Again"
+msgstr ""
+
+#: netbox/templates/extras/inc/script_list_content.html:77
+#: netbox/templates/extras/script.html:41
+#: netbox/templates/extras/script.html:45
+msgid "Run Script"
+msgstr ""
+
+#: netbox/templates/extras/inc/script_list_content.html:123
+#, python-format
+msgid "Could not load scripts from module %(module)s"
+msgstr ""
+
+#: netbox/templates/extras/inc/script_list_content.html:131
+msgid "No Scripts Found"
+msgstr ""
+
+#: netbox/templates/extras/inc/script_list_content.html:134
+#, python-format
+msgid ""
+"Get started by <a href=\"%(create_script_url)s\">creating a script</a> from "
+"an uploaded file or data source."
 msgstr ""
 
 #: netbox/templates/extras/journalentry.html:15
@@ -14149,12 +14187,6 @@ msgstr ""
 msgid "You do not have permission to run scripts"
 msgstr ""
 
-#: netbox/templates/extras/script.html:41
-#: netbox/templates/extras/script.html:45
-#: netbox/templates/extras/script_list.html:90
-msgid "Run Script"
-msgstr ""
-
 #: netbox/templates/extras/script.html:51
 #: netbox/templates/extras/script/source.html:10
 msgid "Error loading script"
@@ -14162,38 +14194,6 @@ msgstr ""
 
 #: netbox/templates/extras/script/jobs.html:16
 msgid "Script no longer exists in the source file."
-msgstr ""
-
-#: netbox/templates/extras/script_list.html:47
-msgid "Last Run"
-msgstr ""
-
-#: netbox/templates/extras/script_list.html:62
-msgid "Script is no longer present in the source file"
-msgstr ""
-
-#: netbox/templates/extras/script_list.html:75
-msgid "Never"
-msgstr ""
-
-#: netbox/templates/extras/script_list.html:88
-msgid "Run Again"
-msgstr ""
-
-#: netbox/templates/extras/script_list.html:136
-#, python-format
-msgid "Could not load scripts from module %(module)s"
-msgstr ""
-
-#: netbox/templates/extras/script_list.html:144
-msgid "No Scripts Found"
-msgstr ""
-
-#: netbox/templates/extras/script_list.html:147
-#, python-format
-msgid ""
-"Get started by <a href=\"%(create_script_url)s\">creating a script</a> from "
-"an uploaded file or data source."
 msgstr ""
 
 #: netbox/templates/extras/script_result.html:35
