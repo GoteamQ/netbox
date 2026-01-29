@@ -1,15 +1,116 @@
 from django.db import models
 from django.urls import reverse
+from django.core.validators import MinLengthValidator
 
 from netbox.models import NetBoxModel
 
 
+class GCPOrganization(NetBoxModel):
+    name = models.CharField(max_length=255, help_text='Display name for this GCP organization')
+    organization_id = models.CharField(
+        max_length=50, 
+        unique=True,
+        validators=[MinLengthValidator(1)],
+        help_text='GCP Organization ID (numeric)'
+    )
+    service_account_json = models.TextField(
+        help_text='Service account JSON key content for API authentication'
+    )
+    is_active = models.BooleanField(default=True, help_text='Enable/disable discovery for this organization')
+    last_discovery = models.DateTimeField(null=True, blank=True, help_text='Last successful discovery timestamp')
+    discovery_status = models.CharField(
+        max_length=50, 
+        default='pending',
+        choices=[
+            ('pending', 'Pending'),
+            ('running', 'Running'),
+            ('completed', 'Completed'),
+            ('failed', 'Failed'),
+        ]
+    )
+    discovery_error = models.TextField(blank=True, help_text='Last discovery error message if any')
+    auto_discover = models.BooleanField(default=False, help_text='Automatically discover assets on schedule')
+    discover_compute = models.BooleanField(default=True, help_text='Discover Compute Engine resources')
+    discover_networking = models.BooleanField(default=True, help_text='Discover VPC and networking resources')
+    discover_databases = models.BooleanField(default=True, help_text='Discover Cloud SQL and database resources')
+    discover_storage = models.BooleanField(default=True, help_text='Discover Cloud Storage resources')
+    discover_kubernetes = models.BooleanField(default=True, help_text='Discover GKE clusters')
+    discover_serverless = models.BooleanField(default=True, help_text='Discover Cloud Functions and Cloud Run')
+    discover_iam = models.BooleanField(default=True, help_text='Discover IAM resources')
+
+    class Meta:
+        ordering = ['name']
+        verbose_name = 'GCP Organization'
+        verbose_name_plural = 'GCP Organizations'
+
+    def __str__(self):
+        return f"{self.name} ({self.organization_id})"
+
+    def get_absolute_url(self):
+        return reverse('gcp:gcporganization', args=[self.pk])
+
+    def get_service_account_info(self):
+        import json
+        try:
+            return json.loads(self.service_account_json)
+        except json.JSONDecodeError:
+            return None
+
+
+class DiscoveryLog(NetBoxModel):
+    organization = models.ForeignKey(
+        GCPOrganization, 
+        on_delete=models.CASCADE, 
+        related_name='discovery_logs'
+    )
+    started_at = models.DateTimeField(auto_now_add=True)
+    completed_at = models.DateTimeField(null=True, blank=True)
+    status = models.CharField(
+        max_length=50,
+        default='running',
+        choices=[
+            ('running', 'Running'),
+            ('completed', 'Completed'),
+            ('failed', 'Failed'),
+        ]
+    )
+    projects_discovered = models.IntegerField(default=0)
+    instances_discovered = models.IntegerField(default=0)
+    networks_discovered = models.IntegerField(default=0)
+    databases_discovered = models.IntegerField(default=0)
+    buckets_discovered = models.IntegerField(default=0)
+    clusters_discovered = models.IntegerField(default=0)
+    total_resources = models.IntegerField(default=0)
+    error_message = models.TextField(blank=True)
+    log_output = models.TextField(blank=True)
+
+    class Meta:
+        ordering = ['-started_at']
+        verbose_name = 'Discovery Log'
+        verbose_name_plural = 'Discovery Logs'
+
+    def __str__(self):
+        return f"Discovery {self.organization.name} - {self.started_at}"
+
+    def get_absolute_url(self):
+        return reverse('gcp:discoverylog', args=[self.pk])
+
+
 class GCPProject(NetBoxModel):
+    organization = models.ForeignKey(
+        GCPOrganization, 
+        on_delete=models.CASCADE, 
+        related_name='projects',
+        null=True,
+        blank=True
+    )
     name = models.CharField(max_length=255)
     project_id = models.CharField(max_length=255, unique=True)
     project_number = models.CharField(max_length=50, blank=True)
     status = models.CharField(max_length=50, default='ACTIVE')
     labels = models.JSONField(blank=True, null=True)
+    discovered = models.BooleanField(default=False, help_text='Was this project auto-discovered')
+    last_synced = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ['name']
@@ -36,6 +137,9 @@ class ComputeInstance(NetBoxModel):
     disk_size_gb = models.IntegerField(default=10)
     image = models.CharField(max_length=255, blank=True)
     labels = models.JSONField(blank=True, null=True)
+    self_link = models.URLField(max_length=500, blank=True)
+    discovered = models.BooleanField(default=False)
+    last_synced = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ['name']
@@ -48,6 +152,10 @@ class ComputeInstance(NetBoxModel):
     def get_absolute_url(self):
         return reverse('gcp:computeinstance', args=[self.pk])
 
+    @property
+    def organization(self):
+        return self.project.organization if self.project else None
+
 
 class InstanceTemplate(NetBoxModel):
     name = models.CharField(max_length=255)
@@ -58,6 +166,9 @@ class InstanceTemplate(NetBoxModel):
     network = models.CharField(max_length=255, blank=True)
     subnet = models.CharField(max_length=255, blank=True)
     labels = models.JSONField(blank=True, null=True)
+    self_link = models.URLField(max_length=500, blank=True)
+    discovered = models.BooleanField(default=False)
+    last_synced = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ['name']
@@ -70,6 +181,10 @@ class InstanceTemplate(NetBoxModel):
     def get_absolute_url(self):
         return reverse('gcp:instancetemplate', args=[self.pk])
 
+    @property
+    def organization(self):
+        return self.project.organization if self.project else None
+
 
 class InstanceGroup(NetBoxModel):
     name = models.CharField(max_length=255)
@@ -79,6 +194,9 @@ class InstanceGroup(NetBoxModel):
     template = models.ForeignKey(InstanceTemplate, on_delete=models.SET_NULL, null=True, blank=True)
     target_size = models.IntegerField(default=1)
     is_managed = models.BooleanField(default=True)
+    self_link = models.URLField(max_length=500, blank=True)
+    discovered = models.BooleanField(default=False)
+    last_synced = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ['name']
@@ -91,6 +209,10 @@ class InstanceGroup(NetBoxModel):
     def get_absolute_url(self):
         return reverse('gcp:instancegroup', args=[self.pk])
 
+    @property
+    def organization(self):
+        return self.project.organization if self.project else None
+
 
 class VPCNetwork(NetBoxModel):
     name = models.CharField(max_length=255)
@@ -98,7 +220,9 @@ class VPCNetwork(NetBoxModel):
     auto_create_subnetworks = models.BooleanField(default=False)
     routing_mode = models.CharField(max_length=50, default='REGIONAL')
     mtu = models.IntegerField(default=1460)
-    description = models.TextField(blank=True)
+    self_link = models.URLField(max_length=500, blank=True)
+    discovered = models.BooleanField(default=False)
+    last_synced = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ['name']
@@ -111,6 +235,10 @@ class VPCNetwork(NetBoxModel):
     def get_absolute_url(self):
         return reverse('gcp:vpcnetwork', args=[self.pk])
 
+    @property
+    def organization(self):
+        return self.project.organization if self.project else None
+
 
 class Subnet(NetBoxModel):
     name = models.CharField(max_length=255)
@@ -118,9 +246,12 @@ class Subnet(NetBoxModel):
     network = models.ForeignKey(VPCNetwork, on_delete=models.CASCADE, related_name='subnets')
     region = models.CharField(max_length=100)
     ip_cidr_range = models.CharField(max_length=50)
+    gateway_address = models.GenericIPAddressField(blank=True, null=True)
     private_ip_google_access = models.BooleanField(default=False)
-    secondary_ip_ranges = models.JSONField(blank=True, null=True)
     purpose = models.CharField(max_length=50, default='PRIVATE')
+    self_link = models.URLField(max_length=500, blank=True)
+    discovered = models.BooleanField(default=False)
+    last_synced = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ['name']
@@ -133,6 +264,10 @@ class Subnet(NetBoxModel):
     def get_absolute_url(self):
         return reverse('gcp:subnet', args=[self.pk])
 
+    @property
+    def organization(self):
+        return self.project.organization if self.project else None
+
 
 class FirewallRule(NetBoxModel):
     name = models.CharField(max_length=255)
@@ -140,7 +275,7 @@ class FirewallRule(NetBoxModel):
     network = models.ForeignKey(VPCNetwork, on_delete=models.CASCADE, related_name='firewall_rules')
     direction = models.CharField(max_length=20, default='INGRESS')
     priority = models.IntegerField(default=1000)
-    action = models.CharField(max_length=20, default='ALLOW')
+    action = models.CharField(max_length=20, default='allow')
     source_ranges = models.JSONField(blank=True, null=True)
     destination_ranges = models.JSONField(blank=True, null=True)
     source_tags = models.JSONField(blank=True, null=True)
@@ -148,6 +283,9 @@ class FirewallRule(NetBoxModel):
     allowed = models.JSONField(blank=True, null=True)
     denied = models.JSONField(blank=True, null=True)
     disabled = models.BooleanField(default=False)
+    self_link = models.URLField(max_length=500, blank=True)
+    discovered = models.BooleanField(default=False)
+    last_synced = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ['priority', 'name']
@@ -160,15 +298,23 @@ class FirewallRule(NetBoxModel):
     def get_absolute_url(self):
         return reverse('gcp:firewallrule', args=[self.pk])
 
+    @property
+    def organization(self):
+        return self.project.organization if self.project else None
+
 
 class CloudRouter(NetBoxModel):
     name = models.CharField(max_length=255)
     project = models.ForeignKey(GCPProject, on_delete=models.CASCADE, related_name='cloud_routers')
     network = models.ForeignKey(VPCNetwork, on_delete=models.CASCADE, related_name='cloud_routers')
     region = models.CharField(max_length=100)
-    asn = models.IntegerField(default=64512)
+    asn = models.BigIntegerField(default=64512)
     advertise_mode = models.CharField(max_length=50, default='DEFAULT')
+    advertised_groups = models.JSONField(blank=True, null=True)
     advertised_ip_ranges = models.JSONField(blank=True, null=True)
+    self_link = models.URLField(max_length=500, blank=True)
+    discovered = models.BooleanField(default=False)
+    last_synced = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ['name']
@@ -181,16 +327,23 @@ class CloudRouter(NetBoxModel):
     def get_absolute_url(self):
         return reverse('gcp:cloudrouter', args=[self.pk])
 
+    @property
+    def organization(self):
+        return self.project.organization if self.project else None
+
 
 class CloudNAT(NetBoxModel):
     name = models.CharField(max_length=255)
     project = models.ForeignKey(GCPProject, on_delete=models.CASCADE, related_name='cloud_nats')
-    router = models.ForeignKey(CloudRouter, on_delete=models.CASCADE, related_name='nat_configs')
+    router = models.ForeignKey(CloudRouter, on_delete=models.CASCADE, related_name='nats')
     region = models.CharField(max_length=100)
     nat_ip_allocate_option = models.CharField(max_length=50, default='AUTO_ONLY')
-    source_subnetwork_ip_ranges = models.CharField(max_length=100, default='ALL_SUBNETWORKS_ALL_IP_RANGES')
+    source_subnetwork_ip_ranges_to_nat = models.CharField(max_length=100, default='ALL_SUBNETWORKS_ALL_IP_RANGES')
     nat_ips = models.JSONField(blank=True, null=True)
     min_ports_per_vm = models.IntegerField(default=64)
+    self_link = models.URLField(max_length=500, blank=True)
+    discovered = models.BooleanField(default=False)
+    last_synced = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ['name']
@@ -203,30 +356,23 @@ class CloudNAT(NetBoxModel):
     def get_absolute_url(self):
         return reverse('gcp:cloudnat', args=[self.pk])
 
+    @property
+    def organization(self):
+        return self.project.organization if self.project else None
+
 
 class LoadBalancer(NetBoxModel):
-    SCHEME_CHOICES = [
-        ('EXTERNAL', 'External'),
-        ('INTERNAL', 'Internal'),
-        ('INTERNAL_MANAGED', 'Internal Managed'),
-    ]
-    TYPE_CHOICES = [
-        ('HTTP', 'HTTP(S)'),
-        ('TCP', 'TCP'),
-        ('UDP', 'UDP'),
-        ('SSL', 'SSL Proxy'),
-        ('TCP_PROXY', 'TCP Proxy'),
-    ]
-
     name = models.CharField(max_length=255)
     project = models.ForeignKey(GCPProject, on_delete=models.CASCADE, related_name='load_balancers')
-    scheme = models.CharField(max_length=50, choices=SCHEME_CHOICES, default='EXTERNAL')
-    lb_type = models.CharField(max_length=50, choices=TYPE_CHOICES, default='HTTP')
+    scheme = models.CharField(max_length=50, default='EXTERNAL')
+    lb_type = models.CharField(max_length=50, default='HTTP')
     region = models.CharField(max_length=100, blank=True)
+    network = models.ForeignKey(VPCNetwork, on_delete=models.SET_NULL, null=True, blank=True)
     ip_address = models.GenericIPAddressField(blank=True, null=True)
     port = models.IntegerField(default=80)
-    backend_services = models.JSONField(blank=True, null=True)
-    health_check = models.CharField(max_length=255, blank=True)
+    self_link = models.URLField(max_length=500, blank=True)
+    discovered = models.BooleanField(default=False)
+    last_synced = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ['name']
@@ -239,29 +385,26 @@ class LoadBalancer(NetBoxModel):
     def get_absolute_url(self):
         return reverse('gcp:loadbalancer', args=[self.pk])
 
+    @property
+    def organization(self):
+        return self.project.organization if self.project else None
+
 
 class CloudSQLInstance(NetBoxModel):
-    DATABASE_CHOICES = [
-        ('MYSQL', 'MySQL'),
-        ('POSTGRES', 'PostgreSQL'),
-        ('SQLSERVER', 'SQL Server'),
-    ]
-
     name = models.CharField(max_length=255)
-    project = models.ForeignKey(GCPProject, on_delete=models.CASCADE, related_name='cloudsql_instances')
+    project = models.ForeignKey(GCPProject, on_delete=models.CASCADE, related_name='cloud_sql_instances')
     region = models.CharField(max_length=100)
+    database_type = models.CharField(max_length=50, default='MYSQL')
     database_version = models.CharField(max_length=50)
-    database_type = models.CharField(max_length=20, choices=DATABASE_CHOICES, default='MYSQL')
     tier = models.CharField(max_length=50)
     storage_size_gb = models.IntegerField(default=10)
     storage_type = models.CharField(max_length=20, default='SSD')
     status = models.CharField(max_length=50, default='RUNNABLE')
-    ip_address = models.GenericIPAddressField(blank=True, null=True)
-    private_ip = models.GenericIPAddressField(blank=True, null=True)
+    ip_addresses = models.JSONField(blank=True, null=True)
     connection_name = models.CharField(max_length=255, blank=True)
-    high_availability = models.BooleanField(default=False)
-    backup_enabled = models.BooleanField(default=True)
-    labels = models.JSONField(blank=True, null=True)
+    self_link = models.URLField(max_length=500, blank=True)
+    discovered = models.BooleanField(default=False)
+    last_synced = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ['name']
@@ -274,16 +417,22 @@ class CloudSQLInstance(NetBoxModel):
     def get_absolute_url(self):
         return reverse('gcp:cloudsqlinstance', args=[self.pk])
 
+    @property
+    def organization(self):
+        return self.project.organization if self.project else None
+
 
 class CloudSpannerInstance(NetBoxModel):
     name = models.CharField(max_length=255)
-    project = models.ForeignKey(GCPProject, on_delete=models.CASCADE, related_name='spanner_instances')
-    config = models.CharField(max_length=100)
-    display_name = models.CharField(max_length=255)
+    project = models.ForeignKey(GCPProject, on_delete=models.CASCADE, related_name='cloud_spanner_instances')
+    config = models.CharField(max_length=255)
+    display_name = models.CharField(max_length=255, blank=True)
     node_count = models.IntegerField(default=1)
     processing_units = models.IntegerField(default=100)
     status = models.CharField(max_length=50, default='READY')
-    labels = models.JSONField(blank=True, null=True)
+    self_link = models.URLField(max_length=500, blank=True)
+    discovered = models.BooleanField(default=False)
+    last_synced = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ['name']
@@ -296,6 +445,10 @@ class CloudSpannerInstance(NetBoxModel):
     def get_absolute_url(self):
         return reverse('gcp:cloudspannerinstance', args=[self.pk])
 
+    @property
+    def organization(self):
+        return self.project.organization if self.project else None
+
 
 class FirestoreDatabase(NetBoxModel):
     name = models.CharField(max_length=255)
@@ -304,6 +457,9 @@ class FirestoreDatabase(NetBoxModel):
     database_type = models.CharField(max_length=50, default='FIRESTORE_NATIVE')
     concurrency_mode = models.CharField(max_length=50, default='OPTIMISTIC')
     status = models.CharField(max_length=50, default='ACTIVE')
+    self_link = models.URLField(max_length=500, blank=True)
+    discovered = models.BooleanField(default=False)
+    last_synced = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ['name']
@@ -316,15 +472,21 @@ class FirestoreDatabase(NetBoxModel):
     def get_absolute_url(self):
         return reverse('gcp:firestoredatabase', args=[self.pk])
 
+    @property
+    def organization(self):
+        return self.project.organization if self.project else None
+
 
 class BigtableInstance(NetBoxModel):
     name = models.CharField(max_length=255)
     project = models.ForeignKey(GCPProject, on_delete=models.CASCADE, related_name='bigtable_instances')
-    display_name = models.CharField(max_length=255)
+    display_name = models.CharField(max_length=255, blank=True)
     instance_type = models.CharField(max_length=50, default='PRODUCTION')
-    storage_type = models.CharField(max_length=20, default='SSD')
+    storage_type = models.CharField(max_length=50, default='SSD')
     status = models.CharField(max_length=50, default='READY')
-    labels = models.JSONField(blank=True, null=True)
+    self_link = models.URLField(max_length=500, blank=True)
+    discovered = models.BooleanField(default=False)
+    last_synced = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ['name']
@@ -337,24 +499,22 @@ class BigtableInstance(NetBoxModel):
     def get_absolute_url(self):
         return reverse('gcp:bigtableinstance', args=[self.pk])
 
+    @property
+    def organization(self):
+        return self.project.organization if self.project else None
+
 
 class CloudStorageBucket(NetBoxModel):
-    STORAGE_CLASS_CHOICES = [
-        ('STANDARD', 'Standard'),
-        ('NEARLINE', 'Nearline'),
-        ('COLDLINE', 'Coldline'),
-        ('ARCHIVE', 'Archive'),
-    ]
-
     name = models.CharField(max_length=255, unique=True)
     project = models.ForeignKey(GCPProject, on_delete=models.CASCADE, related_name='storage_buckets')
     location = models.CharField(max_length=100)
-    storage_class = models.CharField(max_length=20, choices=STORAGE_CLASS_CHOICES, default='STANDARD')
+    storage_class = models.CharField(max_length=50, default='STANDARD')
     versioning_enabled = models.BooleanField(default=False)
-    uniform_bucket_level_access = models.BooleanField(default=True)
-    public_access_prevention = models.CharField(max_length=50, default='enforced')
     lifecycle_rules = models.JSONField(blank=True, null=True)
     labels = models.JSONField(blank=True, null=True)
+    self_link = models.URLField(max_length=500, blank=True)
+    discovered = models.BooleanField(default=False)
+    last_synced = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ['name']
@@ -367,25 +527,23 @@ class CloudStorageBucket(NetBoxModel):
     def get_absolute_url(self):
         return reverse('gcp:cloudstoragebucket', args=[self.pk])
 
+    @property
+    def organization(self):
+        return self.project.organization if self.project else None
+
 
 class PersistentDisk(NetBoxModel):
-    DISK_TYPE_CHOICES = [
-        ('pd-standard', 'Standard'),
-        ('pd-balanced', 'Balanced'),
-        ('pd-ssd', 'SSD'),
-        ('pd-extreme', 'Extreme'),
-    ]
-
     name = models.CharField(max_length=255)
     project = models.ForeignKey(GCPProject, on_delete=models.CASCADE, related_name='persistent_disks')
     zone = models.CharField(max_length=100)
-    disk_type = models.CharField(max_length=50, choices=DISK_TYPE_CHOICES, default='pd-balanced')
+    disk_type = models.CharField(max_length=50, default='pd-standard')
     size_gb = models.IntegerField(default=10)
     status = models.CharField(max_length=50, default='READY')
     source_image = models.CharField(max_length=255, blank=True)
-    source_snapshot = models.CharField(max_length=255, blank=True)
-    attached_instances = models.JSONField(blank=True, null=True)
-    labels = models.JSONField(blank=True, null=True)
+    users = models.JSONField(blank=True, null=True)
+    self_link = models.URLField(max_length=500, blank=True)
+    discovered = models.BooleanField(default=False)
+    last_synced = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ['name']
@@ -398,21 +556,26 @@ class PersistentDisk(NetBoxModel):
     def get_absolute_url(self):
         return reverse('gcp:persistentdisk', args=[self.pk])
 
+    @property
+    def organization(self):
+        return self.project.organization if self.project else None
+
 
 class GKECluster(NetBoxModel):
     name = models.CharField(max_length=255)
     project = models.ForeignKey(GCPProject, on_delete=models.CASCADE, related_name='gke_clusters')
     location = models.CharField(max_length=100)
     network = models.ForeignKey(VPCNetwork, on_delete=models.SET_NULL, null=True, blank=True)
-    subnet = models.ForeignKey(Subnet, on_delete=models.SET_NULL, null=True, blank=True)
+    subnetwork = models.ForeignKey(Subnet, on_delete=models.SET_NULL, null=True, blank=True)
     master_version = models.CharField(max_length=50)
     status = models.CharField(max_length=50, default='RUNNING')
     endpoint = models.CharField(max_length=255, blank=True)
     cluster_ipv4_cidr = models.CharField(max_length=50, blank=True)
     services_ipv4_cidr = models.CharField(max_length=50, blank=True)
     enable_autopilot = models.BooleanField(default=False)
-    private_cluster = models.BooleanField(default=False)
-    labels = models.JSONField(blank=True, null=True)
+    self_link = models.URLField(max_length=500, blank=True)
+    discovered = models.BooleanField(default=False)
+    last_synced = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ['name']
@@ -425,6 +588,10 @@ class GKECluster(NetBoxModel):
     def get_absolute_url(self):
         return reverse('gcp:gkecluster', args=[self.pk])
 
+    @property
+    def organization(self):
+        return self.project.organization if self.project else None
+
 
 class GKENodePool(NetBoxModel):
     name = models.CharField(max_length=255)
@@ -435,12 +602,11 @@ class GKENodePool(NetBoxModel):
     node_count = models.IntegerField(default=3)
     min_node_count = models.IntegerField(default=1)
     max_node_count = models.IntegerField(default=10)
-    autoscaling_enabled = models.BooleanField(default=True)
-    preemptible = models.BooleanField(default=False)
-    spot = models.BooleanField(default=False)
     status = models.CharField(max_length=50, default='RUNNING')
     version = models.CharField(max_length=50, blank=True)
-    labels = models.JSONField(blank=True, null=True)
+    self_link = models.URLField(max_length=500, blank=True)
+    discovered = models.BooleanField(default=False)
+    last_synced = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ['name']
@@ -453,14 +619,20 @@ class GKENodePool(NetBoxModel):
     def get_absolute_url(self):
         return reverse('gcp:gkenodepool', args=[self.pk])
 
+    @property
+    def organization(self):
+        return self.cluster.project.organization if self.cluster and self.cluster.project else None
+
 
 class ServiceAccount(NetBoxModel):
     email = models.EmailField(unique=True)
     project = models.ForeignKey(GCPProject, on_delete=models.CASCADE, related_name='service_accounts')
     display_name = models.CharField(max_length=255, blank=True)
-    description = models.TextField(blank=True)
-    disabled = models.BooleanField(default=False)
     unique_id = models.CharField(max_length=50, blank=True)
+    disabled = models.BooleanField(default=False)
+    self_link = models.URLField(max_length=500, blank=True)
+    discovered = models.BooleanField(default=False)
+    last_synced = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ['email']
@@ -473,15 +645,21 @@ class ServiceAccount(NetBoxModel):
     def get_absolute_url(self):
         return reverse('gcp:serviceaccount', args=[self.pk])
 
+    @property
+    def organization(self):
+        return self.project.organization if self.project else None
+
 
 class IAMRole(NetBoxModel):
     name = models.CharField(max_length=255, unique=True)
-    title = models.CharField(max_length=255)
+    title = models.CharField(max_length=255, blank=True)
     description = models.TextField(blank=True)
-    stage = models.CharField(max_length=20, default='GA')
-    included_permissions = models.JSONField(blank=True, null=True)
+    permissions = models.JSONField(blank=True, null=True)
+    stage = models.CharField(max_length=50, default='GA')
     is_custom = models.BooleanField(default=False)
     project = models.ForeignKey(GCPProject, on_delete=models.CASCADE, null=True, blank=True, related_name='custom_roles')
+    discovered = models.BooleanField(default=False)
+    last_synced = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ['name']
@@ -500,6 +678,8 @@ class IAMBinding(NetBoxModel):
     role = models.ForeignKey(IAMRole, on_delete=models.CASCADE, related_name='bindings')
     member = models.CharField(max_length=255)
     condition = models.JSONField(blank=True, null=True)
+    discovered = models.BooleanField(default=False)
+    last_synced = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ['project', 'role']
@@ -508,41 +688,30 @@ class IAMBinding(NetBoxModel):
         unique_together = ['project', 'role', 'member']
 
     def __str__(self):
-        return f"{self.member} -> {self.role.name}"
+        return f"{self.project} - {self.role} - {self.member}"
 
     def get_absolute_url(self):
         return reverse('gcp:iambinding', args=[self.pk])
 
+    @property
+    def organization(self):
+        return self.project.organization if self.project else None
+
 
 class CloudFunction(NetBoxModel):
-    RUNTIME_CHOICES = [
-        ('python39', 'Python 3.9'),
-        ('python310', 'Python 3.10'),
-        ('python311', 'Python 3.11'),
-        ('nodejs16', 'Node.js 16'),
-        ('nodejs18', 'Node.js 18'),
-        ('nodejs20', 'Node.js 20'),
-        ('go119', 'Go 1.19'),
-        ('go121', 'Go 1.21'),
-        ('java11', 'Java 11'),
-        ('java17', 'Java 17'),
-    ]
-
     name = models.CharField(max_length=255)
     project = models.ForeignKey(GCPProject, on_delete=models.CASCADE, related_name='cloud_functions')
     region = models.CharField(max_length=100)
-    runtime = models.CharField(max_length=20, choices=RUNTIME_CHOICES)
-    entry_point = models.CharField(max_length=255)
+    runtime = models.CharField(max_length=50)
+    entry_point = models.CharField(max_length=255, blank=True)
     trigger_type = models.CharField(max_length=50, default='HTTP')
-    trigger_url = models.URLField(blank=True)
+    trigger_url = models.URLField(max_length=500, blank=True)
     memory_mb = models.IntegerField(default=256)
     timeout_seconds = models.IntegerField(default=60)
-    max_instances = models.IntegerField(default=100)
-    min_instances = models.IntegerField(default=0)
     status = models.CharField(max_length=50, default='ACTIVE')
-    service_account = models.ForeignKey(ServiceAccount, on_delete=models.SET_NULL, null=True, blank=True)
-    environment_variables = models.JSONField(blank=True, null=True)
-    labels = models.JSONField(blank=True, null=True)
+    self_link = models.URLField(max_length=500, blank=True)
+    discovered = models.BooleanField(default=False)
+    last_synced = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ['name']
@@ -555,24 +724,25 @@ class CloudFunction(NetBoxModel):
     def get_absolute_url(self):
         return reverse('gcp:cloudfunction', args=[self.pk])
 
+    @property
+    def organization(self):
+        return self.project.organization if self.project else None
+
 
 class CloudRun(NetBoxModel):
     name = models.CharField(max_length=255)
     project = models.ForeignKey(GCPProject, on_delete=models.CASCADE, related_name='cloud_run_services')
     region = models.CharField(max_length=100)
-    image = models.CharField(max_length=500)
-    url = models.URLField(blank=True)
-    port = models.IntegerField(default=8080)
-    cpu = models.CharField(max_length=10, default='1')
+    image = models.CharField(max_length=500, blank=True)
+    url = models.URLField(max_length=500, blank=True)
+    cpu = models.CharField(max_length=20, default='1')
     memory = models.CharField(max_length=20, default='512Mi')
     max_instances = models.IntegerField(default=100)
     min_instances = models.IntegerField(default=0)
-    concurrency = models.IntegerField(default=80)
-    timeout_seconds = models.IntegerField(default=300)
     status = models.CharField(max_length=50, default='ACTIVE')
-    service_account = models.ForeignKey(ServiceAccount, on_delete=models.SET_NULL, null=True, blank=True)
-    ingress = models.CharField(max_length=50, default='all')
-    labels = models.JSONField(blank=True, null=True)
+    self_link = models.URLField(max_length=500, blank=True)
+    discovered = models.BooleanField(default=False)
+    last_synced = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ['name']
@@ -585,13 +755,18 @@ class CloudRun(NetBoxModel):
     def get_absolute_url(self):
         return reverse('gcp:cloudrun', args=[self.pk])
 
+    @property
+    def organization(self):
+        return self.project.organization if self.project else None
+
 
 class PubSubTopic(NetBoxModel):
     name = models.CharField(max_length=255)
     project = models.ForeignKey(GCPProject, on_delete=models.CASCADE, related_name='pubsub_topics')
     labels = models.JSONField(blank=True, null=True)
-    message_retention_duration = models.CharField(max_length=50, blank=True)
-    schema_settings = models.JSONField(blank=True, null=True)
+    self_link = models.URLField(max_length=500, blank=True)
+    discovered = models.BooleanField(default=False)
+    last_synced = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ['name']
@@ -604,17 +779,21 @@ class PubSubTopic(NetBoxModel):
     def get_absolute_url(self):
         return reverse('gcp:pubsubtopic', args=[self.pk])
 
+    @property
+    def organization(self):
+        return self.project.organization if self.project else None
+
 
 class PubSubSubscription(NetBoxModel):
     name = models.CharField(max_length=255)
     project = models.ForeignKey(GCPProject, on_delete=models.CASCADE, related_name='pubsub_subscriptions')
     topic = models.ForeignKey(PubSubTopic, on_delete=models.CASCADE, related_name='subscriptions')
     ack_deadline_seconds = models.IntegerField(default=10)
+    push_endpoint = models.URLField(max_length=500, blank=True)
     message_retention_duration = models.CharField(max_length=50, default='604800s')
-    push_endpoint = models.URLField(blank=True)
-    filter_expression = models.TextField(blank=True)
-    dead_letter_topic = models.ForeignKey(PubSubTopic, on_delete=models.SET_NULL, null=True, blank=True, related_name='dead_letter_subscriptions')
-    labels = models.JSONField(blank=True, null=True)
+    self_link = models.URLField(max_length=500, blank=True)
+    discovered = models.BooleanField(default=False)
+    last_synced = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ['name']
@@ -627,15 +806,22 @@ class PubSubSubscription(NetBoxModel):
     def get_absolute_url(self):
         return reverse('gcp:pubsubsubscription', args=[self.pk])
 
+    @property
+    def organization(self):
+        return self.project.organization if self.project else None
+
 
 class SecretManagerSecret(NetBoxModel):
     name = models.CharField(max_length=255)
     project = models.ForeignKey(GCPProject, on_delete=models.CASCADE, related_name='secrets')
-    replication_type = models.CharField(max_length=50, default='automatic')
+    replication_type = models.CharField(max_length=50, default='AUTOMATIC')
     replication_locations = models.JSONField(blank=True, null=True)
     labels = models.JSONField(blank=True, null=True)
     version_count = models.IntegerField(default=0)
     latest_version = models.CharField(max_length=50, blank=True)
+    self_link = models.URLField(max_length=500, blank=True)
+    discovered = models.BooleanField(default=False)
+    last_synced = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ['name']
@@ -648,15 +834,21 @@ class SecretManagerSecret(NetBoxModel):
     def get_absolute_url(self):
         return reverse('gcp:secretmanagersecret', args=[self.pk])
 
+    @property
+    def organization(self):
+        return self.project.organization if self.project else None
+
 
 class CloudDNSZone(NetBoxModel):
     name = models.CharField(max_length=255)
     project = models.ForeignKey(GCPProject, on_delete=models.CASCADE, related_name='dns_zones')
     dns_name = models.CharField(max_length=255)
-    visibility = models.CharField(max_length=20, default='public')
     description = models.TextField(blank=True)
+    visibility = models.CharField(max_length=50, default='public')
     name_servers = models.JSONField(blank=True, null=True)
-    labels = models.JSONField(blank=True, null=True)
+    self_link = models.URLField(max_length=500, blank=True)
+    discovered = models.BooleanField(default=False)
+    last_synced = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ['name']
@@ -669,16 +861,22 @@ class CloudDNSZone(NetBoxModel):
     def get_absolute_url(self):
         return reverse('gcp:clouddnszone', args=[self.pk])
 
+    @property
+    def organization(self):
+        return self.project.organization if self.project else None
+
 
 class CloudDNSRecord(NetBoxModel):
-    zone = models.ForeignKey(CloudDNSZone, on_delete=models.CASCADE, related_name='records')
     name = models.CharField(max_length=255)
-    record_type = models.CharField(max_length=10)
+    zone = models.ForeignKey(CloudDNSZone, on_delete=models.CASCADE, related_name='records')
+    record_type = models.CharField(max_length=20)
     ttl = models.IntegerField(default=300)
-    rrdatas = models.JSONField()
+    rrdatas = models.JSONField(blank=True, null=True)
+    discovered = models.BooleanField(default=False)
+    last_synced = models.DateTimeField(null=True, blank=True)
 
     class Meta:
-        ordering = ['name', 'record_type']
+        ordering = ['name']
         verbose_name = 'Cloud DNS Record'
         verbose_name_plural = 'Cloud DNS Records'
 
@@ -688,24 +886,25 @@ class CloudDNSRecord(NetBoxModel):
     def get_absolute_url(self):
         return reverse('gcp:clouddnsrecord', args=[self.pk])
 
+    @property
+    def organization(self):
+        return self.zone.project.organization if self.zone and self.zone.project else None
+
 
 class MemorystoreInstance(NetBoxModel):
-    TIER_CHOICES = [
-        ('BASIC', 'Basic'),
-        ('STANDARD_HA', 'Standard HA'),
-    ]
-
     name = models.CharField(max_length=255)
     project = models.ForeignKey(GCPProject, on_delete=models.CASCADE, related_name='memorystore_instances')
     region = models.CharField(max_length=100)
-    tier = models.CharField(max_length=20, choices=TIER_CHOICES, default='BASIC')
+    tier = models.CharField(max_length=50, default='BASIC')
     memory_size_gb = models.IntegerField(default=1)
-    redis_version = models.CharField(max_length=20, default='REDIS_6_X')
+    redis_version = models.CharField(max_length=50, default='REDIS_6_X')
     host = models.CharField(max_length=255, blank=True)
     port = models.IntegerField(default=6379)
     status = models.CharField(max_length=50, default='READY')
-    authorized_network = models.ForeignKey(VPCNetwork, on_delete=models.SET_NULL, null=True, blank=True)
-    labels = models.JSONField(blank=True, null=True)
+    network = models.ForeignKey(VPCNetwork, on_delete=models.SET_NULL, null=True, blank=True)
+    self_link = models.URLField(max_length=500, blank=True)
+    discovered = models.BooleanField(default=False)
+    last_synced = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ['name']
@@ -718,13 +917,19 @@ class MemorystoreInstance(NetBoxModel):
     def get_absolute_url(self):
         return reverse('gcp:memorystoreinstance', args=[self.pk])
 
+    @property
+    def organization(self):
+        return self.project.organization if self.project else None
+
 
 class NCCHub(NetBoxModel):
     name = models.CharField(max_length=255)
     project = models.ForeignKey(GCPProject, on_delete=models.CASCADE, related_name='ncc_hubs')
     description = models.TextField(blank=True)
-    routing_vpcs = models.JSONField(blank=True, null=True)
     labels = models.JSONField(blank=True, null=True)
+    self_link = models.URLField(max_length=500, blank=True)
+    discovered = models.BooleanField(default=False)
+    last_synced = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ['name']
@@ -737,26 +942,25 @@ class NCCHub(NetBoxModel):
     def get_absolute_url(self):
         return reverse('gcp:ncchub', args=[self.pk])
 
+    @property
+    def organization(self):
+        return self.project.organization if self.project else None
+
 
 class NCCSpoke(NetBoxModel):
-    SPOKE_TYPE_CHOICES = [
-        ('VPN', 'VPN Tunnel'),
-        ('INTERCONNECT', 'Interconnect Attachment'),
-        ('ROUTER_APPLIANCE', 'Router Appliance'),
-        ('VPC', 'VPC Network'),
-    ]
-
     name = models.CharField(max_length=255)
     project = models.ForeignKey(GCPProject, on_delete=models.CASCADE, related_name='ncc_spokes')
     hub = models.ForeignKey(NCCHub, on_delete=models.CASCADE, related_name='spokes')
-    spoke_type = models.CharField(max_length=50, choices=SPOKE_TYPE_CHOICES)
     location = models.CharField(max_length=100)
     description = models.TextField(blank=True)
+    spoke_type = models.CharField(max_length=50, default='VPC_NETWORK')
+    linked_vpc_network = models.ForeignKey(VPCNetwork, on_delete=models.SET_NULL, null=True, blank=True, related_name='ncc_spokes')
     linked_vpn_tunnels = models.JSONField(blank=True, null=True)
     linked_interconnect_attachments = models.JSONField(blank=True, null=True)
-    linked_router_appliance_instances = models.JSONField(blank=True, null=True)
-    linked_vpc_network = models.ForeignKey('VPCNetwork', on_delete=models.SET_NULL, null=True, blank=True, related_name='ncc_spokes')
     labels = models.JSONField(blank=True, null=True)
+    self_link = models.URLField(max_length=500, blank=True)
+    discovered = models.BooleanField(default=False)
+    last_synced = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ['name']
@@ -769,22 +973,22 @@ class NCCSpoke(NetBoxModel):
     def get_absolute_url(self):
         return reverse('gcp:nccspoke', args=[self.pk])
 
+    @property
+    def organization(self):
+        return self.project.organization if self.project else None
+
 
 class VPNGateway(NetBoxModel):
-    GATEWAY_TYPE_CHOICES = [
-        ('HA_VPN', 'HA VPN Gateway'),
-        ('CLASSIC_VPN', 'Classic VPN Gateway'),
-        ('EXTERNAL_VPN', 'External VPN Gateway'),
-    ]
-
     name = models.CharField(max_length=255)
     project = models.ForeignKey(GCPProject, on_delete=models.CASCADE, related_name='vpn_gateways')
-    network = models.ForeignKey('VPCNetwork', on_delete=models.CASCADE, related_name='vpn_gateways')
+    network = models.ForeignKey(VPCNetwork, on_delete=models.CASCADE, related_name='vpn_gateways')
     region = models.CharField(max_length=100)
-    gateway_type = models.CharField(max_length=50, choices=GATEWAY_TYPE_CHOICES, default='HA_VPN')
+    gateway_type = models.CharField(max_length=50, default='HA_VPN')
     ip_addresses = models.JSONField(blank=True, null=True)
-    description = models.TextField(blank=True)
     labels = models.JSONField(blank=True, null=True)
+    self_link = models.URLField(max_length=500, blank=True)
+    discovered = models.BooleanField(default=False)
+    last_synced = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ['name']
@@ -797,20 +1001,21 @@ class VPNGateway(NetBoxModel):
     def get_absolute_url(self):
         return reverse('gcp:vpngateway', args=[self.pk])
 
+    @property
+    def organization(self):
+        return self.project.organization if self.project else None
+
 
 class ExternalVPNGateway(NetBoxModel):
-    REDUNDANCY_TYPE_CHOICES = [
-        ('FOUR_IPS_REDUNDANCY', 'Four IPs Redundancy'),
-        ('SINGLE_IP_INTERNALLY_REDUNDANT', 'Single IP Internally Redundant'),
-        ('TWO_IPS_REDUNDANCY', 'Two IPs Redundancy'),
-    ]
-
     name = models.CharField(max_length=255)
     project = models.ForeignKey(GCPProject, on_delete=models.CASCADE, related_name='external_vpn_gateways')
-    redundancy_type = models.CharField(max_length=50, choices=REDUNDANCY_TYPE_CHOICES, default='TWO_IPS_REDUNDANCY')
-    interfaces = models.JSONField(blank=True, null=True)
     description = models.TextField(blank=True)
+    redundancy_type = models.CharField(max_length=50, default='SINGLE_IP_INTERNALLY_REDUNDANT')
+    interfaces = models.JSONField(blank=True, null=True)
     labels = models.JSONField(blank=True, null=True)
+    self_link = models.URLField(max_length=500, blank=True)
+    discovered = models.BooleanField(default=False)
+    last_synced = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ['name']
@@ -823,36 +1028,31 @@ class ExternalVPNGateway(NetBoxModel):
     def get_absolute_url(self):
         return reverse('gcp:externalvpngateway', args=[self.pk])
 
+    @property
+    def organization(self):
+        return self.project.organization if self.project else None
+
 
 class VPNTunnel(NetBoxModel):
-    STATUS_CHOICES = [
-        ('ESTABLISHED', 'Established'),
-        ('NO_INCOMING_PACKETS', 'No Incoming Packets'),
-        ('AUTHORIZATION_ERROR', 'Authorization Error'),
-        ('NEGOTIATION_FAILURE', 'Negotiation Failure'),
-        ('DEPROVISIONING', 'Deprovisioning'),
-        ('FAILED', 'Failed'),
-        ('FIRST_HANDSHAKE', 'First Handshake'),
-        ('WAITING_FOR_FULL_CONFIG', 'Waiting for Full Config'),
-    ]
-
     name = models.CharField(max_length=255)
     project = models.ForeignKey(GCPProject, on_delete=models.CASCADE, related_name='vpn_tunnels')
     region = models.CharField(max_length=100)
     vpn_gateway = models.ForeignKey(VPNGateway, on_delete=models.CASCADE, related_name='tunnels', null=True, blank=True)
     vpn_gateway_interface = models.IntegerField(default=0)
     peer_external_gateway = models.ForeignKey(ExternalVPNGateway, on_delete=models.SET_NULL, null=True, blank=True, related_name='tunnels')
-    peer_external_gateway_interface = models.IntegerField(default=0, null=True, blank=True)
-    peer_gcp_gateway = models.ForeignKey(VPNGateway, on_delete=models.SET_NULL, null=True, blank=True, related_name='peer_tunnels')
+    peer_external_gateway_interface = models.IntegerField(default=0)
     peer_ip = models.GenericIPAddressField(blank=True, null=True)
     shared_secret_hash = models.CharField(max_length=255, blank=True)
     ike_version = models.IntegerField(default=2)
     local_traffic_selector = models.JSONField(blank=True, null=True)
     remote_traffic_selector = models.JSONField(blank=True, null=True)
-    router = models.ForeignKey('CloudRouter', on_delete=models.SET_NULL, null=True, blank=True, related_name='vpn_tunnels')
-    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='ESTABLISHED')
-    detailed_status = models.TextField(blank=True)
+    router = models.ForeignKey(CloudRouter, on_delete=models.SET_NULL, null=True, blank=True, related_name='vpn_tunnels')
+    status = models.CharField(max_length=50, default='ESTABLISHED')
+    detailed_status = models.CharField(max_length=255, blank=True)
     labels = models.JSONField(blank=True, null=True)
+    self_link = models.URLField(max_length=500, blank=True)
+    discovered = models.BooleanField(default=False)
+    last_synced = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ['name']
@@ -865,50 +1065,29 @@ class VPNTunnel(NetBoxModel):
     def get_absolute_url(self):
         return reverse('gcp:vpntunnel', args=[self.pk])
 
+    @property
+    def organization(self):
+        return self.project.organization if self.project else None
+
 
 class InterconnectAttachment(NetBoxModel):
-    TYPE_CHOICES = [
-        ('DEDICATED', 'Dedicated'),
-        ('PARTNER', 'Partner'),
-    ]
-    STATE_CHOICES = [
-        ('ACTIVE', 'Active'),
-        ('UNPROVISIONED', 'Unprovisioned'),
-        ('PENDING_CUSTOMER', 'Pending Customer'),
-        ('PENDING_PARTNER', 'Pending Partner'),
-        ('DEFUNCT', 'Defunct'),
-    ]
-    BANDWIDTH_CHOICES = [
-        ('BPS_50M', '50 Mbps'),
-        ('BPS_100M', '100 Mbps'),
-        ('BPS_200M', '200 Mbps'),
-        ('BPS_300M', '300 Mbps'),
-        ('BPS_400M', '400 Mbps'),
-        ('BPS_500M', '500 Mbps'),
-        ('BPS_1G', '1 Gbps'),
-        ('BPS_2G', '2 Gbps'),
-        ('BPS_5G', '5 Gbps'),
-        ('BPS_10G', '10 Gbps'),
-        ('BPS_20G', '20 Gbps'),
-        ('BPS_50G', '50 Gbps'),
-    ]
-
     name = models.CharField(max_length=255)
     project = models.ForeignKey(GCPProject, on_delete=models.CASCADE, related_name='interconnect_attachments')
     region = models.CharField(max_length=100)
-    router = models.ForeignKey('CloudRouter', on_delete=models.CASCADE, related_name='interconnect_attachments')
-    attachment_type = models.CharField(max_length=50, choices=TYPE_CHOICES, default='DEDICATED')
-    bandwidth = models.CharField(max_length=20, choices=BANDWIDTH_CHOICES, default='BPS_1G')
+    router = models.ForeignKey(CloudRouter, on_delete=models.CASCADE, related_name='interconnect_attachments')
+    attachment_type = models.CharField(max_length=50, default='DEDICATED')
+    edge_availability_domain = models.CharField(max_length=50, blank=True)
+    bandwidth = models.CharField(max_length=50, default='BPS_1G')
     vlan_tag = models.IntegerField(default=0)
     pairing_key = models.CharField(max_length=255, blank=True)
-    partner_metadata = models.JSONField(blank=True, null=True)
-    cloud_router_ip = models.GenericIPAddressField(blank=True, null=True)
-    customer_router_ip = models.GenericIPAddressField(blank=True, null=True)
-    state = models.CharField(max_length=50, choices=STATE_CHOICES, default='ACTIVE')
-    mtu = models.IntegerField(default=1440)
-    encryption = models.CharField(max_length=20, default='NONE')
-    description = models.TextField(blank=True)
+    partner_asn = models.BigIntegerField(null=True, blank=True)
+    cloud_router_ip_address = models.GenericIPAddressField(blank=True, null=True)
+    customer_router_ip_address = models.GenericIPAddressField(blank=True, null=True)
+    state = models.CharField(max_length=50, default='ACTIVE')
     labels = models.JSONField(blank=True, null=True)
+    self_link = models.URLField(max_length=500, blank=True)
+    discovered = models.BooleanField(default=False)
+    last_synced = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ['name']
@@ -920,3 +1099,7 @@ class InterconnectAttachment(NetBoxModel):
 
     def get_absolute_url(self):
         return reverse('gcp:interconnectattachment', args=[self.pk])
+
+    @property
+    def organization(self):
+        return self.project.organization if self.project else None
