@@ -334,3 +334,76 @@ class MemorystoreInstanceFilterSet(NetBoxModelFilterSet):
 
     def search(self, queryset, name, value):
         return queryset.filter(name__icontains=value)
+
+
+from .models import NCCHub, NCCSpoke, VPNGateway, ExternalVPNGateway, VPNTunnel, InterconnectAttachment
+
+
+class NCCHubFilterSet(NetBoxModelFilterSet):
+    project = django_filters.ModelChoiceFilter(queryset=GCPProject.objects.all())
+
+    class Meta:
+        model = NCCHub
+        fields = ['id', 'name', 'project']
+
+    def search(self, queryset, name, value):
+        return queryset.filter(name__icontains=value)
+
+
+class NCCSpokeFilterSet(NetBoxModelFilterSet):
+    project = django_filters.ModelChoiceFilter(queryset=GCPProject.objects.all())
+    hub = django_filters.ModelChoiceFilter(queryset=NCCHub.objects.all())
+
+    class Meta:
+        model = NCCSpoke
+        fields = ['id', 'name', 'project', 'hub', 'spoke_type', 'location']
+
+    def search(self, queryset, name, value):
+        return queryset.filter(name__icontains=value)
+
+
+class VPNGatewayFilterSet(NetBoxModelFilterSet):
+    project = django_filters.ModelChoiceFilter(queryset=GCPProject.objects.all())
+    network = django_filters.ModelChoiceFilter(queryset=VPCNetwork.objects.all())
+
+    class Meta:
+        model = VPNGateway
+        fields = ['id', 'name', 'project', 'network', 'region', 'gateway_type']
+
+    def search(self, queryset, name, value):
+        return queryset.filter(name__icontains=value)
+
+
+class ExternalVPNGatewayFilterSet(NetBoxModelFilterSet):
+    project = django_filters.ModelChoiceFilter(queryset=GCPProject.objects.all())
+
+    class Meta:
+        model = ExternalVPNGateway
+        fields = ['id', 'name', 'project', 'redundancy_type']
+
+    def search(self, queryset, name, value):
+        return queryset.filter(name__icontains=value)
+
+
+class VPNTunnelFilterSet(NetBoxModelFilterSet):
+    project = django_filters.ModelChoiceFilter(queryset=GCPProject.objects.all())
+    vpn_gateway = django_filters.ModelChoiceFilter(queryset=VPNGateway.objects.all())
+
+    class Meta:
+        model = VPNTunnel
+        fields = ['id', 'name', 'project', 'region', 'vpn_gateway', 'status', 'ike_version']
+
+    def search(self, queryset, name, value):
+        return queryset.filter(name__icontains=value)
+
+
+class InterconnectAttachmentFilterSet(NetBoxModelFilterSet):
+    project = django_filters.ModelChoiceFilter(queryset=GCPProject.objects.all())
+    router = django_filters.ModelChoiceFilter(queryset=CloudRouter.objects.all())
+
+    class Meta:
+        model = InterconnectAttachment
+        fields = ['id', 'name', 'project', 'region', 'router', 'attachment_type', 'bandwidth', 'state']
+
+    def search(self, queryset, name, value):
+        return queryset.filter(name__icontains=value)

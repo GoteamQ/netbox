@@ -947,3 +947,198 @@ class MemorystoreInstanceBulkImportView(generic.BulkImportView):
 class MemorystoreInstanceBulkDeleteView(generic.BulkDeleteView):
     queryset = MemorystoreInstance.objects.all()
     table = tables.MemorystoreInstanceTable
+
+
+from .models import NCCHub, NCCSpoke, VPNGateway, ExternalVPNGateway, VPNTunnel, InterconnectAttachment
+
+
+class NCCHubListView(generic.ObjectListView):
+    queryset = NCCHub.objects.all()
+    table = tables.NCCHubTable
+    filterset = filtersets.NCCHubFilterSet
+
+
+@register_model_view(NCCHub)
+class NCCHubView(generic.ObjectView):
+    queryset = NCCHub.objects.all()
+
+
+@register_model_view(NCCHub, 'edit')
+class NCCHubEditView(generic.ObjectEditView):
+    queryset = NCCHub.objects.all()
+    form = forms.NCCHubForm
+
+
+@register_model_view(NCCHub, 'delete')
+class NCCHubDeleteView(generic.ObjectDeleteView):
+    queryset = NCCHub.objects.all()
+
+
+class NCCHubBulkImportView(generic.BulkImportView):
+    queryset = NCCHub.objects.all()
+    model_form = forms.NCCHubForm
+
+
+class NCCHubBulkDeleteView(generic.BulkDeleteView):
+    queryset = NCCHub.objects.all()
+    table = tables.NCCHubTable
+
+
+class NCCSpokeListView(generic.ObjectListView):
+    queryset = NCCSpoke.objects.all()
+    table = tables.NCCSpokeTable
+    filterset = filtersets.NCCSpokeFilterSet
+
+
+@register_model_view(NCCSpoke)
+class NCCSpokeView(generic.ObjectView):
+    queryset = NCCSpoke.objects.all()
+
+
+@register_model_view(NCCSpoke, 'edit')
+class NCCSpokeEditView(generic.ObjectEditView):
+    queryset = NCCSpoke.objects.all()
+    form = forms.NCCSpokeForm
+
+
+@register_model_view(NCCSpoke, 'delete')
+class NCCSpokeDeleteView(generic.ObjectDeleteView):
+    queryset = NCCSpoke.objects.all()
+
+
+class NCCSpokeBulkImportView(generic.BulkImportView):
+    queryset = NCCSpoke.objects.all()
+    model_form = forms.NCCSpokeForm
+
+
+class NCCSpokeBulkDeleteView(generic.BulkDeleteView):
+    queryset = NCCSpoke.objects.all()
+    table = tables.NCCSpokeTable
+
+
+class VPNGatewayListView(generic.ObjectListView):
+    queryset = VPNGateway.objects.all()
+    table = tables.VPNGatewayTable
+    filterset = filtersets.VPNGatewayFilterSet
+
+
+@register_model_view(VPNGateway)
+class VPNGatewayView(generic.ObjectView):
+    queryset = VPNGateway.objects.all()
+
+
+@register_model_view(VPNGateway, 'edit')
+class VPNGatewayEditView(generic.ObjectEditView):
+    queryset = VPNGateway.objects.all()
+    form = forms.VPNGatewayForm
+
+
+@register_model_view(VPNGateway, 'delete')
+class VPNGatewayDeleteView(generic.ObjectDeleteView):
+    queryset = VPNGateway.objects.all()
+
+
+class VPNGatewayBulkImportView(generic.BulkImportView):
+    queryset = VPNGateway.objects.all()
+    model_form = forms.VPNGatewayForm
+
+
+class VPNGatewayBulkDeleteView(generic.BulkDeleteView):
+    queryset = VPNGateway.objects.all()
+    table = tables.VPNGatewayTable
+
+
+class ExternalVPNGatewayListView(generic.ObjectListView):
+    queryset = ExternalVPNGateway.objects.all()
+    table = tables.ExternalVPNGatewayTable
+    filterset = filtersets.ExternalVPNGatewayFilterSet
+
+
+@register_model_view(ExternalVPNGateway)
+class ExternalVPNGatewayView(generic.ObjectView):
+    queryset = ExternalVPNGateway.objects.all()
+
+
+@register_model_view(ExternalVPNGateway, 'edit')
+class ExternalVPNGatewayEditView(generic.ObjectEditView):
+    queryset = ExternalVPNGateway.objects.all()
+    form = forms.ExternalVPNGatewayForm
+
+
+@register_model_view(ExternalVPNGateway, 'delete')
+class ExternalVPNGatewayDeleteView(generic.ObjectDeleteView):
+    queryset = ExternalVPNGateway.objects.all()
+
+
+class ExternalVPNGatewayBulkImportView(generic.BulkImportView):
+    queryset = ExternalVPNGateway.objects.all()
+    model_form = forms.ExternalVPNGatewayForm
+
+
+class ExternalVPNGatewayBulkDeleteView(generic.BulkDeleteView):
+    queryset = ExternalVPNGateway.objects.all()
+    table = tables.ExternalVPNGatewayTable
+
+
+class VPNTunnelListView(generic.ObjectListView):
+    queryset = VPNTunnel.objects.all()
+    table = tables.VPNTunnelTable
+    filterset = filtersets.VPNTunnelFilterSet
+
+
+@register_model_view(VPNTunnel)
+class VPNTunnelView(generic.ObjectView):
+    queryset = VPNTunnel.objects.all()
+
+
+@register_model_view(VPNTunnel, 'edit')
+class VPNTunnelEditView(generic.ObjectEditView):
+    queryset = VPNTunnel.objects.all()
+    form = forms.VPNTunnelForm
+
+
+@register_model_view(VPNTunnel, 'delete')
+class VPNTunnelDeleteView(generic.ObjectDeleteView):
+    queryset = VPNTunnel.objects.all()
+
+
+class VPNTunnelBulkImportView(generic.BulkImportView):
+    queryset = VPNTunnel.objects.all()
+    model_form = forms.VPNTunnelForm
+
+
+class VPNTunnelBulkDeleteView(generic.BulkDeleteView):
+    queryset = VPNTunnel.objects.all()
+    table = tables.VPNTunnelTable
+
+
+class InterconnectAttachmentListView(generic.ObjectListView):
+    queryset = InterconnectAttachment.objects.all()
+    table = tables.InterconnectAttachmentTable
+    filterset = filtersets.InterconnectAttachmentFilterSet
+
+
+@register_model_view(InterconnectAttachment)
+class InterconnectAttachmentView(generic.ObjectView):
+    queryset = InterconnectAttachment.objects.all()
+
+
+@register_model_view(InterconnectAttachment, 'edit')
+class InterconnectAttachmentEditView(generic.ObjectEditView):
+    queryset = InterconnectAttachment.objects.all()
+    form = forms.InterconnectAttachmentForm
+
+
+@register_model_view(InterconnectAttachment, 'delete')
+class InterconnectAttachmentDeleteView(generic.ObjectDeleteView):
+    queryset = InterconnectAttachment.objects.all()
+
+
+class InterconnectAttachmentBulkImportView(generic.BulkImportView):
+    queryset = InterconnectAttachment.objects.all()
+    model_form = forms.InterconnectAttachmentForm
+
+
+class InterconnectAttachmentBulkDeleteView(generic.BulkDeleteView):
+    queryset = InterconnectAttachment.objects.all()
+    table = tables.InterconnectAttachmentTable

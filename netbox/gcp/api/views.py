@@ -185,3 +185,42 @@ class MemorystoreInstanceViewSet(NetBoxModelViewSet):
     queryset = MemorystoreInstance.objects.all()
     serializer_class = serializers.MemorystoreInstanceSerializer
     filterset_class = filtersets.MemorystoreInstanceFilterSet
+
+
+from gcp.models import NCCHub, NCCSpoke, VPNGateway, ExternalVPNGateway, VPNTunnel, InterconnectAttachment
+
+
+class NCCHubViewSet(NetBoxModelViewSet):
+    queryset = NCCHub.objects.all()
+    serializer_class = serializers.NCCHubSerializer
+    filterset_class = filtersets.NCCHubFilterSet
+
+
+class NCCSpokeViewSet(NetBoxModelViewSet):
+    queryset = NCCSpoke.objects.all()
+    serializer_class = serializers.NCCSpokeSerializer
+    filterset_class = filtersets.NCCSpokeFilterSet
+
+
+class VPNGatewayViewSet(NetBoxModelViewSet):
+    queryset = VPNGateway.objects.all()
+    serializer_class = serializers.VPNGatewaySerializer
+    filterset_class = filtersets.VPNGatewayFilterSet
+
+
+class ExternalVPNGatewayViewSet(NetBoxModelViewSet):
+    queryset = ExternalVPNGateway.objects.all()
+    serializer_class = serializers.ExternalVPNGatewaySerializer
+    filterset_class = filtersets.ExternalVPNGatewayFilterSet
+
+
+class VPNTunnelViewSet(NetBoxModelViewSet):
+    queryset = VPNTunnel.objects.all()
+    serializer_class = serializers.VPNTunnelSerializer
+    filterset_class = filtersets.VPNTunnelFilterSet
+
+
+class InterconnectAttachmentViewSet(NetBoxModelViewSet):
+    queryset = InterconnectAttachment.objects.all()
+    serializer_class = serializers.InterconnectAttachmentSerializer
+    filterset_class = filtersets.InterconnectAttachmentFilterSet

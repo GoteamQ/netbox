@@ -219,3 +219,52 @@ class MemorystoreInstanceSerializer(NetBoxModelSerializer):
         model = MemorystoreInstance
         fields = ['id', 'url', 'display', 'name', 'project', 'region', 'tier', 'memory_size_gb',
                   'redis_version', 'host', 'port', 'status', 'authorized_network', 'labels', 'tags']
+
+
+from gcp.models import NCCHub, NCCSpoke, VPNGateway, ExternalVPNGateway, VPNTunnel, InterconnectAttachment
+
+
+class NCCHubSerializer(NetBoxModelSerializer):
+    class Meta:
+        model = NCCHub
+        fields = ['id', 'url', 'display', 'name', 'project', 'description', 'routing_vpcs', 'labels', 'tags']
+
+
+class NCCSpokeSerializer(NetBoxModelSerializer):
+    class Meta:
+        model = NCCSpoke
+        fields = ['id', 'url', 'display', 'name', 'project', 'hub', 'spoke_type', 'location', 
+                  'description', 'linked_vpn_tunnels', 'linked_interconnect_attachments',
+                  'linked_router_appliance_instances', 'linked_vpc_network', 'labels', 'tags']
+
+
+class VPNGatewaySerializer(NetBoxModelSerializer):
+    class Meta:
+        model = VPNGateway
+        fields = ['id', 'url', 'display', 'name', 'project', 'network', 'region', 'gateway_type',
+                  'ip_addresses', 'description', 'labels', 'tags']
+
+
+class ExternalVPNGatewaySerializer(NetBoxModelSerializer):
+    class Meta:
+        model = ExternalVPNGateway
+        fields = ['id', 'url', 'display', 'name', 'project', 'redundancy_type', 'interfaces',
+                  'description', 'labels', 'tags']
+
+
+class VPNTunnelSerializer(NetBoxModelSerializer):
+    class Meta:
+        model = VPNTunnel
+        fields = ['id', 'url', 'display', 'name', 'project', 'region', 'vpn_gateway', 
+                  'vpn_gateway_interface', 'peer_external_gateway', 'peer_external_gateway_interface',
+                  'peer_gcp_gateway', 'peer_ip', 'shared_secret_hash', 'ike_version',
+                  'local_traffic_selector', 'remote_traffic_selector', 'router', 'status',
+                  'detailed_status', 'labels', 'tags']
+
+
+class InterconnectAttachmentSerializer(NetBoxModelSerializer):
+    class Meta:
+        model = InterconnectAttachment
+        fields = ['id', 'url', 'display', 'name', 'project', 'region', 'router', 'attachment_type',
+                  'bandwidth', 'vlan_tag', 'pairing_key', 'partner_metadata', 'cloud_router_ip',
+                  'customer_router_ip', 'state', 'mtu', 'encryption', 'description', 'labels', 'tags']

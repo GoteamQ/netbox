@@ -717,3 +717,206 @@ class MemorystoreInstance(NetBoxModel):
 
     def get_absolute_url(self):
         return reverse('gcp:memorystoreinstance', args=[self.pk])
+
+
+class NCCHub(NetBoxModel):
+    name = models.CharField(max_length=255)
+    project = models.ForeignKey(GCPProject, on_delete=models.CASCADE, related_name='ncc_hubs')
+    description = models.TextField(blank=True)
+    routing_vpcs = models.JSONField(blank=True, null=True)
+    labels = models.JSONField(blank=True, null=True)
+
+    class Meta:
+        ordering = ['name']
+        verbose_name = 'NCC Hub'
+        verbose_name_plural = 'NCC Hubs'
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse('gcp:ncchub', args=[self.pk])
+
+
+class NCCSpoke(NetBoxModel):
+    SPOKE_TYPE_CHOICES = [
+        ('VPN', 'VPN Tunnel'),
+        ('INTERCONNECT', 'Interconnect Attachment'),
+        ('ROUTER_APPLIANCE', 'Router Appliance'),
+        ('VPC', 'VPC Network'),
+    ]
+
+    name = models.CharField(max_length=255)
+    project = models.ForeignKey(GCPProject, on_delete=models.CASCADE, related_name='ncc_spokes')
+    hub = models.ForeignKey(NCCHub, on_delete=models.CASCADE, related_name='spokes')
+    spoke_type = models.CharField(max_length=50, choices=SPOKE_TYPE_CHOICES)
+    location = models.CharField(max_length=100)
+    description = models.TextField(blank=True)
+    linked_vpn_tunnels = models.JSONField(blank=True, null=True)
+    linked_interconnect_attachments = models.JSONField(blank=True, null=True)
+    linked_router_appliance_instances = models.JSONField(blank=True, null=True)
+    linked_vpc_network = models.ForeignKey('VPCNetwork', on_delete=models.SET_NULL, null=True, blank=True, related_name='ncc_spokes')
+    labels = models.JSONField(blank=True, null=True)
+
+    class Meta:
+        ordering = ['name']
+        verbose_name = 'NCC Spoke'
+        verbose_name_plural = 'NCC Spokes'
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse('gcp:nccspoke', args=[self.pk])
+
+
+class VPNGateway(NetBoxModel):
+    GATEWAY_TYPE_CHOICES = [
+        ('HA_VPN', 'HA VPN Gateway'),
+        ('CLASSIC_VPN', 'Classic VPN Gateway'),
+        ('EXTERNAL_VPN', 'External VPN Gateway'),
+    ]
+
+    name = models.CharField(max_length=255)
+    project = models.ForeignKey(GCPProject, on_delete=models.CASCADE, related_name='vpn_gateways')
+    network = models.ForeignKey('VPCNetwork', on_delete=models.CASCADE, related_name='vpn_gateways')
+    region = models.CharField(max_length=100)
+    gateway_type = models.CharField(max_length=50, choices=GATEWAY_TYPE_CHOICES, default='HA_VPN')
+    ip_addresses = models.JSONField(blank=True, null=True)
+    description = models.TextField(blank=True)
+    labels = models.JSONField(blank=True, null=True)
+
+    class Meta:
+        ordering = ['name']
+        verbose_name = 'VPN Gateway'
+        verbose_name_plural = 'VPN Gateways'
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse('gcp:vpngateway', args=[self.pk])
+
+
+class ExternalVPNGateway(NetBoxModel):
+    REDUNDANCY_TYPE_CHOICES = [
+        ('FOUR_IPS_REDUNDANCY', 'Four IPs Redundancy'),
+        ('SINGLE_IP_INTERNALLY_REDUNDANT', 'Single IP Internally Redundant'),
+        ('TWO_IPS_REDUNDANCY', 'Two IPs Redundancy'),
+    ]
+
+    name = models.CharField(max_length=255)
+    project = models.ForeignKey(GCPProject, on_delete=models.CASCADE, related_name='external_vpn_gateways')
+    redundancy_type = models.CharField(max_length=50, choices=REDUNDANCY_TYPE_CHOICES, default='TWO_IPS_REDUNDANCY')
+    interfaces = models.JSONField(blank=True, null=True)
+    description = models.TextField(blank=True)
+    labels = models.JSONField(blank=True, null=True)
+
+    class Meta:
+        ordering = ['name']
+        verbose_name = 'External VPN Gateway'
+        verbose_name_plural = 'External VPN Gateways'
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse('gcp:externalvpngateway', args=[self.pk])
+
+
+class VPNTunnel(NetBoxModel):
+    STATUS_CHOICES = [
+        ('ESTABLISHED', 'Established'),
+        ('NO_INCOMING_PACKETS', 'No Incoming Packets'),
+        ('AUTHORIZATION_ERROR', 'Authorization Error'),
+        ('NEGOTIATION_FAILURE', 'Negotiation Failure'),
+        ('DEPROVISIONING', 'Deprovisioning'),
+        ('FAILED', 'Failed'),
+        ('FIRST_HANDSHAKE', 'First Handshake'),
+        ('WAITING_FOR_FULL_CONFIG', 'Waiting for Full Config'),
+    ]
+
+    name = models.CharField(max_length=255)
+    project = models.ForeignKey(GCPProject, on_delete=models.CASCADE, related_name='vpn_tunnels')
+    region = models.CharField(max_length=100)
+    vpn_gateway = models.ForeignKey(VPNGateway, on_delete=models.CASCADE, related_name='tunnels', null=True, blank=True)
+    vpn_gateway_interface = models.IntegerField(default=0)
+    peer_external_gateway = models.ForeignKey(ExternalVPNGateway, on_delete=models.SET_NULL, null=True, blank=True, related_name='tunnels')
+    peer_external_gateway_interface = models.IntegerField(default=0, null=True, blank=True)
+    peer_gcp_gateway = models.ForeignKey(VPNGateway, on_delete=models.SET_NULL, null=True, blank=True, related_name='peer_tunnels')
+    peer_ip = models.GenericIPAddressField(blank=True, null=True)
+    shared_secret_hash = models.CharField(max_length=255, blank=True)
+    ike_version = models.IntegerField(default=2)
+    local_traffic_selector = models.JSONField(blank=True, null=True)
+    remote_traffic_selector = models.JSONField(blank=True, null=True)
+    router = models.ForeignKey('CloudRouter', on_delete=models.SET_NULL, null=True, blank=True, related_name='vpn_tunnels')
+    status = models.CharField(max_length=50, choices=STATUS_CHOICES, default='ESTABLISHED')
+    detailed_status = models.TextField(blank=True)
+    labels = models.JSONField(blank=True, null=True)
+
+    class Meta:
+        ordering = ['name']
+        verbose_name = 'VPN Tunnel'
+        verbose_name_plural = 'VPN Tunnels'
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse('gcp:vpntunnel', args=[self.pk])
+
+
+class InterconnectAttachment(NetBoxModel):
+    TYPE_CHOICES = [
+        ('DEDICATED', 'Dedicated'),
+        ('PARTNER', 'Partner'),
+    ]
+    STATE_CHOICES = [
+        ('ACTIVE', 'Active'),
+        ('UNPROVISIONED', 'Unprovisioned'),
+        ('PENDING_CUSTOMER', 'Pending Customer'),
+        ('PENDING_PARTNER', 'Pending Partner'),
+        ('DEFUNCT', 'Defunct'),
+    ]
+    BANDWIDTH_CHOICES = [
+        ('BPS_50M', '50 Mbps'),
+        ('BPS_100M', '100 Mbps'),
+        ('BPS_200M', '200 Mbps'),
+        ('BPS_300M', '300 Mbps'),
+        ('BPS_400M', '400 Mbps'),
+        ('BPS_500M', '500 Mbps'),
+        ('BPS_1G', '1 Gbps'),
+        ('BPS_2G', '2 Gbps'),
+        ('BPS_5G', '5 Gbps'),
+        ('BPS_10G', '10 Gbps'),
+        ('BPS_20G', '20 Gbps'),
+        ('BPS_50G', '50 Gbps'),
+    ]
+
+    name = models.CharField(max_length=255)
+    project = models.ForeignKey(GCPProject, on_delete=models.CASCADE, related_name='interconnect_attachments')
+    region = models.CharField(max_length=100)
+    router = models.ForeignKey('CloudRouter', on_delete=models.CASCADE, related_name='interconnect_attachments')
+    attachment_type = models.CharField(max_length=50, choices=TYPE_CHOICES, default='DEDICATED')
+    bandwidth = models.CharField(max_length=20, choices=BANDWIDTH_CHOICES, default='BPS_1G')
+    vlan_tag = models.IntegerField(default=0)
+    pairing_key = models.CharField(max_length=255, blank=True)
+    partner_metadata = models.JSONField(blank=True, null=True)
+    cloud_router_ip = models.GenericIPAddressField(blank=True, null=True)
+    customer_router_ip = models.GenericIPAddressField(blank=True, null=True)
+    state = models.CharField(max_length=50, choices=STATE_CHOICES, default='ACTIVE')
+    mtu = models.IntegerField(default=1440)
+    encryption = models.CharField(max_length=20, default='NONE')
+    description = models.TextField(blank=True)
+    labels = models.JSONField(blank=True, null=True)
+
+    class Meta:
+        ordering = ['name']
+        verbose_name = 'Interconnect Attachment'
+        verbose_name_plural = 'Interconnect Attachments'
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse('gcp:interconnectattachment', args=[self.pk])

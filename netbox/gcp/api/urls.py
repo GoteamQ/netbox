@@ -33,5 +33,11 @@ router.register('secrets', views.SecretManagerSecretViewSet)
 router.register('dns-zones', views.CloudDNSZoneViewSet)
 router.register('dns-records', views.CloudDNSRecordViewSet)
 router.register('memorystore', views.MemorystoreInstanceViewSet)
+router.register('ncc-hubs', views.NCCHubViewSet)
+router.register('ncc-spokes', views.NCCSpokeViewSet)
+router.register('vpn-gateways', views.VPNGatewayViewSet)
+router.register('external-vpn-gateways', views.ExternalVPNGatewayViewSet)
+router.register('vpn-tunnels', views.VPNTunnelViewSet)
+router.register('interconnect-attachments', views.InterconnectAttachmentViewSet)
 
 urlpatterns = router.urls
