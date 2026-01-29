@@ -59,17 +59,37 @@ class GCPOrganizationDiscoverView(View):
     def post(self, request, pk):
         organization = get_object_or_404(GCPOrganization, pk=pk)
         
-        if organization.discovery_status == 'running':
-            messages.warning(request, f"Discovery is already running for {organization.name}")
+        if organization.discovery_status in ('running', 'canceling'):
+            messages.warning(request, f"Discovery cannot be started while status is {organization.discovery_status} for {organization.name}")
             return redirect('gcp:gcporganization', pk=pk)
         
         from .discovery import run_discovery
-        import threading
+        import django_rq
+
+        queue = django_rq.get_queue('default')
+        queue.enqueue(run_discovery, organization.pk)
         
-        thread = threading.Thread(target=run_discovery, args=(organization.pk,))
-        thread.start()
-        
-        messages.success(request, f"Discovery started for {organization.name}. Refresh the page to see progress.")
+        messages.success(request, f"Discovery queued for {organization.name}. Refresh the page to see progress.")
+        return redirect('gcp:gcporganization', pk=pk)
+
+
+class GCPOrganizationCancelView(View):
+    def post(self, request, pk):
+        organization = get_object_or_404(GCPOrganization, pk=pk)
+
+        if organization.discovery_status == 'canceling':
+            messages.info(request, "Cancellation is already in progress.")
+            return redirect('gcp:gcporganization', pk=pk)
+
+        if organization.discovery_status != 'running':
+            messages.info(request, "No running discovery to cancel.")
+            return redirect('gcp:gcporganization', pk=pk)
+
+        organization.cancel_requested = True
+        organization.discovery_status = 'canceling'
+        organization.save()
+
+        messages.warning(request, f"Cancellation requested for {organization.name}.")
         return redirect('gcp:gcporganization', pk=pk)
 
 

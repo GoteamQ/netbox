@@ -83,14 +83,14 @@ class VPCNetworkSerializer(NetBoxModelSerializer):
     class Meta:
         model = VPCNetwork
         fields = ['id', 'url', 'display', 'name', 'project', 'auto_create_subnetworks', 
-                  'routing_mode', 'mtu', 'description', 'tags']
+                  'routing_mode', 'mtu', 'tags']
 
 
 class SubnetSerializer(NetBoxModelSerializer):
     class Meta:
         model = Subnet
         fields = ['id', 'url', 'display', 'name', 'project', 'network', 'region', 'ip_cidr_range',
-                  'private_ip_google_access', 'secondary_ip_ranges', 'purpose', 'tags']
+              'private_ip_google_access', 'purpose', 'tags']
 
 
 class FirewallRuleSerializer(NetBoxModelSerializer):

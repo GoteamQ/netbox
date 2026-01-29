@@ -24,10 +24,13 @@ class GCPOrganization(NetBoxModel):
         choices=[
             ('pending', 'Pending'),
             ('running', 'Running'),
+            ('canceling', 'Canceling'),
+            ('canceled', 'Canceled'),
             ('completed', 'Completed'),
             ('failed', 'Failed'),
         ]
     )
+    cancel_requested = models.BooleanField(default=False, help_text='Cancel the current discovery run')
     discovery_error = models.TextField(blank=True, help_text='Last discovery error message if any')
     auto_discover = models.BooleanField(default=False, help_text='Automatically discover assets on schedule')
     discover_compute = models.BooleanField(default=True, help_text='Discover Compute Engine resources')
@@ -70,6 +73,7 @@ class DiscoveryLog(NetBoxModel):
         default='running',
         choices=[
             ('running', 'Running'),
+            ('canceled', 'Canceled'),
             ('completed', 'Completed'),
             ('failed', 'Failed'),
         ]

@@ -32,6 +32,7 @@ services:
       REDIS_CACHE_DB: 1
       DEBUG: "false"
       DEVELOPER: "true"
+      GCP_CLEANUP_ON_STARTUP: "true"
     ports:
       - "8000:8000"
 
@@ -56,6 +57,7 @@ services:
       REDIS_CACHE_DB: 1
       DEBUG: "false"
       DEVELOPER: "true"
+      GCP_CLEANUP_ON_STARTUP: "true"
     command: ["python", "netbox/manage.py", "rqworker"]
 
 volumes:

@@ -33,6 +33,7 @@ class DiscoveryLogTable(NetBoxTable):
     completed_at = tables.DateTimeColumn()
     status = tables.Column()
     total_resources = tables.Column()
+    actions = columns.ActionsColumn(actions=('delete', 'changelog'), split_actions=False)
 
     class Meta(NetBoxTable.Meta):
         model = DiscoveryLog

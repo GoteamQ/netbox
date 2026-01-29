@@ -1,16 +1,23 @@
 import json
 import logging
 from datetime import datetime
+from concurrent.futures import ThreadPoolExecutor, as_completed
+import threading
+import django_rq
+
 from django.utils import timezone
 
 logger = logging.getLogger(__name__)
-
 
 class GCPDiscoveryService:
     def __init__(self, organization):
         self.organization = organization
         self.credentials = None
         self.log_messages = []
+        self.redis_conn = None
+        self.log_key = None
+        self.stats_key = None
+        self.discovery_log = None
         self.stats = {
             'projects': 0,
             'instances': 0,
@@ -20,26 +27,211 @@ class GCPDiscoveryService:
             'clusters': 0,
             'total': 0
         }
+        self._lock = threading.Lock()
+        
+        # Try to connect to Redis
+        try:
+            from django_rq.queues import get_redis_connection
+            self.redis_conn = get_redis_connection('default')
+        except Exception as e:
+            logger.warning(f"Failed to connect to Redis: {e}")
+
+    def _setup_redis(self, log_id):
+        if self.redis_conn:
+            self.log_key = f"netbox:gcp:discovery:{log_id}:logs"
+            self.stats_key = f"netbox:gcp:discovery:{log_id}:stats"
+            # expire after 24 hours
+            self.redis_conn.expire(self.log_key, 86400)
+            self.redis_conn.expire(self.stats_key, 86400)
 
     def log(self, message, level='info'):
-        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        self.log_messages.append(f"[{timestamp}] [{level.upper()}] {message}")
+        timestamp = datetime.now().strftime('%H:%M:%S')
+        log_entry = f"[{timestamp}] {message}"
+        
+        if self.redis_conn and self.log_key:
+            try:
+                self.redis_conn.rpush(self.log_key, log_entry)
+            except Exception:
+                # Fallback to memory
+                with self._lock:
+                    self.log_messages.append(log_entry)
+        else:
+            with self._lock:
+                self.log_messages.append(log_entry)
+                
         if level == 'error':
             logger.error(message)
+        elif level == 'warning':
+            logger.warning(message)
         else:
             logger.info(message)
 
     def get_log_output(self):
-        return '\n'.join(self.log_messages)
+        if self.redis_conn and self.log_key:
+            try:
+                logs = self.redis_conn.lrange(self.log_key, 0, -1)
+                return "\n".join([l.decode('utf-8') for l in logs])
+            except Exception:
+                pass
+        return "\n".join(self.log_messages)
+
+    def _increment_stat(self, resource_type):
+        if self.redis_conn and self.stats_key:
+            try:
+                self.redis_conn.hincrby(self.stats_key, resource_type, 1)
+                # usage stats are also memory tracked for final sync if needed, 
+                # or we just rely on redis.
+                # Let's keep memory cache updated too for safety/easy access
+                with self._lock:
+                   if resource_type in self.stats:
+                        self.stats[resource_type] += 1
+            except Exception:
+                 with self._lock:
+                    if resource_type in self.stats:
+                        self.stats[resource_type] += 1
+        else:
+            with self._lock:
+                if resource_type in self.stats:
+                    self.stats[resource_type] += 1
+
+    def _sync_stats_from_redis(self):
+        if self.redis_conn and self.stats_key:
+            try:
+                redis_stats = self.redis_conn.hgetall(self.stats_key)
+                with self._lock:
+                    for k, v in redis_stats.items():
+                        k_str = k.decode('utf-8')
+                        if k_str in self.stats:
+                            self.stats[k_str] = int(v)
+            except Exception:
+                pass
+
+    def process_project(self, project):
+        try:
+            # check cancellation (from redis, usually)
+            if self.redis_conn and self.discovery_log:
+                if self.redis_conn.get(f"netbox:gcp:discovery:{self.discovery_log.pk}:cancel"):
+                     self.organization.cancel_requested = True
+            
+            if self.organization.cancel_requested:
+                return
+
+            self.log(f"Discovering resources in project: {project.project_id}")
+            
+            enabled_services = self._get_enabled_services(project.project_id)
+            
+            def is_enabled(service_name):
+                if enabled_services is None:
+                    return True
+                return service_name in enabled_services
+
+            try:
+                if self.organization.discover_networking and is_enabled('compute.googleapis.com'):
+                    self.discover_vpc_networks(project)
+                    self.discover_subnets(project)
+                    self.discover_firewall_rules(project)
+                    self.discover_cloud_routers(project)
+                    self.discover_vpn_gateways(project)
+                    self.discover_vpn_tunnels(project)
+                    if self.organization.cancel_requested: return
+
+                if self.organization.discover_compute and is_enabled('compute.googleapis.com'):
+                    self.discover_compute_instances(project)
+                    self.discover_instance_templates(project)
+                    self.discover_persistent_disks(project)
+                    if self.organization.cancel_requested: return
+
+                if self.organization.discover_databases:
+                    if is_enabled('sqladmin.googleapis.com'):
+                        self.discover_cloud_sql(project)
+                    if is_enabled('spanner.googleapis.com'):
+                        self.discover_cloud_spanner(project)
+                    if self.organization.cancel_requested: return
+
+                if self.organization.discover_storage and is_enabled('storage.googleapis.com'):
+                    self.discover_storage_buckets(project)
+                    if self.organization.cancel_requested: return
+
+                if self.organization.discover_kubernetes and is_enabled('container.googleapis.com'):
+                    self.discover_gke_clusters(project)
+                    if self.organization.cancel_requested: return
+
+                if self.organization.discover_serverless:
+                    if is_enabled('cloudfunctions.googleapis.com'):
+                        self.discover_cloud_functions(project)
+                    if is_enabled('run.googleapis.com'):
+                        self.discover_cloud_run(project)
+                    if self.organization.cancel_requested: return
+
+                if self.organization.discover_iam and is_enabled('iam.googleapis.com'):
+                    self.discover_service_accounts(project)
+                    
+            except Exception as e:
+                self.log(f"Error in project {project.project_id} module: {str(e)}", 'error')
+
+        except Exception as e:
+            self.log(f"Error discovering project {project.project_id}: {str(e)}", 'error')
+        except BaseException as e:
+            self.log(f"Critical error discovering project {project.project_id}: {str(e)}", 'error')
+
+    def _handle_http_error(self, context, e, resource_id=None):
+        from googleapiclient.errors import HttpError
+        
+        if not isinstance(e, HttpError):
+            return False
+            
+        try:
+            content = json.loads(e.content.decode('utf-8'))
+            reason = content.get('error', {}).get('errors', [{}])[0].get('reason')
+            message = content.get('error', {}).get('message')
+        except Exception:
+            reason = 'unknown'
+            message = str(e)
+
+        if reason in {
+            'notFound',
+            'permissionDenied',
+            'forbidden'
+        }:
+            suffix = f" for {resource_id}" if resource_id else ""
+            self.log(f"{context}{suffix}: {message}", 'warning')
+            return True
+
+        return False
+
+    def discover_all(self):
+        from googleapiclient.errors import HttpError
+        
+        if not isinstance(e, HttpError):
+            return False
+            
+        try:
+            content = json.loads(e.content.decode('utf-8'))
+            reason = content.get('error', {}).get('errors', [{}])[0].get('reason')
+            message = content.get('error', {}).get('message')
+        except Exception:
+            reason = 'unknown'
+            message = str(e)
+
+        if reason in {
+            'notFound',
+            'permissionDenied',
+            'forbidden'
+        }:
+            suffix = f" for {resource_id}" if resource_id else ""
+            self.log(f"{context}{suffix}: {message}", 'warning')
+            return True
+
+        return False
 
     def setup_credentials(self):
         try:
             from google.oauth2 import service_account
-            
+
             sa_info = self.organization.get_service_account_info()
             if not sa_info:
                 raise ValueError("Invalid service account JSON")
-            
+
             self.credentials = service_account.Credentials.from_service_account_info(
                 sa_info,
                 scopes=[
@@ -55,6 +247,106 @@ class GCPDiscoveryService:
             self.log(f"Failed to setup credentials: {str(e)}", 'error')
             return False
 
+    def _normalize_org_id(self):
+        org_id = str(self.organization.organization_id).strip()
+        if '/' in org_id:
+            org_id = org_id.split('/')[-1]
+        return org_id
+
+    def _list_projects_by_parent(self, service, parent_type, parent_id):
+        projects = []
+        page_token = None
+        filter_str = f'parent.type:{parent_type} parent.id:{parent_id}'
+
+        while True:
+            request = service.projects().list(filter=filter_str, pageSize=1000, pageToken=page_token)
+            response = request.execute()
+            projects.extend(response.get('projects', []))
+            page_token = response.get('nextPageToken')
+            if not page_token:
+                break
+
+        return projects
+
+    def _list_folders(self, parent):
+        from googleapiclient.discovery import build
+        from googleapiclient.errors import HttpError
+
+        folders = []
+        page_token = None
+        service = build('cloudresourcemanager', 'v2', credentials=self.credentials)
+
+        while True:
+            request = service.folders().list(parent=parent, pageToken=page_token)
+            response = request.execute()
+            folders.extend(response.get('folders', []))
+            page_token = response.get('nextPageToken')
+            if not page_token:
+                break
+
+        return folders
+
+    def _get_enabled_services(self, project_id):
+        from googleapiclient.discovery import build
+        try:
+            service = build('serviceusage', 'v1', credentials=self.credentials)
+            request = service.services().list(
+                parent=f'projects/{project_id}',
+                filter='state:ENABLED',
+                pageSize=200
+            )
+            enabled_services = set()
+            while request is not None:
+                response = request.execute()
+                for svc in response.get('services', []):
+                    # Service name is in the format projects/{project}/services/{service_name}
+                    name = svc.get('name', '').split('/')[-1]
+                    if name:
+                        enabled_services.add(name)
+                request = service.services().list_next(previous_request=request, previous_response=response)
+            return enabled_services
+        except Exception as e:
+            # If we can't list services, return None to imply "unknown/try all"
+            self.log(f"Warning: Could not list enabled services for {project_id}: {e}", 'warning')
+            return None
+
+    def _finish_discovery(self, discovery_log):
+        self._sync_stats_from_redis()
+        self.stats['total'] = sum([
+            self.stats['projects'],
+            self.stats['instances'],
+            self.stats['networks'],
+            self.stats['databases'],
+            self.stats['buckets'],
+            self.stats['clusters']
+        ])
+        
+        discovery_log.status = 'completed'
+        discovery_log.completed_at = timezone.now()
+        discovery_log.projects_discovered = self.stats['projects']
+        discovery_log.instances_discovered = self.stats['instances']
+        discovery_log.networks_discovered = self.stats['networks']
+        discovery_log.databases_discovered = self.stats['databases']
+        discovery_log.buckets_discovered = self.stats['buckets']
+        discovery_log.clusters_discovered = self.stats['clusters']
+        discovery_log.total_resources = self.stats['total']
+        discovery_log.log_output = self.get_log_output()
+        discovery_log.save()
+        
+        self.organization.discovery_status = 'completed'
+        self.organization.last_discovery = timezone.now()
+        self.organization.discovery_error = ''
+        self.organization.save()
+        
+        if self.redis_conn:
+            self.redis_conn.delete(self.log_key)
+            self.redis_conn.delete(self.stats_key)
+            batches_key = f"netbox:gcp:discovery:{discovery_log.pk}:batches"
+            self.redis_conn.delete(f"{batches_key}:total")
+            self.redis_conn.delete(f"{batches_key}:done")
+        
+        self.log(f"Discovery completed. Total resources: {self.stats['total']}")
+
     def discover_all(self):
         from .models import DiscoveryLog
         
@@ -62,6 +354,11 @@ class GCPDiscoveryService:
             organization=self.organization,
             status='running'
         )
+        self.discovery_log = discovery_log
+        self._setup_redis(discovery_log.pk)
+        
+        self.organization.cancel_requested = False
+        self.organization.save(update_fields=['cancel_requested'])
         
         self.organization.discovery_status = 'running'
         self.organization.save()
@@ -73,69 +370,39 @@ class GCPDiscoveryService:
             self.log("Starting discovery for organization: " + self.organization.name)
             
             projects = self.discover_projects()
+
+            if not projects:
+                self.log("No projects found, finishing.", 'info')
+                self._finish_discovery(discovery_log)
+                return True
+
+            # 2. Chunk projects for parallel batch processing
+            # 20 projects per batch
+            batch_size = 20
+            project_pks = [p.pk for p in projects]
+            chunks = [project_pks[i:i + batch_size] for i in range(0, len(project_pks), batch_size)]
             
-            for project in projects:
-                self.log(f"Discovering resources in project: {project.project_id}")
-                
-                if self.organization.discover_networking:
-                    self.discover_vpc_networks(project)
-                    self.discover_subnets(project)
-                    self.discover_firewall_rules(project)
-                    self.discover_cloud_routers(project)
-                    self.discover_vpn_gateways(project)
-                    self.discover_vpn_tunnels(project)
-                
-                if self.organization.discover_compute:
-                    self.discover_compute_instances(project)
-                    self.discover_instance_templates(project)
-                    self.discover_persistent_disks(project)
-                
-                if self.organization.discover_databases:
-                    self.discover_cloud_sql(project)
-                    self.discover_cloud_spanner(project)
-                
-                if self.organization.discover_storage:
-                    self.discover_storage_buckets(project)
-                
-                if self.organization.discover_kubernetes:
-                    self.discover_gke_clusters(project)
-                
-                if self.organization.discover_serverless:
-                    self.discover_cloud_functions(project)
-                    self.discover_cloud_run(project)
-                
-                if self.organization.discover_iam:
-                    self.discover_service_accounts(project)
+            total_batches = len(chunks)
+            self.log(f"Split {len(projects)} projects into {total_batches} batches for workers.")
             
-            self.stats['total'] = sum([
-                self.stats['projects'],
-                self.stats['instances'],
-                self.stats['networks'],
-                self.stats['databases'],
-                self.stats['buckets'],
-                self.stats['clusters']
-            ])
+            if self.redis_conn:
+                batches_key = f"netbox:gcp:discovery:{discovery_log.pk}:batches"
+                self.redis_conn.set(f"{batches_key}:total", total_batches)
+                self.redis_conn.set(f"{batches_key}:done", 0)
+                self.redis_conn.expire(f"{batches_key}:total", 86400)
+                self.redis_conn.expire(f"{batches_key}:done", 86400)
             
-            discovery_log.status = 'completed'
-            discovery_log.completed_at = timezone.now()
-            discovery_log.projects_discovered = self.stats['projects']
-            discovery_log.instances_discovered = self.stats['instances']
-            discovery_log.networks_discovered = self.stats['networks']
-            discovery_log.databases_discovered = self.stats['databases']
-            discovery_log.buckets_discovered = self.stats['buckets']
-            discovery_log.clusters_discovered = self.stats['clusters']
-            discovery_log.total_resources = self.stats['total']
-            discovery_log.log_output = self.get_log_output()
-            discovery_log.save()
+            # 3. Enqueue batches
+            queue = django_rq.get_queue('default')
+            for chunk in chunks:
+                queue.enqueue(
+                    process_discovery_batch,
+                    organization_id=self.organization.pk,
+                    discovery_log_id=discovery_log.pk,
+                    project_pks=chunk
+                )
             
-            self.organization.discovery_status = 'completed'
-            self.organization.last_discovery = timezone.now()
-            self.organization.discovery_error = ''
-            self.organization.save()
-            
-            self.log(f"Discovery completed. Total resources: {self.stats['total']}")
             return True
-            
         except Exception as e:
             error_msg = str(e)
             self.log(f"Discovery failed: {error_msg}", 'error')
@@ -155,6 +422,7 @@ class GCPDiscoveryService:
     def discover_projects(self):
         from .models import GCPProject
         from googleapiclient.discovery import build
+        from googleapiclient.errors import HttpError
         
         self.log("Discovering projects...")
         projects = []
@@ -162,12 +430,10 @@ class GCPDiscoveryService:
         try:
             service = build('cloudresourcemanager', 'v1', credentials=self.credentials)
             
-            filter_str = f'parent.type:organization parent.id:{self.organization.organization_id}'
-            request = service.projects().list(filter=filter_str)
-            
+            # List all projects accessible to the service account
+            request = service.projects().list()
             while request is not None:
                 response = request.execute()
-                
                 for proj in response.get('projects', []):
                     project, created = GCPProject.objects.update_or_create(
                         project_id=proj['projectId'],
@@ -182,12 +448,18 @@ class GCPDiscoveryService:
                         }
                     )
                     projects.append(project)
-                    self.stats['projects'] += 1
+                    self._increment_stat('projects')
                     action = 'Created' if created else 'Updated'
                     self.log(f"{action} project: {project.project_id}")
-                
+
                 request = service.projects().list_next(previous_request=request, previous_response=response)
+
+            if not projects:
+                self.log("No projects found", 'info')
                 
+        except HttpError as e:
+            if not self._handle_http_error("Discovering projects", e):
+                self.log(f"Error discovering projects: {str(e)}", 'error')
         except Exception as e:
             self.log(f"Error discovering projects: {str(e)}", 'error')
         
@@ -196,6 +468,7 @@ class GCPDiscoveryService:
     def discover_vpc_networks(self, project):
         from .models import VPCNetwork
         from googleapiclient.discovery import build
+        from googleapiclient.errors import HttpError
         
         self.log(f"Discovering VPC networks in {project.project_id}...")
         
@@ -219,17 +492,21 @@ class GCPDiscoveryService:
                             'last_synced': timezone.now()
                         }
                     )
-                    self.stats['networks'] += 1
+                    self._increment_stat('networks')
                     self.log(f"{'Created' if created else 'Updated'} VPC: {vpc.name}")
                 
                 request = service.networks().list_next(previous_request=request, previous_response=response)
                 
+        except HttpError as e:
+            if not self._handle_http_error("Discovering VPC networks", e, project.project_id):
+                self.log(f"Error discovering VPC networks: {str(e)}", 'error')
         except Exception as e:
             self.log(f"Error discovering VPC networks: {str(e)}", 'error')
 
     def discover_subnets(self, project):
         from .models import Subnet, VPCNetwork
         from googleapiclient.discovery import build
+        from googleapiclient.errors import HttpError
         
         self.log(f"Discovering subnets in {project.project_id}...")
         
@@ -269,12 +546,16 @@ class GCPDiscoveryService:
                 
                 request = service.subnetworks().aggregatedList_next(previous_request=request, previous_response=response)
                 
+        except HttpError as e:
+            if not self._handle_http_error("Discovering subnets", e, project.project_id):
+                self.log(f"Error discovering subnets: {str(e)}", 'error')
         except Exception as e:
             self.log(f"Error discovering subnets: {str(e)}", 'error')
 
     def discover_firewall_rules(self, project):
         from .models import FirewallRule, VPCNetwork
         from googleapiclient.discovery import build
+        from googleapiclient.errors import HttpError
         
         self.log(f"Discovering firewall rules in {project.project_id}...")
         
@@ -318,12 +599,16 @@ class GCPDiscoveryService:
                 
                 request = service.firewalls().list_next(previous_request=request, previous_response=response)
                 
+        except HttpError as e:
+            if not self._handle_http_error("Discovering firewall rules", e, project.project_id):
+                self.log(f"Error discovering firewall rules: {str(e)}", 'error')
         except Exception as e:
             self.log(f"Error discovering firewall rules: {str(e)}", 'error')
 
     def discover_cloud_routers(self, project):
         from .models import CloudRouter, VPCNetwork
         from googleapiclient.discovery import build
+        from googleapiclient.errors import HttpError
         
         self.log(f"Discovering Cloud Routers in {project.project_id}...")
         
@@ -364,12 +649,16 @@ class GCPDiscoveryService:
                 
                 request = service.routers().aggregatedList_next(previous_request=request, previous_response=response)
                 
+        except HttpError as e:
+            if not self._handle_http_error("Discovering Cloud Routers", e, project.project_id):
+                self.log(f"Error discovering Cloud Routers: {str(e)}", 'error')
         except Exception as e:
             self.log(f"Error discovering Cloud Routers: {str(e)}", 'error')
 
     def discover_vpn_gateways(self, project):
         from .models import VPNGateway, VPCNetwork
         from googleapiclient.discovery import build
+        from googleapiclient.errors import HttpError
         
         self.log(f"Discovering VPN Gateways in {project.project_id}...")
         
@@ -408,12 +697,16 @@ class GCPDiscoveryService:
                 
                 request = service.vpnGateways().aggregatedList_next(previous_request=request, previous_response=response)
                 
+        except HttpError as e:
+            if not self._handle_http_error("Discovering VPN Gateways", e, project.project_id):
+                self.log(f"Error discovering VPN Gateways: {str(e)}", 'error')
         except Exception as e:
             self.log(f"Error discovering VPN Gateways: {str(e)}", 'error')
 
     def discover_vpn_tunnels(self, project):
         from .models import VPNTunnel, VPNGateway, CloudRouter
         from googleapiclient.discovery import build
+        from googleapiclient.errors import HttpError
         
         self.log(f"Discovering VPN Tunnels in {project.project_id}...")
         
@@ -469,12 +762,16 @@ class GCPDiscoveryService:
                 
                 request = service.vpnTunnels().aggregatedList_next(previous_request=request, previous_response=response)
                 
+        except HttpError as e:
+            if not self._handle_http_error("Discovering VPN Tunnels", e, project.project_id):
+                self.log(f"Error discovering VPN Tunnels: {str(e)}", 'error')
         except Exception as e:
             self.log(f"Error discovering VPN Tunnels: {str(e)}", 'error')
 
     def discover_compute_instances(self, project):
         from .models import ComputeInstance
         from googleapiclient.discovery import build
+        from googleapiclient.errors import HttpError
         
         self.log(f"Discovering Compute instances in {project.project_id}...")
         
@@ -534,17 +831,21 @@ class GCPDiscoveryService:
                                 'last_synced': timezone.now()
                             }
                         )
-                        self.stats['instances'] += 1
+                        self._increment_stat('instances')
                         self.log(f"{'Created' if created else 'Updated'} instance: {inst.name}")
                 
                 request = service.instances().aggregatedList_next(previous_request=request, previous_response=response)
                 
+        except HttpError as e:
+            if not self._handle_http_error("Discovering Compute instances", e, project.project_id):
+                self.log(f"Error discovering Compute instances: {str(e)}", 'error')
         except Exception as e:
             self.log(f"Error discovering Compute instances: {str(e)}", 'error')
 
     def discover_instance_templates(self, project):
         from .models import InstanceTemplate
         from googleapiclient.discovery import build
+        from googleapiclient.errors import HttpError
         
         self.log(f"Discovering Instance Templates in {project.project_id}...")
         
@@ -596,12 +897,16 @@ class GCPDiscoveryService:
                 
                 request = service.instanceTemplates().list_next(previous_request=request, previous_response=response)
                 
+        except HttpError as e:
+            if not self._handle_http_error("Discovering Instance Templates", e, project.project_id):
+                self.log(f"Error discovering Instance Templates: {str(e)}", 'error')
         except Exception as e:
             self.log(f"Error discovering Instance Templates: {str(e)}", 'error')
 
     def discover_persistent_disks(self, project):
         from .models import PersistentDisk
         from googleapiclient.discovery import build
+        from googleapiclient.errors import HttpError
         
         self.log(f"Discovering Persistent Disks in {project.project_id}...")
         
@@ -636,12 +941,16 @@ class GCPDiscoveryService:
                 
                 request = service.disks().aggregatedList_next(previous_request=request, previous_response=response)
                 
+        except HttpError as e:
+            if not self._handle_http_error("Discovering Persistent Disks", e, project.project_id):
+                self.log(f"Error discovering Persistent Disks: {str(e)}", 'error')
         except Exception as e:
             self.log(f"Error discovering Persistent Disks: {str(e)}", 'error')
 
     def discover_cloud_sql(self, project):
         from .models import CloudSQLInstance
         from googleapiclient.discovery import build
+        from googleapiclient.errors import HttpError
         
         self.log(f"Discovering Cloud SQL instances in {project.project_id}...")
         
@@ -678,15 +987,19 @@ class GCPDiscoveryService:
                         'last_synced': timezone.now()
                     }
                 )
-                self.stats['databases'] += 1
+                self._increment_stat('databases')
                 self.log(f"{'Created' if created else 'Updated'} Cloud SQL: {sql.name}")
                 
+        except HttpError as e:
+            if not self._handle_http_error("Discovering Cloud SQL", e, project.project_id):
+                self.log(f"Error discovering Cloud SQL: {str(e)}", 'error')
         except Exception as e:
             self.log(f"Error discovering Cloud SQL: {str(e)}", 'error')
 
     def discover_cloud_spanner(self, project):
         from .models import CloudSpannerInstance
         from googleapiclient.discovery import build
+        from googleapiclient.errors import HttpError
         
         self.log(f"Discovering Cloud Spanner instances in {project.project_id}...")
         
@@ -712,15 +1025,19 @@ class GCPDiscoveryService:
                         'last_synced': timezone.now()
                     }
                 )
-                self.stats['databases'] += 1
+                self._increment_stat('databases')
                 self.log(f"{'Created' if created else 'Updated'} Spanner: {spanner.name}")
                 
+        except HttpError as e:
+            if not self._handle_http_error("Discovering Cloud Spanner", e, project.project_id):
+                self.log(f"Error discovering Cloud Spanner: {str(e)}", 'error')
         except Exception as e:
             self.log(f"Error discovering Cloud Spanner: {str(e)}", 'error')
 
     def discover_storage_buckets(self, project):
         from .models import CloudStorageBucket
         from googleapiclient.discovery import build
+        from googleapiclient.errors import HttpError
         
         self.log(f"Discovering Cloud Storage buckets in {project.project_id}...")
         
@@ -748,17 +1065,21 @@ class GCPDiscoveryService:
                             'last_synced': timezone.now()
                         }
                     )
-                    self.stats['buckets'] += 1
+                    self._increment_stat('buckets')
                     self.log(f"{'Created' if created else 'Updated'} bucket: {bkt.name}")
                 
                 request = service.buckets().list_next(previous_request=request, previous_response=response)
                 
+        except HttpError as e:
+            if not self._handle_http_error("Discovering Storage buckets", e, project.project_id):
+                self.log(f"Error discovering Storage buckets: {str(e)}", 'error')
         except Exception as e:
             self.log(f"Error discovering Storage buckets: {str(e)}", 'error')
 
     def discover_gke_clusters(self, project):
         from .models import GKECluster, GKENodePool, VPCNetwork, Subnet
         from googleapiclient.discovery import build
+        from googleapiclient.errors import HttpError
         
         self.log(f"Discovering GKE clusters in {project.project_id}...")
         
@@ -803,7 +1124,7 @@ class GCPDiscoveryService:
                         'last_synced': timezone.now()
                     }
                 )
-                self.stats['clusters'] += 1
+                self._increment_stat('clusters')
                 self.log(f"{'Created' if created else 'Updated'} GKE cluster: {gke.name}")
                 
                 for pool in cluster.get('nodePools', []):
@@ -829,12 +1150,16 @@ class GCPDiscoveryService:
                     )
                     self.log(f"{'Created' if np_created else 'Updated'} node pool: {np.name}")
                 
+        except HttpError as e:
+            if not self._handle_http_error("Discovering GKE clusters", e, project.project_id):
+                self.log(f"Error discovering GKE clusters: {str(e)}", 'error')
         except Exception as e:
             self.log(f"Error discovering GKE clusters: {str(e)}", 'error')
 
     def discover_cloud_functions(self, project):
         from .models import CloudFunction
         from googleapiclient.discovery import build
+        from googleapiclient.errors import HttpError
         
         self.log(f"Discovering Cloud Functions in {project.project_id}...")
         
@@ -878,12 +1203,16 @@ class GCPDiscoveryService:
                 
                 request = service.projects().locations().functions().list_next(previous_request=request, previous_response=response)
                 
+        except HttpError as e:
+            if not self._handle_http_error("Discovering Cloud Functions", e, project.project_id):
+                self.log(f"Error discovering Cloud Functions: {str(e)}", 'error')
         except Exception as e:
             self.log(f"Error discovering Cloud Functions: {str(e)}", 'error')
 
     def discover_cloud_run(self, project):
         from .models import CloudRun
         from googleapiclient.discovery import build
+        from googleapiclient.errors import HttpError
         
         self.log(f"Discovering Cloud Run services in {project.project_id}...")
         
@@ -930,12 +1259,16 @@ class GCPDiscoveryService:
                 )
                 self.log(f"{'Created' if created else 'Updated'} Cloud Run: {cr.name}")
                 
+        except HttpError as e:
+            if not self._handle_http_error("Discovering Cloud Run", e, project.project_id):
+                self.log(f"Error discovering Cloud Run: {str(e)}", 'error')
         except Exception as e:
             self.log(f"Error discovering Cloud Run: {str(e)}", 'error')
 
     def discover_service_accounts(self, project):
         from .models import ServiceAccount
         from googleapiclient.discovery import build
+        from googleapiclient.errors import HttpError
         
         self.log(f"Discovering Service Accounts in {project.project_id}...")
         
@@ -963,6 +1296,9 @@ class GCPDiscoveryService:
                 
                 request = service.projects().serviceAccounts().list_next(previous_request=request, previous_response=response)
                 
+        except HttpError as e:
+            if not self._handle_http_error("Discovering Service Accounts", e, project.project_id):
+                self.log(f"Error discovering Service Accounts: {str(e)}", 'error')
         except Exception as e:
             self.log(f"Error discovering Service Accounts: {str(e)}", 'error')
 
@@ -976,3 +1312,70 @@ def run_discovery(organization_id):
         return discovery_service.discover_all()
     except GCPOrganization.DoesNotExist:
         return False
+
+def process_discovery_batch(organization_id, discovery_log_id, project_pks):
+    from .models import GCPOrganization, GCPProject, DiscoveryLog
+    import logging
+    
+    logger = logging.getLogger(__name__)
+    
+    try:
+        organization = GCPOrganization.objects.get(pk=organization_id)
+        discovery_log = DiscoveryLog.objects.get(pk=discovery_log_id)
+        
+        service = GCPDiscoveryService(organization)
+        service.discovery_log = discovery_log
+        service._setup_redis(discovery_log.pk)
+        
+        if not service.setup_credentials():
+            service.log("Batch worker failed to authenticate", 'error')
+            return
+
+        projects = GCPProject.objects.filter(pk__in=project_pks)
+        
+        # Process projects in parallel within the batch
+        # This speeds up the batch significantly
+        from concurrent.futures import ThreadPoolExecutor, as_completed
+        
+        # Use a small number of threads to avoid OOM
+        max_threads = min(5, len(projects))
+        
+        with ThreadPoolExecutor(max_workers=max_threads) as executor:
+            futures = [executor.submit(service.process_project, project) for project in projects]
+            for future in as_completed(futures):
+                try:
+                    future.result()
+                except Exception as e:
+                    service.log(f"Thread execution failed: {e}", 'error')
+            
+        if service.redis_conn:
+            batches_key = f"netbox:gcp:discovery:{discovery_log.pk}:batches"
+            done_count = service.redis_conn.incr(f"{batches_key}:done")
+            total_count = int(service.redis_conn.get(f"{batches_key}:total") or 0)
+            
+            service.log(f"Worker finished batch {done_count}/{total_count}")
+            
+            # Sync logs to DB so UI updates
+            try:
+                discovery_log.refresh_from_db()
+                discovery_log.log_output = service.get_log_output()
+                discovery_log.save(update_fields=['log_output'])
+            except Exception:
+                pass
+            
+            if done_count >= total_count:
+                service.log("All batches finished. Finalizing discovery.")
+                service._finish_discovery(discovery_log)
+                
+    except Exception as e:
+        logger.error(f"Batch processing failed: {e}")
+        if 'service' in locals() and hasattr(service, 'log'):
+            service.log(f"Batch processing failed: {str(e)}", 'error')
+            try:
+                # Try to sync the error to the log
+                discovery_log.refresh_from_db()
+                discovery_log.log_output = service.get_log_output()
+                discovery_log.save(update_fields=['log_output'])
+            except:
+                pass
+

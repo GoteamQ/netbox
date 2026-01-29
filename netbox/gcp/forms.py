@@ -38,7 +38,15 @@ class GCPOrganizationFilterForm(NetBoxModelFilterSetForm):
     is_active = forms.NullBooleanField(required=False)
     discovery_status = forms.ChoiceField(
         required=False,
-        choices=[('', '---------'), ('pending', 'Pending'), ('running', 'Running'), ('completed', 'Completed'), ('failed', 'Failed')]
+        choices=[
+            ('', '---------'),
+            ('pending', 'Pending'),
+            ('running', 'Running'),
+            ('canceling', 'Canceling'),
+            ('canceled', 'Canceled'),
+            ('completed', 'Completed'),
+            ('failed', 'Failed'),
+        ]
     )
 
 
