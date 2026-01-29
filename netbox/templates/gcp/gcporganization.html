@@ -41,6 +41,10 @@
                                 <span class="badge bg-success">Completed</span>
                             {% elif object.discovery_status == 'running' %}
                                 <span class="badge bg-primary">Running</span>
+                               {% elif object.discovery_status == 'canceling' %}
+                                   <span class="badge bg-warning">Canceling</span>
+                               {% elif object.discovery_status == 'canceled' %}
+                                   <span class="badge bg-secondary">Canceled</span>
                             {% elif object.discovery_status == 'failed' %}
                                 <span class="badge bg-danger">Failed</span>
                             {% else %}
@@ -69,6 +73,12 @@
                         <i class="mdi mdi-magnify"></i> Run Discovery
                     </button>
                 </form>
+                    <form method="post" action="{% url 'gcp:gcporganization_cancel' pk=object.pk %}" class="d-inline ms-2">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-danger" {% if object.discovery_status != 'running' %}disabled{% endif %}>
+                            <i class="mdi mdi-cancel"></i> Cancel
+                        </button>
+                    </form>
             </div>
         </div>
     </div>

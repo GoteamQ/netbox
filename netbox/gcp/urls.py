@@ -11,6 +11,7 @@ urlpatterns = [
     path('organizations/delete/', views.GCPOrganizationBulkDeleteView.as_view(), name='gcporganization_bulk_delete'),
     path('organizations/<int:pk>/', include(get_model_urls('gcp', 'gcporganization'))),
     path('organizations/<int:pk>/discover/', views.GCPOrganizationDiscoverView.as_view(), name='gcporganization_discover'),
+    path('organizations/<int:pk>/cancel/', views.GCPOrganizationCancelView.as_view(), name='gcporganization_cancel'),
 
     path('discovery-logs/', views.DiscoveryLogListView.as_view(), name='discoverylog_list'),
     path('discovery-logs/delete/', views.DiscoveryLogBulkDeleteView.as_view(), name='discoverylog_bulk_delete'),

@@ -41,20 +41,20 @@ class GCPOrganizationViewSet(NetBoxModelViewSet):
     def discover(self, request, pk=None):
         organization = self.get_object()
         
-        if organization.discovery_status == 'running':
+        if organization.discovery_status in ('running', 'canceling'):
             return Response(
-                {'error': 'Discovery is already running for this organization'},
+                {'error': f"Discovery cannot be started while status is {organization.discovery_status}"},
                 status=status.HTTP_400_BAD_REQUEST
             )
         
         from gcp.discovery import run_discovery
-        import threading
-        
-        thread = threading.Thread(target=run_discovery, args=(organization.pk,))
-        thread.start()
+        import django_rq
+
+        queue = django_rq.get_queue('default')
+        queue.enqueue(run_discovery, organization.pk)
         
         return Response(
-            {'status': 'Discovery started', 'organization': organization.name},
+            {'status': 'Discovery queued', 'organization': organization.name},
             status=status.HTTP_202_ACCEPTED
         )
 
