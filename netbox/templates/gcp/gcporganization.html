@@ -1,0 +1,157 @@
+{% extends 'generic/object.html' %}
+{% load helpers %}
+{% load render_table from django_tables2 %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col-md-6">
+        <div class="card">
+            <h5 class="card-header">Organization Details</h5>
+            <div class="card-body">
+                <table class="table table-hover attr-table">
+                    <tr>
+                        <th scope="row">Name</th>
+                        <td>{{ object.name }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Organization ID</th>
+                        <td>{{ object.organization_id }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Active</th>
+                        <td>{% if object.is_active %}<span class="badge bg-success">Active</span>{% else %}<span class="badge bg-secondary">Inactive</span>{% endif %}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Auto Discovery</th>
+                        <td>{% if object.auto_discover %}<span class="badge bg-success">Enabled</span>{% else %}<span class="badge bg-secondary">Disabled</span>{% endif %}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <h5 class="card-header">Discovery Status</h5>
+            <div class="card-body">
+                <table class="table table-hover attr-table">
+                    <tr>
+                        <th scope="row">Status</th>
+                        <td>
+                            {% if object.discovery_status == 'completed' %}
+                                <span class="badge bg-success">Completed</span>
+                            {% elif object.discovery_status == 'running' %}
+                                <span class="badge bg-primary">Running</span>
+                            {% elif object.discovery_status == 'failed' %}
+                                <span class="badge bg-danger">Failed</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Pending</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Last Discovery</th>
+                        <td>{{ object.last_discovery|placeholder }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Projects Discovered</th>
+                        <td>{{ project_count }}</td>
+                    </tr>
+                    {% if object.discovery_error %}
+                    <tr>
+                        <th scope="row">Last Error</th>
+                        <td><span class="text-danger">{{ object.discovery_error }}</span></td>
+                    </tr>
+                    {% endif %}
+                </table>
+                <form method="post" action="{% url 'gcp:gcporganization_discover' pk=object.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary" {% if object.discovery_status == 'running' %}disabled{% endif %}>
+                        <i class="mdi mdi-magnify"></i> Run Discovery
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-md-12">
+        <div class="card">
+            <h5 class="card-header">Discovery Options</h5>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <strong>Compute:</strong> {% if object.discover_compute %}<span class="badge bg-success">Yes</span>{% else %}<span class="badge bg-secondary">No</span>{% endif %}
+                    </div>
+                    <div class="col-md-3">
+                        <strong>Networking:</strong> {% if object.discover_networking %}<span class="badge bg-success">Yes</span>{% else %}<span class="badge bg-secondary">No</span>{% endif %}
+                    </div>
+                    <div class="col-md-3">
+                        <strong>Databases:</strong> {% if object.discover_databases %}<span class="badge bg-success">Yes</span>{% else %}<span class="badge bg-secondary">No</span>{% endif %}
+                    </div>
+                    <div class="col-md-3">
+                        <strong>Storage:</strong> {% if object.discover_storage %}<span class="badge bg-success">Yes</span>{% else %}<span class="badge bg-secondary">No</span>{% endif %}
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md-3">
+                        <strong>Kubernetes:</strong> {% if object.discover_kubernetes %}<span class="badge bg-success">Yes</span>{% else %}<span class="badge bg-secondary">No</span>{% endif %}
+                    </div>
+                    <div class="col-md-3">
+                        <strong>Serverless:</strong> {% if object.discover_serverless %}<span class="badge bg-success">Yes</span>{% else %}<span class="badge bg-secondary">No</span>{% endif %}
+                    </div>
+                    <div class="col-md-3">
+                        <strong>IAM:</strong> {% if object.discover_iam %}<span class="badge bg-success">Yes</span>{% else %}<span class="badge bg-secondary">No</span>{% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if discovery_logs %}
+<div class="row mb-3">
+    <div class="col-md-12">
+        <div class="card">
+            <h5 class="card-header">Recent Discovery Logs</h5>
+            <div class="card-body">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Started</th>
+                            <th>Completed</th>
+                            <th>Status</th>
+                            <th>Projects</th>
+                            <th>Instances</th>
+                            <th>Networks</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in discovery_logs %}
+                        <tr>
+                            <td><a href="{% url 'gcp:discoverylog' pk=log.pk %}">{{ log.started_at }}</a></td>
+                            <td>{{ log.completed_at|placeholder }}</td>
+                            <td>
+                                {% if log.status == 'completed' %}
+                                    <span class="badge bg-success">Completed</span>
+                                {% elif log.status == 'running' %}
+                                    <span class="badge bg-primary">Running</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Failed</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ log.projects_discovered }}</td>
+                            <td>{{ log.instances_discovered }}</td>
+                            <td>{{ log.networks_discovered }}</td>
+                            <td>{{ log.total_resources }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

@@ -5,6 +5,8 @@ app_name = 'gcp-api'
 
 router = NetBoxRouter()
 
+router.register('organizations', views.GCPOrganizationViewSet)
+router.register('discovery-logs', views.DiscoveryLogViewSet)
 router.register('projects', views.GCPProjectViewSet)
 router.register('compute-instances', views.ComputeInstanceViewSet)
 router.register('instance-templates', views.InstanceTemplateViewSet)

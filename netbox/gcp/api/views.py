@@ -1,5 +1,10 @@
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from rest_framework import status
+
 from netbox.api.viewsets import NetBoxModelViewSet
 from gcp.models import (
+    GCPOrganization, DiscoveryLog,
     GCPProject, ComputeInstance, InstanceTemplate, InstanceGroup,
     VPCNetwork, Subnet, FirewallRule, CloudRouter, CloudNAT, LoadBalancer,
     CloudSQLInstance, CloudSpannerInstance, FirestoreDatabase, BigtableInstance,
@@ -11,6 +16,44 @@ from gcp.models import (
 )
 from gcp import filtersets
 from . import serializers
+
+
+class GCPOrganizationViewSet(NetBoxModelViewSet):
+    queryset = GCPOrganization.objects.all()
+    serializer_class = serializers.GCPOrganizationSerializer
+    filterset_class = filtersets.GCPOrganizationFilterSet
+
+    def get_serializer_class(self):
+        if self.action in ['create', 'update', 'partial_update']:
+            return serializers.GCPOrganizationWriteSerializer
+        return serializers.GCPOrganizationSerializer
+
+    @action(detail=True, methods=['post'])
+    def discover(self, request, pk=None):
+        organization = self.get_object()
+        
+        if organization.discovery_status == 'running':
+            return Response(
+                {'error': 'Discovery is already running for this organization'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        from gcp.discovery import run_discovery
+        import threading
+        
+        thread = threading.Thread(target=run_discovery, args=(organization.pk,))
+        thread.start()
+        
+        return Response(
+            {'status': 'Discovery started', 'organization': organization.name},
+            status=status.HTTP_202_ACCEPTED
+        )
+
+
+class DiscoveryLogViewSet(NetBoxModelViewSet):
+    queryset = DiscoveryLog.objects.all()
+    serializer_class = serializers.DiscoveryLogSerializer
+    filterset_class = filtersets.DiscoveryLogFilterSet
 
 
 class GCPProjectViewSet(NetBoxModelViewSet):

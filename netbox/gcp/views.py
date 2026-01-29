@@ -1,7 +1,12 @@
+from django.contrib import messages
+from django.shortcuts import get_object_or_404, redirect
+from django.views import View
+
 from netbox.views import generic
 from utilities.views import ViewTab, register_model_view
 from . import filtersets, forms, tables
 from .models import (
+    GCPOrganization, DiscoveryLog,
     GCPProject, ComputeInstance, InstanceTemplate, InstanceGroup,
     VPCNetwork, Subnet, FirewallRule, CloudRouter, CloudNAT, LoadBalancer,
     CloudSQLInstance, CloudSpannerInstance, FirestoreDatabase, BigtableInstance,
@@ -11,6 +16,82 @@ from .models import (
     CloudFunction, CloudRun, PubSubTopic, PubSubSubscription,
     SecretManagerSecret, CloudDNSZone, CloudDNSRecord, MemorystoreInstance
 )
+
+
+class GCPOrganizationListView(generic.ObjectListView):
+    queryset = GCPOrganization.objects.all()
+    table = tables.GCPOrganizationTable
+    filterset = filtersets.GCPOrganizationFilterSet
+    filterset_form = forms.GCPOrganizationFilterForm
+
+
+@register_model_view(GCPOrganization)
+class GCPOrganizationView(generic.ObjectView):
+    queryset = GCPOrganization.objects.all()
+
+    def get_extra_context(self, request, instance):
+        discovery_logs = DiscoveryLog.objects.filter(organization=instance).order_by('-started_at')[:10]
+        projects = GCPProject.objects.filter(organization=instance)
+        return {
+            'discovery_logs': discovery_logs,
+            'projects': projects,
+            'project_count': projects.count(),
+        }
+
+
+@register_model_view(GCPOrganization, 'edit')
+class GCPOrganizationEditView(generic.ObjectEditView):
+    queryset = GCPOrganization.objects.all()
+    form = forms.GCPOrganizationForm
+
+
+@register_model_view(GCPOrganization, 'delete')
+class GCPOrganizationDeleteView(generic.ObjectDeleteView):
+    queryset = GCPOrganization.objects.all()
+
+
+class GCPOrganizationBulkDeleteView(generic.BulkDeleteView):
+    queryset = GCPOrganization.objects.all()
+    table = tables.GCPOrganizationTable
+
+
+class GCPOrganizationDiscoverView(View):
+    def post(self, request, pk):
+        organization = get_object_or_404(GCPOrganization, pk=pk)
+        
+        if organization.discovery_status == 'running':
+            messages.warning(request, f"Discovery is already running for {organization.name}")
+            return redirect('gcp:gcporganization', pk=pk)
+        
+        from .discovery import run_discovery
+        import threading
+        
+        thread = threading.Thread(target=run_discovery, args=(organization.pk,))
+        thread.start()
+        
+        messages.success(request, f"Discovery started for {organization.name}. Refresh the page to see progress.")
+        return redirect('gcp:gcporganization', pk=pk)
+
+
+class DiscoveryLogListView(generic.ObjectListView):
+    queryset = DiscoveryLog.objects.all()
+    table = tables.DiscoveryLogTable
+    filterset = filtersets.DiscoveryLogFilterSet
+
+
+@register_model_view(DiscoveryLog)
+class DiscoveryLogView(generic.ObjectView):
+    queryset = DiscoveryLog.objects.all()
+
+
+@register_model_view(DiscoveryLog, 'delete')
+class DiscoveryLogDeleteView(generic.ObjectDeleteView):
+    queryset = DiscoveryLog.objects.all()
+
+
+class DiscoveryLogBulkDeleteView(generic.BulkDeleteView):
+    queryset = DiscoveryLog.objects.all()
+    table = tables.DiscoveryLogTable
 
 
 class GCPProjectListView(generic.ObjectListView):

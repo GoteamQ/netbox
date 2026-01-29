@@ -2,6 +2,7 @@ from rest_framework import serializers
 
 from netbox.api.serializers import NetBoxModelSerializer
 from gcp.models import (
+    GCPOrganization, DiscoveryLog,
     GCPProject, ComputeInstance, InstanceTemplate, InstanceGroup,
     VPCNetwork, Subnet, FirewallRule, CloudRouter, CloudNAT, LoadBalancer,
     CloudSQLInstance, CloudSpannerInstance, FirestoreDatabase, BigtableInstance,
@@ -13,10 +14,48 @@ from gcp.models import (
 )
 
 
+class GCPOrganizationSerializer(NetBoxModelSerializer):
+    class Meta:
+        model = GCPOrganization
+        fields = [
+            'id', 'url', 'display', 'name', 'organization_id', 'is_active', 'auto_discover',
+            'discover_compute', 'discover_networking', 'discover_databases', 
+            'discover_storage', 'discover_kubernetes', 'discover_serverless', 'discover_iam',
+            'discovery_status', 'last_discovery', 'tags'
+        ]
+        read_only_fields = ['discovery_status', 'last_discovery']
+
+
+class GCPOrganizationWriteSerializer(NetBoxModelSerializer):
+    service_account_json = serializers.CharField(write_only=True)
+
+    class Meta:
+        model = GCPOrganization
+        fields = [
+            'id', 'url', 'display', 'name', 'organization_id', 'service_account_json',
+            'is_active', 'auto_discover',
+            'discover_compute', 'discover_networking', 'discover_databases', 
+            'discover_storage', 'discover_kubernetes', 'discover_serverless', 'discover_iam',
+            'tags'
+        ]
+
+
+class DiscoveryLogSerializer(NetBoxModelSerializer):
+    class Meta:
+        model = DiscoveryLog
+        fields = [
+            'id', 'url', 'display', 'organization', 'started_at', 'completed_at', 'status',
+            'projects_discovered', 'instances_discovered', 'networks_discovered',
+            'databases_discovered', 'buckets_discovered', 'clusters_discovered',
+            'total_resources', 'error_message'
+        ]
+        read_only_fields = fields
+
+
 class GCPProjectSerializer(NetBoxModelSerializer):
     class Meta:
         model = GCPProject
-        fields = ['id', 'url', 'display', 'name', 'project_id', 'project_number', 'status', 'labels', 'tags']
+        fields = ['id', 'url', 'display', 'name', 'organization', 'project_id', 'project_number', 'status', 'discovered', 'last_synced', 'labels', 'tags']
 
 
 class ComputeInstanceSerializer(NetBoxModelSerializer):
