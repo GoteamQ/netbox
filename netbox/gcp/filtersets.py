@@ -2,6 +2,7 @@ import django_filters
 
 from netbox.filtersets import NetBoxModelFilterSet
 from .models import (
+    GCPOrganization, DiscoveryLog,
     GCPProject, ComputeInstance, InstanceTemplate, InstanceGroup,
     VPCNetwork, Subnet, FirewallRule, CloudRouter, CloudNAT, LoadBalancer,
     CloudSQLInstance, CloudSpannerInstance, FirestoreDatabase, BigtableInstance,
@@ -13,10 +14,32 @@ from .models import (
 )
 
 
+class GCPOrganizationFilterSet(NetBoxModelFilterSet):
+    class Meta:
+        model = GCPOrganization
+        fields = ['id', 'name', 'organization_id', 'is_active', 'discovery_status']
+
+    def search(self, queryset, name, value):
+        return queryset.filter(name__icontains=value) | queryset.filter(organization_id__icontains=value)
+
+
+class DiscoveryLogFilterSet(NetBoxModelFilterSet):
+    organization = django_filters.ModelChoiceFilter(queryset=GCPOrganization.objects.all())
+
+    class Meta:
+        model = DiscoveryLog
+        fields = ['id', 'organization', 'status']
+
+    def search(self, queryset, name, value):
+        return queryset.filter(organization__name__icontains=value)
+
+
 class GCPProjectFilterSet(NetBoxModelFilterSet):
+    organization = django_filters.ModelChoiceFilter(queryset=GCPOrganization.objects.all())
+
     class Meta:
         model = GCPProject
-        fields = ['id', 'name', 'project_id', 'status']
+        fields = ['id', 'name', 'project_id', 'status', 'organization', 'discovered']
 
     def search(self, queryset, name, value):
         return queryset.filter(name__icontains=value) | queryset.filter(project_id__icontains=value)

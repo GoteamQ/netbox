@@ -1,0 +1,103 @@
+{% extends 'generic/object.html' %}
+{% load helpers %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col-md-6">
+        <div class="card">
+            <h5 class="card-header">Discovery Details</h5>
+            <div class="card-body">
+                <table class="table table-hover attr-table">
+                    <tr>
+                        <th scope="row">Organization</th>
+                        <td><a href="{% url 'gcp:gcporganization' pk=object.organization.pk %}">{{ object.organization }}</a></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Started</th>
+                        <td>{{ object.started_at }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Completed</th>
+                        <td>{{ object.completed_at|placeholder }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Status</th>
+                        <td>
+                            {% if object.status == 'completed' %}
+                                <span class="badge bg-success">Completed</span>
+                            {% elif object.status == 'running' %}
+                                <span class="badge bg-primary">Running</span>
+                            {% else %}
+                                <span class="badge bg-danger">Failed</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <h5 class="card-header">Discovery Statistics</h5>
+            <div class="card-body">
+                <table class="table table-hover attr-table">
+                    <tr>
+                        <th scope="row">Projects Discovered</th>
+                        <td>{{ object.projects_discovered }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Compute Instances</th>
+                        <td>{{ object.instances_discovered }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">VPC Networks</th>
+                        <td>{{ object.networks_discovered }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Databases</th>
+                        <td>{{ object.databases_discovered }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Storage Buckets</th>
+                        <td>{{ object.buckets_discovered }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">GKE Clusters</th>
+                        <td>{{ object.clusters_discovered }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row"><strong>Total Resources</strong></th>
+                        <td><strong>{{ object.total_resources }}</strong></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if object.error_message %}
+<div class="row mb-3">
+    <div class="col-md-12">
+        <div class="card border-danger">
+            <h5 class="card-header bg-danger text-white">Error Message</h5>
+            <div class="card-body">
+                <pre class="mb-0">{{ object.error_message }}</pre>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if object.log_output %}
+<div class="row mb-3">
+    <div class="col-md-12">
+        <div class="card">
+            <h5 class="card-header">Discovery Log Output</h5>
+            <div class="card-body">
+                <pre class="mb-0" style="max-height: 500px; overflow-y: auto;">{{ object.log_output }}</pre>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
