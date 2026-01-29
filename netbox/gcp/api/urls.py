@@ -1,8 +1,10 @@
 from netbox.api.routers import NetBoxRouter
 from . import views
 
+app_name = 'gcp-api'
+
 router = NetBoxRouter()
-router.APIRootView = views.GCPProjectViewSet
+router.APIRootView = views.GCPRootView
 
 router.register('projects', views.GCPProjectViewSet)
 router.register('compute-instances', views.ComputeInstanceViewSet)

@@ -1,3 +1,5 @@
+from rest_framework.routers import APIRootView
+
 from netbox.api.viewsets import NetBoxModelViewSet
 from gcp.models import (
     GCPProject, ComputeInstance, InstanceTemplate, InstanceGroup,
@@ -11,6 +13,14 @@ from gcp.models import (
 )
 from gcp import filtersets
 from . import serializers
+
+
+class GCPRootView(APIRootView):
+    """
+    GCP API root view
+    """
+    def get_view_name(self):
+        return 'GCP'
 
 
 class GCPProjectViewSet(NetBoxModelViewSet):
