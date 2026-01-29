@@ -28,7 +28,7 @@ REDIS = {
 
 SECRET_KEY = os.environ.get('SECRET_KEY', 'r(m)9nLGnz$(_q3N4z1k(EFsMCjjjzx08x9VhNVcfd%6RF#r!6DE@+V5Zk2X')
 
-DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
+DEBUG = os.environ.get('DEBUG', 'True').lower() == 'true'
 
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:8000',
@@ -42,3 +42,5 @@ LOGIN_REQUIRED = False
 PLUGINS = []
 
 PLUGINS_CONFIG = {}
+
+STATIC_ROOT = '/opt/netbox/netbox/static'

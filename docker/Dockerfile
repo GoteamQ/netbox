@@ -33,7 +33,6 @@ RUN python -m venv /opt/netbox/venv \
         google-api-python-client
 
 COPY netbox /opt/netbox/netbox
-
 COPY docker/configuration.py /opt/netbox/netbox/netbox/configuration.py
 COPY docker/entrypoint.sh /opt/netbox/entrypoint.sh
 COPY docker/housekeeping.sh /opt/netbox/housekeeping.sh
@@ -46,6 +45,8 @@ RUN mkdir -p /opt/netbox/netbox/static \
     && mkdir -p /opt/netbox/netbox/scripts
 
 WORKDIR /opt/netbox/netbox
+
+RUN /opt/netbox/venv/bin/python manage.py collectstatic --no-input
 
 EXPOSE 8080
 

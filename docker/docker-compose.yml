@@ -13,6 +13,7 @@ services:
     ports:
       - "8000:8080"
     volumes:
+      - netbox-static:/opt/netbox/netbox/static
       - netbox-media:/opt/netbox/netbox/media
       - netbox-reports:/opt/netbox/netbox/reports
       - netbox-scripts:/opt/netbox/netbox/scripts
@@ -78,6 +79,7 @@ services:
     restart: unless-stopped
 
 volumes:
+  netbox-static:
   netbox-media:
   netbox-reports:
   netbox-scripts:
