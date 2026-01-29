@@ -1,0 +1,61 @@
+{% extends 'generic/object.html' %}
+{% load helpers %}
+{% load plugins %}
+{% load render_table from django_tables2 %}
+{% load i18n %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col col-md-6">
+        <div class="card">
+            <h5 class="card-header">{% trans "Compute Instance" %}</h5>
+            <table class="table table-hover attr-table">
+                <tr>
+                    <th scope="row">{% trans "Name" %}</th>
+                    <td>{{ object.name }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">{% trans "Project" %}</th>
+                    <td>{{ object.project|linkify }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">{% trans "Zone" %}</th>
+                    <td>{{ object.zone }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">{% trans "Machine Type" %}</th>
+                    <td>{{ object.machine_type }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">{% trans "Status" %}</th>
+                    <td>{{ object.status }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">{% trans "Internal IP" %}</th>
+                    <td>{{ object.internal_ip|placeholder }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">{% trans "External IP" %}</th>
+                    <td>{{ object.external_ip|placeholder }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">{% trans "Network" %}</th>
+                    <td>{{ object.network|placeholder }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">{% trans "Subnet" %}</th>
+                    <td>{{ object.subnet|placeholder }}</td>
+                </tr>
+                <tr>
+                    <th scope="row">{% trans "Disk Size (GB)" %}</th>
+                    <td>{{ object.disk_size_gb }}</td>
+                </tr>
+            </table>
+        </div>
+        {% include 'inc/panels/tags.html' %}
+    </div>
+    <div class="col col-md-6">
+        {% include 'inc/panels/custom_fields.html' %}
+    </div>
+</div>
+{% endblock %}

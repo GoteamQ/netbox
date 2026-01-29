@@ -4,6 +4,7 @@ from django.utils.translation import gettext_lazy as _
 
 from netbox.registry import registry
 from . import *
+from gcp.navigation import GCP_MENU
 
 #
 # Nav menus
@@ -472,6 +473,7 @@ def get_menus():
         VIRTUALIZATION_MENU,
         CIRCUITS_MENU,
         POWER_MENU,
+        GCP_MENU,
         PROVISIONING_MENU,
         CUSTOMIZATION_MENU,
         OPERATIONS_MENU,
