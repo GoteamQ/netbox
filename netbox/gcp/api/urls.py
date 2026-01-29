@@ -2,7 +2,6 @@ from netbox.api.routers import NetBoxRouter
 from . import views
 
 router = NetBoxRouter()
-router.APIRootView = views.GCPProjectViewSet
 
 router.register('projects', views.GCPProjectViewSet)
 router.register('compute-instances', views.ComputeInstanceViewSet)
