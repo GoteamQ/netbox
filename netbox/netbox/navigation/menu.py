@@ -463,18 +463,7 @@ def get_menus():
     The result is cached since menus don't change without a Django restart.
     """
     menus = [
-        ORGANIZATION_MENU,
-        RACKS_MENU,
-        DEVICES_MENU,
-        CONNECTIONS_MENU,
-        WIRELESS_MENU,
-        IPAM_MENU,
-        VPN_MENU,
-        VIRTUALIZATION_MENU,
-        CIRCUITS_MENU,
-        POWER_MENU,
         GCP_MENU,
-        PROVISIONING_MENU,
         CUSTOMIZATION_MENU,
         OPERATIONS_MENU,
     ]
