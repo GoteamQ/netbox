@@ -2,6 +2,7 @@ import django_tables2 as tables
 
 from netbox.tables import NetBoxTable, columns
 from .models import (
+    GCPOrganization, DiscoveryLog,
     GCPProject, ComputeInstance, InstanceTemplate, InstanceGroup,
     VPCNetwork, Subnet, FirewallRule, CloudRouter, CloudNAT, LoadBalancer,
     CloudSQLInstance, CloudSpannerInstance, FirestoreDatabase, BigtableInstance,
@@ -13,15 +14,43 @@ from .models import (
 )
 
 
+class GCPOrganizationTable(NetBoxTable):
+    name = tables.Column(linkify=True)
+    organization_id = tables.Column()
+    is_active = tables.BooleanColumn()
+    discovery_status = tables.Column()
+    last_discovery = tables.DateTimeColumn()
+
+    class Meta(NetBoxTable.Meta):
+        model = GCPOrganization
+        fields = ('pk', 'name', 'organization_id', 'is_active', 'discovery_status', 'last_discovery', 'auto_discover')
+        default_columns = ('name', 'organization_id', 'is_active', 'discovery_status', 'last_discovery')
+
+
+class DiscoveryLogTable(NetBoxTable):
+    organization = tables.Column(linkify=True)
+    started_at = tables.DateTimeColumn()
+    completed_at = tables.DateTimeColumn()
+    status = tables.Column()
+    total_resources = tables.Column()
+
+    class Meta(NetBoxTable.Meta):
+        model = DiscoveryLog
+        fields = ('pk', 'organization', 'started_at', 'completed_at', 'status', 'projects_discovered', 'instances_discovered', 'networks_discovered', 'total_resources')
+        default_columns = ('organization', 'started_at', 'status', 'total_resources')
+
+
 class GCPProjectTable(NetBoxTable):
     name = tables.Column(linkify=True)
+    organization = tables.Column(linkify=True)
     project_id = tables.Column()
     status = tables.Column()
+    discovered = tables.BooleanColumn()
 
     class Meta(NetBoxTable.Meta):
         model = GCPProject
-        fields = ('pk', 'name', 'project_id', 'project_number', 'status')
-        default_columns = ('name', 'project_id', 'status')
+        fields = ('pk', 'name', 'organization', 'project_id', 'project_number', 'status', 'discovered', 'last_synced')
+        default_columns = ('name', 'organization', 'project_id', 'status', 'discovered')
 
 
 class ComputeInstanceTable(NetBoxTable):

@@ -40,6 +40,17 @@ GCP_MENU = Menu(
     icon_class='mdi mdi-google-cloud',
     groups=(
         MenuGroup(
+            label=_('Organizations'),
+            items=(
+                get_gcp_model_item('gcporganization', _('GCP Organizations'), actions=('add',)),
+                MenuItem(
+                    link='gcp:discoverylog_list',
+                    link_text=_('Discovery Logs'),
+                    permissions=['gcp.view_discoverylog'],
+                ),
+            ),
+        ),
+        MenuGroup(
             label=_('Projects'),
             items=(
                 get_gcp_model_item('gcpproject', _('GCP Projects')),

@@ -6,6 +6,16 @@ from . import views
 app_name = 'gcp'
 
 urlpatterns = [
+    path('organizations/', views.GCPOrganizationListView.as_view(), name='gcporganization_list'),
+    path('organizations/add/', views.GCPOrganizationEditView.as_view(), name='gcporganization_add'),
+    path('organizations/delete/', views.GCPOrganizationBulkDeleteView.as_view(), name='gcporganization_bulk_delete'),
+    path('organizations/<int:pk>/', include(get_model_urls('gcp', 'gcporganization'))),
+    path('organizations/<int:pk>/discover/', views.GCPOrganizationDiscoverView.as_view(), name='gcporganization_discover'),
+
+    path('discovery-logs/', views.DiscoveryLogListView.as_view(), name='discoverylog_list'),
+    path('discovery-logs/delete/', views.DiscoveryLogBulkDeleteView.as_view(), name='discoverylog_bulk_delete'),
+    path('discovery-logs/<int:pk>/', include(get_model_urls('gcp', 'discoverylog'))),
+
     path('projects/', views.GCPProjectListView.as_view(), name='gcpproject_list'),
     path('projects/add/', views.GCPProjectEditView.as_view(), name='gcpproject_add'),
     path('projects/import/', views.GCPProjectBulkImportView.as_view(), name='gcpproject_bulk_import'),
