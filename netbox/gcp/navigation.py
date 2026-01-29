@@ -65,6 +65,22 @@ GCP_MENU = Menu(
             ),
         ),
         MenuGroup(
+            label=_('Network Connectivity'),
+            items=(
+                get_gcp_model_item('ncchub', _('NCC Hubs')),
+                get_gcp_model_item('nccspoke', _('NCC Spokes')),
+                get_gcp_model_item('interconnectattachment', _('Interconnect Attachments')),
+            ),
+        ),
+        MenuGroup(
+            label=_('Hybrid Connectivity'),
+            items=(
+                get_gcp_model_item('vpngateway', _('VPN Gateways')),
+                get_gcp_model_item('externalvpngateway', _('External VPN Gateways')),
+                get_gcp_model_item('vpntunnel', _('VPN Tunnels')),
+            ),
+        ),
+        MenuGroup(
             label=_('Databases'),
             items=(
                 get_gcp_model_item('cloudsqlinstance', _('Cloud SQL')),

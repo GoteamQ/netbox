@@ -375,3 +375,83 @@ class MemorystoreInstanceTable(NetBoxTable):
         model = MemorystoreInstance
         fields = ('pk', 'name', 'project', 'region', 'tier', 'memory_size_gb', 'redis_version', 'status')
         default_columns = ('name', 'project', 'region', 'tier', 'memory_size_gb', 'status')
+
+
+from .models import NCCHub, NCCSpoke, VPNGateway, ExternalVPNGateway, VPNTunnel, InterconnectAttachment
+
+
+class NCCHubTable(NetBoxTable):
+    name = tables.Column(linkify=True)
+    project = tables.Column(linkify=True)
+
+    class Meta(NetBoxTable.Meta):
+        model = NCCHub
+        fields = ('pk', 'name', 'project', 'description')
+        default_columns = ('name', 'project')
+
+
+class NCCSpokeTable(NetBoxTable):
+    name = tables.Column(linkify=True)
+    project = tables.Column(linkify=True)
+    hub = tables.Column(linkify=True)
+    spoke_type = tables.Column()
+    location = tables.Column()
+
+    class Meta(NetBoxTable.Meta):
+        model = NCCSpoke
+        fields = ('pk', 'name', 'project', 'hub', 'spoke_type', 'location', 'linked_vpc_network')
+        default_columns = ('name', 'project', 'hub', 'spoke_type', 'location')
+
+
+class VPNGatewayTable(NetBoxTable):
+    name = tables.Column(linkify=True)
+    project = tables.Column(linkify=True)
+    network = tables.Column(linkify=True)
+    region = tables.Column()
+    gateway_type = tables.Column()
+
+    class Meta(NetBoxTable.Meta):
+        model = VPNGateway
+        fields = ('pk', 'name', 'project', 'network', 'region', 'gateway_type')
+        default_columns = ('name', 'project', 'network', 'region', 'gateway_type')
+
+
+class ExternalVPNGatewayTable(NetBoxTable):
+    name = tables.Column(linkify=True)
+    project = tables.Column(linkify=True)
+    redundancy_type = tables.Column()
+
+    class Meta(NetBoxTable.Meta):
+        model = ExternalVPNGateway
+        fields = ('pk', 'name', 'project', 'redundancy_type', 'description')
+        default_columns = ('name', 'project', 'redundancy_type')
+
+
+class VPNTunnelTable(NetBoxTable):
+    name = tables.Column(linkify=True)
+    project = tables.Column(linkify=True)
+    region = tables.Column()
+    vpn_gateway = tables.Column(linkify=True)
+    peer_ip = tables.Column()
+    status = tables.Column()
+    ike_version = tables.Column()
+
+    class Meta(NetBoxTable.Meta):
+        model = VPNTunnel
+        fields = ('pk', 'name', 'project', 'region', 'vpn_gateway', 'peer_ip', 'status', 'ike_version', 'router')
+        default_columns = ('name', 'project', 'region', 'vpn_gateway', 'peer_ip', 'status')
+
+
+class InterconnectAttachmentTable(NetBoxTable):
+    name = tables.Column(linkify=True)
+    project = tables.Column(linkify=True)
+    region = tables.Column()
+    router = tables.Column(linkify=True)
+    attachment_type = tables.Column()
+    bandwidth = tables.Column()
+    state = tables.Column()
+
+    class Meta(NetBoxTable.Meta):
+        model = InterconnectAttachment
+        fields = ('pk', 'name', 'project', 'region', 'router', 'attachment_type', 'bandwidth', 'vlan_tag', 'state')
+        default_columns = ('name', 'project', 'region', 'attachment_type', 'bandwidth', 'state')

@@ -179,4 +179,40 @@ urlpatterns = [
     path('memorystore/import/', views.MemorystoreInstanceBulkImportView.as_view(), name='memorystoreinstance_bulk_import'),
     path('memorystore/delete/', views.MemorystoreInstanceBulkDeleteView.as_view(), name='memorystoreinstance_bulk_delete'),
     path('memorystore/<int:pk>/', include(get_model_urls('gcp', 'memorystoreinstance'))),
+
+    path('ncc-hubs/', views.NCCHubListView.as_view(), name='ncchub_list'),
+    path('ncc-hubs/add/', views.NCCHubEditView.as_view(), name='ncchub_add'),
+    path('ncc-hubs/import/', views.NCCHubBulkImportView.as_view(), name='ncchub_bulk_import'),
+    path('ncc-hubs/delete/', views.NCCHubBulkDeleteView.as_view(), name='ncchub_bulk_delete'),
+    path('ncc-hubs/<int:pk>/', include(get_model_urls('gcp', 'ncchub'))),
+
+    path('ncc-spokes/', views.NCCSpokeListView.as_view(), name='nccspoke_list'),
+    path('ncc-spokes/add/', views.NCCSpokeEditView.as_view(), name='nccspoke_add'),
+    path('ncc-spokes/import/', views.NCCSpokeBulkImportView.as_view(), name='nccspoke_bulk_import'),
+    path('ncc-spokes/delete/', views.NCCSpokeBulkDeleteView.as_view(), name='nccspoke_bulk_delete'),
+    path('ncc-spokes/<int:pk>/', include(get_model_urls('gcp', 'nccspoke'))),
+
+    path('vpn-gateways/', views.VPNGatewayListView.as_view(), name='vpngateway_list'),
+    path('vpn-gateways/add/', views.VPNGatewayEditView.as_view(), name='vpngateway_add'),
+    path('vpn-gateways/import/', views.VPNGatewayBulkImportView.as_view(), name='vpngateway_bulk_import'),
+    path('vpn-gateways/delete/', views.VPNGatewayBulkDeleteView.as_view(), name='vpngateway_bulk_delete'),
+    path('vpn-gateways/<int:pk>/', include(get_model_urls('gcp', 'vpngateway'))),
+
+    path('external-vpn-gateways/', views.ExternalVPNGatewayListView.as_view(), name='externalvpngateway_list'),
+    path('external-vpn-gateways/add/', views.ExternalVPNGatewayEditView.as_view(), name='externalvpngateway_add'),
+    path('external-vpn-gateways/import/', views.ExternalVPNGatewayBulkImportView.as_view(), name='externalvpngateway_bulk_import'),
+    path('external-vpn-gateways/delete/', views.ExternalVPNGatewayBulkDeleteView.as_view(), name='externalvpngateway_bulk_delete'),
+    path('external-vpn-gateways/<int:pk>/', include(get_model_urls('gcp', 'externalvpngateway'))),
+
+    path('vpn-tunnels/', views.VPNTunnelListView.as_view(), name='vpntunnel_list'),
+    path('vpn-tunnels/add/', views.VPNTunnelEditView.as_view(), name='vpntunnel_add'),
+    path('vpn-tunnels/import/', views.VPNTunnelBulkImportView.as_view(), name='vpntunnel_bulk_import'),
+    path('vpn-tunnels/delete/', views.VPNTunnelBulkDeleteView.as_view(), name='vpntunnel_bulk_delete'),
+    path('vpn-tunnels/<int:pk>/', include(get_model_urls('gcp', 'vpntunnel'))),
+
+    path('interconnect-attachments/', views.InterconnectAttachmentListView.as_view(), name='interconnectattachment_list'),
+    path('interconnect-attachments/add/', views.InterconnectAttachmentEditView.as_view(), name='interconnectattachment_add'),
+    path('interconnect-attachments/import/', views.InterconnectAttachmentBulkImportView.as_view(), name='interconnectattachment_bulk_import'),
+    path('interconnect-attachments/delete/', views.InterconnectAttachmentBulkDeleteView.as_view(), name='interconnectattachment_bulk_delete'),
+    path('interconnect-attachments/<int:pk>/', include(get_model_urls('gcp', 'interconnectattachment'))),
 ]

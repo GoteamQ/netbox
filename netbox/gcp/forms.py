@@ -331,3 +331,69 @@ class MemorystoreInstanceForm(NetBoxModelForm):
         model = MemorystoreInstance
         fields = ['name', 'project', 'region', 'tier', 'memory_size_gb', 'redis_version', 
                   'host', 'port', 'status', 'authorized_network', 'labels', 'tags']
+
+from .models import NCCHub, NCCSpoke, VPNGateway, ExternalVPNGateway, VPNTunnel, InterconnectAttachment
+
+
+class NCCHubForm(NetBoxModelForm):
+    project = DynamicModelChoiceField(queryset=GCPProject.objects.all())
+
+    class Meta:
+        model = NCCHub
+        fields = ['name', 'project', 'description', 'routing_vpcs', 'labels', 'tags']
+
+
+class NCCSpokeForm(NetBoxModelForm):
+    project = DynamicModelChoiceField(queryset=GCPProject.objects.all())
+    hub = DynamicModelChoiceField(queryset=NCCHub.objects.all())
+    linked_vpc_network = DynamicModelChoiceField(queryset=VPCNetwork.objects.all(), required=False)
+
+    class Meta:
+        model = NCCSpoke
+        fields = ['name', 'project', 'hub', 'spoke_type', 'location', 'description', 
+                  'linked_vpn_tunnels', 'linked_interconnect_attachments', 
+                  'linked_router_appliance_instances', 'linked_vpc_network', 'labels', 'tags']
+
+
+class VPNGatewayForm(NetBoxModelForm):
+    project = DynamicModelChoiceField(queryset=GCPProject.objects.all())
+    network = DynamicModelChoiceField(queryset=VPCNetwork.objects.all())
+
+    class Meta:
+        model = VPNGateway
+        fields = ['name', 'project', 'network', 'region', 'gateway_type', 
+                  'ip_addresses', 'description', 'labels', 'tags']
+
+
+class ExternalVPNGatewayForm(NetBoxModelForm):
+    project = DynamicModelChoiceField(queryset=GCPProject.objects.all())
+
+    class Meta:
+        model = ExternalVPNGateway
+        fields = ['name', 'project', 'redundancy_type', 'interfaces', 'description', 'labels', 'tags']
+
+
+class VPNTunnelForm(NetBoxModelForm):
+    project = DynamicModelChoiceField(queryset=GCPProject.objects.all())
+    vpn_gateway = DynamicModelChoiceField(queryset=VPNGateway.objects.all(), required=False)
+    peer_external_gateway = DynamicModelChoiceField(queryset=ExternalVPNGateway.objects.all(), required=False)
+    peer_gcp_gateway = DynamicModelChoiceField(queryset=VPNGateway.objects.all(), required=False)
+    router = DynamicModelChoiceField(queryset=CloudRouter.objects.all(), required=False)
+
+    class Meta:
+        model = VPNTunnel
+        fields = ['name', 'project', 'region', 'vpn_gateway', 'vpn_gateway_interface',
+                  'peer_external_gateway', 'peer_external_gateway_interface', 'peer_gcp_gateway',
+                  'peer_ip', 'shared_secret_hash', 'ike_version', 'local_traffic_selector',
+                  'remote_traffic_selector', 'router', 'status', 'detailed_status', 'labels', 'tags']
+
+
+class InterconnectAttachmentForm(NetBoxModelForm):
+    project = DynamicModelChoiceField(queryset=GCPProject.objects.all())
+    router = DynamicModelChoiceField(queryset=CloudRouter.objects.all())
+
+    class Meta:
+        model = InterconnectAttachment
+        fields = ['name', 'project', 'region', 'router', 'attachment_type', 'bandwidth',
+                  'vlan_tag', 'pairing_key', 'partner_metadata', 'cloud_router_ip',
+                  'customer_router_ip', 'state', 'mtu', 'encryption', 'description', 'labels', 'tags']
