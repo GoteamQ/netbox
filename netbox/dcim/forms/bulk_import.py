@@ -13,12 +13,19 @@ from ipam.choices import VLANQinQRoleChoices
 from ipam.models import VLAN, VRF, IPAddress, VLANGroup
 from netbox.choices import *
 from netbox.forms import (
-    NestedGroupModelImportForm, NetBoxModelImportForm, OrganizationalModelImportForm, OwnerCSVMixin,
+    NestedGroupModelImportForm,
+    NetBoxModelImportForm,
+    OrganizationalModelImportForm,
+    OwnerCSVMixin,
     PrimaryModelImportForm,
 )
 from tenancy.models import Tenant
 from utilities.forms.fields import (
-    CSVChoiceField, CSVContentTypeField, CSVModelChoiceField, CSVModelMultipleChoiceField, CSVTypedChoiceField,
+    CSVChoiceField,
+    CSVContentTypeField,
+    CSVModelChoiceField,
+    CSVModelMultipleChoiceField,
+    CSVTypedChoiceField,
     SlugField,
 )
 from virtualization.models import Cluster, VirtualMachine, VMInterface
@@ -58,7 +65,7 @@ __all__ = (
     'SiteImportForm',
     'SiteGroupImportForm',
     'VirtualChassisImportForm',
-    'VirtualDeviceContextImportForm'
+    'VirtualDeviceContextImportForm',
 )
 
 
@@ -68,7 +75,7 @@ class RegionImportForm(NestedGroupModelImportForm):
         queryset=Region.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_('Name of parent region')
+        help_text=_('Name of parent region'),
     )
 
     class Meta:
@@ -82,7 +89,7 @@ class SiteGroupImportForm(NestedGroupModelImportForm):
         queryset=SiteGroup.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_('Name of parent site group')
+        help_text=_('Name of parent site group'),
     )
 
     class Meta:
@@ -91,38 +98,48 @@ class SiteGroupImportForm(NestedGroupModelImportForm):
 
 
 class SiteImportForm(PrimaryModelImportForm):
-    status = CSVChoiceField(
-        label=_('Status'),
-        choices=SiteStatusChoices,
-        help_text=_('Operational status')
-    )
+    status = CSVChoiceField(label=_('Status'), choices=SiteStatusChoices, help_text=_('Operational status'))
     region = CSVModelChoiceField(
         label=_('Region'),
         queryset=Region.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_('Assigned region')
+        help_text=_('Assigned region'),
     )
     group = CSVModelChoiceField(
         label=_('Group'),
         queryset=SiteGroup.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_('Assigned group')
+        help_text=_('Assigned group'),
     )
     tenant = CSVModelChoiceField(
         label=_('Tenant'),
         queryset=Tenant.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_('Assigned tenant')
+        help_text=_('Assigned tenant'),
     )
 
     class Meta:
         model = Site
         fields = (
-            'name', 'slug', 'status', 'region', 'group', 'tenant', 'facility', 'time_zone', 'description',
-            'physical_address', 'shipping_address', 'latitude', 'longitude', 'owner', 'comments', 'tags'
+            'name',
+            'slug',
+            'status',
+            'region',
+            'group',
+            'tenant',
+            'facility',
+            'time_zone',
+            'description',
+            'physical_address',
+            'shipping_address',
+            'latitude',
+            'longitude',
+            'owner',
+            'comments',
+            'tags',
         )
         help_texts = {
             'time_zone': mark_safe(
@@ -135,10 +152,7 @@ class SiteImportForm(PrimaryModelImportForm):
 
 class LocationImportForm(NestedGroupModelImportForm):
     site = CSVModelChoiceField(
-        label=_('Site'),
-        queryset=Site.objects.all(),
-        to_field_name='name',
-        help_text=_('Assigned site')
+        label=_('Site'), queryset=Site.objects.all(), to_field_name='name', help_text=_('Assigned site')
     )
     parent = CSVModelChoiceField(
         label=_('Parent'),
@@ -148,25 +162,30 @@ class LocationImportForm(NestedGroupModelImportForm):
         help_text=_('Parent location'),
         error_messages={
             'invalid_choice': _('Location not found.'),
-        }
+        },
     )
-    status = CSVChoiceField(
-        label=_('Status'),
-        choices=LocationStatusChoices,
-        help_text=_('Operational status')
-    )
+    status = CSVChoiceField(label=_('Status'), choices=LocationStatusChoices, help_text=_('Operational status'))
     tenant = CSVModelChoiceField(
         label=_('Tenant'),
         queryset=Tenant.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_('Assigned tenant')
+        help_text=_('Assigned tenant'),
     )
 
     class Meta:
         model = Location
         fields = (
-            'site', 'parent', 'name', 'slug', 'status', 'tenant', 'facility', 'description', 'owner', 'comments',
+            'site',
+            'parent',
+            'name',
+            'slug',
+            'status',
+            'tenant',
+            'facility',
+            'description',
+            'owner',
+            'comments',
             'tags',
         )
 
@@ -175,12 +194,11 @@ class LocationImportForm(NestedGroupModelImportForm):
 
         if data:
             # Limit location queryset by assigned site
-            params = {f"site__{self.fields['site'].to_field_name}": data.get('site')}
+            params = {f'site__{self.fields["site"].to_field_name}': data.get('site')}
             self.fields['parent'].queryset = self.fields['parent'].queryset.filter(**params)
 
 
 class RackRoleImportForm(OrganizationalModelImportForm):
-
     class Meta:
         model = RackRole
         fields = ('name', 'slug', 'color', 'description', 'owner', 'comments', 'tags')
@@ -191,43 +209,48 @@ class RackTypeImportForm(PrimaryModelImportForm):
         label=_('Manufacturer'),
         queryset=Manufacturer.objects.all(),
         to_field_name='name',
-        help_text=_('The manufacturer of this rack type')
+        help_text=_('The manufacturer of this rack type'),
     )
     form_factor = CSVChoiceField(
-        label=_('Type'),
-        choices=RackFormFactorChoices,
-        required=False,
-        help_text=_('Form factor')
+        label=_('Type'), choices=RackFormFactorChoices, required=False, help_text=_('Form factor')
     )
     starting_unit = forms.IntegerField(
-        required=False,
-        min_value=1,
-        help_text=_('The lowest-numbered position in the rack')
+        required=False, min_value=1, help_text=_('The lowest-numbered position in the rack')
     )
-    width = forms.ChoiceField(
-        label=_('Width'),
-        choices=RackWidthChoices,
-        help_text=_('Rail-to-rail width (in inches)')
-    )
+    width = forms.ChoiceField(label=_('Width'), choices=RackWidthChoices, help_text=_('Rail-to-rail width (in inches)'))
     outer_unit = CSVChoiceField(
         label=_('Outer unit'),
         choices=RackDimensionUnitChoices,
         required=False,
-        help_text=_('Unit for outer dimensions')
+        help_text=_('Unit for outer dimensions'),
     )
     weight_unit = CSVChoiceField(
-        label=_('Weight unit'),
-        choices=WeightUnitChoices,
-        required=False,
-        help_text=_('Unit for rack weights')
+        label=_('Weight unit'), choices=WeightUnitChoices, required=False, help_text=_('Unit for rack weights')
     )
 
     class Meta:
         model = RackType
         fields = (
-            'manufacturer', 'model', 'slug', 'form_factor', 'width', 'u_height', 'starting_unit', 'desc_units',
-            'outer_width', 'outer_height', 'outer_depth', 'outer_unit', 'mounting_depth', 'weight', 'max_weight',
-            'weight_unit', 'description', 'owner', 'comments', 'tags',
+            'manufacturer',
+            'model',
+            'slug',
+            'form_factor',
+            'width',
+            'u_height',
+            'starting_unit',
+            'desc_units',
+            'outer_width',
+            'outer_height',
+            'outer_depth',
+            'outer_unit',
+            'mounting_depth',
+            'weight',
+            'max_weight',
+            'weight_unit',
+            'description',
+            'owner',
+            'comments',
+            'tags',
         )
 
     def __init__(self, data=None, *args, **kwargs):
@@ -235,84 +258,81 @@ class RackTypeImportForm(PrimaryModelImportForm):
 
 
 class RackImportForm(PrimaryModelImportForm):
-    site = CSVModelChoiceField(
-        label=_('Site'),
-        queryset=Site.objects.all(),
-        to_field_name='name'
-    )
+    site = CSVModelChoiceField(label=_('Site'), queryset=Site.objects.all(), to_field_name='name')
     location = CSVModelChoiceField(
-        label=_('Location'),
-        queryset=Location.objects.all(),
-        required=False,
-        to_field_name='name'
+        label=_('Location'), queryset=Location.objects.all(), required=False, to_field_name='name'
     )
     tenant = CSVModelChoiceField(
         label=_('Tenant'),
         queryset=Tenant.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_('Name of assigned tenant')
+        help_text=_('Name of assigned tenant'),
     )
-    status = CSVChoiceField(
-        label=_('Status'),
-        choices=RackStatusChoices,
-        help_text=_('Operational status')
-    )
+    status = CSVChoiceField(label=_('Status'), choices=RackStatusChoices, help_text=_('Operational status'))
     role = CSVModelChoiceField(
         label=_('Role'),
         queryset=RackRole.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_('Name of assigned role')
+        help_text=_('Name of assigned role'),
     )
     rack_type = CSVModelChoiceField(
         label=_('Rack type'),
         queryset=RackType.objects.all(),
         to_field_name='model',
         required=False,
-        help_text=_('Rack type model')
+        help_text=_('Rack type model'),
     )
     form_factor = CSVChoiceField(
-        label=_('Type'),
-        choices=RackFormFactorChoices,
-        required=False,
-        help_text=_('Form factor')
+        label=_('Type'), choices=RackFormFactorChoices, required=False, help_text=_('Form factor')
     )
     width = forms.ChoiceField(
-        label=_('Width'),
-        choices=RackWidthChoices,
-        required=False,
-        help_text=_('Rail-to-rail width (in inches)')
+        label=_('Width'), choices=RackWidthChoices, required=False, help_text=_('Rail-to-rail width (in inches)')
     )
-    u_height = forms.IntegerField(
-        required=False,
-        label=_('Height (U)')
-    )
+    u_height = forms.IntegerField(required=False, label=_('Height (U)'))
     outer_unit = CSVChoiceField(
         label=_('Outer unit'),
         choices=RackDimensionUnitChoices,
         required=False,
-        help_text=_('Unit for outer dimensions')
+        help_text=_('Unit for outer dimensions'),
     )
     airflow = CSVChoiceField(
-        label=_('Airflow'),
-        choices=RackAirflowChoices,
-        required=False,
-        help_text=_('Airflow direction')
+        label=_('Airflow'), choices=RackAirflowChoices, required=False, help_text=_('Airflow direction')
     )
     weight_unit = CSVChoiceField(
-        label=_('Weight unit'),
-        choices=WeightUnitChoices,
-        required=False,
-        help_text=_('Unit for rack weights')
+        label=_('Weight unit'), choices=WeightUnitChoices, required=False, help_text=_('Unit for rack weights')
     )
 
     class Meta:
         model = Rack
         fields = (
-            'site', 'location', 'name', 'facility_id', 'tenant', 'status', 'role', 'rack_type', 'form_factor', 'serial',
-            'asset_tag', 'width', 'u_height', 'desc_units', 'outer_width', 'outer_height', 'outer_depth', 'outer_unit',
-            'mounting_depth', 'airflow', 'weight', 'max_weight', 'weight_unit', 'description', 'owner', 'comments',
+            'site',
+            'location',
+            'name',
+            'facility_id',
+            'tenant',
+            'status',
+            'role',
+            'rack_type',
+            'form_factor',
+            'serial',
+            'asset_tag',
+            'width',
+            'u_height',
+            'desc_units',
+            'outer_width',
+            'outer_height',
+            'outer_depth',
+            'outer_unit',
+            'mounting_depth',
+            'airflow',
+            'weight',
+            'max_weight',
+            'weight_unit',
+            'description',
+            'owner',
+            'comments',
             'tags',
         )
 
@@ -320,9 +340,8 @@ class RackImportForm(PrimaryModelImportForm):
         super().__init__(data, *args, **kwargs)
 
         if data:
-
             # Limit location queryset by assigned site
-            params = {f"site__{self.fields['site'].to_field_name}": data.get('site')}
+            params = {f'site__{self.fields["site"].to_field_name}': data.get('site')}
             self.fields['location'].queryset = self.fields['location'].queryset.filter(**params)
 
     def clean(self):
@@ -331,48 +350,36 @@ class RackImportForm(PrimaryModelImportForm):
         # width & u_height must be set if not specifying a rack type on import
         if not self.instance.pk:
             if not self.cleaned_data.get('rack_type') and not self.cleaned_data.get('width'):
-                raise forms.ValidationError(_("Width must be set if not specifying a rack type."))
+                raise forms.ValidationError(_('Width must be set if not specifying a rack type.'))
             if not self.cleaned_data.get('rack_type') and not self.cleaned_data.get('u_height'):
-                raise forms.ValidationError(_("U height must be set if not specifying a rack type."))
+                raise forms.ValidationError(_('U height must be set if not specifying a rack type.'))
 
 
 class RackReservationImportForm(PrimaryModelImportForm):
     site = CSVModelChoiceField(
-        label=_('Site'),
-        queryset=Site.objects.all(),
-        to_field_name='name',
-        help_text=_('Parent site')
+        label=_('Site'), queryset=Site.objects.all(), to_field_name='name', help_text=_('Parent site')
     )
     location = CSVModelChoiceField(
         label=_('Location'),
         queryset=Location.objects.all(),
         to_field_name='name',
         required=False,
-        help_text=_("Rack's location (if any)")
+        help_text=_("Rack's location (if any)"),
     )
-    rack = CSVModelChoiceField(
-        label=_('Rack'),
-        queryset=Rack.objects.all(),
-        to_field_name='name',
-        help_text=_('Rack')
-    )
+    rack = CSVModelChoiceField(label=_('Rack'), queryset=Rack.objects.all(), to_field_name='name', help_text=_('Rack'))
     units = SimpleArrayField(
         label=_('Units'),
         base_field=forms.IntegerField(),
         required=True,
-        help_text=_('Comma-separated list of individual unit numbers')
+        help_text=_('Comma-separated list of individual unit numbers'),
     )
-    status = CSVChoiceField(
-        label=_('Status'),
-        choices=RackReservationStatusChoices,
-        help_text=_('Operational status')
-    )
+    status = CSVChoiceField(label=_('Status'), choices=RackReservationStatusChoices, help_text=_('Operational status'))
     tenant = CSVModelChoiceField(
         label=_('Tenant'),
         queryset=Tenant.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_('Assigned tenant')
+        help_text=_('Assigned tenant'),
     )
 
     class Meta:
@@ -383,21 +390,19 @@ class RackReservationImportForm(PrimaryModelImportForm):
         super().__init__(data, *args, **kwargs)
 
         if data:
-
             # Limit location queryset by assigned site
-            params = {f"site__{self.fields['site'].to_field_name}": data.get('site')}
+            params = {f'site__{self.fields["site"].to_field_name}': data.get('site')}
             self.fields['location'].queryset = self.fields['location'].queryset.filter(**params)
 
             # Limit rack queryset by assigned site and group
             params = {
-                f"site__{self.fields['site'].to_field_name}": data.get('site'),
-                f"location__{self.fields['location'].to_field_name}": data.get('location'),
+                f'site__{self.fields["site"].to_field_name}': data.get('site'),
+                f'location__{self.fields["location"].to_field_name}': data.get('location'),
             }
             self.fields['rack'].queryset = self.fields['rack'].queryset.filter(**params)
 
 
 class ManufacturerImportForm(OrganizationalModelImportForm):
-
     class Meta:
         model = Manufacturer
         fields = ('name', 'slug', 'description', 'owner', 'comments', 'tags')
@@ -408,14 +413,14 @@ class DeviceTypeImportForm(PrimaryModelImportForm):
         label=_('Manufacturer'),
         queryset=Manufacturer.objects.all(),
         to_field_name='name',
-        help_text=_('The manufacturer which produces this device type')
+        help_text=_('The manufacturer which produces this device type'),
     )
     default_platform = CSVModelChoiceField(
         label=_('Default platform'),
         queryset=Platform.objects.all(),
         to_field_name='name',
         required=False,
-        help_text=_('The default platform for devices of this type (optional)')
+        help_text=_('The default platform for devices of this type (optional)'),
     )
     weight = forms.DecimalField(
         label=_('Weight'),
@@ -423,47 +428,53 @@ class DeviceTypeImportForm(PrimaryModelImportForm):
         help_text=_('Device weight'),
     )
     weight_unit = CSVChoiceField(
-        label=_('Weight unit'),
-        choices=WeightUnitChoices,
-        required=False,
-        help_text=_('Unit for device weight')
+        label=_('Weight unit'), choices=WeightUnitChoices, required=False, help_text=_('Unit for device weight')
     )
 
     class Meta:
         model = DeviceType
         fields = [
-            'manufacturer', 'default_platform', 'model', 'slug', 'part_number', 'u_height', 'exclude_from_utilization',
-            'is_full_depth', 'subdevice_role', 'airflow', 'description', 'weight', 'weight_unit', 'owner', 'comments',
+            'manufacturer',
+            'default_platform',
+            'model',
+            'slug',
+            'part_number',
+            'u_height',
+            'exclude_from_utilization',
+            'is_full_depth',
+            'subdevice_role',
+            'airflow',
+            'description',
+            'weight',
+            'weight_unit',
+            'owner',
+            'comments',
             'tags',
         ]
 
 
 class ModuleTypeProfileImportForm(PrimaryModelImportForm):
-
     class Meta:
         model = ModuleTypeProfile
         fields = [
-            'name', 'description', 'schema', 'owner', 'comments', 'tags',
+            'name',
+            'description',
+            'schema',
+            'owner',
+            'comments',
+            'tags',
         ]
 
 
 class ModuleTypeImportForm(PrimaryModelImportForm):
     profile = forms.ModelChoiceField(
-        label=_('Profile'),
-        queryset=ModuleTypeProfile.objects.all(),
-        to_field_name='name',
-        required=False
+        label=_('Profile'), queryset=ModuleTypeProfile.objects.all(), to_field_name='name', required=False
     )
     manufacturer = forms.ModelChoiceField(
-        label=_('Manufacturer'),
-        queryset=Manufacturer.objects.all(),
-        to_field_name='name'
+        label=_('Manufacturer'), queryset=Manufacturer.objects.all(), to_field_name='name'
     )
     airflow = CSVChoiceField(
-        label=_('Airflow'),
-        choices=ModuleAirflowChoices,
-        required=False,
-        help_text=_('Airflow direction')
+        label=_('Airflow'), choices=ModuleAirflowChoices, required=False, help_text=_('Airflow direction')
     )
     weight = forms.DecimalField(
         label=_('Weight'),
@@ -471,22 +482,29 @@ class ModuleTypeImportForm(PrimaryModelImportForm):
         help_text=_('Module weight'),
     )
     weight_unit = CSVChoiceField(
-        label=_('Weight unit'),
-        choices=WeightUnitChoices,
-        required=False,
-        help_text=_('Unit for module weight')
+        label=_('Weight unit'), choices=WeightUnitChoices, required=False, help_text=_('Unit for module weight')
     )
     attribute_data = forms.JSONField(
         label=_('Attributes'),
         required=False,
-        help_text=_('Attribute values for the assigned profile, passed as a dictionary')
+        help_text=_('Attribute values for the assigned profile, passed as a dictionary'),
     )
 
     class Meta:
         model = ModuleType
         fields = [
-            'manufacturer', 'model', 'part_number', 'description', 'airflow', 'weight', 'weight_unit', 'profile',
-            'attribute_data', 'owner', 'comments', 'tags',
+            'manufacturer',
+            'model',
+            'part_number',
+            'description',
+            'airflow',
+            'weight',
+            'weight_unit',
+            'profile',
+            'attribute_data',
+            'owner',
+            'comments',
+            'tags',
         ]
 
     def clean(self):
@@ -494,7 +512,7 @@ class ModuleTypeImportForm(PrimaryModelImportForm):
 
         # Attribute data may be included only if a profile is specified
         if self.cleaned_data.get('attribute_data') and not self.cleaned_data.get('profile'):
-            raise forms.ValidationError(_("Profile must be specified if attribute data is provided."))
+            raise forms.ValidationError(_('Profile must be specified if attribute data is provided.'))
 
         # Default attribute_data to an empty dictionary if a profile is specified (to enforce schema validation)
         if self.cleaned_data.get('profile') and not self.cleaned_data.get('attribute_data'):
@@ -510,20 +528,29 @@ class DeviceRoleImportForm(NestedGroupModelImportForm):
         help_text=_('Parent Device Role'),
         error_messages={
             'invalid_choice': _('Device role not found.'),
-        }
+        },
     )
     config_template = CSVModelChoiceField(
         label=_('Config template'),
         queryset=ConfigTemplate.objects.all(),
         to_field_name='name',
         required=False,
-        help_text=_('Config template')
+        help_text=_('Config template'),
     )
 
     class Meta:
         model = DeviceRole
         fields = (
-            'name', 'slug', 'parent', 'color', 'vm_role', 'config_template', 'description', 'owner', 'comments', 'tags'
+            'name',
+            'slug',
+            'parent',
+            'color',
+            'vm_role',
+            'config_template',
+            'description',
+            'owner',
+            'comments',
+            'tags',
         )
 
 
@@ -536,81 +563,82 @@ class PlatformImportForm(NestedGroupModelImportForm):
         help_text=_('Parent platform'),
         error_messages={
             'invalid_choice': _('Platform not found.'),
-        }
+        },
     )
     manufacturer = CSVModelChoiceField(
         label=_('Manufacturer'),
         queryset=Manufacturer.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_('Limit platform assignments to this manufacturer')
+        help_text=_('Limit platform assignments to this manufacturer'),
     )
     config_template = CSVModelChoiceField(
         label=_('Config template'),
         queryset=ConfigTemplate.objects.all(),
         to_field_name='name',
         required=False,
-        help_text=_('Config template')
+        help_text=_('Config template'),
     )
 
     class Meta:
         model = Platform
         fields = (
-            'name', 'slug', 'parent', 'manufacturer', 'config_template', 'description', 'owner', 'comments', 'tags',
+            'name',
+            'slug',
+            'parent',
+            'manufacturer',
+            'config_template',
+            'description',
+            'owner',
+            'comments',
+            'tags',
         )
 
 
 class BaseDeviceImportForm(PrimaryModelImportForm):
     role = CSVModelChoiceField(
-        label=_('Device role'),
-        queryset=DeviceRole.objects.all(),
-        to_field_name='name',
-        help_text=_('Assigned role')
+        label=_('Device role'), queryset=DeviceRole.objects.all(), to_field_name='name', help_text=_('Assigned role')
     )
     tenant = CSVModelChoiceField(
         label=_('Tenant'),
         queryset=Tenant.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_('Assigned tenant')
+        help_text=_('Assigned tenant'),
     )
     manufacturer = CSVModelChoiceField(
         label=_('Manufacturer'),
         queryset=Manufacturer.objects.all(),
         to_field_name='name',
-        help_text=_('Device type manufacturer')
+        help_text=_('Device type manufacturer'),
     )
     device_type = CSVModelChoiceField(
         label=_('Device type'),
         queryset=DeviceType.objects.all(),
         to_field_name='model',
-        help_text=_('Device type model')
+        help_text=_('Device type model'),
     )
     platform = CSVModelChoiceField(
         label=_('Platform'),
         queryset=Platform.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_('Assigned platform')
+        help_text=_('Assigned platform'),
     )
-    status = CSVChoiceField(
-        label=_('Status'),
-        choices=DeviceStatusChoices,
-        help_text=_('Operational status')
-    )
+    status = CSVChoiceField(label=_('Status'), choices=DeviceStatusChoices, help_text=_('Operational status'))
     virtual_chassis = CSVModelChoiceField(
         label=_('Virtual chassis'),
         queryset=VirtualChassis.objects.all(),
         to_field_name='name',
         required=False,
-        help_text=_('Virtual chassis')
+        help_text=_('Virtual chassis'),
     )
     cluster = CSVModelChoiceField(
         label=_('Cluster'),
         queryset=Cluster.objects.all(),
         to_field_name='name',
         required=False,
-        help_text=_('Virtualization cluster')
+        help_text=_('Virtualization cluster'),
     )
 
     class Meta:
@@ -621,104 +649,117 @@ class BaseDeviceImportForm(PrimaryModelImportForm):
         super().__init__(data, *args, **kwargs)
 
         if data:
-
             # Limit device type queryset by manufacturer
-            params = {f"manufacturer__{self.fields['manufacturer'].to_field_name}": data.get('manufacturer')}
+            params = {f'manufacturer__{self.fields["manufacturer"].to_field_name}': data.get('manufacturer')}
             self.fields['device_type'].queryset = self.fields['device_type'].queryset.filter(**params)
 
 
 class DeviceImportForm(BaseDeviceImportForm):
     site = CSVModelChoiceField(
-        label=_('Site'),
-        queryset=Site.objects.all(),
-        to_field_name='name',
-        help_text=_('Assigned site')
+        label=_('Site'), queryset=Site.objects.all(), to_field_name='name', help_text=_('Assigned site')
     )
     location = CSVModelChoiceField(
         label=_('Location'),
         queryset=Location.objects.all(),
         to_field_name='name',
         required=False,
-        help_text=_("Assigned location (if any)")
+        help_text=_('Assigned location (if any)'),
     )
     rack = CSVModelChoiceField(
         label=_('Rack'),
         queryset=Rack.objects.all(),
         to_field_name='name',
         required=False,
-        help_text=_("Assigned rack (if any)")
+        help_text=_('Assigned rack (if any)'),
     )
-    face = CSVChoiceField(
-        label=_('Face'),
-        choices=DeviceFaceChoices,
-        required=False,
-        help_text=_('Mounted rack face')
-    )
+    face = CSVChoiceField(label=_('Face'), choices=DeviceFaceChoices, required=False, help_text=_('Mounted rack face'))
     parent = CSVModelChoiceField(
         label=_('Parent'),
         queryset=Device.objects.all(),
         to_field_name='name',
         required=False,
-        help_text=_('Parent device (for child devices)')
+        help_text=_('Parent device (for child devices)'),
     )
     device_bay = CSVModelChoiceField(
         label=_('Device bay'),
         queryset=DeviceBay.objects.all(),
         to_field_name='name',
         required=False,
-        help_text=_('Device bay in which this device is installed (for child devices)')
+        help_text=_('Device bay in which this device is installed (for child devices)'),
     )
     airflow = CSVChoiceField(
-        label=_('Airflow'),
-        choices=DeviceAirflowChoices,
-        required=False,
-        help_text=_('Airflow direction')
+        label=_('Airflow'), choices=DeviceAirflowChoices, required=False, help_text=_('Airflow direction')
     )
     config_template = CSVModelChoiceField(
         label=_('Config template'),
         queryset=ConfigTemplate.objects.all(),
         to_field_name='name',
         required=False,
-        help_text=_('Config template')
+        help_text=_('Config template'),
     )
 
     class Meta(BaseDeviceImportForm.Meta):
         fields = [
-            'name', 'role', 'tenant', 'manufacturer', 'device_type', 'platform', 'serial', 'asset_tag', 'status',
-            'site', 'location', 'rack', 'position', 'face', 'latitude', 'longitude', 'parent', 'device_bay', 'airflow',
-            'virtual_chassis', 'vc_position', 'vc_priority', 'cluster', 'description', 'config_template', 'owner',
-            'comments', 'tags',
+            'name',
+            'role',
+            'tenant',
+            'manufacturer',
+            'device_type',
+            'platform',
+            'serial',
+            'asset_tag',
+            'status',
+            'site',
+            'location',
+            'rack',
+            'position',
+            'face',
+            'latitude',
+            'longitude',
+            'parent',
+            'device_bay',
+            'airflow',
+            'virtual_chassis',
+            'vc_position',
+            'vc_priority',
+            'cluster',
+            'description',
+            'config_template',
+            'owner',
+            'comments',
+            'tags',
         ]
 
     def __init__(self, data=None, *args, **kwargs):
         super().__init__(data, *args, **kwargs)
 
         if data:
-
             # Limit location queryset by assigned site
-            params = {f"site__{self.fields['site'].to_field_name}": data.get('site')}
+            params = {f'site__{self.fields["site"].to_field_name}': data.get('site')}
             self.fields['location'].queryset = self.fields['location'].queryset.filter(**params)
             self.fields['parent'].queryset = self.fields['parent'].queryset.filter(**params)
 
             # Limit rack queryset by assigned site and location
             params = {
-                f"site__{self.fields['site'].to_field_name}": data.get('site'),
+                f'site__{self.fields["site"].to_field_name}': data.get('site'),
             }
             if location := data.get('location'):
-                params.update({
-                    f"location__{self.fields['location'].to_field_name}": location,
-                })
+                params.update(
+                    {
+                        f'location__{self.fields["location"].to_field_name}': location,
+                    }
+                )
             self.fields['rack'].queryset = self.fields['rack'].queryset.filter(**params)
 
             # Limit platform queryset by manufacturer
-            params = {f"manufacturer__{self.fields['manufacturer'].to_field_name}": data.get('manufacturer')}
+            params = {f'manufacturer__{self.fields["manufacturer"].to_field_name}': data.get('manufacturer')}
             self.fields['platform'].queryset = self.fields['platform'].queryset.filter(
                 Q(**params) | Q(manufacturer=None)
             )
 
             # Limit device bay queryset by parent device
             if parent := data.get('parent'):
-                params = {f"device__{self.fields['parent'].to_field_name}": parent}
+                params = {f'device__{self.fields["parent"].to_field_name}': parent}
                 self.fields['device_bay'].queryset = self.fields['device_bay'].queryset.filter(**params)
 
     def clean(self):
@@ -739,41 +780,45 @@ class ModuleImportForm(ModuleCommonForm, PrimaryModelImportForm):
         label=_('Device'),
         queryset=Device.objects.all(),
         to_field_name='name',
-        help_text=_('The device in which this module is installed')
+        help_text=_('The device in which this module is installed'),
     )
     module_bay = CSVModelChoiceField(
         label=_('Module bay'),
         queryset=ModuleBay.objects.all(),
         to_field_name='name',
-        help_text=_('The module bay in which this module is installed')
+        help_text=_('The module bay in which this module is installed'),
     )
     module_type = CSVModelChoiceField(
         label=_('Module type'),
         queryset=ModuleType.objects.all(),
         to_field_name='model',
-        help_text=_('The type of module')
+        help_text=_('The type of module'),
     )
-    status = CSVChoiceField(
-        label=_('Status'),
-        choices=ModuleStatusChoices,
-        help_text=_('Operational status')
-    )
+    status = CSVChoiceField(label=_('Status'), choices=ModuleStatusChoices, help_text=_('Operational status'))
     replicate_components = forms.BooleanField(
         label=_('Replicate components'),
         required=False,
-        help_text=_('Automatically populate components associated with this module type (enabled by default)')
+        help_text=_('Automatically populate components associated with this module type (enabled by default)'),
     )
     adopt_components = forms.BooleanField(
-        label=_('Adopt components'),
-        required=False,
-        help_text=_('Adopt already existing components')
+        label=_('Adopt components'), required=False, help_text=_('Adopt already existing components')
     )
 
     class Meta:
         model = Module
         fields = (
-            'device', 'module_bay', 'module_type', 'serial', 'asset_tag', 'status', 'description', 'owner', 'comments',
-            'replicate_components', 'adopt_components', 'tags',
+            'device',
+            'module_bay',
+            'module_type',
+            'serial',
+            'asset_tag',
+            'status',
+            'description',
+            'owner',
+            'comments',
+            'replicate_components',
+            'adopt_components',
+            'tags',
         )
 
     def __init__(self, data=None, *args, **kwargs):
@@ -781,7 +826,7 @@ class ModuleImportForm(ModuleCommonForm, PrimaryModelImportForm):
 
         if data:
             # Limit module_bay queryset by assigned device
-            params = {f"device__{self.fields['device'].to_field_name}": data.get('device')}
+            params = {f'device__{self.fields["device"].to_field_name}': data.get('device')}
             self.fields['module_bay'].queryset = self.fields['module_bay'].queryset.filter(**params)
 
     def clean_replicate_components(self):
@@ -796,25 +841,17 @@ class ModuleImportForm(ModuleCommonForm, PrimaryModelImportForm):
 # Device components
 #
 
+
 class ConsolePortImportForm(OwnerCSVMixin, NetBoxModelImportForm):
-    device = CSVModelChoiceField(
-        label=_('Device'),
-        queryset=Device.objects.all(),
-        to_field_name='name'
-    )
-    type = CSVChoiceField(
-        label=_('Type'),
-        choices=ConsolePortTypeChoices,
-        required=False,
-        help_text=_('Port type')
-    )
+    device = CSVModelChoiceField(label=_('Device'), queryset=Device.objects.all(), to_field_name='name')
+    type = CSVChoiceField(label=_('Type'), choices=ConsolePortTypeChoices, required=False, help_text=_('Port type'))
     speed = CSVTypedChoiceField(
         label=_('Speed'),
         choices=ConsolePortSpeedChoices,
         coerce=int,
         empty_value=None,
         required=False,
-        help_text=_('Port speed in bps')
+        help_text=_('Port speed in bps'),
     )
 
     class Meta:
@@ -823,24 +860,15 @@ class ConsolePortImportForm(OwnerCSVMixin, NetBoxModelImportForm):
 
 
 class ConsoleServerPortImportForm(OwnerCSVMixin, NetBoxModelImportForm):
-    device = CSVModelChoiceField(
-        label=_('Device'),
-        queryset=Device.objects.all(),
-        to_field_name='name'
-    )
-    type = CSVChoiceField(
-        label=_('Type'),
-        choices=ConsolePortTypeChoices,
-        required=False,
-        help_text=_('Port type')
-    )
+    device = CSVModelChoiceField(label=_('Device'), queryset=Device.objects.all(), to_field_name='name')
+    type = CSVChoiceField(label=_('Type'), choices=ConsolePortTypeChoices, required=False, help_text=_('Port type'))
     speed = CSVTypedChoiceField(
         label=_('Speed'),
         choices=ConsolePortSpeedChoices,
         coerce=int,
         empty_value=None,
         required=False,
-        help_text=_('Port speed in bps')
+        help_text=_('Port speed in bps'),
     )
 
     class Meta:
@@ -849,57 +877,56 @@ class ConsoleServerPortImportForm(OwnerCSVMixin, NetBoxModelImportForm):
 
 
 class PowerPortImportForm(OwnerCSVMixin, NetBoxModelImportForm):
-    device = CSVModelChoiceField(
-        label=_('Device'),
-        queryset=Device.objects.all(),
-        to_field_name='name'
-    )
-    type = CSVChoiceField(
-        label=_('Type'),
-        choices=PowerPortTypeChoices,
-        required=False,
-        help_text=_('Port type')
-    )
+    device = CSVModelChoiceField(label=_('Device'), queryset=Device.objects.all(), to_field_name='name')
+    type = CSVChoiceField(label=_('Type'), choices=PowerPortTypeChoices, required=False, help_text=_('Port type'))
 
     class Meta:
         model = PowerPort
         fields = (
-            'device', 'name', 'label', 'type', 'mark_connected', 'maximum_draw', 'allocated_draw', 'description',
-            'owner', 'tags',
+            'device',
+            'name',
+            'label',
+            'type',
+            'mark_connected',
+            'maximum_draw',
+            'allocated_draw',
+            'description',
+            'owner',
+            'tags',
         )
 
 
 class PowerOutletImportForm(OwnerCSVMixin, NetBoxModelImportForm):
-    device = CSVModelChoiceField(
-        label=_('Device'),
-        queryset=Device.objects.all(),
-        to_field_name='name'
-    )
-    type = CSVChoiceField(
-        label=_('Type'),
-        choices=PowerOutletTypeChoices,
-        required=False,
-        help_text=_('Outlet type')
-    )
+    device = CSVModelChoiceField(label=_('Device'), queryset=Device.objects.all(), to_field_name='name')
+    type = CSVChoiceField(label=_('Type'), choices=PowerOutletTypeChoices, required=False, help_text=_('Outlet type'))
     power_port = CSVModelChoiceField(
         label=_('Power port'),
         queryset=PowerPort.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_('Local power port which feeds this outlet')
+        help_text=_('Local power port which feeds this outlet'),
     )
     feed_leg = CSVChoiceField(
         label=_('Feed leg'),
         choices=PowerOutletFeedLegChoices,
         required=False,
-        help_text=_('Electrical phase (for three-phase circuits)')
+        help_text=_('Electrical phase (for three-phase circuits)'),
     )
 
     class Meta:
         model = PowerOutlet
         fields = (
-            'device', 'name', 'label', 'type', 'color', 'mark_connected', 'power_port', 'feed_leg', 'description',
-            'owner', 'tags',
+            'device',
+            'name',
+            'label',
+            'type',
+            'color',
+            'mark_connected',
+            'power_port',
+            'feed_leg',
+            'description',
+            'owner',
+            'tags',
         )
 
     def __init__(self, *args, **kwargs):
@@ -918,39 +945,33 @@ class PowerOutletImportForm(OwnerCSVMixin, NetBoxModelImportForm):
                 device = None
 
         if device:
-            self.fields['power_port'].queryset = PowerPort.objects.filter(
-                device__in=[device, device.get_vc_master()]
-            )
+            self.fields['power_port'].queryset = PowerPort.objects.filter(device__in=[device, device.get_vc_master()])
         else:
             self.fields['power_port'].queryset = PowerPort.objects.none()
 
 
 class InterfaceImportForm(OwnerCSVMixin, NetBoxModelImportForm):
-    device = CSVModelChoiceField(
-        label=_('Device'),
-        queryset=Device.objects.all(),
-        to_field_name='name'
-    )
+    device = CSVModelChoiceField(label=_('Device'), queryset=Device.objects.all(), to_field_name='name')
     parent = CSVModelChoiceField(
         label=_('Parent'),
         queryset=Interface.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_('Parent interface')
+        help_text=_('Parent interface'),
     )
     bridge = CSVModelChoiceField(
         label=_('Bridge'),
         queryset=Interface.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_('Bridged interface')
+        help_text=_('Bridged interface'),
     )
     lag = CSVModelChoiceField(
         label=_('Lag'),
         queryset=Interface.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_('Parent LAG interface')
+        help_text=_('Parent LAG interface'),
     )
     vdcs = CSVModelMultipleChoiceField(
         label=_('Vdcs'),
@@ -959,29 +980,15 @@ class InterfaceImportForm(OwnerCSVMixin, NetBoxModelImportForm):
         to_field_name='name',
         help_text=mark_safe(
             _('VDC names separated by commas, encased with double quotes. Example:') + ' <code>"vdc1,vdc2,vdc3"</code>'
-        )
+        ),
     )
-    type = CSVChoiceField(
-        label=_('Type'),
-        choices=InterfaceTypeChoices,
-        help_text=_('Physical medium')
-    )
-    duplex = CSVChoiceField(
-        label=_('Duplex'),
-        choices=InterfaceDuplexChoices,
-        required=False
-    )
+    type = CSVChoiceField(label=_('Type'), choices=InterfaceTypeChoices, help_text=_('Physical medium'))
+    duplex = CSVChoiceField(label=_('Duplex'), choices=InterfaceDuplexChoices, required=False)
     poe_mode = CSVChoiceField(
-        label=_('Poe mode'),
-        choices=InterfacePoEModeChoices,
-        required=False,
-        help_text=_('PoE mode')
+        label=_('Poe mode'), choices=InterfacePoEModeChoices, required=False, help_text=_('PoE mode')
     )
     poe_type = CSVChoiceField(
-        label=_('Poe type'),
-        choices=InterfacePoETypeChoices,
-        required=False,
-        help_text=_('PoE type')
+        label=_('Poe type'), choices=InterfacePoETypeChoices, required=False, help_text=_('PoE type')
     )
     mode = CSVChoiceField(
         label=_('Mode'),
@@ -1024,26 +1031,46 @@ class InterfaceImportForm(OwnerCSVMixin, NetBoxModelImportForm):
         help_text=_('Assigned Q-in-Q Service VLAN ID (filtered by VLAN group)'),
     )
     vrf = CSVModelChoiceField(
-        label=_('VRF'),
-        queryset=VRF.objects.all(),
-        required=False,
-        to_field_name='rd',
-        help_text=_('Assigned VRF')
+        label=_('VRF'), queryset=VRF.objects.all(), required=False, to_field_name='rd', help_text=_('Assigned VRF')
     )
     rf_role = CSVChoiceField(
-        label=_('Rf role'),
-        choices=WirelessRoleChoices,
-        required=False,
-        help_text=_('Wireless role (AP/station)')
+        label=_('Rf role'), choices=WirelessRoleChoices, required=False, help_text=_('Wireless role (AP/station)')
     )
 
     class Meta:
         model = Interface
         fields = (
-            'device', 'name', 'label', 'parent', 'bridge', 'lag', 'type', 'speed', 'duplex', 'enabled',
-            'mark_connected', 'wwn', 'vdcs', 'mtu', 'mgmt_only', 'description', 'poe_mode', 'poe_type', 'mode',
-            'vlan_group', 'untagged_vlan', 'tagged_vlans', 'qinq_svlan', 'vrf', 'rf_role', 'rf_channel',
-            'rf_channel_frequency', 'rf_channel_width', 'tx_power', 'owner', 'tags'
+            'device',
+            'name',
+            'label',
+            'parent',
+            'bridge',
+            'lag',
+            'type',
+            'speed',
+            'duplex',
+            'enabled',
+            'mark_connected',
+            'wwn',
+            'vdcs',
+            'mtu',
+            'mgmt_only',
+            'description',
+            'poe_mode',
+            'poe_type',
+            'mode',
+            'vlan_group',
+            'untagged_vlan',
+            'tagged_vlans',
+            'qinq_svlan',
+            'vrf',
+            'rf_role',
+            'rf_channel',
+            'rf_channel_frequency',
+            'rf_channel_width',
+            'tx_power',
+            'owner',
+            'tags',
         )
 
     def __init__(self, data=None, *args, **kwargs):
@@ -1052,9 +1079,7 @@ class InterfaceImportForm(OwnerCSVMixin, NetBoxModelImportForm):
         if data:
             # Limit choices for parent, bridge, and LAG interfaces to the assigned device
             if device := data.get('device'):
-                params = {
-                    f"device__{self.fields['device'].to_field_name}": device
-                }
+                params = {f'device__{self.fields["device"].to_field_name}': device}
                 self.fields['parent'].queryset = self.fields['parent'].queryset.filter(**params)
                 self.fields['bridge'].queryset = self.fields['bridge'].queryset.filter(**params)
                 self.fields['lag'].queryset = self.fields['lag'].queryset.filter(**params)
@@ -1062,7 +1087,7 @@ class InterfaceImportForm(OwnerCSVMixin, NetBoxModelImportForm):
 
             # Limit choices for VLANs to the assigned VLAN group
             if vlan_group := data.get('vlan_group'):
-                params = {f"group__{self.fields['vlan_group'].to_field_name}": vlan_group}
+                params = {f'group__{self.fields["vlan_group"].to_field_name}': vlan_group}
                 self.fields['untagged_vlan'].queryset = self.fields['untagged_vlan'].queryset.filter(**params)
                 self.fields['tagged_vlans'].queryset = self.fields['tagged_vlans'].queryset.filter(**params)
                 self.fields['qinq_svlan'].queryset = self.fields['qinq_svlan'].queryset.filter(**params)
@@ -1078,7 +1103,7 @@ class InterfaceImportForm(OwnerCSVMixin, NetBoxModelImportForm):
         for vdc in self.cleaned_data['vdcs']:
             if vdc.device != self.cleaned_data['device']:
                 raise forms.ValidationError(
-                    _("VDC {vdc} is not assigned to device {device}").format(
+                    _('VDC {vdc} is not assigned to device {device}').format(
                         vdc=vdc, device=self.cleaned_data['device']
                     )
                 )
@@ -1086,30 +1111,27 @@ class InterfaceImportForm(OwnerCSVMixin, NetBoxModelImportForm):
 
 
 class FrontPortImportForm(OwnerCSVMixin, NetBoxModelImportForm):
-    device = CSVModelChoiceField(
-        label=_('Device'),
-        queryset=Device.objects.all(),
-        to_field_name='name'
-    )
-    type = CSVChoiceField(
-        label=_('Type'),
-        choices=PortTypeChoices,
-        help_text=_('Physical medium classification')
-    )
+    device = CSVModelChoiceField(label=_('Device'), queryset=Device.objects.all(), to_field_name='name')
+    type = CSVChoiceField(label=_('Type'), choices=PortTypeChoices, help_text=_('Physical medium classification'))
 
     class Meta:
         model = FrontPort
         fields = (
-            'device', 'name', 'label', 'type', 'color', 'mark_connected', 'positions', 'description', 'owner', 'tags'
+            'device',
+            'name',
+            'label',
+            'type',
+            'color',
+            'mark_connected',
+            'positions',
+            'description',
+            'owner',
+            'tags',
         )
 
 
 class RearPortImportForm(OwnerCSVMixin, NetBoxModelImportForm):
-    device = CSVModelChoiceField(
-        label=_('Device'),
-        queryset=Device.objects.all(),
-        to_field_name='name'
-    )
+    device = CSVModelChoiceField(label=_('Device'), queryset=Device.objects.all(), to_field_name='name')
     type = CSVChoiceField(
         label=_('Type'),
         help_text=_('Physical medium classification'),
@@ -1119,16 +1141,21 @@ class RearPortImportForm(OwnerCSVMixin, NetBoxModelImportForm):
     class Meta:
         model = RearPort
         fields = (
-            'device', 'name', 'label', 'type', 'color', 'mark_connected', 'positions', 'description', 'owner', 'tags',
+            'device',
+            'name',
+            'label',
+            'type',
+            'color',
+            'mark_connected',
+            'positions',
+            'description',
+            'owner',
+            'tags',
         )
 
 
 class ModuleBayImportForm(OwnerCSVMixin, NetBoxModelImportForm):
-    device = CSVModelChoiceField(
-        label=_('Device'),
-        queryset=Device.objects.all(),
-        to_field_name='name'
-    )
+    device = CSVModelChoiceField(label=_('Device'), queryset=Device.objects.all(), to_field_name='name')
 
     class Meta:
         model = ModuleBay
@@ -1136,11 +1163,7 @@ class ModuleBayImportForm(OwnerCSVMixin, NetBoxModelImportForm):
 
 
 class DeviceBayImportForm(OwnerCSVMixin, NetBoxModelImportForm):
-    device = CSVModelChoiceField(
-        label=_('Device'),
-        queryset=Device.objects.all(),
-        to_field_name='name'
-    )
+    device = CSVModelChoiceField(label=_('Device'), queryset=Device.objects.all(), to_field_name='name')
     installed_device = CSVModelChoiceField(
         label=_('Installed device'),
         queryset=Device.objects.all(),
@@ -1149,7 +1172,7 @@ class DeviceBayImportForm(OwnerCSVMixin, NetBoxModelImportForm):
         help_text=_('Child device installed within this bay'),
         error_messages={
             'invalid_choice': _('Child device not found.'),
-        }
+        },
     )
 
     class Meta:
@@ -1177,60 +1200,56 @@ class DeviceBayImportForm(OwnerCSVMixin, NetBoxModelImportForm):
                 rack=device.rack,
                 parent_bay__isnull=True,
                 device_type__u_height=0,
-                device_type__subdevice_role=SubdeviceRoleChoices.ROLE_CHILD
+                device_type__subdevice_role=SubdeviceRoleChoices.ROLE_CHILD,
             ).exclude(pk=device.pk)
         else:
             self.fields['installed_device'].queryset = Device.objects.none()
 
 
 class InventoryItemImportForm(OwnerCSVMixin, NetBoxModelImportForm):
-    device = CSVModelChoiceField(
-        label=_('Device'),
-        queryset=Device.objects.all(),
-        to_field_name='name'
-    )
+    device = CSVModelChoiceField(label=_('Device'), queryset=Device.objects.all(), to_field_name='name')
     role = CSVModelChoiceField(
-        label=_('Role'),
-        queryset=InventoryItemRole.objects.all(),
-        to_field_name='name',
-        required=False
+        label=_('Role'), queryset=InventoryItemRole.objects.all(), to_field_name='name', required=False
     )
     manufacturer = CSVModelChoiceField(
-        label=_('Manufacturer'),
-        queryset=Manufacturer.objects.all(),
-        to_field_name='name',
-        required=False
+        label=_('Manufacturer'), queryset=Manufacturer.objects.all(), to_field_name='name', required=False
     )
     parent = CSVModelChoiceField(
         label=_('Parent'),
         queryset=Device.objects.all(),
         to_field_name='name',
         required=False,
-        help_text=_('Parent inventory item')
+        help_text=_('Parent inventory item'),
     )
     component_type = CSVContentTypeField(
         label=_('Component type'),
         queryset=ContentType.objects.all(),
         limit_choices_to=MODULAR_COMPONENT_MODELS,
         required=False,
-        help_text=_('Component Type')
+        help_text=_('Component Type'),
     )
-    component_name = forms.CharField(
-        label=_('Component name'),
-        required=False,
-        help_text=_('Component Name')
-    )
-    status = CSVChoiceField(
-        label=_('Status'),
-        choices=InventoryItemStatusChoices,
-        help_text=_('Operational status')
-    )
+    component_name = forms.CharField(label=_('Component name'), required=False, help_text=_('Component Name'))
+    status = CSVChoiceField(label=_('Status'), choices=InventoryItemStatusChoices, help_text=_('Operational status'))
 
     class Meta:
         model = InventoryItem
         fields = (
-            'device', 'name', 'label', 'status', 'role', 'manufacturer', 'parent', 'part_id', 'serial', 'asset_tag',
-            'discovered', 'description', 'owner', 'tags', 'component_type', 'component_name',
+            'device',
+            'name',
+            'label',
+            'status',
+            'role',
+            'manufacturer',
+            'parent',
+            'part_id',
+            'serial',
+            'asset_tag',
+            'discovered',
+            'description',
+            'owner',
+            'tags',
+            'component_type',
+            'component_name',
         )
 
     def __init__(self, *args, **kwargs):
@@ -1253,16 +1272,14 @@ class InventoryItemImportForm(OwnerCSVMixin, NetBoxModelImportForm):
         cleaned_data = self.cleaned_data
         component_type = cleaned_data.get('component_type')
         component_name = cleaned_data.get('component_name')
-        device = self.cleaned_data.get("device")
+        device = self.cleaned_data.get('device')
 
         if component_type:
             if device is None:
                 cleaned_data.pop('component_type', None)
             if component_name is None:
                 cleaned_data.pop('component_type', None)
-                raise forms.ValidationError(
-                    _("Component name must be specified when component type is specified")
-                )
+                raise forms.ValidationError(_('Component name must be specified when component type is specified'))
             if all([device, component_name]):
                 try:
                     model = component_type.model_class()
@@ -1271,27 +1288,24 @@ class InventoryItemImportForm(OwnerCSVMixin, NetBoxModelImportForm):
                     cleaned_data.pop('component_type', None)
                     cleaned_data.pop('component_name', None)
                     raise forms.ValidationError(
-                        _("Component not found: {device} - {component_name}").format(
+                        _('Component not found: {device} - {component_name}').format(
                             device=device, component_name=component_name
                         )
                     )
             else:
                 cleaned_data.pop('component_type', None)
                 if not component_name:
-                    raise forms.ValidationError(
-                        _("Component name must be specified when component type is specified")
-                    )
+                    raise forms.ValidationError(_('Component name must be specified when component type is specified'))
         else:
             if component_name:
-                raise forms.ValidationError(
-                    _("Component type must be specified when component name is specified")
-                )
+                raise forms.ValidationError(_('Component type must be specified when component name is specified'))
         return cleaned_data
 
 
 #
 # Device component roles
 #
+
 
 class InventoryItemRoleImportForm(OrganizationalModelImportForm):
     slug = SlugField()
@@ -1305,38 +1319,46 @@ class InventoryItemRoleImportForm(OrganizationalModelImportForm):
 # Addressing
 #
 
+
 class MACAddressImportForm(PrimaryModelImportForm):
     device = CSVModelChoiceField(
         label=_('Device'),
         queryset=Device.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_('Parent device of assigned interface (if any)')
+        help_text=_('Parent device of assigned interface (if any)'),
     )
     virtual_machine = CSVModelChoiceField(
         label=_('Virtual machine'),
         queryset=VirtualMachine.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_('Parent VM of assigned interface (if any)')
+        help_text=_('Parent VM of assigned interface (if any)'),
     )
     interface = CSVModelChoiceField(
         label=_('Interface'),
         queryset=Interface.objects.none(),  # Can also refer to VMInterface
         required=False,
         to_field_name='name',
-        help_text=_('Assigned interface')
+        help_text=_('Assigned interface'),
     )
     is_primary = forms.BooleanField(
         label=_('Is primary'),
         help_text=_('Make this the primary MAC address for the assigned interface'),
-        required=False
+        required=False,
     )
 
     class Meta:
         model = MACAddress
         fields = [
-            'mac_address', 'device', 'virtual_machine', 'interface', 'is_primary', 'description', 'owner', 'comments',
+            'mac_address',
+            'device',
+            'virtual_machine',
+            'interface',
+            'is_primary',
+            'description',
+            'owner',
+            'comments',
             'tags',
         ]
 
@@ -1344,17 +1366,16 @@ class MACAddressImportForm(PrimaryModelImportForm):
         super().__init__(data, *args, **kwargs)
 
         if data:
-
             # Limit interface queryset by assigned device
             if data.get('device'):
                 self.fields['interface'].queryset = Interface.objects.filter(
-                    **{f"device__{self.fields['device'].to_field_name}": data['device']}
+                    **{f'device__{self.fields["device"].to_field_name}': data['device']}
                 )
 
             # Limit interface queryset by assigned device
             elif data.get('virtual_machine'):
                 self.fields['interface'].queryset = VMInterface.objects.filter(
-                    **{f"virtual_machine__{self.fields['virtual_machine'].to_field_name}": data['virtual_machine']}
+                    **{f'virtual_machine__{self.fields["virtual_machine"].to_field_name}': data['virtual_machine']}
                 )
 
     def clean(self):
@@ -1366,12 +1387,11 @@ class MACAddressImportForm(PrimaryModelImportForm):
 
         # Validate interface assignment
         if interface and not device and not virtual_machine:
-            raise forms.ValidationError({
-                "interface": _("Must specify the parent device or VM when assigning an interface")
-            })
+            raise forms.ValidationError(
+                {'interface': _('Must specify the parent device or VM when assigning an interface')}
+            )
 
     def save(self, *args, **kwargs):
-
         # Set interface assignment
         if interface := self.cleaned_data.get('interface'):
             self.instance.assigned_object = interface
@@ -1390,6 +1410,7 @@ class MACAddressImportForm(PrimaryModelImportForm):
 # Cables
 #
 
+
 class CableImportForm(PrimaryModelImportForm):
     # Termination A
     side_a_site = CSVModelChoiceField(
@@ -1400,21 +1421,15 @@ class CableImportForm(PrimaryModelImportForm):
         help_text=_('Site of parent device A (if any)'),
     )
     side_a_device = CSVModelChoiceField(
-        label=_('Side A device'),
-        queryset=Device.objects.all(),
-        to_field_name='name',
-        help_text=_('Device name')
+        label=_('Side A device'), queryset=Device.objects.all(), to_field_name='name', help_text=_('Device name')
     )
     side_a_type = CSVContentTypeField(
         label=_('Side A type'),
         queryset=ContentType.objects.all(),
         limit_choices_to=CABLE_TERMINATION_MODELS,
-        help_text=_('Termination type')
+        help_text=_('Termination type'),
     )
-    side_a_name = forms.CharField(
-        label=_('Side A name'),
-        help_text=_('Termination name')
-    )
+    side_a_name = forms.CharField(label=_('Side A name'), help_text=_('Termination name'))
 
     # Termination B
     side_b_site = CSVModelChoiceField(
@@ -1425,67 +1440,66 @@ class CableImportForm(PrimaryModelImportForm):
         help_text=_('Site of parent device B (if any)'),
     )
     side_b_device = CSVModelChoiceField(
-        label=_('Side B device'),
-        queryset=Device.objects.all(),
-        to_field_name='name',
-        help_text=_('Device name')
+        label=_('Side B device'), queryset=Device.objects.all(), to_field_name='name', help_text=_('Device name')
     )
     side_b_type = CSVContentTypeField(
         label=_('Side B type'),
         queryset=ContentType.objects.all(),
         limit_choices_to=CABLE_TERMINATION_MODELS,
-        help_text=_('Termination type')
+        help_text=_('Termination type'),
     )
-    side_b_name = forms.CharField(
-        label=_('Side B name'),
-        help_text=_('Termination name')
-    )
+    side_b_name = forms.CharField(label=_('Side B name'), help_text=_('Termination name'))
 
     # Cable attributes
     status = CSVChoiceField(
-        label=_('Status'),
-        choices=LinkStatusChoices,
-        required=False,
-        help_text=_('Connection status')
+        label=_('Status'), choices=LinkStatusChoices, required=False, help_text=_('Connection status')
     )
     profile = CSVChoiceField(
-        label=_('Profile'),
-        choices=CableProfileChoices,
-        required=False,
-        help_text=_('Cable connection profile')
+        label=_('Profile'), choices=CableProfileChoices, required=False, help_text=_('Cable connection profile')
     )
     type = CSVChoiceField(
-        label=_('Type'),
-        choices=CableTypeChoices,
-        required=False,
-        help_text=_('Physical medium classification')
+        label=_('Type'), choices=CableTypeChoices, required=False, help_text=_('Physical medium classification')
     )
     tenant = CSVModelChoiceField(
         label=_('Tenant'),
         queryset=Tenant.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_('Assigned tenant')
+        help_text=_('Assigned tenant'),
     )
     length_unit = CSVChoiceField(
-        label=_('Length unit'),
-        choices=CableLengthUnitChoices,
-        required=False,
-        help_text=_('Length unit')
+        label=_('Length unit'), choices=CableLengthUnitChoices, required=False, help_text=_('Length unit')
     )
     color = forms.CharField(
         label=_('Color'),
         required=False,
         max_length=16,
-        help_text=_('Color name (e.g. "Red") or hex code (e.g. "f44336")')
+        help_text=_('Color name (e.g. "Red") or hex code (e.g. "f44336")'),
     )
 
     class Meta:
         model = Cable
         fields = [
-            'side_a_site', 'side_a_device', 'side_a_type', 'side_a_name', 'side_b_site', 'side_b_device', 'side_b_type',
-            'side_b_name', 'type', 'status', 'profile', 'tenant', 'label', 'color', 'length', 'length_unit',
-            'description', 'owner', 'comments', 'tags',
+            'side_a_site',
+            'side_a_device',
+            'side_a_type',
+            'side_a_name',
+            'side_b_site',
+            'side_b_device',
+            'side_b_type',
+            'side_b_name',
+            'type',
+            'status',
+            'profile',
+            'tenant',
+            'label',
+            'color',
+            'length',
+            'length_unit',
+            'description',
+            'owner',
+            'comments',
+            'tags',
         ]
 
     def __init__(self, data=None, *args, **kwargs):
@@ -1512,7 +1526,7 @@ class CableImportForm(PrimaryModelImportForm):
 
         :param side: 'a' or 'b'
         """
-        assert side in 'ab', f"Invalid side designation: {side}"
+        assert side in 'ab', f'Invalid side designation: {side}'
 
         device = self.cleaned_data.get(f'side_{side}_device')
         content_type = self.cleaned_data.get(f'side_{side}_type')
@@ -1522,20 +1536,23 @@ class CableImportForm(PrimaryModelImportForm):
 
         model = content_type.model_class()
         try:
-            if device.virtual_chassis and device.virtual_chassis.master == device and \
-                    model.objects.filter(device=device, name=name).count() == 0:
+            if (
+                device.virtual_chassis
+                and device.virtual_chassis.master == device
+                and model.objects.filter(device=device, name=name).count() == 0
+            ):
                 termination_object = model.objects.get(device__in=device.virtual_chassis.members.all(), name=name)
             else:
                 termination_object = model.objects.get(device=device, name=name)
             if termination_object.cable is not None and termination_object.cable != self.instance:
                 raise forms.ValidationError(
-                    _("Side {side_upper}: {device} {termination_object} is already connected").format(
+                    _('Side {side_upper}: {device} {termination_object} is already connected').format(
                         side_upper=side.upper(), device=device, termination_object=termination_object
                     )
                 )
         except ObjectDoesNotExist:
             raise forms.ValidationError(
-                _("{side_upper} side termination not found: {device} {name}").format(
+                _('{side_upper} side termination not found: {device} {name}').format(
                     side_upper=side.upper(), device=device, name=name
                 )
             )
@@ -1556,7 +1573,7 @@ class CableImportForm(PrimaryModelImportForm):
 
         if len(color_parsed) > 6:
             raise forms.ValidationError(
-                _(f"{color} did not match any used color name and was longer than six characters: invalid hex.")
+                _(f'{color} did not match any used color name and was longer than six characters: invalid hex.')
             )
         return color_parsed
 
@@ -1574,6 +1591,8 @@ class CableImportForm(PrimaryModelImportForm):
     def clean_color(self):
         color = self.cleaned_data.get('color', None)
         return self._clean_color(color) if color is not None else ''
+
+
 #
 # Virtual chassis
 #
@@ -1585,7 +1604,7 @@ class VirtualChassisImportForm(PrimaryModelImportForm):
         queryset=Device.objects.all(),
         to_field_name='name',
         required=False,
-        help_text=_('Master device')
+        help_text=_('Master device'),
     )
 
     class Meta:
@@ -1597,18 +1616,13 @@ class VirtualChassisImportForm(PrimaryModelImportForm):
 # Power
 #
 
+
 class PowerPanelImportForm(PrimaryModelImportForm):
     site = CSVModelChoiceField(
-        label=_('Site'),
-        queryset=Site.objects.all(),
-        to_field_name='name',
-        help_text=_('Name of parent site')
+        label=_('Site'), queryset=Site.objects.all(), to_field_name='name', help_text=_('Name of parent site')
     )
     location = CSVModelChoiceField(
-        label=_('Location'),
-        queryset=Location.objects.all(),
-        required=False,
-        to_field_name='name'
+        label=_('Location'), queryset=Location.objects.all(), required=False, to_field_name='name'
     )
 
     class Meta:
@@ -1619,107 +1633,92 @@ class PowerPanelImportForm(PrimaryModelImportForm):
         super().__init__(data, *args, **kwargs)
 
         if data:
-
             # Limit group queryset by assigned site
-            params = {f"site__{self.fields['site'].to_field_name}": data.get('site')}
+            params = {f'site__{self.fields["site"].to_field_name}': data.get('site')}
             self.fields['location'].queryset = self.fields['location'].queryset.filter(**params)
 
 
 class PowerFeedImportForm(PrimaryModelImportForm):
     site = CSVModelChoiceField(
-        label=_('Site'),
-        queryset=Site.objects.all(),
-        to_field_name='name',
-        help_text=_('Assigned site')
+        label=_('Site'), queryset=Site.objects.all(), to_field_name='name', help_text=_('Assigned site')
     )
     power_panel = CSVModelChoiceField(
         label=_('Power panel'),
         queryset=PowerPanel.objects.all(),
         to_field_name='name',
-        help_text=_('Upstream power panel')
+        help_text=_('Upstream power panel'),
     )
     location = CSVModelChoiceField(
         label=_('Location'),
         queryset=Location.objects.all(),
         to_field_name='name',
         required=False,
-        help_text=_("Rack's location (if any)")
+        help_text=_("Rack's location (if any)"),
     )
     rack = CSVModelChoiceField(
-        label=_('Rack'),
-        queryset=Rack.objects.all(),
-        to_field_name='name',
-        required=False,
-        help_text=_('Rack')
+        label=_('Rack'), queryset=Rack.objects.all(), to_field_name='name', required=False, help_text=_('Rack')
     )
     tenant = CSVModelChoiceField(
-        queryset=Tenant.objects.all(),
-        to_field_name='name',
-        required=False,
-        help_text=_('Assigned tenant')
+        queryset=Tenant.objects.all(), to_field_name='name', required=False, help_text=_('Assigned tenant')
     )
-    status = CSVChoiceField(
-        label=_('Status'),
-        choices=PowerFeedStatusChoices,
-        help_text=_('Operational status')
-    )
-    type = CSVChoiceField(
-        label=_('Type'),
-        choices=PowerFeedTypeChoices,
-        help_text=_('Primary or redundant')
-    )
-    supply = CSVChoiceField(
-        label=_('Supply'),
-        choices=PowerFeedSupplyChoices,
-        help_text=_('Supply type (AC/DC)')
-    )
-    phase = CSVChoiceField(
-        label=_('Phase'),
-        choices=PowerFeedPhaseChoices,
-        help_text=_('Single or three-phase')
-    )
+    status = CSVChoiceField(label=_('Status'), choices=PowerFeedStatusChoices, help_text=_('Operational status'))
+    type = CSVChoiceField(label=_('Type'), choices=PowerFeedTypeChoices, help_text=_('Primary or redundant'))
+    supply = CSVChoiceField(label=_('Supply'), choices=PowerFeedSupplyChoices, help_text=_('Supply type (AC/DC)'))
+    phase = CSVChoiceField(label=_('Phase'), choices=PowerFeedPhaseChoices, help_text=_('Single or three-phase'))
 
     class Meta:
         model = PowerFeed
         fields = (
-            'site', 'power_panel', 'location', 'rack', 'name', 'status', 'type', 'mark_connected', 'supply', 'phase',
-            'voltage', 'amperage', 'max_utilization', 'tenant', 'description', 'owner', 'comments', 'tags',
+            'site',
+            'power_panel',
+            'location',
+            'rack',
+            'name',
+            'status',
+            'type',
+            'mark_connected',
+            'supply',
+            'phase',
+            'voltage',
+            'amperage',
+            'max_utilization',
+            'tenant',
+            'description',
+            'owner',
+            'comments',
+            'tags',
         )
 
     def __init__(self, data=None, *args, **kwargs):
         super().__init__(data, *args, **kwargs)
 
         if data:
-
             # Limit power_panel queryset by site
-            params = {f"site__{self.fields['site'].to_field_name}": data.get('site')}
+            params = {f'site__{self.fields["site"].to_field_name}': data.get('site')}
             self.fields['power_panel'].queryset = self.fields['power_panel'].queryset.filter(**params)
 
             # Limit location queryset by site
-            params = {f"site__{self.fields['site'].to_field_name}": data.get('site')}
+            params = {f'site__{self.fields["site"].to_field_name}': data.get('site')}
             self.fields['location'].queryset = self.fields['location'].queryset.filter(**params)
 
             # Limit rack queryset by site and group
             params = {
-                f"site__{self.fields['site'].to_field_name}": data.get('site'),
-                f"location__{self.fields['location'].to_field_name}": data.get('location'),
+                f'site__{self.fields["site"].to_field_name}': data.get('site'),
+                f'location__{self.fields["location"].to_field_name}': data.get('location'),
             }
             self.fields['rack'].queryset = self.fields['rack'].queryset.filter(**params)
 
 
 class VirtualDeviceContextImportForm(PrimaryModelImportForm):
     device = CSVModelChoiceField(
-        label=_('Device'),
-        queryset=Device.objects.all(),
-        to_field_name='name',
-        help_text=_('Assigned role')
+        label=_('Device'), queryset=Device.objects.all(), to_field_name='name', help_text=_('Assigned role')
     )
     tenant = CSVModelChoiceField(
         label=_('Tenant'),
         queryset=Tenant.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_('Assigned tenant')
+        help_text=_('Assigned tenant'),
     )
     status = CSVChoiceField(
         label=_('Status'),
@@ -1730,19 +1729,27 @@ class VirtualDeviceContextImportForm(PrimaryModelImportForm):
         queryset=IPAddress.objects.all(),
         required=False,
         to_field_name='address',
-        help_text=_('IPv4 address with mask, e.g. 1.2.3.4/24')
+        help_text=_('IPv4 address with mask, e.g. 1.2.3.4/24'),
     )
     primary_ip6 = CSVModelChoiceField(
         label=_('Primary IPv6'),
         queryset=IPAddress.objects.all(),
         required=False,
         to_field_name='address',
-        help_text=_('IPv6 address with prefix length, e.g. 2001:db8::1/64')
+        help_text=_('IPv6 address with prefix length, e.g. 2001:db8::1/64'),
     )
 
     class Meta:
         fields = [
-            'name', 'device', 'status', 'tenant', 'identifier', 'owner', 'comments', 'primary_ip4', 'primary_ip6',
+            'name',
+            'device',
+            'status',
+            'tenant',
+            'identifier',
+            'owner',
+            'comments',
+            'primary_ip4',
+            'primary_ip6',
         ]
         model = VirtualDeviceContext
 
@@ -1750,8 +1757,7 @@ class VirtualDeviceContextImportForm(PrimaryModelImportForm):
         super().__init__(data, *args, **kwargs)
 
         if data:
-
             # Limit primary_ip4/ip6 querysets by assigned device
-            params = {f"interface__device__{self.fields['device'].to_field_name}": data.get('device')}
+            params = {f'interface__device__{self.fields["device"].to_field_name}': data.get('device')}
             self.fields['primary_ip4'].queryset = self.fields['primary_ip4'].queryset.filter(**params)
             self.fields['primary_ip6'].queryset = self.fields['primary_ip6'].queryset.filter(**params)

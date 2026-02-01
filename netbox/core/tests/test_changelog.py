@@ -7,7 +7,16 @@ from core.choices import ObjectChangeActionChoices
 from core.models import ObjectChange, ObjectType
 from dcim.choices import InterfaceTypeChoices, ModuleStatusChoices, SiteStatusChoices
 from dcim.models import (
-    Cable, CableTermination, Device, DeviceRole, DeviceType, Manufacturer, Module, ModuleBay, ModuleType, Interface,
+    Cable,
+    CableTermination,
+    Device,
+    DeviceRole,
+    DeviceType,
+    Manufacturer,
+    Module,
+    ModuleBay,
+    ModuleType,
+    Interface,
     Site,
 )
 from extras.choices import *
@@ -23,26 +32,18 @@ class ChangeLogViewTest(ModelViewTestCase):
     @classmethod
     def setUpTestData(cls):
         choice_set = CustomFieldChoiceSet.objects.create(
-            name='Choice Set 1',
-            extra_choices=(('foo', 'Foo'), ('bar', 'Bar'))
+            name='Choice Set 1', extra_choices=(('foo', 'Foo'), ('bar', 'Bar'))
         )
 
         # Create a custom field on the Site model
         site_type = ObjectType.objects.get_for_model(Site)
-        cf = CustomField(
-            type=CustomFieldTypeChoices.TYPE_TEXT,
-            name='cf1',
-            required=False
-        )
+        cf = CustomField(type=CustomFieldTypeChoices.TYPE_TEXT, name='cf1', required=False)
         cf.save()
         cf.object_types.set([site_type])
 
         # Create a select custom field on the Site model
         cf_select = CustomField(
-            type=CustomFieldTypeChoices.TYPE_SELECT,
-            name='cf2',
-            required=False,
-            choice_set=choice_set
+            type=CustomFieldTypeChoices.TYPE_SELECT, name='cf2', required=False, choice_set=choice_set
         )
         cf_select.save()
         cf_select.object_types.set([site_type])
@@ -69,8 +70,7 @@ class ChangeLogViewTest(ModelViewTestCase):
         # Verify the creation of a new ObjectChange record
         site = Site.objects.get(name='Site 1')
         oc = ObjectChange.objects.get(
-            changed_object_type=ContentType.objects.get_for_model(Site),
-            changed_object_id=site.pk
+            changed_object_type=ContentType.objects.get_for_model(Site), changed_object_id=site.pk
         )
         self.assertEqual(oc.changed_object, site)
         self.assertEqual(oc.action, ObjectChangeActionChoices.ACTION_CREATE)
@@ -105,8 +105,7 @@ class ChangeLogViewTest(ModelViewTestCase):
         # Verify the creation of a new ObjectChange record
         site.refresh_from_db()
         oc = ObjectChange.objects.filter(
-            changed_object_type=ContentType.objects.get_for_model(Site),
-            changed_object_id=site.pk
+            changed_object_type=ContentType.objects.get_for_model(Site), changed_object_id=site.pk
         ).first()
         self.assertEqual(oc.changed_object, site)
         self.assertEqual(oc.action, ObjectChangeActionChoices.ACTION_UPDATE)
@@ -117,14 +116,7 @@ class ChangeLogViewTest(ModelViewTestCase):
         self.assertEqual(oc.postchange_data['tags'], ['Tag 3'])
 
     def test_delete_object(self):
-        site = Site(
-            name='Site 1',
-            slug='site-1',
-            custom_field_data={
-                'cf1': 'ABC',
-                'cf2': 'Bar'
-            }
-        )
+        site = Site(name='Site 1', slug='site-1', custom_field_data={'cf1': 'ABC', 'cf2': 'Bar'})
         site.save()
         create_tags('Tag 1', 'Tag 2')
         site.tags.set(['Tag 1', 'Tag 2'])
@@ -170,8 +162,7 @@ class ChangeLogViewTest(ModelViewTestCase):
         self.assertHttpStatus(response, 302)
 
         objectchange = ObjectChange.objects.get(
-            changed_object_type=ContentType.objects.get_for_model(Site),
-            changed_object_id=sites[0].pk
+            changed_object_type=ContentType.objects.get_for_model(Site), changed_object_id=sites[0].pk
         )
         self.assertEqual(objectchange.changed_object, sites[0])
         self.assertEqual(objectchange.action, ObjectChangeActionChoices.ACTION_UPDATE)
@@ -203,8 +194,7 @@ class ChangeLogViewTest(ModelViewTestCase):
         self.assertHttpStatus(response, 302)
 
         objectchange = ObjectChange.objects.get(
-            changed_object_type=ContentType.objects.get_for_model(Site),
-            changed_object_id=sites[0].pk
+            changed_object_type=ContentType.objects.get_for_model(Site), changed_object_id=sites[0].pk
         )
         self.assertEqual(objectchange.changed_object_type, ContentType.objects.get_for_model(Site))
         self.assertEqual(objectchange.changed_object_id, sites[0].pk)
@@ -220,10 +210,7 @@ class ChangeLogViewTest(ModelViewTestCase):
             name='Site 1',
             slug='site-1',
             status=SiteStatusChoices.STATUS_PLANNED,
-            custom_field_data={
-                'cf1': None,
-                'cf2': None
-            }
+            custom_field_data={'cf1': None, 'cf2': None},
         )
 
         # Update it with the same field values
@@ -250,10 +237,7 @@ class ChangeLogViewTest(ModelViewTestCase):
             name='Site 1',
             slug='site-1',
             status=SiteStatusChoices.STATUS_PLANNED,
-            custom_field_data={
-                'cf1': None,
-                'cf2': None
-            }
+            custom_field_data={'cf1': None, 'cf2': None},
         )
 
         # Update it with the same field values
@@ -276,52 +260,20 @@ class ChangeLogViewTest(ModelViewTestCase):
     def test_ordering_genericrelation(self):
         # Create required objects first
         manufacturer = Manufacturer.objects.create(name='Manufacturer 1')
-        device_type = DeviceType.objects.create(
-            manufacturer=manufacturer,
-            model='Model 1',
-            slug='model-1'
-        )
-        device_role = DeviceRole.objects.create(
-            name='Role 1',
-            slug='role-1'
-        )
-        site = Site.objects.create(
-            name='Site 1',
-            slug='site-1'
-        )
+        device_type = DeviceType.objects.create(manufacturer=manufacturer, model='Model 1', slug='model-1')
+        device_role = DeviceRole.objects.create(name='Role 1', slug='role-1')
+        site = Site.objects.create(name='Site 1', slug='site-1')
 
         # Create two devices
-        device1 = Device.objects.create(
-            name='Device 1',
-            device_type=device_type,
-            role=device_role,
-            site=site
-        )
-        device2 = Device.objects.create(
-            name='Device 2',
-            device_type=device_type,
-            role=device_role,
-            site=site
-        )
+        device1 = Device.objects.create(name='Device 1', device_type=device_type, role=device_role, site=site)
+        device2 = Device.objects.create(name='Device 2', device_type=device_type, role=device_role, site=site)
 
         # Create interfaces on both devices
-        interface1 = Interface.objects.create(
-            device=device1,
-            name='eth0',
-            type='1000base-t'
-        )
-        interface2 = Interface.objects.create(
-            device=device2,
-            name='eth0',
-            type='1000base-t'
-        )
+        interface1 = Interface.objects.create(device=device1, name='eth0', type='1000base-t')
+        interface2 = Interface.objects.create(device=device2, name='eth0', type='1000base-t')
 
         # Create a cable between the interfaces
-        _ = Cable.objects.create(
-            a_terminations=[interface1],
-            b_terminations=[interface2],
-            status='connected'
-        )
+        _ = Cable.objects.create(a_terminations=[interface1], b_terminations=[interface2], status='connected')
 
         # Delete device1
         request = {
@@ -329,18 +281,13 @@ class ChangeLogViewTest(ModelViewTestCase):
             'data': post_data({'confirm': True}),
         }
         self.add_permissions(
-            'dcim.delete_device',
-            'dcim.delete_interface',
-            'dcim.delete_cable',
-            'dcim.delete_cabletermination'
+            'dcim.delete_device', 'dcim.delete_interface', 'dcim.delete_cable', 'dcim.delete_cabletermination'
         )
         response = self.client.post(**request)
         self.assertHttpStatus(response, 302)
 
         # Get the ObjectChange records for delete actions ordered by time
-        changes = ObjectChange.objects.filter(
-            action=ObjectChangeActionChoices.ACTION_DELETE
-        ).order_by('time')[:3]
+        changes = ObjectChange.objects.filter(action=ObjectChangeActionChoices.ACTION_DELETE).order_by('time')[:3]
 
         # Verify the order of deletion
         self.assertEqual(len(changes), 3)
@@ -376,36 +323,26 @@ class ChangeLogViewTest(ModelViewTestCase):
         objectchanges = ObjectChange.objects.filter(
             changed_object_type=ContentType.objects.get_for_model(DeviceRole),
             changed_object_id__in=pk_list,
-            action=ObjectChangeActionChoices.ACTION_DELETE
+            action=ObjectChangeActionChoices.ACTION_DELETE,
         )
         self.assertEqual(objectchanges.count(), 2)
 
 
 class ChangeLogAPITest(APITestCase):
-
     @classmethod
     def setUpTestData(cls):
-
         # Create a custom field on the Site model
         site_type = ObjectType.objects.get_for_model(Site)
-        cf = CustomField(
-            type=CustomFieldTypeChoices.TYPE_TEXT,
-            name='cf1',
-            required=False
-        )
+        cf = CustomField(type=CustomFieldTypeChoices.TYPE_TEXT, name='cf1', required=False)
         cf.save()
         cf.object_types.set([site_type])
 
         # Create a select custom field on the Site model
         choice_set = CustomFieldChoiceSet.objects.create(
-            name='Choice Set 1',
-            extra_choices=(('foo', 'Foo'), ('bar', 'Bar'))
+            name='Choice Set 1', extra_choices=(('foo', 'Foo'), ('bar', 'Bar'))
         )
         cf_select = CustomField(
-            type=CustomFieldTypeChoices.TYPE_SELECT,
-            name='cf2',
-            required=False,
-            choice_set=choice_set
+            type=CustomFieldTypeChoices.TYPE_SELECT, name='cf2', required=False, choice_set=choice_set
         )
         cf_select.save()
         cf_select.object_types.set([site_type])
@@ -429,7 +366,7 @@ class ChangeLogAPITest(APITestCase):
             'tags': [
                 {'name': 'Tag 1'},
                 {'name': 'Tag 2'},
-            ]
+            ],
         }
         self.assertEqual(ObjectChange.objects.count(), 0)
         url = reverse('dcim-api:site-list')
@@ -440,8 +377,7 @@ class ChangeLogAPITest(APITestCase):
 
         site = Site.objects.get(pk=response.data['id'])
         oc = ObjectChange.objects.get(
-            changed_object_type=ContentType.objects.get_for_model(Site),
-            changed_object_id=site.pk
+            changed_object_type=ContentType.objects.get_for_model(Site), changed_object_id=site.pk
         )
         self.assertEqual(oc.changed_object, site)
         self.assertEqual(oc.action, ObjectChangeActionChoices.ACTION_CREATE)
@@ -460,9 +396,7 @@ class ChangeLogAPITest(APITestCase):
                 'cf1': 'DEF',
                 'cf2': 'foo',
             },
-            'tags': [
-                {'name': 'Tag 3'}
-            ]
+            'tags': [{'name': 'Tag 3'}],
         }
         self.assertEqual(ObjectChange.objects.count(), 0)
         self.add_permissions('dcim.change_site')
@@ -473,8 +407,7 @@ class ChangeLogAPITest(APITestCase):
 
         site = Site.objects.get(pk=response.data['id'])
         oc = ObjectChange.objects.get(
-            changed_object_type=ContentType.objects.get_for_model(Site),
-            changed_object_id=site.pk
+            changed_object_type=ContentType.objects.get_for_model(Site), changed_object_id=site.pk
         )
         self.assertEqual(oc.changed_object, site)
         self.assertEqual(oc.action, ObjectChangeActionChoices.ACTION_UPDATE)
@@ -482,14 +415,7 @@ class ChangeLogAPITest(APITestCase):
         self.assertEqual(oc.postchange_data['tags'], ['Tag 3'])
 
     def test_delete_object(self):
-        site = Site(
-            name='Site 1',
-            slug='site-1',
-            custom_field_data={
-                'cf1': 'ABC',
-                'cf2': 'Bar'
-            }
-        )
+        site = Site(name='Site 1', slug='site-1', custom_field_data={'cf1': 'ABC', 'cf2': 'Bar'})
         site.save()
         site.tags.set(Tag.objects.all()[:2])
         self.assertEqual(ObjectChange.objects.count(), 0)
@@ -534,8 +460,7 @@ class ChangeLogAPITest(APITestCase):
 
         site1 = Site.objects.get(pk=response.data[0]['id'])
         objectchange = ObjectChange.objects.get(
-            changed_object_type=ContentType.objects.get_for_model(Site),
-            changed_object_id=site1.pk
+            changed_object_type=ContentType.objects.get_for_model(Site), changed_object_id=site1.pk
         )
         self.assertEqual(objectchange.changed_object, site1)
         self.assertEqual(objectchange.action, ObjectChangeActionChoices.ACTION_CREATE)
@@ -577,8 +502,7 @@ class ChangeLogAPITest(APITestCase):
         self.assertEqual(ObjectChange.objects.count(), 3)
 
         objectchange = ObjectChange.objects.get(
-            changed_object_type=ContentType.objects.get_for_model(Site),
-            changed_object_id=sites[0].pk
+            changed_object_type=ContentType.objects.get_for_model(Site), changed_object_id=sites[0].pk
         )
         self.assertEqual(objectchange.changed_object, sites[0])
         self.assertEqual(objectchange.action, ObjectChangeActionChoices.ACTION_UPDATE)
@@ -615,8 +539,7 @@ class ChangeLogAPITest(APITestCase):
         self.assertEqual(ObjectChange.objects.count(), 3)
 
         objectchange = ObjectChange.objects.get(
-            changed_object_type=ContentType.objects.get_for_model(Site),
-            changed_object_id=sites[0].pk
+            changed_object_type=ContentType.objects.get_for_model(Site), changed_object_id=sites[0].pk
         )
         self.assertEqual(objectchange.changed_object_type, ContentType.objects.get_for_model(Site))
         self.assertEqual(objectchange.changed_object_id, sites[0].pk)

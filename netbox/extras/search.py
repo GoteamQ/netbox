@@ -39,9 +39,7 @@ class ImageAttachmentIndex(SearchIndex):
 @register_search
 class JournalEntryIndex(SearchIndex):
     model = models.JournalEntry
-    fields = (
-        ('comments', 5000),
-    )
+    fields = (('comments', 5000),)
     category = 'Journal'
     display_attrs = ('kind', 'created_by')
 

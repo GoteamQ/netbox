@@ -77,18 +77,9 @@ class CSVImportTestCase(ModelViewTestCase):
         self.assertHttpStatus(self.client.post(self._get_url('bulk_import'), data), 302)
         regions = Region.objects.all()
         self.assertEqual(regions.count(), 4)
-        self.assertEqual(
-            list(regions[0].tags.values_list('name', flat=True)),
-            ['Alpha', 'Bravo']
-        )
-        self.assertEqual(
-            list(regions[1].tags.values_list('name', flat=True)),
-            ['Charlie', 'Delta']
-        )
-        self.assertEqual(
-            list(regions[2].tags.values_list('name', flat=True)),
-            ['Echo']
-        )
+        self.assertEqual(list(regions[0].tags.values_list('name', flat=True)), ['Alpha', 'Bravo'])
+        self.assertEqual(list(regions[1].tags.values_list('name', flat=True)), ['Charlie', 'Delta'])
+        self.assertEqual(list(regions[2].tags.values_list('name', flat=True)), ['Echo'])
         self.assertEqual(regions[3].tags.count(), 0)
 
     @override_settings(EXEMPT_VIEW_PERMISSIONS=['*'])
@@ -130,12 +121,7 @@ class CSVImportTestCase(ModelViewTestCase):
             'csv_delimiter': CSVDelimiterChoices.AUTO,
         }
 
-        cf = CustomField.objects.create(
-            name='tcf',
-            type='text',
-            required=False,
-            default='def-cf-text'
-        )
+        cf = CustomField.objects.create(name='tcf', type='text', required=False, default='def-cf-text')
         cf.object_types.set([ObjectType.objects.get_for_model(self.model)])
 
         self.assertHttpStatus(self.client.post(self._get_url('bulk_import'), data), 302)

@@ -22,11 +22,13 @@ __all__ = (
 # Fake request object
 #
 
+
 class NetBoxFakeRequest:
     """
     A fake request object which is explicitly defined at the module level so it is able to be pickled. It simply
     takes what is passed to it as kwargs on init and sets them as instance variables.
     """
+
     def __init__(self, _dict):
         self.__dict__ = _dict
 
@@ -34,6 +36,7 @@ class NetBoxFakeRequest:
 #
 # Utility functions
 #
+
 
 def copy_safe_request(request, include_files=True):
     """
@@ -69,12 +72,7 @@ def get_client_ip(request, additional_headers=()):
     """
     Return the client (source) IP address of the given request.
     """
-    HTTP_HEADERS = (
-        'HTTP_X_REAL_IP',
-        'HTTP_X_FORWARDED_FOR',
-        'REMOTE_ADDR',
-        *additional_headers
-    )
+    HTTP_HEADERS = ('HTTP_X_REAL_IP', 'HTTP_X_FORWARDED_FOR', 'REMOTE_ADDR', *additional_headers)
     for header in HTTP_HEADERS:
         if header in request.META:
             ip = request.META[header].split(',')[0].strip()
@@ -88,7 +86,7 @@ def get_client_ip(request, additional_headers=()):
                 return IPAddress(ip)
             except AddrFormatError:
                 # We did our best
-                raise ValueError(_("Invalid IP address set for {header}: {ip}").format(header=header, ip=ip))
+                raise ValueError(_('Invalid IP address set for {header}: {ip}').format(header=header, ip=ip))
 
     # Could not determine the client IP address from request headers
     return None

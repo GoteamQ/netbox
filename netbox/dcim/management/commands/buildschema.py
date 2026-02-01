@@ -31,14 +31,10 @@ CHOICES_MAP = {
 
 
 class Command(BaseCommand):
-    help = "Generate JSON schema for validating NetBox device type definitions"
+    help = 'Generate JSON schema for validating NetBox device type definitions'
 
     def add_arguments(self, parser):
-        parser.add_argument(
-            '--write',
-            action='store_true',
-            help="Write the generated schema to file"
-        )
+        parser.add_argument('--write', action='store_true', help='Write the generated schema to file')
 
     def handle(self, *args, **kwargs):
         # Initialize template
@@ -47,10 +43,7 @@ class Command(BaseCommand):
         template = template_env.get_template(TEMPLATE_FILENAME)
 
         # Render template
-        context = {
-            key: json.dumps(choices.values())
-            for key, choices in CHOICES_MAP.items()
-        }
+        context = {key: json.dumps(choices.values()) for key, choices in CHOICES_MAP.items()}
         rendered = template.render(**context)
 
         if kwargs['write']:
@@ -60,6 +53,6 @@ class Command(BaseCommand):
                 f.write(json.dumps(json.loads(rendered), indent=4))
                 f.write('\n')
                 f.close()
-            self.stdout.write(self.style.SUCCESS(f"Schema written to {filename}."))
+            self.stdout.write(self.style.SUCCESS(f'Schema written to {filename}.'))
         else:
             self.stdout.write(rendered)

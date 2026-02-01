@@ -102,7 +102,7 @@ FORM_FIELD_LOOKUPS = {
 class BackgroundJobMixin(forms.Form):
     background_job = forms.BooleanField(
         label=_('Background job'),
-        help_text=_("Execute this task via a background job"),
+        help_text=_('Execute this task via a background job'),
         required=False,
     )
 
@@ -125,11 +125,8 @@ class CheckLastUpdatedMixin(forms.Form):
     This validation does not apply to newly created objects, or if the `_init_time` field is not present in the form
     data.
     """
-    _init_time = forms.DecimalField(
-        initial=time.time,
-        required=False,
-        widget=forms.HiddenInput()
-    )
+
+    _init_time = forms.DecimalField(initial=time.time, required=False, widget=forms.HiddenInput())
 
     def clean(self):
         super().clean()
@@ -148,10 +145,12 @@ class CheckLastUpdatedMixin(forms.Form):
 
         # Check that the submitted initialization time is not earlier than the object's modification time
         if form_init_time < last_updated.timestamp():
-            raise forms.ValidationError(_(
-                "This object has been modified since the form was rendered. Please consult the object's change "
-                "log for details."
-            ))
+            raise forms.ValidationError(
+                _(
+                    "This object has been modified since the form was rendered. Please consult the object's change "
+                    'log for details.'
+                )
+            )
 
 
 class DistanceValidationMixin(forms.Form):
@@ -160,7 +159,7 @@ class DistanceValidationMixin(forms.Form):
         validators=[
             MinValueValidator(Decimal(0)),
             MaxValueValidator(Decimal(100000)),
-        ]
+        ],
     )
 
 
@@ -197,10 +196,7 @@ class FilterModifierMixin:
                 lookups = self._verify_lookups_with_filterset(field_name, lookups, filterset)
 
                 if len(lookups) > 1:
-                    field.widget = FilterModifierWidget(
-                        widget=field.widget,
-                        lookups=lookups
-                    )
+                    field.widget = FilterModifierWidget(widget=field.widget, lookups=lookups)
 
     def _get_lookup_choices(self, field):
         """Determine the available lookup choices for a given field.

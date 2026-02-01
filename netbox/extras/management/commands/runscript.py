@@ -12,19 +12,20 @@ from utilities.request import NetBoxFakeRequest
 
 
 class Command(BaseCommand):
-    help = "Run a script in NetBox"
+    help = 'Run a script in NetBox'
 
     def add_arguments(self, parser):
         parser.add_argument(
             '--loglevel',
-            help="Logging Level (default: info)",
+            help='Logging Level (default: info)',
             dest='loglevel',
             default='info',
-            choices=['debug', 'info', 'warning', 'error', 'critical'])
-        parser.add_argument('--commit', help="Commit this script to database", action='store_true')
-        parser.add_argument('--user', help="User script is running as")
-        parser.add_argument('--data', help="Data as a string encapsulated JSON blob")
-        parser.add_argument('script', help="Script to run")
+            choices=['debug', 'info', 'warning', 'error', 'critical'],
+        )
+        parser.add_argument('--commit', help='Commit this script to database', action='store_true')
+        parser.add_argument('--user', help='User script is running as')
+        parser.add_argument('--data', help='Data as a string encapsulated JSON blob')
+        parser.add_argument('script', help='Script to run')
 
     def handle(self, *args, **options):
         # Params
@@ -56,20 +57,22 @@ class Command(BaseCommand):
         stdouthandler.setLevel(logging.DEBUG)
         stdouthandler.setFormatter(formatter)
 
-        logger = logging.getLogger(f"netbox.scripts.{script.full_name}")
+        logger = logging.getLogger(f'netbox.scripts.{script.full_name}')
         logger.addHandler(stdouthandler)
 
         try:
-            logger.setLevel({
-                'critical': logging.CRITICAL,
-                'debug': logging.DEBUG,
-                'error': logging.ERROR,
-                'fatal': logging.FATAL,
-                'info': logging.INFO,
-                'warning': logging.WARNING,
-            }[loglevel])
+            logger.setLevel(
+                {
+                    'critical': logging.CRITICAL,
+                    'debug': logging.DEBUG,
+                    'error': logging.ERROR,
+                    'fatal': logging.FATAL,
+                    'info': logging.INFO,
+                    'warning': logging.WARNING,
+                }[loglevel]
+            )
         except KeyError:
-            raise CommandError(f"Invalid log level: {loglevel}")
+            raise CommandError(f'Invalid log level: {loglevel}')
 
         # Initialize the script form
         script = script()
@@ -92,16 +95,10 @@ class Command(BaseCommand):
             user=user,
             immediate=True,
             data=form.cleaned_data,
-            request=NetBoxFakeRequest({
-                'META': {},
-                'POST': data,
-                'GET': {},
-                'FILES': {},
-                'user': user,
-                'path': '',
-                'id': uuid.uuid4()
-            }),
+            request=NetBoxFakeRequest(
+                {'META': {}, 'POST': data, 'GET': {}, 'FILES': {}, 'user': user, 'path': '', 'id': uuid.uuid4()}
+            ),
             commit=commit,
         )
 
-        logger.info(f"Script completed in {job.duration}")
+        logger.info(f'Script completed in {job.duration}')

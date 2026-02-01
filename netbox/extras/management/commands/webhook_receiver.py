@@ -12,7 +12,6 @@ class WebhookHandler(BaseHTTPRequestHandler):
     show_headers = True
 
     def __getattr__(self, item):
-
         # Return the same method for any type of HTTP request (GET, POST, etc.)
         if item.startswith('do_'):
             return self.do_ANY
@@ -22,12 +21,9 @@ class WebhookHandler(BaseHTTPRequestHandler):
     def log_message(self, format_str, *args):
         global request_counter
 
-        print("[{}] {} {} {}".format(
-            request_counter,
-            self.date_time_string(),
-            self.address_string(),
-            format_str % args
-        ))
+        print(
+            '[{}] {} {} {}'.format(request_counter, self.date_time_string(), self.address_string(), format_str % args)
+        )
 
     def do_ANY(self):
         global request_counter
@@ -60,19 +56,18 @@ class WebhookHandler(BaseHTTPRequestHandler):
 
 
 class Command(BaseCommand):
-    help = "Start a simple listener to display received HTTP requests"
+    help = 'Start a simple listener to display received HTTP requests'
 
     default_port = 9000
 
     def add_arguments(self, parser):
         parser.add_argument(
-            '--port', type=int, default=self.default_port,
-            help="Optional port number (default: {})".format(self.default_port)
+            '--port',
+            type=int,
+            default=self.default_port,
+            help='Optional port number (default: {})'.format(self.default_port),
         )
-        parser.add_argument(
-            "--no-headers", action='store_true', dest='no_headers',
-            help="Hide HTTP request headers"
-        )
+        parser.add_argument('--no-headers', action='store_true', dest='no_headers', help='Hide HTTP request headers')
 
     def handle(self, *args, **options):
         port = options['port']
@@ -86,4 +81,4 @@ class Command(BaseCommand):
         try:
             httpd.serve_forever()
         except KeyboardInterrupt:
-            self.stdout.write("\nExiting...")
+            self.stdout.write('\nExiting...')

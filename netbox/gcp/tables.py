@@ -2,16 +2,45 @@ import django_tables2 as tables
 
 from netbox.tables import NetBoxTable, columns
 from .models import (
-    GCPOrganization, DiscoveryLog,
-    GCPProject, ComputeInstance, InstanceTemplate, InstanceGroup,
-    VPCNetwork, Subnet, FirewallRule, CloudRouter, CloudNAT, LoadBalancer,
-    CloudSQLInstance, CloudSpannerInstance, FirestoreDatabase, BigtableInstance,
-    CloudStorageBucket, PersistentDisk,
-    GKECluster, GKENodePool,
-    ServiceAccount, IAMRole, IAMBinding,
-    CloudFunction, CloudRun, PubSubTopic, PubSubSubscription,
-    SecretManagerSecret, CloudDNSZone, CloudDNSRecord, MemorystoreInstance,
-    InterconnectAttachment, VPNTunnel, NCCHub, NCCSpoke, ServiceAttachment, ServiceConnectEndpoint
+    GCPOrganization,
+    DiscoveryLog,
+    GCPProject,
+    ComputeInstance,
+    InstanceTemplate,
+    InstanceGroup,
+    VPCNetwork,
+    Subnet,
+    FirewallRule,
+    CloudRouter,
+    CloudNAT,
+    LoadBalancer,
+    CloudSQLInstance,
+    CloudSpannerInstance,
+    FirestoreDatabase,
+    BigtableInstance,
+    CloudStorageBucket,
+    PersistentDisk,
+    GKECluster,
+    GKENodePool,
+    ServiceAccount,
+    IAMRole,
+    IAMBinding,
+    CloudFunction,
+    CloudRun,
+    PubSubTopic,
+    PubSubSubscription,
+    SecretManagerSecret,
+    CloudDNSZone,
+    CloudDNSRecord,
+    MemorystoreInstance,
+    InterconnectAttachment,
+    VPNTunnel,
+    NCCHub,
+    NCCSpoke,
+    ServiceAttachment,
+    ServiceConnectEndpoint,
+    VPNGateway,
+    ExternalVPNGateway,
 )
 
 
@@ -38,7 +67,17 @@ class DiscoveryLogTable(NetBoxTable):
 
     class Meta(NetBoxTable.Meta):
         model = DiscoveryLog
-        fields = ('pk', 'organization', 'started_at', 'completed_at', 'status', 'projects_discovered', 'instances_discovered', 'networks_discovered', 'total_resources')
+        fields = (
+            'pk',
+            'organization',
+            'started_at',
+            'completed_at',
+            'status',
+            'projects_discovered',
+            'instances_discovered',
+            'networks_discovered',
+            'total_resources',
+        )
         default_columns = ('organization', 'started_at', 'status', 'total_resources')
 
 
@@ -67,7 +106,18 @@ class ComputeInstanceTable(NetBoxTable):
 
     class Meta(NetBoxTable.Meta):
         model = ComputeInstance
-        fields = ('pk', 'name', 'organization', 'project', 'zone', 'machine_type', 'status', 'internal_ip', 'external_ip', 'network')
+        fields = (
+            'pk',
+            'name',
+            'organization',
+            'project',
+            'zone',
+            'machine_type',
+            'status',
+            'internal_ip',
+            'external_ip',
+            'network',
+        )
         default_columns = ('name', 'organization', 'project', 'zone', 'machine_type', 'status', 'internal_ip')
 
 
@@ -124,7 +174,17 @@ class SubnetTable(NetBoxTable):
 
     class Meta(NetBoxTable.Meta):
         model = Subnet
-        fields = ('pk', 'name', 'organization', 'project', 'network', 'region', 'ip_cidr_range', 'purpose', 'utilization')
+        fields = (
+            'pk',
+            'name',
+            'organization',
+            'project',
+            'network',
+            'region',
+            'ip_cidr_range',
+            'purpose',
+            'utilization',
+        )
         default_columns = ('name', 'organization', 'project', 'network', 'region', 'ip_cidr_range', 'utilization')
 
 
@@ -196,7 +256,18 @@ class CloudSQLInstanceTable(NetBoxTable):
 
     class Meta(NetBoxTable.Meta):
         model = CloudSQLInstance
-        fields = ('pk', 'name', 'organization', 'project', 'region', 'database_type', 'database_version', 'tier', 'status', 'storage_size_gb')
+        fields = (
+            'pk',
+            'name',
+            'organization',
+            'project',
+            'region',
+            'database_type',
+            'database_version',
+            'tier',
+            'status',
+            'storage_size_gb',
+        )
         default_columns = ('name', 'organization', 'project', 'region', 'database_type', 'tier', 'status')
 
 
@@ -210,7 +281,17 @@ class CloudSpannerInstanceTable(NetBoxTable):
 
     class Meta(NetBoxTable.Meta):
         model = CloudSpannerInstance
-        fields = ('pk', 'name', 'organization', 'project', 'config', 'display_name', 'node_count', 'processing_units', 'status')
+        fields = (
+            'pk',
+            'name',
+            'organization',
+            'project',
+            'config',
+            'display_name',
+            'node_count',
+            'processing_units',
+            'status',
+        )
         default_columns = ('name', 'organization', 'project', 'config', 'node_count', 'status')
 
 
@@ -280,7 +361,17 @@ class GKEClusterTable(NetBoxTable):
 
     class Meta(NetBoxTable.Meta):
         model = GKECluster
-        fields = ('pk', 'name', 'organization', 'project', 'location', 'network', 'master_version', 'status', 'enable_autopilot')
+        fields = (
+            'pk',
+            'name',
+            'organization',
+            'project',
+            'location',
+            'network',
+            'master_version',
+            'status',
+            'enable_autopilot',
+        )
         default_columns = ('name', 'organization', 'project', 'location', 'master_version', 'status')
 
 
@@ -294,7 +385,17 @@ class GKENodePoolTable(NetBoxTable):
 
     class Meta(NetBoxTable.Meta):
         model = GKENodePool
-        fields = ('pk', 'name', 'organization', 'cluster', 'machine_type', 'node_count', 'min_node_count', 'max_node_count', 'status')
+        fields = (
+            'pk',
+            'name',
+            'organization',
+            'cluster',
+            'machine_type',
+            'node_count',
+            'min_node_count',
+            'max_node_count',
+            'status',
+        )
         default_columns = ('name', 'organization', 'cluster', 'machine_type', 'node_count', 'status')
 
 
@@ -436,11 +537,18 @@ class MemorystoreInstanceTable(NetBoxTable):
 
     class Meta(NetBoxTable.Meta):
         model = MemorystoreInstance
-        fields = ('pk', 'name', 'organization', 'project', 'region', 'tier', 'memory_size_gb', 'redis_version', 'status')
+        fields = (
+            'pk',
+            'name',
+            'organization',
+            'project',
+            'region',
+            'tier',
+            'memory_size_gb',
+            'redis_version',
+            'status',
+        )
         default_columns = ('name', 'organization', 'project', 'region', 'tier', 'memory_size_gb', 'status')
-
-
-from .models import NCCHub, NCCSpoke, VPNGateway, ExternalVPNGateway, VPNTunnel, InterconnectAttachment
 
 
 class NCCHubTable(NetBoxTable):
@@ -506,7 +614,18 @@ class VPNTunnelTable(NetBoxTable):
 
     class Meta(NetBoxTable.Meta):
         model = VPNTunnel
-        fields = ('pk', 'name', 'organization', 'project', 'region', 'vpn_gateway', 'peer_ip', 'status', 'ike_version', 'router')
+        fields = (
+            'pk',
+            'name',
+            'organization',
+            'project',
+            'region',
+            'vpn_gateway',
+            'peer_ip',
+            'status',
+            'ike_version',
+            'router',
+        )
         default_columns = ('name', 'organization', 'project', 'region', 'vpn_gateway', 'peer_ip', 'status')
 
 
@@ -522,7 +641,18 @@ class InterconnectAttachmentTable(NetBoxTable):
 
     class Meta(NetBoxTable.Meta):
         model = InterconnectAttachment
-        fields = ('pk', 'name', 'organization', 'project', 'region', 'router', 'attachment_type', 'bandwidth', 'vlan_tag', 'state')
+        fields = (
+            'pk',
+            'name',
+            'organization',
+            'project',
+            'region',
+            'router',
+            'attachment_type',
+            'bandwidth',
+            'vlan_tag',
+            'state',
+        )
         default_columns = ('name', 'organization', 'project', 'region', 'attachment_type', 'bandwidth', 'state')
 
 
@@ -536,7 +666,16 @@ class ServiceAttachmentTable(NetBoxTable):
 
     class Meta(NetBoxTable.Meta):
         model = ServiceAttachment
-        fields = ('pk', 'name', 'organization', 'project', 'region', 'connection_preference', 'target_service', 'nat_subnets')
+        fields = (
+            'pk',
+            'name',
+            'organization',
+            'project',
+            'region',
+            'connection_preference',
+            'target_service',
+            'nat_subnets',
+        )
         default_columns = ('name', 'organization', 'project', 'region', 'connection_preference', 'target_service')
 
 
@@ -551,5 +690,22 @@ class ServiceConnectEndpointTable(NetBoxTable):
 
     class Meta(NetBoxTable.Meta):
         model = ServiceConnectEndpoint
-        fields = ('pk', 'name', 'organization', 'project', 'region', 'network', 'ip_address', 'target_service_attachment')
-        default_columns = ('name', 'organization', 'project', 'region', 'network', 'ip_address', 'target_service_attachment')
+        fields = (
+            'pk',
+            'name',
+            'organization',
+            'project',
+            'region',
+            'network',
+            'ip_address',
+            'target_service_attachment',
+        )
+        default_columns = (
+            'name',
+            'organization',
+            'project',
+            'region',
+            'network',
+            'ip_address',
+            'target_service_attachment',
+        )

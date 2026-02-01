@@ -18,9 +18,7 @@ def update_counter(model, pk, counter_name, value):
     Increment or decrement a counter field on an object identified by its model and primary key (PK). Positive values
     will increment; negative values will decrement.
     """
-    model.objects.filter(pk=pk).update(
-        **{counter_name: F(counter_name) + value}
-    )
+    model.objects.filter(pk=pk).update(**{counter_name: F(counter_name) + value})
 
 
 def update_counts(model, field_name, related_query):
@@ -33,17 +31,14 @@ def update_counts(model, field_name, related_query):
 
         Device.objects.update(_interface_count=Count('interfaces'))
     """
-    subquery = Subquery(
-        model.objects.filter(pk=OuterRef('pk')).annotate(_count=Count(related_query)).values('_count')
-    )
-    return model.objects.update(**{
-        field_name: subquery
-    })
+    subquery = Subquery(model.objects.filter(pk=OuterRef('pk')).annotate(_count=Count(related_query)).values('_count'))
+    return model.objects.update(**{field_name: subquery})
 
 
 #
 # Signal handlers
 #
+
 
 def post_save_receiver(sender, instance, created, **kwargs):
     """
@@ -84,6 +79,7 @@ def post_delete_receiver(sender, instance, origin, **kwargs):
 #
 # Registration
 #
+
 
 def connect_counters(*models):
     """

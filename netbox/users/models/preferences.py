@@ -4,23 +4,16 @@ from django.utils.translation import gettext_lazy as _
 from netbox.config import get_config
 from utilities.data import flatten_dict
 
-__all__ = (
-    'UserConfig',
-)
+__all__ = ('UserConfig',)
 
 
 class UserConfig(models.Model):
     """
     This model stores arbitrary user-specific preferences in a JSON data structure.
     """
-    user = models.OneToOneField(
-        to='users.User',
-        on_delete=models.CASCADE,
-        related_name='config'
-    )
-    data = models.JSONField(
-        default=dict
-    )
+
+    user = models.OneToOneField(to='users.User', on_delete=models.CASCADE, related_name='config')
+    data = models.JSONField(default=dict)
 
     _netbox_private = True
 
@@ -92,10 +85,8 @@ class UserConfig(models.Model):
             if key in d and type(d[key]) is dict:
                 d = d[key]
             elif key in d:
-                err_path = '.'.join(path.split('.')[:i + 1])
-                raise TypeError(
-                    _("Key '{path}' is a leaf node; cannot assign new keys").format(path=err_path)
-                )
+                err_path = '.'.join(path.split('.')[: i + 1])
+                raise TypeError(_("Key '{path}' is a leaf node; cannot assign new keys").format(path=err_path))
             else:
                 d = d.setdefault(key, {})
 

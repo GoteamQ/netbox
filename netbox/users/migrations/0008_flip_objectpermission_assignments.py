@@ -23,11 +23,10 @@ class Migration(migrations.Migration):
             database_operations=[
                 # Rename table
                 migrations.RunSQL(
-                    'ALTER TABLE users_objectpermission_groups' '  RENAME TO users_group_object_permissions'
+                    'ALTER TABLE users_objectpermission_groups  RENAME TO users_group_object_permissions'
                 ),
                 migrations.RunSQL(
-                    'ALTER TABLE users_objectpermission_groups_id_seq'
-                    '  RENAME TO users_group_object_permissions_id_seq'
+                    'ALTER TABLE users_objectpermission_groups_id_seq  RENAME TO users_group_object_permissions_id_seq'
                 ),
                 # Rename constraints
                 migrations.RunSQL(
@@ -48,7 +47,7 @@ class Migration(migrations.Migration):
                 ),
                 # Rename indexes
                 migrations.RunSQL(
-                    'ALTER INDEX users_objectpermission_groups_pkey ' '  RENAME TO users_group_object_permissions_pkey'
+                    'ALTER INDEX users_objectpermission_groups_pkey   RENAME TO users_group_object_permissions_pkey'
                 ),
                 migrations.RunSQL(
                     'ALTER INDEX users_objectpermission_g_objectpermission_id_grou_3b62a39c_uniq '
@@ -79,11 +78,9 @@ class Migration(migrations.Migration):
             ],
             database_operations=[
                 # Rename table
+                migrations.RunSQL('ALTER TABLE users_objectpermission_users  RENAME TO users_user_object_permissions'),
                 migrations.RunSQL(
-                    'ALTER TABLE users_objectpermission_users' '  RENAME TO users_user_object_permissions'
-                ),
-                migrations.RunSQL(
-                    'ALTER TABLE users_objectpermission_users_id_seq' '  RENAME TO users_user_object_permissions_id_seq'
+                    'ALTER TABLE users_objectpermission_users_id_seq  RENAME TO users_user_object_permissions_id_seq'
                 ),
                 # Rename constraints
                 migrations.RunSQL(
@@ -104,7 +101,7 @@ class Migration(migrations.Migration):
                 ),
                 # Rename indexes
                 migrations.RunSQL(
-                    'ALTER INDEX users_objectpermission_users_pkey ' '  RENAME TO users_user_object_permissions_pkey'
+                    'ALTER INDEX users_objectpermission_users_pkey   RENAME TO users_user_object_permissions_pkey'
                 ),
                 migrations.RunSQL(
                     'ALTER INDEX users_objectpermission_u_objectpermission_id_user_3a7db108_uniq '

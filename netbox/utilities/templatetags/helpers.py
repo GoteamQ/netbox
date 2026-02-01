@@ -80,11 +80,11 @@ class ActionURLNode(template.Node):
 
     def __repr__(self):
         return (
-            f"<{self.__class__.__qualname__} "
+            f'<{self.__class__.__qualname__} '
             f"model='{self.model}' "
             f"action='{self.action}' "
-            f"kwargs={repr(self.kwargs)} "
-            f"as={repr(self.asvar)}>"
+            f'kwargs={repr(self.kwargs)} '
+            f'as={repr(self.asvar)}>'
         )
 
     def render(self, context):
@@ -110,12 +110,12 @@ class ActionURLNode(template.Node):
         except NoReverseMatch:
             if self.asvar is None:
                 raise
-            url = ""
+            url = ''
 
         # Handle variable assignment or return escaped URL
         if self.asvar:
             context[self.asvar] = url
-            return ""
+            return ''
 
         return conditional_escape(url) if context.autoescape else url
 
@@ -158,9 +158,7 @@ def action_url(parser, token):
     # Parse the token contents
     bits = token.split_contents()
     if len(bits) < 3:
-        raise template.TemplateSyntaxError(
-            f"'{bits[0]}' takes at least two arguments, a model and an action."
-        )
+        raise template.TemplateSyntaxError(f"'{bits[0]}' takes at least two arguments, a model and an action.")
 
     # Extract model and action
     model = parser.compile_filter(bits[1])
@@ -170,7 +168,7 @@ def action_url(parser, token):
     bits = bits[3:]
 
     # Handle 'as' syntax for variable assignment
-    if len(bits) >= 2 and bits[-2] == "as":
+    if len(bits) >= 2 and bits[-2] == 'as':
         asvar = bits[-1]
         bits = bits[:-2]
 
@@ -214,19 +212,19 @@ def _humanize_megabytes(mb, divisor=1000):
     Express a number of megabytes in the most suitable unit (e.g. gigabytes, terabytes, etc.).
     """
     if not mb:
-        return ""
+        return ''
 
     PB_SIZE = divisor**3
     TB_SIZE = divisor**2
     GB_SIZE = divisor
 
     if mb >= PB_SIZE:
-        return f"{mb / PB_SIZE:.2f} PB"
+        return f'{mb / PB_SIZE:.2f} PB'
     if mb >= TB_SIZE:
-        return f"{mb / TB_SIZE:.2f} TB"
+        return f'{mb / TB_SIZE:.2f} TB'
     if mb >= GB_SIZE:
-        return f"{mb / GB_SIZE:.2f} GB"
-    return f"{mb} MB"
+        return f'{mb / GB_SIZE:.2f} GB'
+    return f'{mb} MB'
 
 
 @register.filter()
@@ -296,7 +294,7 @@ def kg_to_pounds(n):
     return float(n) * 2.204623
 
 
-@register.filter("startswith")
+@register.filter('startswith')
 def startswith(text: str, starts: str) -> bool:
     """
     Template implementation of `str.startswith()`.
@@ -326,7 +324,7 @@ def get_item(value: object, attr: str) -> Any:
 
 
 @register.filter
-def status_from_tag(tag: str = "info") -> str:
+def status_from_tag(tag: str = 'info') -> str:
     """
     Determine Bootstrap theme status/level from Django's Message.level_tag.
     """
@@ -342,7 +340,7 @@ def status_from_tag(tag: str = "info") -> str:
 
 
 @register.filter
-def icon_from_status(status: str = "info") -> str:
+def icon_from_status(status: str = 'info') -> str:
     """
     Determine icon class name from Bootstrap theme status/level.
     """
@@ -358,6 +356,7 @@ def icon_from_status(status: str = "info") -> str:
 #
 # Tags
 #
+
 
 @register.simple_tag()
 def querystring(request, **kwargs):
@@ -476,19 +475,21 @@ def applied_filters(context, model, form, query_params):
         else:
             link_text = f'{bound_field.label}: {display_value}'
 
-        applied_filters.append({
-            'name': param_name,  # Use actual param name for removal link
-            'value': form.cleaned_data.get(filter_name),
-            'link_url': f'?{querydict.urlencode()}',
-            'link_text': link_text,
-        })
+        applied_filters.append(
+            {
+                'name': param_name,  # Use actual param name for removal link
+                'value': form.cleaned_data.get(filter_name),
+                'link_url': f'?{querydict.urlencode()}',
+                'link_text': link_text,
+            }
+        )
 
     save_link = None
     if user.has_perm('extras.add_savedfilter') and 'filter_id' not in context['request'].GET:
         object_type = ObjectType.objects.get_for_model(model).pk
         parameters = json.dumps(dict(context['request'].GET.lists()))
         url = reverse('extras:savedfilter_add')
-        save_link = f"{url}?object_types={object_type}&parameters={quote(parameters)}"
+        save_link = f'{url}?object_types={object_type}&parameters={quote(parameters)}'
 
     return {
         'applied_filters': applied_filters,

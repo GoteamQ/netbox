@@ -11,6 +11,7 @@ class DatePicker(forms.TextInput):
     """
     Date picker using Flatpickr.
     """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.attrs['class'] = 'date-picker'
@@ -21,6 +22,7 @@ class DateTimePicker(forms.TextInput):
     """
     DateTime picker using Flatpickr.
     """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.attrs['class'] = 'datetime-picker'
@@ -31,6 +33,7 @@ class TimePicker(forms.TextInput):
     """
     Time picker using Flatpickr.
     """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.attrs['class'] = 'time-picker'

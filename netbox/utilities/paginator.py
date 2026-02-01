@@ -10,12 +10,9 @@ __all__ = (
 
 
 class EnhancedPaginator(Paginator):
-    default_page_lengths = (
-        25, 50, 100, 250, 500, 1000
-    )
+    default_page_lengths = (25, 50, 100, 250, 500, 1000)
 
     def __init__(self, object_list, per_page, orphans=None, **kwargs):
-
         # Determine the page size
         try:
             per_page = int(per_page)
@@ -42,9 +39,7 @@ class EnhancedPaginator(Paginator):
 
 
 class EnhancedPage(Page):
-
     def smart_pages(self):
-
         # When dealing with five or fewer pages, simply return the whole list.
         if self.paginator.num_pages <= 5:
             return self.paginator.page_range

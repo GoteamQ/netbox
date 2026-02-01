@@ -3,6 +3,7 @@ Unit tests for OpenAPI schema generation.
 
 Refs: #20638
 """
+
 import json
 from django.test import TestCase
 
@@ -39,26 +40,20 @@ class OpenAPISchemaTestCase(TestCase):
                 request_schema = operation['requestBody']['content']['application/json']['schema']
 
                 # Should have oneOf with two options
-                self.assertIn('oneOf', request_schema, f"POST {path} should have oneOf schema")
-                self.assertEqual(
-                    len(request_schema['oneOf']), 2,
-                    f"POST {path} oneOf should have exactly 2 options"
-                )
+                self.assertIn('oneOf', request_schema, f'POST {path} should have oneOf schema')
+                self.assertEqual(len(request_schema['oneOf']), 2, f'POST {path} oneOf should have exactly 2 options')
 
                 # First option: single object (has $ref or properties)
                 single_schema = request_schema['oneOf'][0]
                 self.assertTrue(
                     '$ref' in single_schema or 'properties' in single_schema,
-                    f"POST {path} first oneOf option should be single object"
+                    f'POST {path} first oneOf option should be single object',
                 )
 
                 # Second option: array of objects
                 array_schema = request_schema['oneOf'][1]
-                self.assertEqual(
-                    array_schema['type'], 'array',
-                    f"POST {path} second oneOf option should be array"
-                )
-                self.assertIn('items', array_schema, f"POST {path} array should have items")
+                self.assertEqual(array_schema['type'], 'array', f'POST {path} second oneOf option should be array')
+                self.assertIn('items', array_schema, f'POST {path} array should have items')
 
     def test_bulk_update_operations_require_array_only(self):
         """
@@ -80,17 +75,10 @@ class OpenAPISchemaTestCase(TestCase):
 
                     # Should be array-only, not oneOf
                     self.assertNotIn(
-                        'oneOf', request_schema,
-                        f"{method.upper()} {path} should NOT have oneOf (array-only)"
+                        'oneOf', request_schema, f'{method.upper()} {path} should NOT have oneOf (array-only)'
                     )
-                    self.assertEqual(
-                        request_schema['type'], 'array',
-                        f"{method.upper()} {path} should require array"
-                    )
-                    self.assertIn(
-                        'items', request_schema,
-                        f"{method.upper()} {path} array should have items"
-                    )
+                    self.assertEqual(request_schema['type'], 'array', f'{method.upper()} {path} should require array')
+                    self.assertIn('items', request_schema, f'{method.upper()} {path} array should have items')
 
     def test_bulk_delete_requires_array(self):
         """
@@ -103,6 +91,6 @@ class OpenAPISchemaTestCase(TestCase):
         request_schema = operation['requestBody']['content']['application/json']['schema']
 
         # Should be array-only
-        self.assertNotIn('oneOf', request_schema, "DELETE should NOT have oneOf")
-        self.assertEqual(request_schema['type'], 'array', "DELETE should require array")
-        self.assertIn('items', request_schema, "DELETE array should have items")
+        self.assertNotIn('oneOf', request_schema, 'DELETE should NOT have oneOf')
+        self.assertEqual(request_schema['type'], 'array', 'DELETE should require array')
+        self.assertIn('items', request_schema, 'DELETE array should have items')

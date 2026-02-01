@@ -7,6 +7,7 @@ class GetPrefetchableFieldsTest(TestCase):
     """
     Verify the operation of get_prefetchable_fields()
     """
+
     def test_get_prefetchable_fields(self):
         field_names = get_prefetchable_fields(Provider)
         self.assertIn('asns', field_names)  # ManyToManyField

@@ -4,7 +4,7 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.db import router
 from django.db.models.deletion import CASCADE, Collector
 
-logger = logging.getLogger("netbox.models.deletion")
+logger = logging.getLogger('netbox.models.deletion')
 
 
 class CustomCollector(Collector):
@@ -51,7 +51,7 @@ class CustomCollector(Collector):
                 for field in instance._meta.private_fields:
                     if isinstance(field, GenericRelation):
                         # Create a unique key for this relation
-                        relation_key = f"{instance._meta.model_name}.{field.name}"
+                        relation_key = f'{instance._meta.model_name}.{field.name}'
                         if relation_key in processed_relations:
                             continue
                         processed_relations.add(relation_key)
@@ -89,4 +89,4 @@ class DeleteMixin:
         """
         mro = instance.__class__.__mro__
         if mro.index(cls) != 0:
-            raise RuntimeError(f"{cls.__name__} must be first in the MRO. Current MRO: {mro}")
+            raise RuntimeError(f'{cls.__name__} must be first in the MRO. Current MRO: {mro}')

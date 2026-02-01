@@ -2,9 +2,7 @@ from rest_framework import serializers
 
 from extras.models import Dashboard
 
-__all__ = (
-    'DashboardSerializer',
-)
+__all__ = ('DashboardSerializer',)
 
 
 class DashboardSerializer(serializers.ModelSerializer):

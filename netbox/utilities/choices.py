@@ -15,13 +15,13 @@ class ChoiceSetMeta(type):
     """
     Metaclass for ChoiceSet
     """
-    def __new__(mcs, name, bases, attrs):
 
+    def __new__(mcs, name, bases, attrs):
         # Extend static choices with any configured choices
         if key := attrs.get('key'):
-            assert type(attrs['CHOICES']) is list, _(
-                "{name} has a key defined but CHOICES is not a list"
-            ).format(name=name)
+            assert type(attrs['CHOICES']) is list, _('{name} has a key defined but CHOICES is not a list').format(
+                name=name
+            )
             app = attrs['__module__'].split('.', 1)[0]
             replace_key = f'{app}.{key}'
             extend_key = f'{replace_key}+' if replace_key else None
@@ -63,6 +63,7 @@ class ChoiceSet(metaclass=ChoiceSetMeta):
     Holds an iterable of choice tuples suitable for passing to a Django model or form field. Choices can be defined
     statically within the class as CHOICES and/or gleaned from the FIELD_CHOICES configuration parameter.
     """
+
     CHOICES = list()
 
     @classmethod
@@ -75,7 +76,7 @@ class ChoiceSet(metaclass=ChoiceSetMeta):
         Return the ChoiceSet as an Enum. If no name is provided, "Choices" will be stripped from the class name (if
         present) and "Enum" will be appended. For example, "CircuitStatusChoices" will become "CircuitStatusEnum".
         """
-        name = name or f"{cls.__name__.split('Choices')[0]}Enum"
+        name = name or f'{cls.__name__.split("Choices")[0]}Enum'
         prefix = f'{prefix}_' if prefix else ''
         data = {f'{prefix}{enum_key(v)}'.upper(): v for v in cls.values()}
         return enum.Enum(name, data)

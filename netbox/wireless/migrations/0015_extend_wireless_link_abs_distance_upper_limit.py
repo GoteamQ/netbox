@@ -2,7 +2,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('wireless', '0014_wirelesslangroup_comments'),
     ]

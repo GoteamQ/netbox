@@ -52,18 +52,12 @@ RACKS_MENU = Menu(
                 get_model_item('dcim', 'rack', _('Racks')),
                 get_model_item('dcim', 'rackrole', _('Rack Roles')),
                 get_model_item('dcim', 'rackreservation', _('Reservations')),
-                MenuItem(
-                    link='dcim:rack_elevation_list',
-                    link_text=_('Elevations'),
-                    permissions=['dcim.view_rack']
-                ),
+                MenuItem(link='dcim:rack_elevation_list', link_text=_('Elevations'), permissions=['dcim.view_rack']),
             ),
         ),
         MenuGroup(
             label=_('Rack Types'),
-            items=(
-                get_model_item('dcim', 'racktype', _('Rack Types')),
-            ),
+            items=(get_model_item('dcim', 'racktype', _('Rack Types')),),
         ),
     ),
 )
@@ -110,9 +104,7 @@ DEVICES_MENU = Menu(
         ),
         MenuGroup(
             label=_('Addressing'),
-            items=(
-                get_model_item('dcim', 'macaddress', _('MAC Addresses')),
-            ),
+            items=(get_model_item('dcim', 'macaddress', _('MAC Addresses')),),
         ),
     ),
 )
@@ -129,17 +121,17 @@ CONNECTIONS_MENU = Menu(
                 MenuItem(
                     link='dcim:interface_connections_list',
                     link_text=_('Interface Connections'),
-                    permissions=['dcim.view_interface']
+                    permissions=['dcim.view_interface'],
                 ),
                 MenuItem(
                     link='dcim:console_connections_list',
                     link_text=_('Console Connections'),
-                    permissions=['dcim.view_consoleport']
+                    permissions=['dcim.view_consoleport'],
                 ),
                 MenuItem(
                     link='dcim:power_connections_list',
                     link_text=_('Power Connections'),
-                    permissions=['dcim.view_powerport']
+                    permissions=['dcim.view_powerport'],
                 ),
             ),
         ),
@@ -365,7 +357,7 @@ CUSTOMIZATION_MENU = Menu(
                     link='extras:script_list',
                     link_text=_('Scripts'),
                     permissions=['extras.view_script'],
-                    buttons=get_model_buttons('extras', "scriptmodule", actions=['add'])
+                    buttons=get_model_buttons('extras', 'scriptmodule', actions=['add']),
                 ),
             ),
         ),
@@ -475,15 +467,8 @@ def get_menus():
     # Add the default "plugins" menu
     if registry['plugins']['menu_items']:
         # Build the default plugins menu
-        groups = [
-            MenuGroup(label=label, items=items)
-            for label, items in registry['plugins']['menu_items'].items()
-        ]
-        plugins_menu = Menu(
-            label=_("Plugins"),
-            icon_class="mdi mdi-puzzle",
-            groups=groups
-        )
+        groups = [MenuGroup(label=label, items=items) for label, items in registry['plugins']['menu_items'].items()]
+        plugins_menu = Menu(label=_('Plugins'), icon_class='mdi mdi-puzzle', groups=groups)
         menus.append(plugins_menu)
 
     # Add the admin menu last

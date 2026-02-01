@@ -5,7 +5,6 @@ from . import views
 
 app_name = 'account'
 urlpatterns = [
-
     # Account views
     path('profile/', views.ProfileView.as_view(), name='profile'),
     path('bookmarks/', views.BookmarkListView.as_view(), name='bookmarks'),
@@ -16,5 +15,4 @@ urlpatterns = [
     path('api-tokens/', views.UserTokenListView.as_view(), name='usertoken_list'),
     path('api-tokens/add/', views.UserTokenEditView.as_view(), name='usertoken_add'),
     path('api-tokens/<int:pk>/', include(get_model_urls('account', 'usertoken'))),
-
 ]

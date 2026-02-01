@@ -28,7 +28,7 @@ class DataSourceTestCase(TestCase, ChangeLoggedFilterSetTests):
                 status=DataSourceStatusChoices.NEW,
                 enabled=True,
                 description='foobar1',
-                sync_interval=JobIntervalChoices.INTERVAL_HOURLY
+                sync_interval=JobIntervalChoices.INTERVAL_HOURLY,
             ),
             DataSource(
                 name='Data Source 2',
@@ -37,7 +37,7 @@ class DataSourceTestCase(TestCase, ChangeLoggedFilterSetTests):
                 status=DataSourceStatusChoices.SYNCING,
                 enabled=True,
                 description='foobar2',
-                sync_interval=JobIntervalChoices.INTERVAL_DAILY
+                sync_interval=JobIntervalChoices.INTERVAL_DAILY,
             ),
             DataSource(
                 name='Data Source 3',
@@ -45,7 +45,7 @@ class DataSourceTestCase(TestCase, ChangeLoggedFilterSetTests):
                 source_url='https://example.com/git/source3',
                 status=DataSourceStatusChoices.COMPLETED,
                 enabled=False,
-                sync_interval=JobIntervalChoices.INTERVAL_WEEKLY
+                sync_interval=JobIntervalChoices.INTERVAL_WEEKLY,
             ),
         )
         DataSource.objects.bulk_create(data_sources)
@@ -101,21 +101,21 @@ class DataFileTestCase(TestCase, ChangeLoggedFilterSetTests):
                 path='dir1/file1.txt',
                 last_updated=datetime(2023, 1, 1, 0, 0, 0, tzinfo=timezone.utc),
                 size=1000,
-                hash='442da078f0111cbdf42f21903724f6597c692535f55bdfbbea758a1ae99ad9e1'
+                hash='442da078f0111cbdf42f21903724f6597c692535f55bdfbbea758a1ae99ad9e1',
             ),
             DataFile(
                 source=data_sources[1],
                 path='dir1/file2.txt',
                 last_updated=datetime(2023, 1, 2, 0, 0, 0, tzinfo=timezone.utc),
                 size=2000,
-                hash='a78168c7c97115bafd96450ed03ea43acec495094c5caa28f0d02e20e3a76cc2'
+                hash='a78168c7c97115bafd96450ed03ea43acec495094c5caa28f0d02e20e3a76cc2',
             ),
             DataFile(
                 source=data_sources[2],
                 path='dir1/file3.txt',
                 last_updated=datetime(2023, 1, 3, 0, 0, 0, tzinfo=timezone.utc),
                 size=3000,
-                hash='12b8827a14c4d5a2f30b6c6e2b7983063988612391c6cbe8ee7493b59054827a'
+                hash='12b8827a14c4d5a2f30b6c6e2b7983063988612391c6cbe8ee7493b59054827a',
             ),
         )
         DataFile.objects.bulk_create(data_files)
@@ -140,10 +140,12 @@ class DataFileTestCase(TestCase, ChangeLoggedFilterSetTests):
         self.assertEqual(self.filterset(params, self.queryset).qs.count(), 2)
 
     def test_hash(self):
-        params = {'hash': [
-            '442da078f0111cbdf42f21903724f6597c692535f55bdfbbea758a1ae99ad9e1',
-            'a78168c7c97115bafd96450ed03ea43acec495094c5caa28f0d02e20e3a76cc2',
-        ]}
+        params = {
+            'hash': [
+                '442da078f0111cbdf42f21903724f6597c692535f55bdfbbea758a1ae99ad9e1',
+                'a78168c7c97115bafd96450ed03ea43acec495094c5caa28f0d02e20e3a76cc2',
+            ]
+        }
         self.assertEqual(self.filterset(params, self.queryset).qs.count(), 2)
 
 
@@ -172,7 +174,7 @@ class ObjectChangeTestCase(TestCase, BaseFilterSetTests):
                 action=ObjectChangeActionChoices.ACTION_CREATE,
                 changed_object=site,
                 object_repr=str(site),
-                postchange_data={'name': site.name, 'slug': site.slug}
+                postchange_data={'name': site.name, 'slug': site.slug},
             ),
             ObjectChange(
                 user=users[0],
@@ -181,7 +183,7 @@ class ObjectChangeTestCase(TestCase, BaseFilterSetTests):
                 action=ObjectChangeActionChoices.ACTION_UPDATE,
                 changed_object=site,
                 object_repr=str(site),
-                postchange_data={'name': site.name, 'slug': site.slug}
+                postchange_data={'name': site.name, 'slug': site.slug},
             ),
             ObjectChange(
                 user=users[1],
@@ -190,7 +192,7 @@ class ObjectChangeTestCase(TestCase, BaseFilterSetTests):
                 action=ObjectChangeActionChoices.ACTION_DELETE,
                 changed_object=site,
                 object_repr=str(site),
-                postchange_data={'name': site.name, 'slug': site.slug}
+                postchange_data={'name': site.name, 'slug': site.slug},
             ),
             ObjectChange(
                 user=users[1],
@@ -199,7 +201,7 @@ class ObjectChangeTestCase(TestCase, BaseFilterSetTests):
                 action=ObjectChangeActionChoices.ACTION_CREATE,
                 changed_object=ipaddress,
                 object_repr=str(ipaddress),
-                postchange_data={'address': ipaddress.address, 'status': ipaddress.status}
+                postchange_data={'address': ipaddress.address, 'status': ipaddress.status},
             ),
             ObjectChange(
                 user=users[2],
@@ -208,7 +210,7 @@ class ObjectChangeTestCase(TestCase, BaseFilterSetTests):
                 action=ObjectChangeActionChoices.ACTION_UPDATE,
                 changed_object=ipaddress,
                 object_repr=str(ipaddress),
-                postchange_data={'address': ipaddress.address, 'status': ipaddress.status}
+                postchange_data={'address': ipaddress.address, 'status': ipaddress.status},
             ),
             ObjectChange(
                 user=users[2],
@@ -217,7 +219,7 @@ class ObjectChangeTestCase(TestCase, BaseFilterSetTests):
                 action=ObjectChangeActionChoices.ACTION_DELETE,
                 changed_object=ipaddress,
                 object_repr=str(ipaddress),
-                postchange_data={'address': ipaddress.address, 'status': ipaddress.status}
+                postchange_data={'address': ipaddress.address, 'status': ipaddress.status},
             ),
         )
         ObjectChange.objects.bulk_create(object_changes)

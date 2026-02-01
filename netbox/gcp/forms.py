@@ -3,32 +3,69 @@ from django import forms
 from netbox.forms import NetBoxModelForm, NetBoxModelFilterSetForm
 from utilities.forms.fields import DynamicModelChoiceField
 from .models import (
-    GCPOrganization, DiscoveryLog,
-    GCPProject, ComputeInstance, InstanceTemplate, InstanceGroup,
-    VPCNetwork, Subnet, FirewallRule, CloudRouter, CloudNAT, LoadBalancer,
-    CloudSQLInstance, CloudSpannerInstance, FirestoreDatabase, BigtableInstance,
-    CloudStorageBucket, PersistentDisk,
-    GKECluster, GKENodePool,
-    ServiceAccount, IAMRole, IAMBinding,
-    CloudFunction, CloudRun, PubSubTopic, PubSubSubscription,
-    SecretManagerSecret, CloudDNSZone, CloudDNSRecord, MemorystoreInstance,
-    ServiceAttachment, ServiceConnectEndpoint
+    GCPOrganization,
+    GCPProject,
+    ComputeInstance,
+    InstanceTemplate,
+    InstanceGroup,
+    VPCNetwork,
+    Subnet,
+    FirewallRule,
+    CloudRouter,
+    CloudNAT,
+    LoadBalancer,
+    CloudSQLInstance,
+    CloudSpannerInstance,
+    FirestoreDatabase,
+    BigtableInstance,
+    CloudStorageBucket,
+    PersistentDisk,
+    GKECluster,
+    GKENodePool,
+    ServiceAccount,
+    IAMRole,
+    IAMBinding,
+    CloudFunction,
+    CloudRun,
+    PubSubTopic,
+    PubSubSubscription,
+    SecretManagerSecret,
+    CloudDNSZone,
+    CloudDNSRecord,
+    MemorystoreInstance,
+    ServiceAttachment,
+    ServiceConnectEndpoint,
+    NCCHub,
+    NCCSpoke,
+    VPNGateway,
+    ExternalVPNGateway,
+    VPNTunnel,
+    InterconnectAttachment,
 )
 
 
 class GCPOrganizationForm(NetBoxModelForm):
     service_account_json = forms.CharField(
         widget=forms.Textarea(attrs={'rows': 10, 'class': 'font-monospace'}),
-        help_text='Paste the full JSON content of your GCP service account key file'
+        help_text='Paste the full JSON content of your GCP service account key file',
     )
 
     class Meta:
         model = GCPOrganization
         fields = [
-            'name', 'organization_id', 'service_account_json', 'is_active', 'auto_discover',
-            'discover_compute', 'discover_networking', 'discover_databases', 
-            'discover_storage', 'discover_kubernetes', 'discover_serverless', 'discover_iam',
-            'tags'
+            'name',
+            'organization_id',
+            'service_account_json',
+            'is_active',
+            'auto_discover',
+            'discover_compute',
+            'discover_networking',
+            'discover_databases',
+            'discover_storage',
+            'discover_kubernetes',
+            'discover_serverless',
+            'discover_iam',
+            'tags',
         ]
 
 
@@ -47,7 +84,7 @@ class GCPOrganizationFilterForm(NetBoxModelFilterSetForm):
             ('canceled', 'Canceled'),
             ('completed', 'Completed'),
             ('failed', 'Failed'),
-        ]
+        ],
     )
 
 
@@ -73,8 +110,21 @@ class ComputeInstanceForm(NetBoxModelForm):
 
     class Meta:
         model = ComputeInstance
-        fields = ['name', 'project', 'zone', 'machine_type', 'status', 'internal_ip', 'external_ip', 
-                  'network', 'subnet', 'disk_size_gb', 'image', 'labels', 'tags']
+        fields = [
+            'name',
+            'project',
+            'zone',
+            'machine_type',
+            'status',
+            'internal_ip',
+            'external_ip',
+            'network',
+            'subnet',
+            'disk_size_gb',
+            'image',
+            'labels',
+            'tags',
+        ]
 
 
 class ComputeInstanceFilterForm(NetBoxModelFilterSetForm):
@@ -123,8 +173,16 @@ class SubnetForm(NetBoxModelForm):
 
     class Meta:
         model = Subnet
-        fields = ['name', 'project', 'network', 'region', 'ip_cidr_range', 'private_ip_google_access', 
-                  'purpose', 'tags']
+        fields = [
+            'name',
+            'project',
+            'network',
+            'region',
+            'ip_cidr_range',
+            'private_ip_google_access',
+            'purpose',
+            'tags',
+        ]
 
 
 class SubnetFilterForm(NetBoxModelFilterSetForm):
@@ -140,8 +198,22 @@ class FirewallRuleForm(NetBoxModelForm):
 
     class Meta:
         model = FirewallRule
-        fields = ['name', 'project', 'network', 'direction', 'priority', 'action', 'source_ranges', 
-                  'destination_ranges', 'source_tags', 'target_tags', 'allowed', 'denied', 'disabled', 'tags']
+        fields = [
+            'name',
+            'project',
+            'network',
+            'direction',
+            'priority',
+            'action',
+            'source_ranges',
+            'destination_ranges',
+            'source_tags',
+            'target_tags',
+            'allowed',
+            'denied',
+            'disabled',
+            'tags',
+        ]
 
 
 class CloudRouterForm(NetBoxModelForm):
@@ -159,8 +231,17 @@ class CloudNATForm(NetBoxModelForm):
 
     class Meta:
         model = CloudNAT
-        fields = ['name', 'project', 'router', 'region', 'nat_ip_allocate_option', 
-                  'source_subnetwork_ip_ranges_to_nat', 'nat_ips', 'min_ports_per_vm', 'tags']
+        fields = [
+            'name',
+            'project',
+            'router',
+            'region',
+            'nat_ip_allocate_option',
+            'source_subnetwork_ip_ranges_to_nat',
+            'nat_ips',
+            'min_ports_per_vm',
+            'tags',
+        ]
 
 
 class LoadBalancerForm(NetBoxModelForm):
@@ -177,8 +258,20 @@ class CloudSQLInstanceForm(NetBoxModelForm):
 
     class Meta:
         model = CloudSQLInstance
-        fields = ['name', 'project', 'region', 'database_version', 'database_type', 'tier', 
-                  'storage_size_gb', 'storage_type', 'status', 'ip_addresses', 'connection_name', 'tags']
+        fields = [
+            'name',
+            'project',
+            'region',
+            'database_version',
+            'database_type',
+            'tier',
+            'storage_size_gb',
+            'storage_type',
+            'status',
+            'ip_addresses',
+            'connection_name',
+            'tags',
+        ]
 
 
 class CloudSQLInstanceFilterForm(NetBoxModelFilterSetForm):
@@ -218,8 +311,16 @@ class CloudStorageBucketForm(NetBoxModelForm):
 
     class Meta:
         model = CloudStorageBucket
-        fields = ['name', 'project', 'location', 'storage_class', 'versioning_enabled', 
-                  'lifecycle_rules', 'labels', 'tags']
+        fields = [
+            'name',
+            'project',
+            'location',
+            'storage_class',
+            'versioning_enabled',
+            'lifecycle_rules',
+            'labels',
+            'tags',
+        ]
 
 
 class CloudStorageBucketFilterForm(NetBoxModelFilterSetForm):
@@ -244,8 +345,20 @@ class GKEClusterForm(NetBoxModelForm):
 
     class Meta:
         model = GKECluster
-        fields = ['name', 'project', 'location', 'network', 'subnetwork', 'master_version', 'status', 
-                  'endpoint', 'cluster_ipv4_cidr', 'services_ipv4_cidr', 'enable_autopilot', 'tags']
+        fields = [
+            'name',
+            'project',
+            'location',
+            'network',
+            'subnetwork',
+            'master_version',
+            'status',
+            'endpoint',
+            'cluster_ipv4_cidr',
+            'services_ipv4_cidr',
+            'enable_autopilot',
+            'tags',
+        ]
 
 
 class GKEClusterFilterForm(NetBoxModelFilterSetForm):
@@ -260,8 +373,19 @@ class GKENodePoolForm(NetBoxModelForm):
 
     class Meta:
         model = GKENodePool
-        fields = ['name', 'cluster', 'machine_type', 'disk_size_gb', 'disk_type', 'node_count', 
-                  'min_node_count', 'max_node_count', 'status', 'version', 'tags']
+        fields = [
+            'name',
+            'cluster',
+            'machine_type',
+            'disk_size_gb',
+            'disk_type',
+            'node_count',
+            'min_node_count',
+            'max_node_count',
+            'status',
+            'version',
+            'tags',
+        ]
 
 
 class ServiceAccountForm(NetBoxModelForm):
@@ -300,8 +424,19 @@ class CloudFunctionForm(NetBoxModelForm):
 
     class Meta:
         model = CloudFunction
-        fields = ['name', 'project', 'region', 'runtime', 'entry_point', 'trigger_type', 
-                  'trigger_url', 'memory_mb', 'timeout_seconds', 'status', 'tags']
+        fields = [
+            'name',
+            'project',
+            'region',
+            'runtime',
+            'entry_point',
+            'trigger_type',
+            'trigger_url',
+            'memory_mb',
+            'timeout_seconds',
+            'status',
+            'tags',
+        ]
 
 
 class CloudRunForm(NetBoxModelForm):
@@ -326,8 +461,15 @@ class PubSubSubscriptionForm(NetBoxModelForm):
 
     class Meta:
         model = PubSubSubscription
-        fields = ['name', 'project', 'topic', 'push_endpoint', 'ack_deadline_seconds', 
-                  'message_retention_duration', 'tags']
+        fields = [
+            'name',
+            'project',
+            'topic',
+            'push_endpoint',
+            'ack_deadline_seconds',
+            'message_retention_duration',
+            'tags',
+        ]
 
 
 class SecretManagerSecretForm(NetBoxModelForm):
@@ -359,11 +501,18 @@ class MemorystoreInstanceForm(NetBoxModelForm):
 
     class Meta:
         model = MemorystoreInstance
-        fields = ['name', 'project', 'region', 'tier', 'memory_size_gb', 'redis_version', 
-                  'host', 'port', 'status', 'tags']
-
-
-from .models import NCCHub, NCCSpoke, VPNGateway, ExternalVPNGateway, VPNTunnel, InterconnectAttachment
+        fields = [
+            'name',
+            'project',
+            'region',
+            'tier',
+            'memory_size_gb',
+            'redis_version',
+            'host',
+            'port',
+            'status',
+            'tags',
+        ]
 
 
 class NCCHubForm(NetBoxModelForm):
@@ -381,8 +530,19 @@ class NCCSpokeForm(NetBoxModelForm):
 
     class Meta:
         model = NCCSpoke
-        fields = ['name', 'project', 'hub', 'location', 'description', 'spoke_type', 
-                  'linked_vpc_network', 'linked_vpn_tunnels', 'linked_interconnect_attachments', 'labels', 'tags']
+        fields = [
+            'name',
+            'project',
+            'hub',
+            'location',
+            'description',
+            'spoke_type',
+            'linked_vpc_network',
+            'linked_vpn_tunnels',
+            'linked_interconnect_attachments',
+            'labels',
+            'tags',
+        ]
 
 
 class VPNGatewayForm(NetBoxModelForm):
@@ -410,10 +570,23 @@ class VPNTunnelForm(NetBoxModelForm):
 
     class Meta:
         model = VPNTunnel
-        fields = ['name', 'project', 'region', 'vpn_gateway', 'vpn_gateway_interface', 
-                  'peer_external_gateway', 'peer_external_gateway_interface', 'peer_ip',
-                  'ike_version', 'local_traffic_selector', 'remote_traffic_selector', 
-                  'router', 'status', 'labels', 'tags']
+        fields = [
+            'name',
+            'project',
+            'region',
+            'vpn_gateway',
+            'vpn_gateway_interface',
+            'peer_external_gateway',
+            'peer_external_gateway_interface',
+            'peer_ip',
+            'ike_version',
+            'local_traffic_selector',
+            'remote_traffic_selector',
+            'router',
+            'status',
+            'labels',
+            'tags',
+        ]
 
 
 class InterconnectAttachmentForm(NetBoxModelForm):
@@ -422,56 +595,52 @@ class InterconnectAttachmentForm(NetBoxModelForm):
 
     class Meta:
         model = InterconnectAttachment
-        fields = ['name', 'project', 'region', 'router', 'attachment_type', 
-                  'edge_availability_domain', 'bandwidth', 'vlan_tag', 'pairing_key',
-                  'partner_asn', 'cloud_router_ip_address', 'customer_router_ip_address',
-                  'state', 'labels', 'tags']
+        fields = [
+            'name',
+            'project',
+            'region',
+            'router',
+            'attachment_type',
+            'edge_availability_domain',
+            'bandwidth',
+            'vlan_tag',
+            'pairing_key',
+            'partner_asn',
+            'cloud_router_ip_address',
+            'customer_router_ip_address',
+            'state',
+            'labels',
+            'tags',
+        ]
 
 
 class ServiceAttachmentForm(NetBoxModelForm):
-    project = DynamicModelChoiceField(
-        queryset=GCPProject.objects.all()
-    )
+    project = DynamicModelChoiceField(queryset=GCPProject.objects.all())
 
     class Meta:
         model = ServiceAttachment
-        fields = ('name', 'project', 'region', 'connection_preference', 
-                  'target_service', 'nat_subnets', 'tags')
+        fields = ('name', 'project', 'region', 'connection_preference', 'target_service', 'nat_subnets', 'tags')
 
 
 class ServiceAttachmentFilterForm(NetBoxModelFilterSetForm):
     model = ServiceAttachment
-    project = DynamicModelChoiceField(
-        queryset=GCPProject.objects.all(),
-        required=False
-    )
+    project = DynamicModelChoiceField(queryset=GCPProject.objects.all(), required=False)
     name = forms.CharField(required=False)
     region = forms.CharField(required=False)
 
 
 class ServiceConnectEndpointForm(NetBoxModelForm):
-    project = DynamicModelChoiceField(
-        queryset=GCPProject.objects.all()
-    )
-    network = DynamicModelChoiceField(
-        queryset=VPCNetwork.objects.all()
-    )
+    project = DynamicModelChoiceField(queryset=GCPProject.objects.all())
+    network = DynamicModelChoiceField(queryset=VPCNetwork.objects.all())
 
     class Meta:
         model = ServiceConnectEndpoint
-        fields = ('name', 'project', 'region', 'network', 'ip_address', 
-                  'target_service_attachment', 'tags')
+        fields = ('name', 'project', 'region', 'network', 'ip_address', 'target_service_attachment', 'tags')
 
 
 class ServiceConnectEndpointFilterForm(NetBoxModelFilterSetForm):
     model = ServiceConnectEndpoint
-    project = DynamicModelChoiceField(
-        queryset=GCPProject.objects.all(),
-        required=False
-    )
-    network = DynamicModelChoiceField(
-        queryset=VPCNetwork.objects.all(),
-        required=False
-    )
+    project = DynamicModelChoiceField(queryset=GCPProject.objects.all(), required=False)
+    network = DynamicModelChoiceField(queryset=VPCNetwork.objects.all(), required=False)
     name = forms.CharField(required=False)
     region = forms.CharField(required=False)

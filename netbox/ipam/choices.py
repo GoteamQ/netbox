@@ -4,7 +4,6 @@ from utilities.choices import ChoiceSet
 
 
 class IPAddressFamilyChoices(ChoiceSet):
-
     FAMILY_4 = 4
     FAMILY_6 = 6
 
@@ -17,6 +16,7 @@ class IPAddressFamilyChoices(ChoiceSet):
 #
 # Prefixes
 #
+
 
 class PrefixStatusChoices(ChoiceSet):
     key = 'Prefix.status'
@@ -38,6 +38,7 @@ class PrefixStatusChoices(ChoiceSet):
 # IP Ranges
 #
 
+
 class IPRangeStatusChoices(ChoiceSet):
     key = 'IPRange.status'
 
@@ -55,6 +56,7 @@ class IPRangeStatusChoices(ChoiceSet):
 #
 # IP Addresses
 #
+
 
 class IPAddressStatusChoices(ChoiceSet):
     key = 'IPAddress.status'
@@ -75,7 +77,6 @@ class IPAddressStatusChoices(ChoiceSet):
 
 
 class IPAddressRoleChoices(ChoiceSet):
-
     ROLE_LOOPBACK = 'loopback'
     ROLE_SECONDARY = 'secondary'
     ROLE_ANYCAST = 'anycast'
@@ -101,8 +102,8 @@ class IPAddressRoleChoices(ChoiceSet):
 # FHRP
 #
 
-class FHRPGroupProtocolChoices(ChoiceSet):
 
+class FHRPGroupProtocolChoices(ChoiceSet):
     PROTOCOL_VRRP2 = 'vrrp2'
     PROTOCOL_VRRP3 = 'vrrp3'
     PROTOCOL_HSRP = 'hsrp'
@@ -112,24 +113,27 @@ class FHRPGroupProtocolChoices(ChoiceSet):
     PROTOCOL_OTHER = 'other'
 
     CHOICES = (
-        (_('Standard'), (
-            (PROTOCOL_VRRP2, 'VRRPv2'),
-            (PROTOCOL_VRRP3, 'VRRPv3'),
-            (PROTOCOL_CARP, 'CARP'),
-        )),
-        (_('CheckPoint'), (
-            (PROTOCOL_CLUSTERXL, 'ClusterXL'),
-        )),
-        (_('Cisco'), (
-            (PROTOCOL_HSRP, 'HSRP'),
-            (PROTOCOL_GLBP, 'GLBP'),
-        )),
+        (
+            _('Standard'),
+            (
+                (PROTOCOL_VRRP2, 'VRRPv2'),
+                (PROTOCOL_VRRP3, 'VRRPv3'),
+                (PROTOCOL_CARP, 'CARP'),
+            ),
+        ),
+        (_('CheckPoint'), ((PROTOCOL_CLUSTERXL, 'ClusterXL'),)),
+        (
+            _('Cisco'),
+            (
+                (PROTOCOL_HSRP, 'HSRP'),
+                (PROTOCOL_GLBP, 'GLBP'),
+            ),
+        ),
         (PROTOCOL_OTHER, 'Other'),
     )
 
 
 class FHRPGroupAuthTypeChoices(ChoiceSet):
-
     AUTHENTICATION_PLAINTEXT = 'plaintext'
     AUTHENTICATION_MD5 = 'md5'
 
@@ -142,6 +146,7 @@ class FHRPGroupAuthTypeChoices(ChoiceSet):
 #
 # VLANs
 #
+
 
 class VLANStatusChoices(ChoiceSet):
     key = 'VLAN.status'
@@ -158,7 +163,6 @@ class VLANStatusChoices(ChoiceSet):
 
 
 class VLANQinQRoleChoices(ChoiceSet):
-
     ROLE_SERVICE = 'svlan'
     ROLE_CUSTOMER = 'cvlan'
 
@@ -172,8 +176,8 @@ class VLANQinQRoleChoices(ChoiceSet):
 # Services
 #
 
-class ServiceProtocolChoices(ChoiceSet):
 
+class ServiceProtocolChoices(ChoiceSet):
     PROTOCOL_TCP = 'tcp'
     PROTOCOL_UDP = 'udp'
     PROTOCOL_SCTP = 'sctp'

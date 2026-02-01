@@ -18,38 +18,26 @@ __all__ = (
 
 @strawberry_django.type(
     models.DataFile,
-    exclude=['data',],
+    exclude=[
+        'data',
+    ],
     filters=DataFileFilter,
-    pagination=True
+    pagination=True,
 )
 class DataFileType(BaseObjectType):
-    source: Annotated["DataSourceType", strawberry.lazy('core.graphql.types')]
+    source: Annotated['DataSourceType', strawberry.lazy('core.graphql.types')]
 
 
-@strawberry_django.type(
-    models.DataSource,
-    fields='__all__',
-    filters=DataSourceFilter,
-    pagination=True
-)
+@strawberry_django.type(models.DataSource, fields='__all__', filters=DataSourceFilter, pagination=True)
 class DataSourceType(PrimaryObjectType):
-    datafiles: List[Annotated["DataFileType", strawberry.lazy('core.graphql.types')]]
+    datafiles: List[Annotated['DataFileType', strawberry.lazy('core.graphql.types')]]
 
 
-@strawberry_django.type(
-    models.ObjectChange,
-    fields='__all__',
-    filters=ObjectChangeFilter,
-    pagination=True
-)
+@strawberry_django.type(models.ObjectChange, fields='__all__', filters=ObjectChangeFilter, pagination=True)
 class ObjectChangeType(BaseObjectType):
     pass
 
 
-@strawberry_django.type(
-    DjangoContentType,
-    fields='__all__',
-    pagination=True
-)
+@strawberry_django.type(DjangoContentType, fields='__all__', pagination=True)
 class ContentType:
     pass

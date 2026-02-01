@@ -15,6 +15,7 @@ class DataFileLoader(BaseLoader):
     """
     Custom Jinja2 loader to facilitate populating template content from DataFiles.
     """
+
     def __init__(self, data_source):
         self.data_source = data_source
         self._template_cache = {}
@@ -35,9 +36,7 @@ class DataFileLoader(BaseLoader):
             # defined, we can filter by path for optimization.
             if None not in referenced_templates:
                 related_files = related_files.filter(path__in=referenced_templates)
-            self.cache_templates({
-                df.path: df.data_as_string for df in related_files
-            })
+            self.cache_templates({df.path: df.data_as_string for df in related_files})
 
         return template_source, template, lambda: True
 
@@ -49,6 +48,7 @@ class DataFileLoader(BaseLoader):
 # Utility functions
 #
 
+
 def render_jinja2(template_code, context, environment_params=None, data_file=None):
     """
     Render a Jinja2 template with the provided context. Return the rendered content.
@@ -58,9 +58,7 @@ def render_jinja2(template_code, context, environment_params=None, data_file=Non
     if 'loader' not in environment_params:
         if data_file:
             loader = DataFileLoader(data_file.source)
-            loader.cache_templates({
-                data_file.path: template_code
-            })
+            loader.cache_templates({data_file.path: template_code})
         else:
             loader = BaseLoader()
         environment_params['loader'] = loader

@@ -15,16 +15,18 @@ from ipam.models import Prefix, VLAN, VRF
 from users.constants import TOKEN_PREFIX
 from users.models import Token
 from utilities.testing import (
-    APITestCase, APIViewTestCases, create_test_device, create_test_virtualmachine, disable_logging,
+    APITestCase,
+    APIViewTestCases,
+    create_test_device,
+    create_test_virtualmachine,
+    disable_logging,
 )
 from virtualization.choices import *
 from virtualization.models import *
 
 
 class AppTest(APITestCase):
-
     def test_root(self):
-
         url = reverse('virtualization-api:api-root')
         response = self.client.get('{}?format=api'.format(url), **self.header)
 
@@ -54,7 +56,6 @@ class ClusterTypeTest(APIViewTestCases.APIViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
-
         cluster_types = (
             ClusterType(name='Cluster Type 1', slug='cluster-type-1'),
             ClusterType(name='Cluster Type 2', slug='cluster-type-2'),
@@ -86,7 +87,6 @@ class ClusterGroupTest(APIViewTestCases.APIViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
-
         cluster_Groups = (
             ClusterGroup(name='Cluster Group 1', slug='cluster-type-1'),
             ClusterGroup(name='Cluster Group 2', slug='cluster-type-2'),
@@ -105,7 +105,6 @@ class ClusterTest(APIViewTestCases.APIViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
-
         cluster_types = (
             ClusterType(name='Cluster Type 1', slug='cluster-type-1'),
             ClusterType(name='Cluster Type 2', slug='cluster-type-2'),
@@ -201,12 +200,7 @@ class VirtualMachineTest(APIViewTestCases.APIViewTestCase):
                 device=device1,
                 local_context_data={'A': 1},
             ),
-            VirtualMachine(
-                name='Virtual Machine 2',
-                site=sites[0],
-                cluster=clusters[0],
-                local_context_data={'B': 2
-                                    }),
+            VirtualMachine(name='Virtual Machine 2', site=sites[0], cluster=clusters[0], local_context_data={'B': 2}),
             VirtualMachine(
                 name='Virtual Machine 3',
                 site=sites[0],
@@ -277,17 +271,14 @@ class VirtualMachineTest(APIViewTestCases.APIViewTestCase):
 
     def test_render_config(self):
         configtemplate = ConfigTemplate.objects.create(
-            name='Config Template 1',
-            template_code='Config for virtual machine {{ virtualmachine.name }}'
+            name='Config Template 1', template_code='Config for virtual machine {{ virtualmachine.name }}'
         )
 
         vm = VirtualMachine.objects.first()
         vm.config_template = configtemplate
         vm.save()
 
-        self.add_permissions(
-            'virtualization.render_config_virtualmachine', 'virtualization.view_virtualmachine'
-        )
+        self.add_permissions('virtualization.render_config_virtualmachine', 'virtualization.view_virtualmachine')
         url = reverse('virtualization-api:virtualmachine-render-config', kwargs={'pk': vm.pk})
         response = self.client.post(url, {}, format='json', **self.header)
         self.assertHttpStatus(response, status.HTTP_200_OK)
@@ -295,8 +286,7 @@ class VirtualMachineTest(APIViewTestCases.APIViewTestCase):
 
     def test_render_config_without_permission(self):
         configtemplate = ConfigTemplate.objects.create(
-            name='Config Template 1',
-            template_code='Config for virtual machine {{ virtualmachine.name }}'
+            name='Config Template 1', template_code='Config for virtual machine {{ virtualmachine.name }}'
         )
 
         vm = VirtualMachine.objects.first()
@@ -310,8 +300,7 @@ class VirtualMachineTest(APIViewTestCases.APIViewTestCase):
 
     def test_render_config_token_write_enabled(self):
         configtemplate = ConfigTemplate.objects.create(
-            name='Config Template 1',
-            template_code='Config for virtual machine {{ virtualmachine.name }}'
+            name='Config Template 1', template_code='Config for virtual machine {{ virtualmachine.name }}'
         )
 
         vm = VirtualMachine.objects.first()
@@ -347,7 +336,7 @@ class VMInterfaceTest(APIViewTestCases.APIViewTestCase):
         'description': 'New description',
     }
     graphql_base_name = 'vm_interface'
-    user_permissions = ('virtualization.view_virtualmachine', )
+    user_permissions = ('virtualization.view_virtualmachine',)
 
     @classmethod
     def setUpTestData(cls):
@@ -416,7 +405,7 @@ class VMInterfaceTest(APIViewTestCases.APIViewTestCase):
             name='associated_interface',
             type=CustomFieldTypeChoices.TYPE_OBJECT,
             related_object_type=ObjectType.objects.get_for_model(VMInterface),
-            required=False
+            required=False,
         )
         cf.object_types.set([ObjectType.objects.get_for_model(Prefix)])
         cf.save()
@@ -449,11 +438,7 @@ class VMInterfaceTest(APIViewTestCases.APIViewTestCase):
         self.add_permissions('virtualization.delete_vminterface')
 
         # Create a child interface
-        child = VMInterface.objects.create(
-            virtual_machine=virtual_machine,
-            name='Interface 1A',
-            parent=interface1
-        )
+        child = VMInterface.objects.create(virtual_machine=virtual_machine, name='Interface 1A', parent=interface1)
         self.assertEqual(virtual_machine.interfaces.count(), 4)
 
         # Attempt to delete only the parent interface
@@ -464,8 +449,8 @@ class VMInterfaceTest(APIViewTestCases.APIViewTestCase):
 
         # Attempt to bulk delete parent & child together
         data = [
-            {"id": interface1.pk},
-            {"id": child.pk},
+            {'id': interface1.pk},
+            {'id': child.pk},
         ]
         self.client.delete(self._get_list_url(), data, format='json', **self.header)
         self.assertEqual(virtual_machine.interfaces.count(), 2)  # Child & parent were both deleted
@@ -478,7 +463,7 @@ class VirtualDiskTest(APIViewTestCases.APIViewTestCase):
         'size': 888,
     }
     graphql_base_name = 'virtual_disk'
-    user_permissions = ('virtualization.view_virtualmachine', )
+    user_permissions = ('virtualization.view_virtualmachine',)
 
     @classmethod
     def setUpTestData(cls):

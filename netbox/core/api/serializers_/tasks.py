@@ -11,9 +11,7 @@ __all__ = (
 class BackgroundTaskSerializer(serializers.Serializer):
     id = serializers.CharField()
     url = serializers.HyperlinkedIdentityField(
-        view_name='core-api:rqtask-detail',
-        lookup_field='id',
-        lookup_url_kwarg='id'
+        view_name='core-api:rqtask-detail', lookup_field='id', lookup_url_kwarg='id'
     )
     description = serializers.CharField()
     origin = serializers.CharField()
@@ -43,14 +41,10 @@ class BackgroundTaskSerializer(serializers.Serializer):
     is_stopped = serializers.BooleanField()
 
     def get_args(self, obj) -> list:
-        return [
-            str(arg) for arg in obj.args
-        ]
+        return [str(arg) for arg in obj.args]
 
     def get_kwargs(self, obj) -> dict:
-        return {
-            key: str(value) for key, value in obj.kwargs.items()
-        }
+        return {key: str(value) for key, value in obj.kwargs.items()}
 
     def get_position(self, obj) -> int:
         return obj.get_position()
@@ -74,20 +68,15 @@ class BackgroundQueueSerializer(serializers.Serializer):
     scheduled_jobs = serializers.IntegerField()
 
     def get_url(self, obj):
-        return reverse('core-api:rqqueue-detail', args=[obj['name']], request=self.context.get("request"))
+        return reverse('core-api:rqqueue-detail', args=[obj['name']], request=self.context.get('request'))
 
 
 class BackgroundWorkerSerializer(serializers.Serializer):
     name = serializers.CharField()
-    url = serializers.HyperlinkedIdentityField(
-        view_name='core-api:rqworker-detail',
-        lookup_field='name'
-    )
+    url = serializers.HyperlinkedIdentityField(view_name='core-api:rqworker-detail', lookup_field='name')
     state = serializers.SerializerMethodField()
     birth_date = serializers.DateTimeField()
-    queue_names = serializers.ListField(
-        child=serializers.CharField()
-    )
+    queue_names = serializers.ListField(child=serializers.CharField())
     pid = serializers.CharField()
     successful_job_count = serializers.IntegerField()
     failed_job_count = serializers.IntegerField()

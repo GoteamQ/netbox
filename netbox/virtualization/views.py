@@ -14,7 +14,14 @@ from extras.views import ObjectConfigContextView, ObjectRenderConfigView
 from ipam.models import IPAddress, VLANGroup
 from ipam.tables import InterfaceVLANTable, VLANTranslationRuleTable
 from netbox.object_actions import (
-    AddObject, BulkDelete, BulkEdit, BulkExport, BulkImport, BulkRename, DeleteObject, EditObject,
+    AddObject,
+    BulkDelete,
+    BulkEdit,
+    BulkExport,
+    BulkImport,
+    BulkRename,
+    DeleteObject,
+    EditObject,
 )
 from netbox.views import generic
 from utilities.query import count_related
@@ -29,11 +36,10 @@ from .object_actions import BulkAddComponents
 # Cluster types
 #
 
+
 @register_model_view(ClusterType, 'list', path='', detail=False)
 class ClusterTypeListView(generic.ObjectListView):
-    queryset = ClusterType.objects.annotate(
-        cluster_count=count_related(Cluster, 'type')
-    )
+    queryset = ClusterType.objects.annotate(cluster_count=count_related(Cluster, 'type'))
     filterset = filtersets.ClusterTypeFilterSet
     filterset_form = forms.ClusterTypeFilterForm
     table = tables.ClusterTypeTable
@@ -69,9 +75,7 @@ class ClusterTypeBulkImportView(generic.BulkImportView):
 
 @register_model_view(ClusterType, 'bulk_edit', path='edit', detail=False)
 class ClusterTypeBulkEditView(generic.BulkEditView):
-    queryset = ClusterType.objects.annotate(
-        cluster_count=count_related(Cluster, 'type')
-    )
+    queryset = ClusterType.objects.annotate(cluster_count=count_related(Cluster, 'type'))
     filterset = filtersets.ClusterTypeFilterSet
     table = tables.ClusterTypeTable
     form = forms.ClusterTypeBulkEditForm
@@ -85,9 +89,7 @@ class ClusterTypeBulkRenameView(generic.BulkRenameView):
 
 @register_model_view(ClusterType, 'bulk_delete', path='delete', detail=False)
 class ClusterTypeBulkDeleteView(generic.BulkDeleteView):
-    queryset = ClusterType.objects.annotate(
-        cluster_count=count_related(Cluster, 'type')
-    )
+    queryset = ClusterType.objects.annotate(cluster_count=count_related(Cluster, 'type'))
     filterset = filtersets.ClusterTypeFilterSet
     table = tables.ClusterTypeTable
 
@@ -96,11 +98,10 @@ class ClusterTypeBulkDeleteView(generic.BulkDeleteView):
 # Cluster groups
 #
 
+
 @register_model_view(ClusterGroup, 'list', path='', detail=False)
 class ClusterGroupListView(generic.ObjectListView):
-    queryset = ClusterGroup.objects.annotate(
-        cluster_count=count_related(Cluster, 'group')
-    )
+    queryset = ClusterGroup.objects.annotate(cluster_count=count_related(Cluster, 'group'))
     filterset = filtersets.ClusterGroupFilterSet
     filterset_form = forms.ClusterGroupFilterForm
     table = tables.ClusterGroupTable
@@ -117,10 +118,11 @@ class ClusterGroupView(GetRelatedModelsMixin, generic.ObjectView):
                 instance,
                 extra=(
                     (
-                    VLANGroup.objects.restrict(request.user, 'view').filter(
-                        scope_type=ContentType.objects.get_for_model(ClusterGroup),
-                        scope_id=instance.pk
-                    ), 'cluster_group'),
+                        VLANGroup.objects.restrict(request.user, 'view').filter(
+                            scope_type=ContentType.objects.get_for_model(ClusterGroup), scope_id=instance.pk
+                        ),
+                        'cluster_group',
+                    ),
                 ),
             ),
         }
@@ -140,17 +142,13 @@ class ClusterGroupDeleteView(generic.ObjectDeleteView):
 
 @register_model_view(ClusterGroup, 'bulk_import', path='import', detail=False)
 class ClusterGroupBulkImportView(generic.BulkImportView):
-    queryset = ClusterGroup.objects.annotate(
-        cluster_count=count_related(Cluster, 'group')
-    )
+    queryset = ClusterGroup.objects.annotate(cluster_count=count_related(Cluster, 'group'))
     model_form = forms.ClusterGroupImportForm
 
 
 @register_model_view(ClusterGroup, 'bulk_edit', path='edit', detail=False)
 class ClusterGroupBulkEditView(generic.BulkEditView):
-    queryset = ClusterGroup.objects.annotate(
-        cluster_count=count_related(Cluster, 'group')
-    )
+    queryset = ClusterGroup.objects.annotate(cluster_count=count_related(Cluster, 'group'))
     filterset = filtersets.ClusterGroupFilterSet
     table = tables.ClusterGroupTable
     form = forms.ClusterGroupBulkEditForm
@@ -164,9 +162,7 @@ class ClusterGroupBulkRenameView(generic.BulkRenameView):
 
 @register_model_view(ClusterGroup, 'bulk_delete', path='delete', detail=False)
 class ClusterGroupBulkDeleteView(generic.BulkDeleteView):
-    queryset = ClusterGroup.objects.annotate(
-        cluster_count=count_related(Cluster, 'group')
-    )
+    queryset = ClusterGroup.objects.annotate(cluster_count=count_related(Cluster, 'group'))
     filterset = filtersets.ClusterGroupFilterSet
     table = tables.ClusterGroupTable
 
@@ -175,12 +171,12 @@ class ClusterGroupBulkDeleteView(generic.BulkDeleteView):
 # Clusters
 #
 
+
 @register_model_view(Cluster, 'list', path='', detail=False)
 class ClusterListView(generic.ObjectListView):
     permission_required = 'virtualization.view_cluster'
     queryset = Cluster.objects.annotate(
-        device_count=count_related(Device, 'cluster'),
-        vm_count=count_related(VirtualMachine, 'cluster')
+        device_count=count_related(Device, 'cluster'), vm_count=count_related(VirtualMachine, 'cluster')
     )
     table = tables.ClusterTable
     filterset = filtersets.ClusterFilterSet
@@ -194,21 +190,21 @@ class ClusterView(GetRelatedModelsMixin, generic.ObjectView):
     def get_extra_context(self, request, instance):
         return {
             **instance.virtual_machines.aggregate(
-                vcpus_sum=Sum('vcpus'),
-                memory_sum=Sum('memory'),
-                disk_sum=Sum('disk')
+                vcpus_sum=Sum('vcpus'), memory_sum=Sum('memory'), disk_sum=Sum('disk')
             ),
             'related_models': self.get_related_models(
                 request,
                 instance,
                 omit=(),
                 extra=(
-                    (VLANGroup.objects.restrict(request.user, 'view').filter(
-                        scope_type=ContentType.objects.get_for_model(Cluster),
-                        scope_id=instance.pk
-                    ), 'cluster'),
-                )
+                    (
+                        VLANGroup.objects.restrict(request.user, 'view').filter(
+                            scope_type=ContentType.objects.get_for_model(Cluster), scope_id=instance.pk
+                        ),
+                        'cluster',
+                    ),
                 ),
+            ),
         }
 
 
@@ -224,7 +220,7 @@ class ClusterVirtualMachinesView(generic.ObjectChildrenView):
         label=_('Virtual Machines'),
         badge=lambda obj: obj.virtual_machines.count(),
         permission='virtualization.view_virtualmachine',
-        weight=500
+        weight=500,
     )
 
     def get_children(self, request, parent):
@@ -243,7 +239,7 @@ class ClusterDevicesView(generic.ObjectChildrenView):
         label=_('Devices'),
         badge=lambda obj: obj.devices.count(),
         permission='virtualization.view_virtualmachine',
-        weight=600
+        weight=600,
     )
 
     def get_children(self, request, parent):
@@ -299,42 +295,48 @@ class ClusterAddDevicesView(generic.ObjectEditView):
         cluster = get_object_or_404(self.queryset, pk=pk)
         form = self.form(cluster, initial=request.GET)
 
-        return render(request, self.template_name, {
-            'cluster': cluster,
-            'form': form,
-            'return_url': reverse('virtualization:cluster', kwargs={'pk': pk}),
-        })
+        return render(
+            request,
+            self.template_name,
+            {
+                'cluster': cluster,
+                'form': form,
+                'return_url': reverse('virtualization:cluster', kwargs={'pk': pk}),
+            },
+        )
 
     def post(self, request, pk):
         cluster = get_object_or_404(self.queryset, pk=pk)
         form = self.form(cluster, request.POST)
 
         if form.is_valid():
-
             device_pks = form.cleaned_data['devices']
             with transaction.atomic(using=router.db_for_write(Device)):
-
                 # Assign the selected Devices to the Cluster
                 for device in Device.objects.filter(pk__in=device_pks):
                     device.cluster = cluster
                     device.save()
 
-            messages.success(request, _("Added {count} devices to cluster {cluster}").format(
-                count=len(device_pks),
-                cluster=cluster
-            ))
+            messages.success(
+                request, _('Added {count} devices to cluster {cluster}').format(count=len(device_pks), cluster=cluster)
+            )
             return redirect(cluster.get_absolute_url())
 
-        return render(request, self.template_name, {
-            'cluster': cluster,
-            'form': form,
-            'return_url': cluster.get_absolute_url(),
-        })
+        return render(
+            request,
+            self.template_name,
+            {
+                'cluster': cluster,
+                'form': form,
+                'return_url': cluster.get_absolute_url(),
+            },
+        )
 
 
 #
 # Virtual machines
 #
+
 
 @register_model_view(VirtualMachine, 'list', path='', detail=False)
 class VirtualMachineListView(generic.ObjectListView):
@@ -362,7 +364,7 @@ class VirtualMachineInterfacesView(generic.ObjectChildrenView):
         label=_('Interfaces'),
         badge=lambda obj: obj.interface_count,
         permission='virtualization.view_vminterface',
-        weight=500
+        weight=500,
     )
 
     def get_children(self, request, parent):
@@ -384,7 +386,7 @@ class VirtualMachineVirtualDisksView(generic.ObjectChildrenView):
         label=_('Virtual Disks'),
         badge=lambda obj: obj.virtual_disk_count,
         permission='virtualization.view_virtualdisk',
-        weight=500
+        weight=500,
     )
 
     def get_children(self, request, parent):
@@ -395,10 +397,7 @@ class VirtualMachineVirtualDisksView(generic.ObjectChildrenView):
 class VirtualMachineConfigContextView(ObjectConfigContextView):
     queryset = VirtualMachine.objects.annotate_config_context_data()
     base_template = 'virtualization/virtualmachine.html'
-    tab = ViewTab(
-        label=_('Config Context'),
-        weight=2000
-    )
+    tab = ViewTab(label=_('Config Context'), weight=2000)
 
 
 @register_model_view(VirtualMachine, 'render-config')
@@ -455,6 +454,7 @@ class VirtualMachineBulkDeleteView(generic.BulkDeleteView):
 # VM interfaces
 #
 
+
 @register_model_view(VMInterface, 'list', path='', detail=False)
 class VMInterfaceListView(generic.ObjectListView):
     queryset = VMInterface.objects.all()
@@ -468,13 +468,10 @@ class VMInterfaceView(generic.ObjectView):
     queryset = VMInterface.objects.all()
 
     def get_extra_context(self, request, instance):
-
         # Get child interfaces
         child_interfaces = VMInterface.objects.restrict(request.user, 'view').filter(parent=instance)
         child_interfaces_tables = tables.VMInterfaceTable(
-            child_interfaces,
-            exclude=('virtual_machine',),
-            orderable=False
+            child_interfaces, exclude=('virtual_machine',), orderable=False
         )
         child_interfaces_tables.configure(request)
 
@@ -482,8 +479,7 @@ class VMInterfaceView(generic.ObjectView):
         vlan_translation_table = None
         if instance.vlan_translation_policy:
             vlan_translation_table = VLANTranslationRuleTable(
-                data=instance.vlan_translation_policy.rules.all(),
-                orderable=False
+                data=instance.vlan_translation_policy.rules.all(), orderable=False
             )
             vlan_translation_table.configure(request)
 
@@ -495,11 +491,7 @@ class VMInterfaceView(generic.ObjectView):
         for vlan in instance.tagged_vlans.restrict(request.user).prefetch_related('site', 'group', 'tenant', 'role'):
             vlan.tagged = True
             vlans.append(vlan)
-        vlan_table = InterfaceVLANTable(
-            interface=instance,
-            data=vlans,
-            orderable=False
-        )
+        vlan_table = InterfaceVLANTable(interface=instance, data=vlans, orderable=False)
         vlan_table.configure(request)
 
         return {
@@ -559,6 +551,7 @@ class VMInterfaceBulkDeleteView(generic.BulkDeleteView):
 #
 # Virtual disks
 #
+
 
 @register_model_view(VirtualDisk, 'list', path='', detail=False)
 class VirtualDiskListView(generic.ObjectListView):
@@ -622,6 +615,7 @@ class VirtualDiskBulkDeleteView(generic.BulkDeleteView):
 #
 # Bulk Device component creation
 #
+
 
 class VirtualMachineBulkAddInterfaceView(generic.BulkComponentCreateView):
     parent_model = VirtualMachine

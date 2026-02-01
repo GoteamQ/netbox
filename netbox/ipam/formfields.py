@@ -9,9 +9,10 @@ from netaddr import IPAddress, IPNetwork, AddrFormatError
 # Form fields
 #
 
+
 class IPAddressFormField(forms.Field):
     default_error_messages = {
-        'invalid': _("Enter a valid IPv4 or IPv6 address (without a mask)."),
+        'invalid': _('Enter a valid IPv4 or IPv6 address (without a mask).'),
     }
 
     def to_python(self, value):
@@ -29,19 +30,19 @@ class IPAddressFormField(forms.Field):
             try:
                 validate_ipv6_address(value)
             except ValidationError:
-                raise ValidationError(_("Invalid IPv4/IPv6 address format: {address}").format(address=value))
+                raise ValidationError(_('Invalid IPv4/IPv6 address format: {address}').format(address=value))
 
         try:
             return IPAddress(value)
         except ValueError:
             raise ValidationError(_('This field requires an IP address without a mask.'))
         except AddrFormatError:
-            raise ValidationError(_("Please specify a valid IPv4 or IPv6 address."))
+            raise ValidationError(_('Please specify a valid IPv4 or IPv6 address.'))
 
 
 class IPNetworkFormField(forms.Field):
     default_error_messages = {
-        'invalid': _("Enter a valid IPv4 or IPv6 address (with CIDR mask)."),
+        'invalid': _('Enter a valid IPv4 or IPv6 address (with CIDR mask).'),
     }
 
     def to_python(self, value):
@@ -58,4 +59,4 @@ class IPNetworkFormField(forms.Field):
         try:
             return IPNetwork(value)
         except AddrFormatError:
-            raise ValidationError(_("Please specify a valid IPv4 or IPv6 address."))
+            raise ValidationError(_('Please specify a valid IPv4 or IPv6 address.'))

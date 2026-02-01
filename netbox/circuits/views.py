@@ -1,4 +1,3 @@
-
 from dcim.views import PathTraceView
 from ipam.models import ASN
 from netbox.object_actions import AddObject, BulkDelete, BulkEdit, BulkExport, BulkImport
@@ -12,6 +11,7 @@ from .models import *
 #
 # Providers
 #
+
 
 @register_model_view(Provider, 'list', path='', detail=False)
 class ProviderListView(generic.ObjectListView):
@@ -43,7 +43,7 @@ class ProviderView(GetRelatedModelsMixin, generic.ObjectView):
                         'provider_id',
                     ),
                 ),
-                ),
+            ),
         }
 
 
@@ -67,9 +67,7 @@ class ProviderBulkImportView(generic.BulkImportView):
 
 @register_model_view(Provider, 'bulk_edit', path='edit', detail=False)
 class ProviderBulkEditView(generic.BulkEditView):
-    queryset = Provider.objects.annotate(
-        count_circuits=count_related(Circuit, 'provider')
-    )
+    queryset = Provider.objects.annotate(count_circuits=count_related(Circuit, 'provider'))
     filterset = filtersets.ProviderFilterSet
     table = tables.ProviderTable
     form = forms.ProviderBulkEditForm
@@ -83,9 +81,7 @@ class ProviderBulkRenameView(generic.BulkRenameView):
 
 @register_model_view(Provider, 'bulk_delete', path='delete', detail=False)
 class ProviderBulkDeleteView(generic.BulkDeleteView):
-    queryset = Provider.objects.annotate(
-        count_circuits=count_related(Circuit, 'provider')
-    )
+    queryset = Provider.objects.annotate(count_circuits=count_related(Circuit, 'provider'))
     filterset = filtersets.ProviderFilterSet
     table = tables.ProviderTable
 
@@ -94,11 +90,10 @@ class ProviderBulkDeleteView(generic.BulkDeleteView):
 # ProviderAccounts
 #
 
+
 @register_model_view(ProviderAccount, 'list', path='', detail=False)
 class ProviderAccountListView(generic.ObjectListView):
-    queryset = ProviderAccount.objects.annotate(
-        count_circuits=count_related(Circuit, 'provider_account')
-    )
+    queryset = ProviderAccount.objects.annotate(count_circuits=count_related(Circuit, 'provider_account'))
     filterset = filtersets.ProviderAccountFilterSet
     filterset_form = forms.ProviderAccountFilterForm
     table = tables.ProviderAccountTable
@@ -135,9 +130,7 @@ class ProviderAccountBulkImportView(generic.BulkImportView):
 
 @register_model_view(ProviderAccount, 'bulk_edit', path='edit', detail=False)
 class ProviderAccountBulkEditView(generic.BulkEditView):
-    queryset = ProviderAccount.objects.annotate(
-        count_circuits=count_related(Circuit, 'provider_account')
-    )
+    queryset = ProviderAccount.objects.annotate(count_circuits=count_related(Circuit, 'provider_account'))
     filterset = filtersets.ProviderAccountFilterSet
     table = tables.ProviderAccountTable
     form = forms.ProviderAccountBulkEditForm
@@ -151,9 +144,7 @@ class ProviderAccountBulkRenameView(generic.BulkRenameView):
 
 @register_model_view(ProviderAccount, 'bulk_delete', path='delete', detail=False)
 class ProviderAccountBulkDeleteView(generic.BulkDeleteView):
-    queryset = ProviderAccount.objects.annotate(
-        count_circuits=count_related(Circuit, 'provider_account')
-    )
+    queryset = ProviderAccount.objects.annotate(count_circuits=count_related(Circuit, 'provider_account'))
     filterset = filtersets.ProviderAccountFilterSet
     table = tables.ProviderAccountTable
 
@@ -161,6 +152,7 @@ class ProviderAccountBulkDeleteView(generic.BulkDeleteView):
 #
 # Provider networks
 #
+
 
 @register_model_view(ProviderNetwork, 'list', path='', detail=False)
 class ProviderNetworkListView(generic.ObjectListView):
@@ -237,11 +229,10 @@ class ProviderNetworkBulkDeleteView(generic.BulkDeleteView):
 # Circuit Types
 #
 
+
 @register_model_view(CircuitType, 'list', path='', detail=False)
 class CircuitTypeListView(generic.ObjectListView):
-    queryset = CircuitType.objects.annotate(
-        circuit_count=count_related(Circuit, 'type')
-    )
+    queryset = CircuitType.objects.annotate(circuit_count=count_related(Circuit, 'type'))
     filterset = filtersets.CircuitTypeFilterSet
     filterset_form = forms.CircuitTypeFilterForm
     table = tables.CircuitTypeTable
@@ -277,9 +268,7 @@ class CircuitTypeBulkImportView(generic.BulkImportView):
 
 @register_model_view(CircuitType, 'bulk_edit', path='edit', detail=False)
 class CircuitTypeBulkEditView(generic.BulkEditView):
-    queryset = CircuitType.objects.annotate(
-        circuit_count=count_related(Circuit, 'type')
-    )
+    queryset = CircuitType.objects.annotate(circuit_count=count_related(Circuit, 'type'))
     filterset = filtersets.CircuitTypeFilterSet
     table = tables.CircuitTypeTable
     form = forms.CircuitTypeBulkEditForm
@@ -293,9 +282,7 @@ class CircuitTypeBulkRenameView(generic.BulkRenameView):
 
 @register_model_view(CircuitType, 'bulk_delete', path='delete', detail=False)
 class CircuitTypeBulkDeleteView(generic.BulkDeleteView):
-    queryset = CircuitType.objects.annotate(
-        circuit_count=count_related(Circuit, 'type')
-    )
+    queryset = CircuitType.objects.annotate(circuit_count=count_related(Circuit, 'type'))
     filterset = filtersets.CircuitTypeFilterSet
     table = tables.CircuitTypeTable
 
@@ -304,10 +291,13 @@ class CircuitTypeBulkDeleteView(generic.BulkDeleteView):
 # Circuits
 #
 
+
 @register_model_view(Circuit, 'list', path='', detail=False)
 class CircuitListView(generic.ObjectListView):
     queryset = Circuit.objects.prefetch_related(
-        'tenant__group', 'termination_a__termination', 'termination_z__termination',
+        'tenant__group',
+        'termination_a__termination',
+        'termination_z__termination',
     )
     filterset = filtersets.CircuitFilterSet
     filterset_form = forms.CircuitFilterForm
@@ -350,7 +340,9 @@ class CircuitBulkImportView(generic.BulkImportView):
 @register_model_view(Circuit, 'bulk_edit', path='edit', detail=False)
 class CircuitBulkEditView(generic.BulkEditView):
     queryset = Circuit.objects.prefetch_related(
-        'tenant__group', 'termination_a__termination', 'termination_z__termination',
+        'tenant__group',
+        'termination_a__termination',
+        'termination_z__termination',
     )
     filterset = filtersets.CircuitFilterSet
     table = tables.CircuitTable
@@ -367,7 +359,9 @@ class CircuitBulkRenameView(generic.BulkRenameView):
 @register_model_view(Circuit, 'bulk_delete', path='delete', detail=False)
 class CircuitBulkDeleteView(generic.BulkDeleteView):
     queryset = Circuit.objects.prefetch_related(
-        'tenant__group', 'termination_a__termination', 'termination_z__termination',
+        'tenant__group',
+        'termination_a__termination',
+        'termination_z__termination',
     )
     filterset = filtersets.CircuitFilterSet
     table = tables.CircuitTable
@@ -376,6 +370,7 @@ class CircuitBulkDeleteView(generic.BulkDeleteView):
 #
 # Circuit terminations
 #
+
 
 @register_model_view(CircuitTermination, 'list', path='', detail=False)
 class CircuitTerminationListView(generic.ObjectListView):
@@ -431,6 +426,7 @@ register_model_view(CircuitTermination, 'trace', kwargs={'model': CircuitTermina
 #
 # Circuit Groups
 #
+
 
 @register_model_view(CircuitGroup, 'list', path='', detail=False)
 class CircuitGroupListView(generic.ObjectListView):
@@ -495,6 +491,7 @@ class CircuitGroupBulkDeleteView(generic.BulkDeleteView):
 # Circuit Groups
 #
 
+
 @register_model_view(CircuitGroupAssignment, 'list', path='', detail=False)
 class CircuitGroupAssignmentListView(generic.ObjectListView):
     queryset = CircuitGroupAssignment.objects.all()
@@ -546,11 +543,10 @@ class CircuitGroupAssignmentBulkDeleteView(generic.BulkDeleteView):
 # Virtual circuit Types
 #
 
+
 @register_model_view(VirtualCircuitType, 'list', path='', detail=False)
 class VirtualCircuitTypeListView(generic.ObjectListView):
-    queryset = VirtualCircuitType.objects.annotate(
-        virtual_circuit_count=count_related(VirtualCircuit, 'type')
-    )
+    queryset = VirtualCircuitType.objects.annotate(virtual_circuit_count=count_related(VirtualCircuit, 'type'))
     filterset = filtersets.VirtualCircuitTypeFilterSet
     filterset_form = forms.VirtualCircuitTypeFilterForm
     table = tables.VirtualCircuitTypeTable
@@ -586,9 +582,7 @@ class VirtualCircuitTypeBulkImportView(generic.BulkImportView):
 
 @register_model_view(VirtualCircuitType, 'bulk_edit', path='edit', detail=False)
 class VirtualCircuitTypeBulkEditView(generic.BulkEditView):
-    queryset = VirtualCircuitType.objects.annotate(
-        circuit_count=count_related(Circuit, 'type')
-    )
+    queryset = VirtualCircuitType.objects.annotate(circuit_count=count_related(Circuit, 'type'))
     filterset = filtersets.VirtualCircuitTypeFilterSet
     table = tables.VirtualCircuitTypeTable
     form = forms.VirtualCircuitTypeBulkEditForm
@@ -602,9 +596,7 @@ class VirtualCircuitTypeBulkRenameView(generic.BulkRenameView):
 
 @register_model_view(VirtualCircuitType, 'bulk_delete', path='delete', detail=False)
 class VirtualCircuitTypeBulkDeleteView(generic.BulkDeleteView):
-    queryset = VirtualCircuitType.objects.annotate(
-        circuit_count=count_related(Circuit, 'type')
-    )
+    queryset = VirtualCircuitType.objects.annotate(circuit_count=count_related(Circuit, 'type'))
     filterset = filtersets.VirtualCircuitTypeFilterSet
     table = tables.VirtualCircuitTypeTable
 
@@ -612,6 +604,7 @@ class VirtualCircuitTypeBulkDeleteView(generic.BulkDeleteView):
 #
 # Virtual circuits
 #
+
 
 @register_model_view(VirtualCircuit, 'list', path='', detail=False)
 class VirtualCircuitListView(generic.ObjectListView):
@@ -685,6 +678,7 @@ class VirtualCircuitBulkDeleteView(generic.BulkDeleteView):
 #
 # Virtual circuit terminations
 #
+
 
 class VirtualCircuitTerminationListView(generic.ObjectListView):
     queryset = VirtualCircuitTermination.objects.all()

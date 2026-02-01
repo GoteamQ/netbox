@@ -59,10 +59,7 @@ class GroupFilterSet(BaseFilterSet):
     def search(self, queryset, name, value):
         if not value.strip():
             return queryset
-        return queryset.filter(
-            Q(name__icontains=value) |
-            Q(description__icontains=value)
-        )
+        return queryset.filter(Q(name__icontains=value) | Q(description__icontains=value))
 
 
 @register_filterset
@@ -107,7 +104,14 @@ class UserFilterSet(BaseFilterSet):
     class Meta:
         model = User
         fields = (
-            'id', 'username', 'first_name', 'last_name', 'email', 'date_joined', 'last_login', 'is_active',
+            'id',
+            'username',
+            'first_name',
+            'last_name',
+            'email',
+            'date_joined',
+            'last_login',
+            'is_active',
             'is_superuser',
         )
 
@@ -115,10 +119,10 @@ class UserFilterSet(BaseFilterSet):
         if not value.strip():
             return queryset
         return queryset.filter(
-            Q(username__icontains=value) |
-            Q(first_name__icontains=value) |
-            Q(last_name__icontains=value) |
-            Q(email__icontains=value)
+            Q(username__icontains=value)
+            | Q(first_name__icontains=value)
+            | Q(last_name__icontains=value)
+            | Q(email__icontains=value)
         )
 
 
@@ -140,48 +144,34 @@ class TokenFilterSet(BaseFilterSet):
         label=_('User (name)'),
     )
     created = django_filters.DateTimeFilter()
-    created__gte = django_filters.DateTimeFilter(
-        field_name='created',
-        lookup_expr='gte'
-    )
-    created__lte = django_filters.DateTimeFilter(
-        field_name='created',
-        lookup_expr='lte'
-    )
+    created__gte = django_filters.DateTimeFilter(field_name='created', lookup_expr='gte')
+    created__lte = django_filters.DateTimeFilter(field_name='created', lookup_expr='lte')
     expires = django_filters.DateTimeFilter()
-    expires__gte = django_filters.DateTimeFilter(
-        field_name='expires',
-        lookup_expr='gte'
-    )
-    expires__lte = django_filters.DateTimeFilter(
-        field_name='expires',
-        lookup_expr='lte'
-    )
+    expires__gte = django_filters.DateTimeFilter(field_name='expires', lookup_expr='gte')
+    expires__lte = django_filters.DateTimeFilter(field_name='expires', lookup_expr='lte')
     last_used = django_filters.DateTimeFilter()
-    last_used__gte = django_filters.DateTimeFilter(
-        field_name='last_used',
-        lookup_expr='gte'
-    )
-    last_used__lte = django_filters.DateTimeFilter(
-        field_name='last_used',
-        lookup_expr='lte'
-    )
+    last_used__gte = django_filters.DateTimeFilter(field_name='last_used', lookup_expr='gte')
+    last_used__lte = django_filters.DateTimeFilter(field_name='last_used', lookup_expr='lte')
 
     class Meta:
         model = Token
         fields = (
-            'id', 'version', 'key', 'pepper_id', 'enabled', 'write_enabled',
-            'description', 'created', 'expires', 'last_used',
+            'id',
+            'version',
+            'key',
+            'pepper_id',
+            'enabled',
+            'write_enabled',
+            'description',
+            'created',
+            'expires',
+            'last_used',
         )
 
     def search(self, queryset, name, value):
         if not value.strip():
             return queryset
-        return queryset.filter(
-            Q(key=value) |
-            Q(user__username__icontains=value) |
-            Q(description__icontains=value)
-        )
+        return queryset.filter(Q(key=value) | Q(user__username__icontains=value) | Q(description__icontains=value))
 
 
 @register_filterset
@@ -191,24 +181,13 @@ class ObjectPermissionFilterSet(BaseFilterSet):
         label=_('Search'),
     )
     object_type_id = django_filters.ModelMultipleChoiceFilter(
-        queryset=ObjectType.objects.all(),
-        field_name='object_types'
+        queryset=ObjectType.objects.all(), field_name='object_types'
     )
-    object_type = ContentTypeFilter(
-        field_name='object_types'
-    )
-    can_view = django_filters.BooleanFilter(
-        method='_check_action'
-    )
-    can_add = django_filters.BooleanFilter(
-        method='_check_action'
-    )
-    can_change = django_filters.BooleanFilter(
-        method='_check_action'
-    )
-    can_delete = django_filters.BooleanFilter(
-        method='_check_action'
-    )
+    object_type = ContentTypeFilter(field_name='object_types')
+    can_view = django_filters.BooleanFilter(method='_check_action')
+    can_add = django_filters.BooleanFilter(method='_check_action')
+    can_change = django_filters.BooleanFilter(method='_check_action')
+    can_delete = django_filters.BooleanFilter(method='_check_action')
     user_id = django_filters.ModelMultipleChoiceFilter(
         field_name='users',
         queryset=User.objects.all(),
@@ -239,10 +218,7 @@ class ObjectPermissionFilterSet(BaseFilterSet):
     def search(self, queryset, name, value):
         if not value.strip():
             return queryset
-        return queryset.filter(
-            Q(name__icontains=value) |
-            Q(description__icontains=value)
-        )
+        return queryset.filter(Q(name__icontains=value) | Q(description__icontains=value))
 
     def _check_action(self, queryset, name, value):
         action = name.split('_')[1]
@@ -266,10 +242,7 @@ class OwnerGroupFilterSet(BaseFilterSet):
     def search(self, queryset, name, value):
         if not value.strip():
             return queryset
-        return queryset.filter(
-            Q(name__icontains=value) |
-            Q(description__icontains=value)
-        )
+        return queryset.filter(Q(name__icontains=value) | Q(description__icontains=value))
 
 
 @register_filterset
@@ -318,7 +291,4 @@ class OwnerFilterSet(BaseFilterSet):
     def search(self, queryset, name, value):
         if not value.strip():
             return queryset
-        return queryset.filter(
-            Q(name__icontains=value) |
-            Q(description__icontains=value)
-        )
+        return queryset.filter(Q(name__icontains=value) | Q(description__icontains=value))

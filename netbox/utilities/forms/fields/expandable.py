@@ -22,8 +22,8 @@ class ExpandableNameField(forms.CharField):
         super().__init__(*args, **kwargs)
         if not self.help_text:
             self.help_text = _(
-                "Alphanumeric ranges are supported for bulk creation. Mixed cases and types within a single range are "
-                "not supported (example: <code>[ge,xe]-0/0/[0-9]</code>)."
+                'Alphanumeric ranges are supported for bulk creation. Mixed cases and types within a single range are '
+                'not supported (example: <code>[ge,xe]-0/0/[0-9]</code>).'
             )
 
     def to_python(self, value):
@@ -43,8 +43,9 @@ class ExpandableIPAddressField(forms.CharField):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if not self.help_text:
-            self.help_text = _('Specify a numeric range to create multiple IPs.<br />'
-                               'Example: <code>192.0.2.[1,5,100-254]/24</code>')
+            self.help_text = _(
+                'Specify a numeric range to create multiple IPs.<br />Example: <code>192.0.2.[1,5,100-254]/24</code>'
+            )
 
     def to_python(self, value):
         # Hackish address family detection but it's all we have to work with

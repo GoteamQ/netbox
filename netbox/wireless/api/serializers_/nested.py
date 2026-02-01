@@ -23,7 +23,6 @@ class NestedWirelessLANGroupSerializer(WritableNestedSerializer):
 
 
 class NestedWirelessLinkSerializer(WritableNestedSerializer):
-
     class Meta:
         model = models.WirelessLink
         fields = ['id', 'url', 'display_url', 'display', 'ssid']

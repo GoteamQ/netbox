@@ -11,7 +11,6 @@ class TunnelGroupTestCase(ViewTestCases.OrganizationalObjectViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
-
         tunnel_groups = (
             TunnelGroup(name='Tunnel Group 1', slug='tunnel-group-1'),
             TunnelGroup(name='Tunnel Group 2', slug='tunnel-group-2'),
@@ -29,17 +28,17 @@ class TunnelGroupTestCase(ViewTestCases.OrganizationalObjectViewTestCase):
         }
 
         cls.csv_data = (
-            "name,slug",
-            "Tunnel Group 4,tunnel-group-4",
-            "Tunnel Group 5,tunnel-group-5",
-            "Tunnel Group 6,tunnel-group-6",
+            'name,slug',
+            'Tunnel Group 4,tunnel-group-4',
+            'Tunnel Group 5,tunnel-group-5',
+            'Tunnel Group 6,tunnel-group-6',
         )
 
         cls.csv_update_data = (
-            "id,name,description",
-            f"{tunnel_groups[0].pk},Tunnel Group 7,New description7",
-            f"{tunnel_groups[1].pk},Tunnel Group 8,New description8",
-            f"{tunnel_groups[2].pk},Tunnel Group 9,New description9",
+            'id,name,description',
+            f'{tunnel_groups[0].pk},Tunnel Group 7,New description7',
+            f'{tunnel_groups[1].pk},Tunnel Group 8,New description8',
+            f'{tunnel_groups[2].pk},Tunnel Group 9,New description9',
         )
 
         cls.bulk_edit_data = {
@@ -52,7 +51,6 @@ class TunnelTestCase(ViewTestCases.PrimaryObjectViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
-
         tunnel_groups = (
             TunnelGroup(name='Tunnel Group 1', slug='tunnel-group-1'),
             TunnelGroup(name='Tunnel Group 2', slug='tunnel-group-2'),
@@ -66,19 +64,19 @@ class TunnelTestCase(ViewTestCases.PrimaryObjectViewTestCase):
                 name='Tunnel 1',
                 status=TunnelStatusChoices.STATUS_ACTIVE,
                 group=tunnel_groups[0],
-                encapsulation=TunnelEncapsulationChoices.ENCAP_IP_IP
+                encapsulation=TunnelEncapsulationChoices.ENCAP_IP_IP,
             ),
             Tunnel(
                 name='Tunnel 2',
                 status=TunnelStatusChoices.STATUS_ACTIVE,
                 group=tunnel_groups[1],
-                encapsulation=TunnelEncapsulationChoices.ENCAP_IP_IP
+                encapsulation=TunnelEncapsulationChoices.ENCAP_IP_IP,
             ),
             Tunnel(
                 name='Tunnel 3',
                 status=TunnelStatusChoices.STATUS_ACTIVE,
                 group=tunnel_groups[2],
-                encapsulation=TunnelEncapsulationChoices.ENCAP_IP_IP
+                encapsulation=TunnelEncapsulationChoices.ENCAP_IP_IP,
             ),
         )
         Tunnel.objects.bulk_create(tunnels)
@@ -95,17 +93,17 @@ class TunnelTestCase(ViewTestCases.PrimaryObjectViewTestCase):
         }
 
         cls.csv_data = (
-            "name,status,group,encapsulation",
-            "Tunnel 4,planned,Tunnel Group 1,gre",
-            "Tunnel 5,planned,Tunnel Group 2,gre",
-            "Tunnel 6,planned,Tunnel Group 3,gre",
+            'name,status,group,encapsulation',
+            'Tunnel 4,planned,Tunnel Group 1,gre',
+            'Tunnel 5,planned,Tunnel Group 2,gre',
+            'Tunnel 6,planned,Tunnel Group 3,gre',
         )
 
         cls.csv_update_data = (
-            "id,status,group,encapsulation",
-            f"{tunnels[0].pk},active,Tunnel Group 4,ip-ip",
-            f"{tunnels[1].pk},active,Tunnel Group 4,ip-ip",
-            f"{tunnels[2].pk},active,Tunnel Group 4,ip-ip",
+            'id,status,group,encapsulation',
+            f'{tunnels[0].pk},active,Tunnel Group 4,ip-ip',
+            f'{tunnels[1].pk},active,Tunnel Group 4,ip-ip',
+            f'{tunnels[2].pk},active,Tunnel Group 4,ip-ip',
         )
 
         cls.bulk_edit_data = {
@@ -138,25 +136,13 @@ class TunnelTerminationTestCase(ViewTestCases.PrimaryObjectViewTestCase):
         tunnel = Tunnel.objects.create(
             name='Tunnel 1',
             status=TunnelStatusChoices.STATUS_ACTIVE,
-            encapsulation=TunnelEncapsulationChoices.ENCAP_IP_IP
+            encapsulation=TunnelEncapsulationChoices.ENCAP_IP_IP,
         )
 
         tunnel_terminations = (
-            TunnelTermination(
-                tunnel=tunnel,
-                role=TunnelTerminationRoleChoices.ROLE_HUB,
-                termination=interfaces[0]
-            ),
-            TunnelTermination(
-                tunnel=tunnel,
-                role=TunnelTerminationRoleChoices.ROLE_SPOKE,
-                termination=interfaces[1]
-            ),
-            TunnelTermination(
-                tunnel=tunnel,
-                role=TunnelTerminationRoleChoices.ROLE_SPOKE,
-                termination=interfaces[2]
-            ),
+            TunnelTermination(tunnel=tunnel, role=TunnelTerminationRoleChoices.ROLE_HUB, termination=interfaces[0]),
+            TunnelTermination(tunnel=tunnel, role=TunnelTerminationRoleChoices.ROLE_SPOKE, termination=interfaces[1]),
+            TunnelTermination(tunnel=tunnel, role=TunnelTerminationRoleChoices.ROLE_SPOKE, termination=interfaces[2]),
         )
         TunnelTermination.objects.bulk_create(tunnel_terminations)
 
@@ -172,17 +158,17 @@ class TunnelTerminationTestCase(ViewTestCases.PrimaryObjectViewTestCase):
         }
 
         cls.csv_data = (
-            "tunnel,role,device,termination",
-            "Tunnel 1,peer,Device 1,Interface 4",
-            "Tunnel 1,peer,Device 1,Interface 5",
-            "Tunnel 1,peer,Device 1,Interface 6",
+            'tunnel,role,device,termination',
+            'Tunnel 1,peer,Device 1,Interface 4',
+            'Tunnel 1,peer,Device 1,Interface 5',
+            'Tunnel 1,peer,Device 1,Interface 6',
         )
 
         cls.csv_update_data = (
-            "id,role",
-            f"{tunnel_terminations[0].pk},peer",
-            f"{tunnel_terminations[1].pk},peer",
-            f"{tunnel_terminations[2].pk},peer",
+            'id,role',
+            f'{tunnel_terminations[0].pk},peer',
+            f'{tunnel_terminations[1].pk},peer',
+            f'{tunnel_terminations[2].pk},peer',
         )
 
         cls.bulk_edit_data = {
@@ -195,28 +181,27 @@ class IKEProposalTestCase(ViewTestCases.PrimaryObjectViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
-
         ike_proposals = (
             IKEProposal(
                 name='IKE Proposal 1',
                 authentication_method=AuthenticationMethodChoices.PRESHARED_KEYS,
                 encryption_algorithm=EncryptionAlgorithmChoices.ENCRYPTION_AES128_CBC,
                 authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1,
-                group=DHGroupChoices.GROUP_14
+                group=DHGroupChoices.GROUP_14,
             ),
             IKEProposal(
                 name='IKE Proposal 2',
                 authentication_method=AuthenticationMethodChoices.PRESHARED_KEYS,
                 encryption_algorithm=EncryptionAlgorithmChoices.ENCRYPTION_AES128_CBC,
                 authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1,
-                group=DHGroupChoices.GROUP_14
+                group=DHGroupChoices.GROUP_14,
             ),
             IKEProposal(
                 name='IKE Proposal 3',
                 authentication_method=AuthenticationMethodChoices.PRESHARED_KEYS,
                 encryption_algorithm=EncryptionAlgorithmChoices.ENCRYPTION_AES128_CBC,
                 authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1,
-                group=DHGroupChoices.GROUP_14
+                group=DHGroupChoices.GROUP_14,
             ),
         )
         IKEProposal.objects.bulk_create(ike_proposals)
@@ -233,17 +218,17 @@ class IKEProposalTestCase(ViewTestCases.PrimaryObjectViewTestCase):
         }
 
         cls.csv_data = (
-            "name,authentication_method,encryption_algorithm,authentication_algorithm,group",
-            "IKE Proposal 4,preshared-keys,aes-128-cbc,hmac-sha1,14",
-            "IKE Proposal 5,preshared-keys,aes-128-cbc,hmac-sha1,14",
-            "IKE Proposal 6,preshared-keys,aes-128-cbc,hmac-sha1,14",
+            'name,authentication_method,encryption_algorithm,authentication_algorithm,group',
+            'IKE Proposal 4,preshared-keys,aes-128-cbc,hmac-sha1,14',
+            'IKE Proposal 5,preshared-keys,aes-128-cbc,hmac-sha1,14',
+            'IKE Proposal 6,preshared-keys,aes-128-cbc,hmac-sha1,14',
         )
 
         cls.csv_update_data = (
-            "id,description",
-            f"{ike_proposals[0].pk},New description",
-            f"{ike_proposals[1].pk},New description",
-            f"{ike_proposals[2].pk},New description",
+            'id,description',
+            f'{ike_proposals[0].pk},New description',
+            f'{ike_proposals[1].pk},New description',
+            f'{ike_proposals[2].pk},New description',
         )
 
         cls.bulk_edit_data = {
@@ -251,7 +236,7 @@ class IKEProposalTestCase(ViewTestCases.PrimaryObjectViewTestCase):
             'authentication_method': AuthenticationMethodChoices.CERTIFICATES,
             'encryption_algorithm': EncryptionAlgorithmChoices.ENCRYPTION_AES192_CBC,
             'authentication_algorithm': AuthenticationAlgorithmChoices.AUTH_HMAC_SHA256,
-            'group': DHGroupChoices.GROUP_19
+            'group': DHGroupChoices.GROUP_19,
         }
 
 
@@ -260,21 +245,20 @@ class IKEPolicyTestCase(ViewTestCases.PrimaryObjectViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
-
         ike_proposals = (
             IKEProposal(
                 name='IKE Proposal 1',
                 authentication_method=AuthenticationMethodChoices.PRESHARED_KEYS,
                 encryption_algorithm=EncryptionAlgorithmChoices.ENCRYPTION_AES128_CBC,
                 authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1,
-                group=DHGroupChoices.GROUP_14
+                group=DHGroupChoices.GROUP_14,
             ),
             IKEProposal(
                 name='IKE Proposal 2',
                 authentication_method=AuthenticationMethodChoices.PRESHARED_KEYS,
                 encryption_algorithm=EncryptionAlgorithmChoices.ENCRYPTION_AES128_CBC,
                 authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1,
-                group=DHGroupChoices.GROUP_14
+                group=DHGroupChoices.GROUP_14,
             ),
         )
         IKEProposal.objects.bulk_create(ike_proposals)
@@ -311,17 +295,17 @@ class IKEPolicyTestCase(ViewTestCases.PrimaryObjectViewTestCase):
 
         ike_proposal_names = ','.join([p.name for p in ike_proposals])
         cls.csv_data = (
-            "name,version,mode,proposals",
-            f"IKE Proposal 4,1,main,\"{ike_proposal_names}\"",
-            f"IKE Proposal 5,1,aggressive,\"{ike_proposal_names}\"",
-            f"IKE Proposal 6,2,,\"{ike_proposal_names}\"",
+            'name,version,mode,proposals',
+            f'IKE Proposal 4,1,main,"{ike_proposal_names}"',
+            f'IKE Proposal 5,1,aggressive,"{ike_proposal_names}"',
+            f'IKE Proposal 6,2,,"{ike_proposal_names}"',
         )
 
         cls.csv_update_data = (
-            "id,description",
-            f"{ike_policies[0].pk},New description",
-            f"{ike_policies[1].pk},New description",
-            f"{ike_policies[2].pk},New description",
+            'id,description',
+            f'{ike_policies[0].pk},New description',
+            f'{ike_policies[1].pk},New description',
+            f'{ike_policies[2].pk},New description',
         )
 
         cls.bulk_edit_data = {
@@ -336,7 +320,6 @@ class IPSecProposalTestCase(ViewTestCases.PrimaryObjectViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
-
         ipsec_proposals = (
             IPSecProposal(
                 name='IPSec Proposal 1',
@@ -368,17 +351,17 @@ class IPSecProposalTestCase(ViewTestCases.PrimaryObjectViewTestCase):
         }
 
         cls.csv_data = (
-            "name,encryption_algorithm,authentication_algorithm,sa_lifetime_seconds,sa_lifetime_data",
-            "IKE Proposal 4,aes-128-cbc,hmac-sha1,3600,1000000",
-            "IKE Proposal 5,aes-128-cbc,hmac-sha1,3600,1000000",
-            "IKE Proposal 6,aes-128-cbc,hmac-sha1,3600,1000000",
+            'name,encryption_algorithm,authentication_algorithm,sa_lifetime_seconds,sa_lifetime_data',
+            'IKE Proposal 4,aes-128-cbc,hmac-sha1,3600,1000000',
+            'IKE Proposal 5,aes-128-cbc,hmac-sha1,3600,1000000',
+            'IKE Proposal 6,aes-128-cbc,hmac-sha1,3600,1000000',
         )
 
         cls.csv_update_data = (
-            "id,description",
-            f"{ipsec_proposals[0].pk},New description",
-            f"{ipsec_proposals[1].pk},New description",
-            f"{ipsec_proposals[2].pk},New description",
+            'id,description',
+            f'{ipsec_proposals[0].pk},New description',
+            f'{ipsec_proposals[1].pk},New description',
+            f'{ipsec_proposals[2].pk},New description',
         )
 
         cls.bulk_edit_data = {
@@ -395,34 +378,24 @@ class IPSecPolicyTestCase(ViewTestCases.PrimaryObjectViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
-
         ipsec_proposals = (
             IPSecProposal(
                 name='IPSec Policy 1',
                 encryption_algorithm=EncryptionAlgorithmChoices.ENCRYPTION_AES128_CBC,
-                authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1
+                authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1,
             ),
             IPSecProposal(
                 name='IPSec Proposal 2',
                 encryption_algorithm=EncryptionAlgorithmChoices.ENCRYPTION_AES128_CBC,
-                authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1
+                authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1,
             ),
         )
         IPSecProposal.objects.bulk_create(ipsec_proposals)
 
         ipsec_policies = (
-            IPSecPolicy(
-                name='IPSec Policy 1',
-                pfs_group=DHGroupChoices.GROUP_14
-            ),
-            IPSecPolicy(
-                name='IPSec Policy 2',
-                pfs_group=DHGroupChoices.GROUP_14
-            ),
-            IPSecPolicy(
-                name='IPSec Policy 3',
-                pfs_group=DHGroupChoices.GROUP_14
-            ),
+            IPSecPolicy(name='IPSec Policy 1', pfs_group=DHGroupChoices.GROUP_14),
+            IPSecPolicy(name='IPSec Policy 2', pfs_group=DHGroupChoices.GROUP_14),
+            IPSecPolicy(name='IPSec Policy 3', pfs_group=DHGroupChoices.GROUP_14),
         )
         IPSecPolicy.objects.bulk_create(ipsec_policies)
         for ipsec_policy in ipsec_policies:
@@ -439,17 +412,17 @@ class IPSecPolicyTestCase(ViewTestCases.PrimaryObjectViewTestCase):
 
         ipsec_proposal_names = ','.join([p.name for p in ipsec_proposals])
         cls.csv_data = (
-            "name,pfs_group,proposals",
-            f"IKE Proposal 4,19,\"{ipsec_proposal_names}\"",
-            f"IKE Proposal 5,19,\"{ipsec_proposal_names}\"",
-            f"IKE Proposal 6,19,\"{ipsec_proposal_names}\"",
+            'name,pfs_group,proposals',
+            f'IKE Proposal 4,19,"{ipsec_proposal_names}"',
+            f'IKE Proposal 5,19,"{ipsec_proposal_names}"',
+            f'IKE Proposal 6,19,"{ipsec_proposal_names}"',
         )
 
         cls.csv_update_data = (
-            "id,description",
-            f"{ipsec_policies[0].pk},New description",
-            f"{ipsec_policies[1].pk},New description",
-            f"{ipsec_policies[2].pk},New description",
+            'id,description',
+            f'{ipsec_policies[0].pk},New description',
+            f'{ipsec_policies[1].pk},New description',
+            f'{ipsec_policies[2].pk},New description',
         )
 
         cls.bulk_edit_data = {
@@ -463,19 +436,18 @@ class IPSecProfileTestCase(ViewTestCases.PrimaryObjectViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
-
         ike_proposal = IKEProposal.objects.create(
             name='IKE Proposal 1',
             authentication_method=AuthenticationMethodChoices.PRESHARED_KEYS,
             encryption_algorithm=EncryptionAlgorithmChoices.ENCRYPTION_AES128_CBC,
             authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1,
-            group=DHGroupChoices.GROUP_14
+            group=DHGroupChoices.GROUP_14,
         )
 
         ipsec_proposal = IPSecProposal.objects.create(
             name='IPSec Proposal 1',
             encryption_algorithm=EncryptionAlgorithmChoices.ENCRYPTION_AES128_CBC,
-            authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1
+            authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1,
         )
 
         ike_policies = (
@@ -495,14 +467,8 @@ class IPSecProfileTestCase(ViewTestCases.PrimaryObjectViewTestCase):
             ike_policy.proposals.add(ike_proposal)
 
         ipsec_policies = (
-            IPSecPolicy(
-                name='IPSec Policy 1',
-                pfs_group=DHGroupChoices.GROUP_14
-            ),
-            IPSecPolicy(
-                name='IPSec Policy 2',
-                pfs_group=DHGroupChoices.GROUP_14
-            ),
+            IPSecPolicy(name='IPSec Policy 1', pfs_group=DHGroupChoices.GROUP_14),
+            IPSecPolicy(name='IPSec Policy 2', pfs_group=DHGroupChoices.GROUP_14),
         )
         IPSecPolicy.objects.bulk_create(ipsec_policies)
         for ipsec_policy in ipsec_policies:
@@ -513,19 +479,19 @@ class IPSecProfileTestCase(ViewTestCases.PrimaryObjectViewTestCase):
                 name='IPSec Profile 1',
                 mode=IPSecModeChoices.ESP,
                 ike_policy=ike_policies[0],
-                ipsec_policy=ipsec_policies[0]
+                ipsec_policy=ipsec_policies[0],
             ),
             IPSecProfile(
                 name='IPSec Profile 2',
                 mode=IPSecModeChoices.ESP,
                 ike_policy=ike_policies[0],
-                ipsec_policy=ipsec_policies[0]
+                ipsec_policy=ipsec_policies[0],
             ),
             IPSecProfile(
                 name='IPSec Profile 3',
                 mode=IPSecModeChoices.ESP,
                 ike_policy=ike_policies[0],
-                ipsec_policy=ipsec_policies[0]
+                ipsec_policy=ipsec_policies[0],
             ),
         )
         IPSecProfile.objects.bulk_create(ipsec_profiles)
@@ -541,17 +507,17 @@ class IPSecProfileTestCase(ViewTestCases.PrimaryObjectViewTestCase):
         }
 
         cls.csv_data = (
-            "name,mode,ike_policy,ipsec_policy",
-            "IKE Proposal 4,ah,IKE Policy 2,IPSec Policy 2",
-            "IKE Proposal 5,ah,IKE Policy 2,IPSec Policy 2",
-            "IKE Proposal 6,ah,IKE Policy 2,IPSec Policy 2",
+            'name,mode,ike_policy,ipsec_policy',
+            'IKE Proposal 4,ah,IKE Policy 2,IPSec Policy 2',
+            'IKE Proposal 5,ah,IKE Policy 2,IPSec Policy 2',
+            'IKE Proposal 6,ah,IKE Policy 2,IPSec Policy 2',
         )
 
         cls.csv_update_data = (
-            "id,description",
-            f"{ipsec_profiles[0].pk},New description",
-            f"{ipsec_profiles[1].pk},New description",
-            f"{ipsec_profiles[2].pk},New description",
+            'id,description',
+            f'{ipsec_profiles[0].pk},New description',
+            f'{ipsec_profiles[1].pk},New description',
+            f'{ipsec_profiles[2].pk},New description',
         )
 
         cls.bulk_edit_data = {
@@ -567,25 +533,31 @@ class L2VPNTestCase(ViewTestCases.PrimaryObjectViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
-        rts = (
-            RouteTarget(name='64534:123'),
-            RouteTarget(name='64534:321')
-        )
+        rts = (RouteTarget(name='64534:123'), RouteTarget(name='64534:321'))
         RouteTarget.objects.bulk_create(rts)
 
         l2vpns = (
             L2VPN(
-                name='L2VPN 1', slug='l2vpn-1', status=L2VPNStatusChoices.STATUS_ACTIVE,
-                type=L2VPNTypeChoices.TYPE_VXLAN, identifier='650001'
+                name='L2VPN 1',
+                slug='l2vpn-1',
+                status=L2VPNStatusChoices.STATUS_ACTIVE,
+                type=L2VPNTypeChoices.TYPE_VXLAN,
+                identifier='650001',
             ),
             L2VPN(
-                name='L2VPN 2', slug='l2vpn-2', status=L2VPNStatusChoices.STATUS_DECOMMISSIONING,
-                type=L2VPNTypeChoices.TYPE_VXLAN, identifier='650002'
+                name='L2VPN 2',
+                slug='l2vpn-2',
+                status=L2VPNStatusChoices.STATUS_DECOMMISSIONING,
+                type=L2VPNTypeChoices.TYPE_VXLAN,
+                identifier='650002',
             ),
             L2VPN(
-                name='L2VPN 3', slug='l2vpn-3', status=L2VPNStatusChoices.STATUS_PLANNED,
-                type=L2VPNTypeChoices.TYPE_VXLAN, identifier='650003'
-            )
+                name='L2VPN 3',
+                slug='l2vpn-3',
+                status=L2VPNStatusChoices.STATUS_PLANNED,
+                type=L2VPNTypeChoices.TYPE_VXLAN,
+                identifier='650003',
+            ),
         )
         L2VPN.objects.bulk_create(l2vpns)
 
@@ -614,21 +586,20 @@ class L2VPNTestCase(ViewTestCases.PrimaryObjectViewTestCase):
             'identifier': 123,
             'description': 'Description',
             'import_targets': [rts[0].pk],
-            'export_targets': [rts[1].pk]
+            'export_targets': [rts[1].pk],
         }
 
 
 class L2VPNTerminationTestCase(
-        ViewTestCases.GetObjectViewTestCase,
-        ViewTestCases.GetObjectChangelogViewTestCase,
-        ViewTestCases.CreateObjectViewTestCase,
-        ViewTestCases.EditObjectViewTestCase,
-        ViewTestCases.DeleteObjectViewTestCase,
-        ViewTestCases.ListObjectsViewTestCase,
-        ViewTestCases.BulkImportObjectsViewTestCase,
-        ViewTestCases.BulkDeleteObjectsViewTestCase,
+    ViewTestCases.GetObjectViewTestCase,
+    ViewTestCases.GetObjectChangelogViewTestCase,
+    ViewTestCases.CreateObjectViewTestCase,
+    ViewTestCases.EditObjectViewTestCase,
+    ViewTestCases.DeleteObjectViewTestCase,
+    ViewTestCases.ListObjectsViewTestCase,
+    ViewTestCases.BulkImportObjectsViewTestCase,
+    ViewTestCases.BulkDeleteObjectsViewTestCase,
 ):
-
     model = L2VPNTermination
 
     @classmethod
@@ -647,14 +618,14 @@ class L2VPNTerminationTestCase(
             VLAN(name='Vlan 3', vid=1003),
             VLAN(name='Vlan 4', vid=1004),
             VLAN(name='Vlan 5', vid=1005),
-            VLAN(name='Vlan 6', vid=1006)
+            VLAN(name='Vlan 6', vid=1006),
         )
         VLAN.objects.bulk_create(vlans)
 
         terminations = (
             L2VPNTermination(l2vpn=l2vpns[0], assigned_object=vlans[0]),
             L2VPNTermination(l2vpn=l2vpns[0], assigned_object=vlans[1]),
-            L2VPNTermination(l2vpn=l2vpns[0], assigned_object=vlans[2])
+            L2VPNTermination(l2vpn=l2vpns[0], assigned_object=vlans[2]),
         )
         L2VPNTermination.objects.bulk_create(terminations)
 
@@ -665,17 +636,17 @@ class L2VPNTerminationTestCase(
         }
 
         cls.csv_data = (
-            "l2vpn,vlan",
-            "L2VPN 1,Vlan 4",
-            "L2VPN 1,Vlan 5",
-            "L2VPN 1,Vlan 6",
+            'l2vpn,vlan',
+            'L2VPN 1,Vlan 4',
+            'L2VPN 1,Vlan 5',
+            'L2VPN 1,Vlan 6',
         )
 
         cls.csv_update_data = (
-            "id,l2vpn",
-            f"{terminations[0].pk},{l2vpns[0].name}",
-            f"{terminations[1].pk},{l2vpns[0].name}",
-            f"{terminations[2].pk},{l2vpns[0].name}",
+            'id,l2vpn',
+            f'{terminations[0].pk},{l2vpns[0].name}',
+            f'{terminations[1].pk},{l2vpns[0].name}',
+            f'{terminations[2].pk},{l2vpns[0].name}',
         )
 
         cls.bulk_edit_data = {}
@@ -700,9 +671,7 @@ class L2VPNTerminationTestCase(
         model_dict = self.model_to_dict(instance, fields=fields, api=api)
 
         # Omit any dictionary keys which are not instance attributes or have been excluded
-        relevant_data = {
-            k: v for k, v in data.items() if hasattr(instance, k) and k not in exclude
-        }
+        relevant_data = {k: v for k, v in data.items() if hasattr(instance, k) and k not in exclude}
 
         # Handle relations on the model
         for k, v in model_dict.items():

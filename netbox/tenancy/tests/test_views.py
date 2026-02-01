@@ -12,7 +12,6 @@ class TenantGroupTestCase(ViewTestCases.OrganizationalObjectViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
-
         tenant_groups = (
             TenantGroup(name='Tenant Group 1', slug='tenant-group-1'),
             TenantGroup(name='Tenant Group 2', slug='tenant-group-2', comments='Tenant Group 2 comment'),
@@ -32,17 +31,17 @@ class TenantGroupTestCase(ViewTestCases.OrganizationalObjectViewTestCase):
         }
 
         cls.csv_data = (
-            "name,slug,description,comments",
-            "Tenant Group 4,tenant-group-4,Fourth tenant group,",
-            "Tenant Group 5,tenant-group-5,Fifth tenant group,",
-            "Tenant Group 6,tenant-group-6,Sixth tenant group,Sixth tenant group comment",
+            'name,slug,description,comments',
+            'Tenant Group 4,tenant-group-4,Fourth tenant group,',
+            'Tenant Group 5,tenant-group-5,Fifth tenant group,',
+            'Tenant Group 6,tenant-group-6,Sixth tenant group,Sixth tenant group comment',
         )
 
         cls.csv_update_data = (
-            "id,name,description,comments",
-            f"{tenant_groups[0].pk},Tenant Group 7,Fourth tenant group7,Group 7 comment",
-            f"{tenant_groups[1].pk},Tenant Group 8,Fifth tenant group8,",
-            f"{tenant_groups[2].pk},Tenant Group 0,Sixth tenant group9,",
+            'id,name,description,comments',
+            f'{tenant_groups[0].pk},Tenant Group 7,Fourth tenant group7,Group 7 comment',
+            f'{tenant_groups[1].pk},Tenant Group 8,Fifth tenant group8,',
+            f'{tenant_groups[2].pk},Tenant Group 0,Sixth tenant group9,',
         )
 
         cls.bulk_edit_data = {
@@ -56,7 +55,6 @@ class TenantTestCase(ViewTestCases.PrimaryObjectViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
-
         tenant_groups = (
             TenantGroup(name='Tenant Group 1', slug='tenant-group-1'),
             TenantGroup(name='Tenant Group 2', slug='tenant-group-2'),
@@ -83,17 +81,17 @@ class TenantTestCase(ViewTestCases.PrimaryObjectViewTestCase):
         }
 
         cls.csv_data = (
-            "name,slug",
-            "Tenant 4,tenant-4",
-            "Tenant 5,tenant-5",
-            "Tenant 6,tenant-6",
+            'name,slug',
+            'Tenant 4,tenant-4',
+            'Tenant 5,tenant-5',
+            'Tenant 6,tenant-6',
         )
 
         cls.csv_update_data = (
-            "id,name,description",
-            f"{tenants[0].pk},Tenant 7,New description 7",
-            f"{tenants[1].pk},Tenant 8,New description 8",
-            f"{tenants[2].pk},Tenant 9,New description 9",
+            'id,name,description',
+            f'{tenants[0].pk},Tenant 7,New description 7',
+            f'{tenants[1].pk},Tenant 8,New description 8',
+            f'{tenants[2].pk},Tenant 9,New description 9',
         )
 
         cls.bulk_edit_data = {
@@ -107,7 +105,6 @@ class ContactGroupTestCase(ViewTestCases.OrganizationalObjectViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
-
         contact_groups = (
             ContactGroup(name='Contact Group 1', slug='contact-group-1', comments='Comment 1'),
             ContactGroup(name='Contact Group 2', slug='contact-group-2'),
@@ -127,17 +124,17 @@ class ContactGroupTestCase(ViewTestCases.OrganizationalObjectViewTestCase):
         }
 
         cls.csv_data = (
-            "name,slug,description,comments",
-            "Contact Group 4,contact-group-4,Fourth contact group,",
-            "Contact Group 5,contact-group-5,Fifth contact group,Fifth comment",
-            "Contact Group 6,contact-group-6,Sixth contact group,",
+            'name,slug,description,comments',
+            'Contact Group 4,contact-group-4,Fourth contact group,',
+            'Contact Group 5,contact-group-5,Fifth contact group,Fifth comment',
+            'Contact Group 6,contact-group-6,Sixth contact group,',
         )
 
         cls.csv_update_data = (
-            "id,name,description,comments",
-            f"{contact_groups[0].pk},Contact Group 7,Fourth contact group7,",
-            f"{contact_groups[1].pk},Contact Group 8,Fifth contact group8,Group 8 comment",
-            f"{contact_groups[2].pk},Contact Group 0,Sixth contact group9,",
+            'id,name,description,comments',
+            f'{contact_groups[0].pk},Contact Group 7,Fourth contact group7,',
+            f'{contact_groups[1].pk},Contact Group 8,Fifth contact group8,Group 8 comment',
+            f'{contact_groups[2].pk},Contact Group 0,Sixth contact group9,',
         )
 
         cls.bulk_edit_data = {
@@ -151,7 +148,6 @@ class ContactRoleTestCase(ViewTestCases.OrganizationalObjectViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
-
         contact_roles = (
             ContactRole(name='Contact Role 1', slug='contact-role-1'),
             ContactRole(name='Contact Role 2', slug='contact-role-2'),
@@ -169,17 +165,17 @@ class ContactRoleTestCase(ViewTestCases.OrganizationalObjectViewTestCase):
         }
 
         cls.csv_data = (
-            "name,slug",
-            "Contact Role 4,contact-role-4",
-            "Contact Role 5,contact-role-5",
-            "Contact Role 6,contact-role-6",
+            'name,slug',
+            'Contact Role 4,contact-role-4',
+            'Contact Role 5,contact-role-5',
+            'Contact Role 6,contact-role-6',
         )
 
         cls.csv_update_data = (
-            "id,name,description",
-            f"{contact_roles[0].pk},Contact Role 7,New description 7",
-            f"{contact_roles[1].pk},Contact Role 8,New description 8",
-            f"{contact_roles[2].pk},Contact Role 9,New description 9",
+            'id,name,description',
+            f'{contact_roles[0].pk},Contact Role 7,New description 7',
+            f'{contact_roles[1].pk},Contact Role 8,New description 8',
+            f'{contact_roles[2].pk},Contact Role 9,New description 9',
         )
 
         cls.bulk_edit_data = {
@@ -192,7 +188,6 @@ class ContactTestCase(ViewTestCases.PrimaryObjectViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
-
         contact_groups = (
             ContactGroup(name='Contact Group 1', slug='contact-group-1'),
             ContactGroup(name='Contact Group 2', slug='contact-group-2'),
@@ -219,22 +214,22 @@ class ContactTestCase(ViewTestCases.PrimaryObjectViewTestCase):
         }
 
         cls.csv_data = (
-            "name",
-            "groups",
-            "Contact 4",
-            "Contact 5",
-            "Contact 6",
+            'name',
+            'groups',
+            'Contact 4',
+            'Contact 5',
+            'Contact 6',
         )
 
         cls.csv_update_data = (
-            "id,name,groups,comments",
+            'id,name,groups,comments',
             f'{contacts[0].pk},Contact 7,"Contact Group 1,Contact Group 2",New comments 7',
             f'{contacts[1].pk},Contact 8,"Contact Group 1",New comments 8',
             f'{contacts[2].pk},Contact 9,"Contact Group 1",New comments 9',
         )
 
         cls.bulk_edit_data = {
-            'description':  "New description",
+            'description': 'New description',
         }
 
 
@@ -244,13 +239,12 @@ class ContactAssignmentTestCase(
     ViewTestCases.DeleteObjectViewTestCase,
     ViewTestCases.ListObjectsViewTestCase,
     ViewTestCases.BulkEditObjectsViewTestCase,
-    ViewTestCases.BulkDeleteObjectsViewTestCase
+    ViewTestCases.BulkDeleteObjectsViewTestCase,
 ):
     model = ContactAssignment
 
     @classmethod
     def setUpTestData(cls):
-
         sites = (
             Site(name='Site 1', slug='site-1'),
             Site(name='Site 2', slug='site-2'),
@@ -280,19 +274,19 @@ class ContactAssignmentTestCase(
                 object=sites[0],
                 contact=contacts[0],
                 role=contact_roles[0],
-                priority=ContactPriorityChoices.PRIORITY_PRIMARY
+                priority=ContactPriorityChoices.PRIORITY_PRIMARY,
             ),
             ContactAssignment(
                 object=sites[1],
                 contact=contacts[1],
                 role=contact_roles[1],
-                priority=ContactPriorityChoices.PRIORITY_SECONDARY
+                priority=ContactPriorityChoices.PRIORITY_SECONDARY,
             ),
             ContactAssignment(
                 object=sites[2],
                 contact=contacts[2],
                 role=contact_roles[2],
-                priority=ContactPriorityChoices.PRIORITY_TERTIARY
+                priority=ContactPriorityChoices.PRIORITY_TERTIARY,
             ),
         )
         ContactAssignment.objects.bulk_create(assignments)
@@ -319,6 +313,6 @@ class ContactAssignmentTestCase(
             url = reverse('tenancy:contactassignment_add')
             content_type = ContentType.objects.get_for_model(Site).pk
             object_id = Site.objects.first().pk
-            return f"{url}?object_type={content_type}&object_id={object_id}"
+            return f'{url}?object_type={content_type}&object_id={object_id}'
 
         return super()._get_url(action, instance=instance)

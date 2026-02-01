@@ -7,6 +7,7 @@ class Tracker:
     """
     An ephemeral instance employed to record which tracked fields on an instance have been modified.
     """
+
     def __init__(self):
         self._changed_fields = {}
 
@@ -36,7 +37,6 @@ class Tracker:
 
 
 class TrackingModelMixin:
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -48,7 +48,7 @@ class TrackingModelMixin:
         """
         Return the Tracker instance for this instance, first creating it if necessary.
         """
-        if not hasattr(self._state, "_tracker"):
+        if not hasattr(self._state, '_tracker'):
             self._state._tracker = Tracker()
         return self._state._tracker
 
@@ -60,7 +60,7 @@ class TrackingModelMixin:
         self.tracker.clear(*update_fields)
 
     def __setattr__(self, name, value):
-        if hasattr(self, "_initialized"):
+        if hasattr(self, '_initialized'):
             # Record any changes to a tracked field
             if name in registry['counter_fields'][self.__class__]:
                 if name not in self.tracker:

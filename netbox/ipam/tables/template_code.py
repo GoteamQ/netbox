@@ -14,7 +14,8 @@ PREFIX_COPY_BUTTON = """
 {% copy_content record.pk prefix="prefix_" %}
 """
 
-PREFIX_LINK_WITH_DEPTH = """
+PREFIX_LINK_WITH_DEPTH = (
+    """
 {% load helpers %}
 {% if record.depth %}
     <div class="record-depth">
@@ -23,7 +24,9 @@ PREFIX_LINK_WITH_DEPTH = """
         {% endfor %}
     </div>
 {% endif %}
-""" + PREFIX_LINK
+"""
+    + PREFIX_LINK
+)
 
 # Annotate the ID of each IP address for copy-to-clipboard functionality
 IPADDRESS_LINK = """

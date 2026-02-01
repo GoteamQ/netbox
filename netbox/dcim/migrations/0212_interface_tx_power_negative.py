@@ -3,7 +3,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('dcim', '0211_platform_manufacturer_uniqueness'),
     ]
@@ -17,8 +16,8 @@ class Migration(migrations.Migration):
                 null=True,
                 validators=[
                     django.core.validators.MinValueValidator(-40),
-                    django.core.validators.MaxValueValidator(127)
-                ]
+                    django.core.validators.MaxValueValidator(127),
+                ],
             ),
         ),
     ]

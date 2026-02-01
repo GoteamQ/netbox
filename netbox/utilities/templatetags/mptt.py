@@ -14,8 +14,4 @@ def nested_tree(obj):
         return mark_safe('&mdash;')
 
     nodes = obj.get_ancestors(include_self=True)
-    return mark_safe(
-        ' / '.join(
-            f'<a href="{node.get_absolute_url()}">{escape(node)}</a>' for node in nodes
-        )
-    )
+    return mark_safe(' / '.join(f'<a href="{node.get_absolute_url()}">{escape(node)}</a>' for node in nodes))

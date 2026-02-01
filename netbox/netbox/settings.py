@@ -46,7 +46,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Validate Python version
 if sys.version_info < (3, 12):
     raise RuntimeError(
-        f"NetBox requires Python 3.12 or later. (Currently installed: Python {platform.python_version()})"
+        f'NetBox requires Python 3.12 or later. (Currently installed: Python {platform.python_version()})'
     )
 
 #
@@ -60,35 +60,39 @@ try:
 except ModuleNotFoundError as e:
     if getattr(e, 'name') == config_path:
         raise ImproperlyConfigured(
-            f"Specified configuration module ({config_path}) not found. Please define netbox/netbox/configuration.py "
-            f"per the documentation, or specify an alternate module in the NETBOX_CONFIGURATION environment variable."
+            f'Specified configuration module ({config_path}) not found. Please define netbox/netbox/configuration.py '
+            f'per the documentation, or specify an alternate module in the NETBOX_CONFIGURATION environment variable.'
         )
     raise
 
 # Check for missing/conflicting required configuration parameters
 for parameter in ('ALLOWED_HOSTS', 'SECRET_KEY', 'REDIS'):
     if not hasattr(configuration, parameter):
-        raise ImproperlyConfigured(f"Required parameter {parameter} is missing from configuration.")
+        raise ImproperlyConfigured(f'Required parameter {parameter} is missing from configuration.')
 if not hasattr(configuration, 'DATABASE') and not hasattr(configuration, 'DATABASES'):
-    raise ImproperlyConfigured("The database configuration must be defined using DATABASE or DATABASES.")
+    raise ImproperlyConfigured('The database configuration must be defined using DATABASE or DATABASES.')
 elif hasattr(configuration, 'DATABASE') and hasattr(configuration, 'DATABASES'):
-    raise ImproperlyConfigured("DATABASE and DATABASES may not be set together. The use of DATABASES is encouraged.")
+    raise ImproperlyConfigured('DATABASE and DATABASES may not be set together. The use of DATABASES is encouraged.')
 
 # Set static config parameters
 ADMINS = getattr(configuration, 'ADMINS', [])
 ALLOWED_HOSTS = getattr(configuration, 'ALLOWED_HOSTS')  # Required
 API_TOKEN_PEPPERS = getattr(configuration, 'API_TOKEN_PEPPERS', {})
-AUTH_PASSWORD_VALIDATORS = getattr(configuration, 'AUTH_PASSWORD_VALIDATORS', [
-    {
-        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-        "OPTIONS": {
-            "min_length": 12,
+AUTH_PASSWORD_VALIDATORS = getattr(
+    configuration,
+    'AUTH_PASSWORD_VALIDATORS',
+    [
+        {
+            'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+            'OPTIONS': {
+                'min_length': 12,
+            },
         },
-    },
-    {
-        "NAME": "utilities.password_validation.AlphanumericPasswordValidator",
-    },
-])
+        {
+            'NAME': 'utilities.password_validation.AlphanumericPasswordValidator',
+        },
+    ],
+)
 BASE_PATH = trailing_slash(getattr(configuration, 'BASE_PATH', ''))
 CHANGELOG_SKIP_EMPTY_CHANGES = getattr(configuration, 'CHANGELOG_SKIP_EMPTY_CHANGES', True)
 CENSUS_REPORTING_ENABLED = getattr(configuration, 'CENSUS_REPORTING_ENABLED', True)
@@ -106,34 +110,42 @@ DATABASE_ROUTERS = getattr(configuration, 'DATABASE_ROUTERS', [])
 DATABASES = getattr(configuration, 'DATABASES', {'default': DATABASE})
 DEBUG = getattr(configuration, 'DEBUG', False)
 DEFAULT_DASHBOARD = getattr(configuration, 'DEFAULT_DASHBOARD', None)
-DEFAULT_PERMISSIONS = getattr(configuration, 'DEFAULT_PERMISSIONS', {
-    # Permit users to manage their own bookmarks
-    'extras.view_bookmark': ({'user': '$user'},),
-    'extras.add_bookmark': ({'user': '$user'},),
-    'extras.change_bookmark': ({'user': '$user'},),
-    'extras.delete_bookmark': ({'user': '$user'},),
-    # Permit users to manage their own notifications
-    'extras.view_notification': ({'user': '$user'},),
-    'extras.add_notification': ({'user': '$user'},),
-    'extras.change_notification': ({'user': '$user'},),
-    'extras.delete_notification': ({'user': '$user'},),
-    # Permit users to manage their own subscriptions
-    'extras.view_subscription': ({'user': '$user'},),
-    'extras.add_subscription': ({'user': '$user'},),
-    'extras.change_subscription': ({'user': '$user'},),
-    'extras.delete_subscription': ({'user': '$user'},),
-    # Permit users to manage their own API tokens
-    'users.view_token': ({'user': '$user'},),
-    'users.add_token': ({'user': '$user'},),
-    'users.change_token': ({'user': '$user'},),
-    'users.delete_token': ({'user': '$user'},),
-})
+DEFAULT_PERMISSIONS = getattr(
+    configuration,
+    'DEFAULT_PERMISSIONS',
+    {
+        # Permit users to manage their own bookmarks
+        'extras.view_bookmark': ({'user': '$user'},),
+        'extras.add_bookmark': ({'user': '$user'},),
+        'extras.change_bookmark': ({'user': '$user'},),
+        'extras.delete_bookmark': ({'user': '$user'},),
+        # Permit users to manage their own notifications
+        'extras.view_notification': ({'user': '$user'},),
+        'extras.add_notification': ({'user': '$user'},),
+        'extras.change_notification': ({'user': '$user'},),
+        'extras.delete_notification': ({'user': '$user'},),
+        # Permit users to manage their own subscriptions
+        'extras.view_subscription': ({'user': '$user'},),
+        'extras.add_subscription': ({'user': '$user'},),
+        'extras.change_subscription': ({'user': '$user'},),
+        'extras.delete_subscription': ({'user': '$user'},),
+        # Permit users to manage their own API tokens
+        'users.view_token': ({'user': '$user'},),
+        'users.add_token': ({'user': '$user'},),
+        'users.change_token': ({'user': '$user'},),
+        'users.delete_token': ({'user': '$user'},),
+    },
+)
 DEVELOPER = getattr(configuration, 'DEVELOPER', False)
 DOCS_ROOT = getattr(configuration, 'DOCS_ROOT', os.path.join(os.path.dirname(BASE_DIR), 'docs'))
 EMAIL = getattr(configuration, 'EMAIL', {})
-EVENTS_PIPELINE = getattr(configuration, 'EVENTS_PIPELINE', [
-    'extras.events.process_event_queue',
-])
+EVENTS_PIPELINE = getattr(
+    configuration,
+    'EVENTS_PIPELINE',
+    [
+        'extras.events.process_event_queue',
+    ],
+)
 EXEMPT_VIEW_PERMISSIONS = getattr(configuration, 'EXEMPT_VIEW_PERMISSIONS', [])
 FIELD_CHOICES = getattr(configuration, 'FIELD_CHOICES', {})
 FILE_UPLOAD_MAX_MEMORY_SIZE = getattr(configuration, 'FILE_UPLOAD_MAX_MEMORY_SIZE', 2621440)
@@ -210,10 +222,10 @@ TIME_ZONE = getattr(configuration, 'TIME_ZONE', 'UTC')
 TRANSLATION_ENABLED = getattr(configuration, 'TRANSLATION_ENABLED', True)
 DISK_BASE_UNIT = getattr(configuration, 'DISK_BASE_UNIT', 1000)
 if DISK_BASE_UNIT not in [1000, 1024]:
-    raise ImproperlyConfigured(f"DISK_BASE_UNIT must be 1000 or 1024 (found {DISK_BASE_UNIT})")
+    raise ImproperlyConfigured(f'DISK_BASE_UNIT must be 1000 or 1024 (found {DISK_BASE_UNIT})')
 RAM_BASE_UNIT = getattr(configuration, 'RAM_BASE_UNIT', 1000)
 if RAM_BASE_UNIT not in [1000, 1024]:
-    raise ImproperlyConfigured(f"RAM_BASE_UNIT must be 1000 or 1024 (found {RAM_BASE_UNIT})")
+    raise ImproperlyConfigured(f'RAM_BASE_UNIT must be 1000 or 1024 (found {RAM_BASE_UNIT})')
 
 # Load any dynamic configuration parameters which have been hard-coded in the configuration file
 for param in CONFIG_PARAMS:
@@ -222,18 +234,18 @@ for param in CONFIG_PARAMS:
 
 # Enforce minimum length for SECRET_KEY
 if type(SECRET_KEY) is not str:
-    raise ImproperlyConfigured(f"SECRET_KEY must be a string (found {type(SECRET_KEY).__name__})")
+    raise ImproperlyConfigured(f'SECRET_KEY must be a string (found {type(SECRET_KEY).__name__})')
 if len(SECRET_KEY) < 50:
     raise ImproperlyConfigured(
-        f"SECRET_KEY must be at least 50 characters in length. To generate a suitable key, run the following command:\n"
-        f"  python {BASE_DIR}/generate_secret_key.py"
+        f'SECRET_KEY must be at least 50 characters in length. To generate a suitable key, run the following command:\n'
+        f'  python {BASE_DIR}/generate_secret_key.py'
     )
 
 # Validate API token peppers
 if API_TOKEN_PEPPERS:
     validate_peppers(API_TOKEN_PEPPERS)
 else:
-    warnings.warn("API_TOKEN_PEPPERS is not defined. v2 API tokens cannot be used.")
+    warnings.warn('API_TOKEN_PEPPERS is not defined. v2 API tokens cannot be used.')
 
 # Validate update repo URL and timeout
 if RELEASE_CHECK_URL:
@@ -241,7 +253,7 @@ if RELEASE_CHECK_URL:
         URLValidator()(RELEASE_CHECK_URL)
     except ValidationError:
         raise ImproperlyConfigured(
-            "RELEASE_CHECK_URL must be a valid URL. Example: https://api.github.com/repos/netbox-community/netbox"
+            'RELEASE_CHECK_URL must be a valid URL. Example: https://api.github.com/repos/netbox-community/netbox'
         )
 
 # Validate configured proxy routers
@@ -250,7 +262,7 @@ for path in PROXY_ROUTERS:
         try:
             import_string(path)
         except ImportError:
-            raise ImproperlyConfigured(f"Invalid path in PROXY_ROUTERS: {path}")
+            raise ImproperlyConfigured(f'Invalid path in PROXY_ROUTERS: {path}')
 
 
 #
@@ -259,13 +271,13 @@ for path in PROXY_ROUTERS:
 
 # Verify that a default database has been configured
 if 'default' not in DATABASES:
-    raise ImproperlyConfigured("No default database has been configured.")
+    raise ImproperlyConfigured('No default database has been configured.')
 
 # Set the database engine
 if 'ENGINE' not in DATABASES['default']:
-    DATABASES['default'].update({
-        'ENGINE': 'django_prometheus.db.backends.postgresql' if METRICS_ENABLED else 'django.db.backends.postgresql'
-    })
+    DATABASES['default'].update(
+        {'ENGINE': 'django_prometheus.db.backends.postgresql' if METRICS_ENABLED else 'django.db.backends.postgresql'}
+    )
 
 
 #
@@ -275,30 +287,26 @@ if 'ENGINE' not in DATABASES['default']:
 if STORAGE_BACKEND is not None:
     if not STORAGES:
         raise ImproperlyConfigured(
-            "STORAGE_BACKEND and STORAGES are both set, remove the deprecated STORAGE_BACKEND setting."
+            'STORAGE_BACKEND and STORAGES are both set, remove the deprecated STORAGE_BACKEND setting.'
         )
     else:
-        warnings.warn(
-            "STORAGE_BACKEND is deprecated, use the new STORAGES setting instead."
-        )
+        warnings.warn('STORAGE_BACKEND is deprecated, use the new STORAGES setting instead.')
 
 if STORAGE_CONFIG is not None:
-    warnings.warn(
-        "STORAGE_CONFIG is deprecated, use the new STORAGES setting instead."
-    )
+    warnings.warn('STORAGE_CONFIG is deprecated, use the new STORAGES setting instead.')
 
 # Default STORAGES for Django
 DEFAULT_STORAGES = {
-    "default": {
-        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    'default': {
+        'BACKEND': 'django.core.files.storage.FileSystemStorage',
     },
-    "staticfiles": {
-        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    'staticfiles': {
+        'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage',
     },
-    "scripts": {
-        "BACKEND": "extras.storage.ScriptFileSystemStorage",
-        "OPTIONS": {
-            "allow_overwrite": True,
+    'scripts': {
+        'BACKEND': 'extras.storage.ScriptFileSystemStorage',
+        'OPTIONS': {
+            'allow_overwrite': True,
         },
     },
 }
@@ -310,10 +318,12 @@ if STORAGE_BACKEND is not None:
 
 # Monkey-patch django-storages to fetch settings from STORAGE_CONFIG
 if STORAGE_CONFIG is not None:
+
     def _setting(name, default=None):
         if name in STORAGE_CONFIG:
             return STORAGE_CONFIG[name]
         return globals().get(name, default)
+
     storages.utils.setting = _setting
 
 # django-storage-swift
@@ -323,7 +333,7 @@ if STORAGE_BACKEND == 'swift.storage.SwiftStorage':
     except ModuleNotFoundError as e:
         if getattr(e, 'name') == 'swift':
             raise ImproperlyConfigured(
-                f"STORAGE_BACKEND is set to {STORAGE_BACKEND} but django-storage-swift is not present. "
+                f'STORAGE_BACKEND is set to {STORAGE_BACKEND} but django-storage-swift is not present. '
                 "It can be installed by running 'pip install django-storage-swift'."
             )
         raise e
@@ -346,10 +356,7 @@ TASKS_REDIS_HOST = TASKS_REDIS.get('HOST', 'localhost')
 TASKS_REDIS_PORT = TASKS_REDIS.get('PORT', 6379)
 TASKS_REDIS_URL = TASKS_REDIS.get('URL')
 TASKS_REDIS_SENTINELS = TASKS_REDIS.get('SENTINELS', [])
-TASKS_REDIS_USING_SENTINEL = all([
-    isinstance(TASKS_REDIS_SENTINELS, (list, tuple)),
-    len(TASKS_REDIS_SENTINELS) > 0
-])
+TASKS_REDIS_USING_SENTINEL = all([isinstance(TASKS_REDIS_SENTINELS, (list, tuple)), len(TASKS_REDIS_SENTINELS) > 0])
 TASKS_REDIS_SENTINEL_SERVICE = TASKS_REDIS.get('SENTINEL_SERVICE', 'default')
 TASKS_REDIS_SENTINEL_TIMEOUT = TASKS_REDIS.get('SENTINEL_TIMEOUT', 10)
 TASKS_REDIS_USERNAME = TASKS_REDIS.get('USERNAME', '')
@@ -361,7 +368,7 @@ TASKS_REDIS_CA_CERT_PATH = TASKS_REDIS.get('CA_CERT_PATH', False)
 
 # Caching
 if 'caching' not in REDIS:
-    raise ImproperlyConfigured("REDIS section in configuration.py is missing caching subsection.")
+    raise ImproperlyConfigured('REDIS section in configuration.py is missing caching subsection.')
 CACHING_REDIS_HOST = REDIS['caching'].get('HOST', 'localhost')
 CACHING_REDIS_PORT = REDIS['caching'].get('PORT', 6379)
 CACHING_REDIS_DATABASE = REDIS['caching'].get('DATABASE', 0)
@@ -373,7 +380,9 @@ CACHING_REDIS_SENTINEL_SERVICE = REDIS['caching'].get('SENTINEL_SERVICE', 'defau
 CACHING_REDIS_PROTO = 'rediss' if REDIS['caching'].get('SSL', False) else 'redis'
 CACHING_REDIS_SKIP_TLS_VERIFY = REDIS['caching'].get('INSECURE_SKIP_TLS_VERIFY', False)
 CACHING_REDIS_CA_CERT_PATH = REDIS['caching'].get('CA_CERT_PATH', False)
-CACHING_REDIS_URL = REDIS['caching'].get('URL', f'{CACHING_REDIS_PROTO}://{CACHING_REDIS_USERNAME_HOST}:{CACHING_REDIS_PORT}/{CACHING_REDIS_DATABASE}')
+CACHING_REDIS_URL = REDIS['caching'].get(
+    'URL', f'{CACHING_REDIS_PROTO}://{CACHING_REDIS_USERNAME_HOST}:{CACHING_REDIS_PORT}/{CACHING_REDIS_DATABASE}'
+)
 
 # Configure Django's default cache to use Redis
 CACHES = {
@@ -383,7 +392,7 @@ CACHES = {
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient',
             'PASSWORD': CACHING_REDIS_PASSWORD,
-        }
+        },
     }
 }
 
@@ -494,7 +503,7 @@ MIDDLEWARE = [
 
 if DEBUG:
     MIDDLEWARE = [
-        "strawberry_django.middlewares.debug_toolbar.DebugToolbarMiddleware",
+        'strawberry_django.middlewares.debug_toolbar.DebugToolbarMiddleware',
         *MIDDLEWARE,
     ]
 
@@ -614,7 +623,7 @@ MAINTENANCE_EXEMPT_PATHS = (
     f'/{BASE_PATH}extras/config-revisions/',  # Allow modifying the configuration
     LOGIN_URL,
     LOGIN_REDIRECT_URL,
-    LOGOUT_REDIRECT_URL
+    LOGOUT_REDIRECT_URL,
 )
 
 
@@ -626,7 +635,7 @@ if SENTRY_ENABLED:
     try:
         import sentry_sdk
     except ModuleNotFoundError:
-        raise ImproperlyConfigured("SENTRY_ENABLED is True but the sentry-sdk package is not installed.")
+        raise ImproperlyConfigured('SENTRY_ENABLED is True but the sentry-sdk package is not installed.')
 
     # Construct default Sentry initialization parameters from legacy SENTRY_* config parameters
     sentry_config = {
@@ -643,14 +652,11 @@ if SENTRY_ENABLED:
     # Check for a DSN
     if not sentry_config.get('dsn'):
         raise ImproperlyConfigured(
-            "Sentry is enabled but a DSN has not been specified. Set one under the SENTRY_CONFIG parameter."
+            'Sentry is enabled but a DSN has not been specified. Set one under the SENTRY_CONFIG parameter.'
         )
 
     # Initialize the SDK
-    sentry_sdk.init(
-        release=RELEASE.full_version,
-        **sentry_config
-    )
+    sentry_sdk.init(release=RELEASE.full_version, **sentry_config)
     # Assign any configured tags
     for k, v in SENTRY_TAGS.items():
         sentry_sdk.set_tag(k, v)
@@ -736,9 +742,7 @@ REST_FRAMEWORK = {
         'rest_framework.parsers.JSONParser',
         'rest_framework.parsers.MultiPartParser',
     ),
-    'DEFAULT_PERMISSION_CLASSES': (
-        'netbox.api.authentication.TokenPermissions',
-    ),
+    'DEFAULT_PERMISSION_CLASSES': ('netbox.api.authentication.TokenPermissions',),
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
         'netbox.api.renderers.FormlessBrowsableAPIRenderer',
@@ -766,10 +770,12 @@ SPECTACULAR_SETTINGS = {
     'VERSION': RELEASE.full_version,
     'COMPONENT_SPLIT_REQUEST': True,
     'REDOC_DIST': 'SIDECAR',
-    'SERVERS': [{
-        'url': BASE_PATH,
-        'description': 'NetBox',
-    }],
+    'SERVERS': [
+        {
+            'url': BASE_PATH,
+            'description': 'NetBox',
+        }
+    ],
     'SWAGGER_UI_DIST': 'SIDECAR',
     'SWAGGER_UI_FAVICON_HREF': 'SIDECAR',
     'POSTPROCESSING_HOOKS': [],
@@ -784,9 +790,7 @@ if TASKS_REDIS_USING_SENTINEL:
         'SENTINELS': TASKS_REDIS_SENTINELS,
         'MASTER_NAME': TASKS_REDIS_SENTINEL_SERVICE,
         'SOCKET_TIMEOUT': None,
-        'CONNECTION_KWARGS': {
-            'socket_connect_timeout': TASKS_REDIS_SENTINEL_TIMEOUT
-        },
+        'CONNECTION_KWARGS': {'socket_connect_timeout': TASKS_REDIS_SENTINEL_TIMEOUT},
     }
 elif TASKS_REDIS_URL:
     RQ_PARAMS = {
@@ -801,12 +805,14 @@ else:
         'SSL': TASKS_REDIS_SSL,
         'SSL_CERT_REQS': None if TASKS_REDIS_SKIP_TLS_VERIFY else 'required',
     }
-RQ_PARAMS.update({
-    'DB': TASKS_REDIS_DATABASE,
-    'USERNAME': TASKS_REDIS_USERNAME,
-    'PASSWORD': TASKS_REDIS_PASSWORD,
-    'DEFAULT_TIMEOUT': RQ_DEFAULT_TIMEOUT,
-})
+RQ_PARAMS.update(
+    {
+        'DB': TASKS_REDIS_DATABASE,
+        'USERNAME': TASKS_REDIS_USERNAME,
+        'PASSWORD': TASKS_REDIS_PASSWORD,
+        'DEFAULT_TIMEOUT': RQ_DEFAULT_TIMEOUT,
+    }
+)
 if TASKS_REDIS_CA_CERT_PATH:
     RQ_PARAMS.setdefault('REDIS_CLIENT_KWARGS', {})
     RQ_PARAMS['REDIS_CLIENT_KWARGS']['ssl_ca_certs'] = TASKS_REDIS_CA_CERT_PATH
@@ -818,9 +824,7 @@ RQ_QUEUES = {
     RQ_QUEUE_LOW: RQ_PARAMS,
 }
 # Add any queues defined in QUEUE_MAPPINGS
-RQ_QUEUES.update({
-    queue: RQ_PARAMS for queue in set(QUEUE_MAPPINGS.values()) if queue not in RQ_QUEUES
-})
+RQ_QUEUES.update({queue: RQ_PARAMS for queue in set(QUEUE_MAPPINGS.values()) if queue not in RQ_QUEUES})
 
 #
 # Localization
@@ -845,17 +849,15 @@ LANGUAGES = (
     ('uk', _('Ukrainian')),
     ('zh', _('Chinese')),
 )
-LOCALE_PATHS = (
-    BASE_DIR + '/translations',
-)
+LOCALE_PATHS = (BASE_DIR + '/translations',)
 
 #
 # Strawberry (GraphQL)
 #
 STRAWBERRY_DJANGO = {
-    "DEFAULT_PK_FIELD_NAME": "id",
-    "TYPE_DESCRIPTION_FROM_MODEL_DOCSTRING": True,
-    "PAGINATION_DEFAULT_LIMIT": 100,
+    'DEFAULT_PK_FIELD_NAME': 'id',
+    'TYPE_DESCRIPTION_FROM_MODEL_DOCSTRING': True,
+    'PAGINATION_DEFAULT_LIMIT': 100,
 }
 
 #
@@ -876,8 +878,8 @@ for plugin_name in PLUGINS:
     except ModuleNotFoundError as e:
         if getattr(e, 'name') == plugin_name:
             raise ImproperlyConfigured(
-                f"Unable to import plugin {plugin_name}: Module not found. Check that the plugin module has been "
-                f"installed within the correct Python environment."
+                f'Unable to import plugin {plugin_name}: Module not found. Check that the plugin module has been '
+                f'installed within the correct Python environment.'
             )
         raise e
 
@@ -887,7 +889,7 @@ for plugin_name in PLUGINS:
     except AttributeError:
         raise ImproperlyConfigured(
             f"Plugin {plugin_name} does not provide a 'config' variable. This should be defined in the plugin's "
-            f"__init__.py file and point to the PluginConfig subclass."
+            f'__init__.py file and point to the PluginConfig subclass.'
         )
 
     # Validate version compatibility and user-provided configuration settings and assign defaults
@@ -902,7 +904,7 @@ for plugin_name in PLUGINS:
     # Register the plugin as installed successfully
     registry['plugins']['installed'].append(plugin_name)
 
-    plugin_module = "{}.{}".format(plugin_config.__module__, plugin_config.__name__)  # type: ignore
+    plugin_module = '{}.{}'.format(plugin_config.__module__, plugin_config.__name__)  # type: ignore
 
     # Gather additional apps to load alongside this plugin
     django_apps = plugin_config.django_apps
@@ -913,16 +915,16 @@ for plugin_name in PLUGINS:
 
     # Test if we can import all modules (or its parent, for PluginConfigs and AppConfigs)
     for app in django_apps:
-        if "." in app:
-            parts = app.split(".")
-            spec = importlib.util.find_spec(".".join(parts[:-1]))
+        if '.' in app:
+            parts = app.split('.')
+            spec = importlib.util.find_spec('.'.join(parts[:-1]))
         else:
             spec = importlib.util.find_spec(app)
         if spec is None:
             raise ImproperlyConfigured(
-                f"Failed to load django_apps specified by plugin {plugin_name}: {django_apps} "
-                f"The module {app} cannot be imported. Check that the necessary package has been "
-                f"installed within the correct Python environment."
+                f'Failed to load django_apps specified by plugin {plugin_name}: {django_apps} '
+                f'The module {app} cannot be imported. Check that the necessary package has been '
+                f'installed within the correct Python environment.'
             )
 
     INSTALLED_APPS.extend(django_apps)
@@ -940,22 +942,21 @@ for plugin_name in PLUGINS:
     # we use the plugin name as a prefix for queue name's defined in the plugin config
     # ex: mysuperplugin.mysuperqueue1
     if type(plugin_config.queues) is not list:
-        raise ImproperlyConfigured(f"Plugin {plugin_name} queues must be a list.")
-    RQ_QUEUES.update({
-        f"{plugin_name}.{queue}": RQ_PARAMS for queue in plugin_config.queues
-    })
+        raise ImproperlyConfigured(f'Plugin {plugin_name} queues must be a list.')
+    RQ_QUEUES.update({f'{plugin_name}.{queue}': RQ_PARAMS for queue in plugin_config.queues})
 
     events_pipeline = plugin_config.events_pipeline
     if events_pipeline:
         if type(events_pipeline) in (list, tuple):
             EVENTS_PIPELINE.extend(events_pipeline)
         else:
-            raise ImproperlyConfigured(f"events_pipline in plugin: {plugin_name} must be a list or tuple")
+            raise ImproperlyConfigured(f'events_pipline in plugin: {plugin_name} must be a list or tuple')
 
 
 # UNSUPPORTED FUNCTIONALITY: Import any local overrides.
 try:
     from .local_settings import *
+
     _UNSUPPORTED_SETTINGS = True
 except ImportError:
     pass

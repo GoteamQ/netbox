@@ -28,7 +28,6 @@ ADVISORY_LOCK_KEYS = {
     'available-ips': 100200,
     'available-vlans': 100300,
     'available-asns': 100400,
-
     # MPTT locks
     'region': 105100,
     'sitegroup': 105200,
@@ -39,7 +38,6 @@ ADVISORY_LOCK_KEYS = {
     'inventoryitem': 105700,
     'inventoryitemtemplate': 105800,
     'platform': 105900,
-
     # Jobs
     'job-schedules': 110100,
 }

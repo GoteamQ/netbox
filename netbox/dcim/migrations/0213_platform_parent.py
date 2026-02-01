@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('dcim', '0212_interface_tx_power_negative'),
     ]
@@ -19,7 +18,7 @@ class Migration(migrations.Migration):
                 null=True,
                 on_delete=django.db.models.deletion.CASCADE,
                 related_name='children',
-                to='dcim.platform'
+                to='dcim.platform',
             ),
         ),
         migrations.AddField(

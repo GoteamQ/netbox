@@ -5,26 +5,22 @@ from core.choices import JobIntervalChoices
 from utilities.forms.widgets import DateTimePicker, NumberWithOptions
 from utilities.datetime import local_now
 
-__all__ = (
-    'ReportForm',
-)
+__all__ = ('ReportForm',)
 
 
 class ReportForm(forms.Form):
     schedule_at = forms.DateTimeField(
         required=False,
         widget=DateTimePicker(),
-        label=_("Schedule at"),
-        help_text=_("Schedule execution of report to a set time"),
+        label=_('Schedule at'),
+        help_text=_('Schedule execution of report to a set time'),
     )
     interval = forms.IntegerField(
         required=False,
         min_value=1,
-        label=_("Recurs every"),
-        widget=NumberWithOptions(
-            options=JobIntervalChoices
-        ),
-        help_text=_("Interval at which this report is re-run (in minutes)")
+        label=_('Recurs every'),
+        widget=NumberWithOptions(options=JobIntervalChoices),
+        help_text=_('Interval at which this report is re-run (in minutes)'),
     )
 
     def __init__(self, *args, scheduling_enabled=True, **kwargs):

@@ -4,7 +4,9 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.utils.translation import gettext_lazy as _
 
 from circuits.choices import (
-    CircuitCommitRateChoices, CircuitTerminationPortSpeedChoices, VirtualCircuitTerminationRoleChoices,
+    CircuitCommitRateChoices,
+    CircuitTerminationPortSpeedChoices,
+    VirtualCircuitTerminationRoleChoices,
 )
 from circuits.constants import *
 from circuits.models import *
@@ -14,7 +16,10 @@ from netbox.forms import NetBoxModelForm, OrganizationalModelForm, PrimaryModelF
 from tenancy.forms import TenancyForm
 from utilities.forms import get_field_value
 from utilities.forms.fields import (
-    ContentTypeChoiceField, DynamicModelChoiceField, DynamicModelMultipleChoiceField, SlugField,
+    ContentTypeChoiceField,
+    DynamicModelChoiceField,
+    DynamicModelMultipleChoiceField,
+    SlugField,
 )
 from utilities.forms.mixins import DistanceValidationMixin
 from utilities.forms.rendering import FieldSet, InlineFields
@@ -38,75 +43,79 @@ __all__ = (
 
 class ProviderForm(PrimaryModelForm):
     slug = SlugField()
-    asns = DynamicModelMultipleChoiceField(
-        queryset=ASN.objects.all(),
-        label=_('ASNs'),
-        required=False
-    )
+    asns = DynamicModelMultipleChoiceField(queryset=ASN.objects.all(), label=_('ASNs'), required=False)
 
-    fieldsets = (
-        FieldSet('name', 'slug', 'asns', 'description', 'tags'),
-    )
+    fieldsets = (FieldSet('name', 'slug', 'asns', 'description', 'tags'),)
 
     class Meta:
         model = Provider
         fields = [
-            'name', 'slug', 'asns', 'description', 'owner', 'comments', 'tags',
+            'name',
+            'slug',
+            'asns',
+            'description',
+            'owner',
+            'comments',
+            'tags',
         ]
 
 
 class ProviderAccountForm(PrimaryModelForm):
     provider = DynamicModelChoiceField(
-        label=_('Provider'),
-        queryset=Provider.objects.all(),
-        selector=True,
-        quick_add=True
+        label=_('Provider'), queryset=Provider.objects.all(), selector=True, quick_add=True
     )
 
     class Meta:
         model = ProviderAccount
         fields = [
-            'provider', 'name', 'account', 'description', 'owner', 'comments', 'tags',
+            'provider',
+            'name',
+            'account',
+            'description',
+            'owner',
+            'comments',
+            'tags',
         ]
 
 
 class ProviderNetworkForm(PrimaryModelForm):
     provider = DynamicModelChoiceField(
-        label=_('Provider'),
-        queryset=Provider.objects.all(),
-        selector=True,
-        quick_add=True
+        label=_('Provider'), queryset=Provider.objects.all(), selector=True, quick_add=True
     )
 
-    fieldsets = (
-        FieldSet('provider', 'name', 'service_id', 'description', 'tags'),
-    )
+    fieldsets = (FieldSet('provider', 'name', 'service_id', 'description', 'tags'),)
 
     class Meta:
         model = ProviderNetwork
         fields = [
-            'provider', 'name', 'service_id', 'description', 'owner', 'comments', 'tags',
+            'provider',
+            'name',
+            'service_id',
+            'description',
+            'owner',
+            'comments',
+            'tags',
         ]
 
 
 class CircuitTypeForm(OrganizationalModelForm):
-    fieldsets = (
-        FieldSet('name', 'slug', 'color', 'description', 'owner', 'tags'),
-    )
+    fieldsets = (FieldSet('name', 'slug', 'color', 'description', 'owner', 'tags'),)
 
     class Meta:
         model = CircuitType
         fields = [
-            'name', 'slug', 'color', 'description', 'comments', 'tags',
+            'name',
+            'slug',
+            'color',
+            'description',
+            'comments',
+            'tags',
         ]
 
 
 class CircuitForm(DistanceValidationMixin, TenancyForm, PrimaryModelForm):
     provider = DynamicModelChoiceField(
-        label=_('Provider'),
-        queryset=Provider.objects.all(),
-        selector=True,
-        quick_add=True
+        label=_('Provider'), queryset=Provider.objects.all(), selector=True, quick_add=True
     )
     provider_account = DynamicModelChoiceField(
         label=_('Provider account'),
@@ -114,12 +123,9 @@ class CircuitForm(DistanceValidationMixin, TenancyForm, PrimaryModelForm):
         required=False,
         query_params={
             'provider_id': '$provider',
-        }
+        },
     )
-    type = DynamicModelChoiceField(
-        queryset=CircuitType.objects.all(),
-        quick_add=True
-    )
+    type = DynamicModelChoiceField(queryset=CircuitType.objects.all(), quick_add=True)
 
     fieldsets = (
         FieldSet(
@@ -131,7 +137,7 @@ class CircuitForm(DistanceValidationMixin, TenancyForm, PrimaryModelForm):
             InlineFields('distance', 'distance_unit', label=_('Distance')),
             'description',
             'tags',
-            name=_('Circuit')
+            name=_('Circuit'),
         ),
         FieldSet('install_date', 'termination_date', 'commit_rate', name=_('Service Parameters')),
         FieldSet('tenant_group', 'tenant', name=_('Tenancy')),
@@ -140,43 +146,56 @@ class CircuitForm(DistanceValidationMixin, TenancyForm, PrimaryModelForm):
     class Meta:
         model = Circuit
         fields = [
-            'cid', 'type', 'provider', 'provider_account', 'status', 'install_date', 'termination_date', 'commit_rate',
-            'distance', 'distance_unit', 'description', 'tenant_group', 'tenant', 'owner', 'comments', 'tags',
+            'cid',
+            'type',
+            'provider',
+            'provider_account',
+            'status',
+            'install_date',
+            'termination_date',
+            'commit_rate',
+            'distance',
+            'distance_unit',
+            'description',
+            'tenant_group',
+            'tenant',
+            'owner',
+            'comments',
+            'tags',
         ]
         widgets = {
             'install_date': DatePicker(),
             'termination_date': DatePicker(),
-            'commit_rate': NumberWithOptions(
-                options=CircuitCommitRateChoices
-            ),
+            'commit_rate': NumberWithOptions(options=CircuitCommitRateChoices),
         }
 
 
 class CircuitTerminationForm(NetBoxModelForm):
-    circuit = DynamicModelChoiceField(
-        label=_('Circuit'),
-        queryset=Circuit.objects.all(),
-        selector=True
-    )
+    circuit = DynamicModelChoiceField(label=_('Circuit'), queryset=Circuit.objects.all(), selector=True)
     termination_type = ContentTypeChoiceField(
         queryset=ContentType.objects.filter(model__in=CIRCUIT_TERMINATION_TERMINATION_TYPES),
         widget=HTMXSelect(),
         required=False,
-        label=_('Termination type')
+        label=_('Termination type'),
     )
     termination = DynamicModelChoiceField(
         label=_('Termination'),
         queryset=Site.objects.none(),  # Initial queryset
         required=False,
         disabled=True,
-        selector=True
+        selector=True,
     )
 
     fieldsets = (
         FieldSet(
-            'circuit', 'term_side', 'description', 'tags',
-            'termination_type', 'termination',
-            'mark_connected', name=_('Circuit Termination')
+            'circuit',
+            'term_side',
+            'description',
+            'tags',
+            'termination_type',
+            'termination',
+            'mark_connected',
+            name=_('Circuit Termination'),
         ),
         FieldSet('port_speed', 'upstream_speed', 'xconnect_id', 'pp_info', name=_('Termination Details')),
     )
@@ -184,16 +203,20 @@ class CircuitTerminationForm(NetBoxModelForm):
     class Meta:
         model = CircuitTermination
         fields = [
-            'circuit', 'term_side', 'termination_type', 'mark_connected', 'port_speed', 'upstream_speed',
-            'xconnect_id', 'pp_info', 'description', 'tags',
+            'circuit',
+            'term_side',
+            'termination_type',
+            'mark_connected',
+            'port_speed',
+            'upstream_speed',
+            'xconnect_id',
+            'pp_info',
+            'description',
+            'tags',
         ]
         widgets = {
-            'port_speed': NumberWithOptions(
-                options=CircuitTerminationPortSpeedChoices
-            ),
-            'upstream_speed': NumberWithOptions(
-                options=CircuitTerminationPortSpeedChoices
-            ),
+            'port_speed': NumberWithOptions(options=CircuitTerminationPortSpeedChoices),
+            'upstream_speed': NumberWithOptions(options=CircuitTerminationPortSpeedChoices),
         }
 
     def __init__(self, *args, **kwargs):
@@ -236,7 +259,14 @@ class CircuitGroupForm(TenancyForm, OrganizationalModelForm):
     class Meta:
         model = CircuitGroup
         fields = [
-            'name', 'slug', 'description', 'tenant_group', 'tenant', 'owner', 'comments', 'tags',
+            'name',
+            'slug',
+            'description',
+            'tenant_group',
+            'tenant',
+            'owner',
+            'comments',
+            'tags',
         ]
 
 
@@ -249,24 +279,25 @@ class CircuitGroupAssignmentForm(NetBoxModelForm):
         queryset=ContentType.objects.filter(CIRCUIT_GROUP_ASSIGNMENT_MEMBER_MODELS),
         widget=HTMXSelect(),
         required=False,
-        label=_('Circuit type')
+        label=_('Circuit type'),
     )
     member = DynamicModelChoiceField(
         label=_('Circuit'),
         queryset=Circuit.objects.none(),  # Initial queryset
         required=False,
         disabled=True,
-        selector=True
+        selector=True,
     )
 
-    fieldsets = (
-        FieldSet('group', 'member_type', 'member', 'priority', 'tags', name=_('Group Assignment')),
-    )
+    fieldsets = (FieldSet('group', 'member_type', 'member', 'priority', 'tags', name=_('Group Assignment')),)
 
     class Meta:
         model = CircuitGroupAssignment
         fields = [
-            'group', 'member_type', 'priority', 'tags',
+            'group',
+            'member_type',
+            'priority',
+            'tags',
         ]
 
     def __init__(self, *args, **kwargs):
@@ -300,36 +331,39 @@ class CircuitGroupAssignmentForm(NetBoxModelForm):
 
 
 class VirtualCircuitTypeForm(OrganizationalModelForm):
-    fieldsets = (
-        FieldSet('name', 'slug', 'color', 'description', 'tags'),
-    )
+    fieldsets = (FieldSet('name', 'slug', 'color', 'description', 'tags'),)
 
     class Meta:
         model = VirtualCircuitType
         fields = [
-            'name', 'slug', 'color', 'description', 'owner', 'comments', 'tags',
+            'name',
+            'slug',
+            'color',
+            'description',
+            'owner',
+            'comments',
+            'tags',
         ]
 
 
 class VirtualCircuitForm(TenancyForm, PrimaryModelForm):
     provider_network = DynamicModelChoiceField(
-        label=_('Provider network'),
-        queryset=ProviderNetwork.objects.all(),
-        selector=True
+        label=_('Provider network'), queryset=ProviderNetwork.objects.all(), selector=True
     )
     provider_account = DynamicModelChoiceField(
-        label=_('Provider account'),
-        queryset=ProviderAccount.objects.all(),
-        required=False
+        label=_('Provider account'), queryset=ProviderAccount.objects.all(), required=False
     )
-    type = DynamicModelChoiceField(
-        queryset=VirtualCircuitType.objects.all(),
-        quick_add=True
-    )
+    type = DynamicModelChoiceField(queryset=VirtualCircuitType.objects.all(), quick_add=True)
 
     fieldsets = (
         FieldSet(
-            'provider_network', 'provider_account', 'cid', 'type', 'status', 'description', 'tags',
+            'provider_network',
+            'provider_account',
+            'cid',
+            'type',
+            'status',
+            'description',
+            'tags',
             name=_('Virtual circuit'),
         ),
         FieldSet('tenant_group', 'tenant', name=_('Tenancy')),
@@ -338,22 +372,25 @@ class VirtualCircuitForm(TenancyForm, PrimaryModelForm):
     class Meta:
         model = VirtualCircuit
         fields = [
-            'cid', 'provider_network', 'provider_account', 'type', 'status', 'description', 'tenant_group', 'tenant',
-            'owner', 'comments', 'tags',
+            'cid',
+            'provider_network',
+            'provider_account',
+            'type',
+            'status',
+            'description',
+            'tenant_group',
+            'tenant',
+            'owner',
+            'comments',
+            'tags',
         ]
 
 
 class VirtualCircuitTerminationForm(NetBoxModelForm):
     virtual_circuit = DynamicModelChoiceField(
-        label=_('Virtual circuit'),
-        queryset=VirtualCircuit.objects.all(),
-        selector=True
+        label=_('Virtual circuit'), queryset=VirtualCircuit.objects.all(), selector=True
     )
-    role = forms.ChoiceField(
-        choices=VirtualCircuitTerminationRoleChoices,
-        widget=HTMXSelect(),
-        label=_('Role')
-    )
+    role = forms.ChoiceField(choices=VirtualCircuitTerminationRoleChoices, widget=HTMXSelect(), label=_('Role'))
     interface = DynamicModelChoiceField(
         label=_('Interface'),
         queryset=Interface.objects.all(),
@@ -364,15 +401,17 @@ class VirtualCircuitTerminationForm(NetBoxModelForm):
         },
         context={
             'parent': 'device',
-        }
+        },
     )
 
-    fieldsets = (
-        FieldSet('virtual_circuit', 'role', 'interface', 'description', 'tags'),
-    )
+    fieldsets = (FieldSet('virtual_circuit', 'role', 'interface', 'description', 'tags'),)
 
     class Meta:
         model = VirtualCircuitTermination
         fields = [
-            'virtual_circuit', 'role', 'interface', 'description', 'tags',
+            'virtual_circuit',
+            'role',
+            'interface',
+            'description',
+            'tags',
         ]

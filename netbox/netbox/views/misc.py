@@ -45,9 +45,9 @@ class HomeView(ConditionalLoginRequiredMixin, View):
         try:
             dashboard = get_dashboard(request.user).get_layout()
         except Exception:
-            messages.error(request, _(
-                "There was an error loading the dashboard configuration. A default dashboard is in use."
-            ))
+            messages.error(
+                request, _('There was an error loading the dashboard configuration. A default dashboard is in use.')
+            )
             dashboard = get_default_dashboard(config=DEFAULT_DASHBOARD).get_layout()
 
         # Check whether a new release is available. (Only for superusers.)
@@ -69,14 +69,17 @@ class HomeView(ConditionalLoginRequiredMixin, View):
                         'url': release_url,
                     }
 
-        return render(request, self.template_name, {
-            'dashboard': dashboard,
-            'new_release': new_release,
-        })
+        return render(
+            request,
+            self.template_name,
+            {
+                'dashboard': dashboard,
+                'new_release': new_release,
+            },
+        )
 
 
 class SearchView(ConditionalLoginRequiredMixin, View):
-
     def get(self, request):
         results = []
         highlight = None
@@ -85,7 +88,6 @@ class SearchView(ConditionalLoginRequiredMixin, View):
         form = SearchForm(request.GET) if 'q' in request.GET else SearchForm()
 
         if form.is_valid():
-
             # Restrict results by object type
             object_types = []
             for obj_type in form.cleaned_data['obj_types']:
@@ -94,16 +96,13 @@ class SearchView(ConditionalLoginRequiredMixin, View):
 
             lookup = form.cleaned_data['lookup'] or LookupTypes.PARTIAL
             results = search_backend.search(
-                form.cleaned_data['q'],
-                user=request.user,
-                object_types=object_types,
-                lookup=lookup
+                form.cleaned_data['q'], user=request.user, object_types=object_types, lookup=lookup
             )
 
             # If performing a regex search, pass the highlight value as a compiled pattern
             if form.cleaned_data['lookup'] == LookupTypes.REGEX:
                 try:
-                    highlight = re.compile(f"({form.cleaned_data['q']})", flags=re.IGNORECASE)
+                    highlight = re.compile(f'({form.cleaned_data["q"]})', flags=re.IGNORECASE)
                 except re.error:
                     pass
             elif form.cleaned_data['lookup'] != LookupTypes.EXACT:
@@ -112,26 +111,34 @@ class SearchView(ConditionalLoginRequiredMixin, View):
         table = SearchTable(results, highlight=highlight)
 
         # Paginate the table results
-        RequestConfig(request, {
-            'paginator_class': EnhancedPaginator,
-            'per_page': get_paginate_count(request)
-        }).configure(table)
+        RequestConfig(
+            request, {'paginator_class': EnhancedPaginator, 'per_page': get_paginate_count(request)}
+        ).configure(table)
 
         # If this is an HTMX request, return only the rendered table HTML
         if htmx_partial(request):
-            return render(request, 'htmx/table.html', {
-                'table': table,
-            })
+            return render(
+                request,
+                'htmx/table.html',
+                {
+                    'table': table,
+                },
+            )
 
-        return render(request, 'search.html', {
-            'form': form,
-            'table': table,
-        })
+        return render(
+            request,
+            'search.html',
+            {
+                'form': form,
+                'table': table,
+            },
+        )
 
 
 class MediaView(TokenConditionalLoginRequiredMixin, View):
     """
     Wrap Django's serve() view to enforce LOGIN_REQUIRED for static media.
     """
+
     def get(self, request, path):
         return serve(request, path, document_root=settings.MEDIA_ROOT)

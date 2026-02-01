@@ -42,17 +42,17 @@ class DataSourceTestCase(ViewTestCases.PrimaryObjectViewTestCase):
         }
 
         cls.csv_data = (
-            "name,type,source_url,enabled",
-            "Data Source 4,local,file:///var/tmp/source4/,true",
-            "Data Source 5,local,file:///var/tmp/source4/,true",
-            "Data Source 6,git,http:///exmaple/com/foo/bar/,false",
+            'name,type,source_url,enabled',
+            'Data Source 4,local,file:///var/tmp/source4/,true',
+            'Data Source 5,local,file:///var/tmp/source4/,true',
+            'Data Source 6,git,http:///exmaple/com/foo/bar/,false',
         )
 
         cls.csv_update_data = (
-            "id,name,description",
-            f"{data_sources[0].pk},Data Source 7,New description7",
-            f"{data_sources[1].pk},Data Source 8,New description8",
-            f"{data_sources[2].pk},Data Source 9,New description9",
+            'id,name,description',
+            f'{data_sources[0].pk},Data Source 7,New description7',
+            f'{data_sources[1].pk},Data Source 8,New description8',
+            f'{data_sources[2].pk},Data Source 9,New description9',
         )
 
         cls.bulk_edit_data = {
@@ -72,9 +72,7 @@ class DataFileTestCase(
     @classmethod
     def setUpTestData(cls):
         datasource = DataSource.objects.create(
-            name='Data Source 1',
-            type='local',
-            source_url='file:///var/tmp/source1/'
+            name='Data Source 1', type='local', source_url='file:///var/tmp/source1/'
         )
 
         data_files = (
@@ -83,21 +81,21 @@ class DataFileTestCase(
                 path='dir1/file1.txt',
                 last_updated=timezone.now(),
                 size=1000,
-                hash='442da078f0111cbdf42f21903724f6597c692535f55bdfbbea758a1ae99ad9e1'
+                hash='442da078f0111cbdf42f21903724f6597c692535f55bdfbbea758a1ae99ad9e1',
             ),
             DataFile(
                 source=datasource,
                 path='dir1/file2.txt',
                 last_updated=timezone.now(),
                 size=2000,
-                hash='a78168c7c97115bafd96450ed03ea43acec495094c5caa28f0d02e20e3a76cc2'
+                hash='a78168c7c97115bafd96450ed03ea43acec495094c5caa28f0d02e20e3a76cc2',
             ),
             DataFile(
                 source=datasource,
                 path='dir1/file3.txt',
                 last_updated=timezone.now(),
                 size=3000,
-                hash='12b8827a14c4d5a2f30b6c6e2b7983063988612391c6cbe8ee7493b59054827a'
+                hash='12b8827a14c4d5a2f30b6c6e2b7983063988612391c6cbe8ee7493b59054827a',
             ),
         )
         DataFile.objects.bulk_create(data_files)
@@ -105,13 +103,10 @@ class DataFileTestCase(
 
 # TODO: Convert to StandardTestCases.Views
 class ObjectChangeTestCase(TestCase):
-    user_permissions = (
-        'core.view_objectchange',
-    )
+    user_permissions = ('core.view_objectchange',)
 
     @classmethod
     def setUpTestData(cls):
-
         site = Site(name='Site 1', slug='site-1')
         site.save()
 
@@ -124,17 +119,15 @@ class ObjectChangeTestCase(TestCase):
             oc.save()
 
     def test_objectchange_list(self):
-
         url = reverse('core:objectchange_list')
         params = {
-            "user": User.objects.first().pk,
+            'user': User.objects.first().pk,
         }
 
         response = self.client.get('{}?{}'.format(url, urllib.parse.urlencode(params)))
         self.assertHttpStatus(response, 200)
 
     def test_objectchange(self):
-
         objectchange = ObjectChange.objects.first()
         response = self.client.get(objectchange.get_absolute_url())
         self.assertHttpStatus(response, 200)
@@ -146,15 +139,15 @@ class BackgroundTaskTestCase(TestCase):
     # Dummy worker functions
     @staticmethod
     def dummy_job_default():
-        return "Job finished"
+        return 'Job finished'
 
     @staticmethod
     def dummy_job_high():
-        return "Job finished"
+        return 'Job finished'
 
     @staticmethod
     def dummy_job_failing():
-        raise Exception("Job failed")
+        raise Exception('Job failed')
 
     def setUp(self):
         super().setUp()
@@ -352,7 +345,6 @@ class BackgroundTaskTestCase(TestCase):
 
 
 class SystemTestCase(TestCase):
-
     def setUp(self):
         super().setUp()
 
@@ -365,7 +357,7 @@ class SystemTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
 
         # Test export
-        response = self.client.get(f"{reverse('core:system')}?export=true")
+        response = self.client.get(f'{reverse("core:system")}?export=true')
         self.assertEqual(response.status_code, 200)
         data = json.loads(response.content)
         self.assertIn('netbox_release', data)
@@ -381,5 +373,5 @@ class SystemTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
 
         # Test export
-        response = self.client.get(f"{reverse('core:system')}?export=true")
+        response = self.client.get(f'{reverse("core:system")}?export=true')
         self.assertEqual(response.status_code, 200)

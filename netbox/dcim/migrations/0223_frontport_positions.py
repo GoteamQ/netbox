@@ -3,7 +3,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('dcim', '0222_port_mappings'),
     ]
@@ -22,7 +21,6 @@ class Migration(migrations.Migration):
             model_name='frontporttemplate',
             name='rear_port_position',
         ),
-
         # Add positions on FrontPortTemplate
         migrations.AddField(
             model_name='frontporttemplate',
@@ -31,11 +29,10 @@ class Migration(migrations.Migration):
                 default=1,
                 validators=[
                     django.core.validators.MinValueValidator(1),
-                    django.core.validators.MaxValueValidator(1024)
-                ]
+                    django.core.validators.MaxValueValidator(1024),
+                ],
             ),
         ),
-
         # Remove rear_port & rear_port_position from FrontPort
         migrations.RemoveConstraint(
             model_name='frontport',
@@ -49,7 +46,6 @@ class Migration(migrations.Migration):
             model_name='frontport',
             name='rear_port_position',
         ),
-
         # Add positions on FrontPort
         migrations.AddField(
             model_name='frontport',
@@ -58,8 +54,8 @@ class Migration(migrations.Migration):
                 default=1,
                 validators=[
                     django.core.validators.MinValueValidator(1),
-                    django.core.validators.MaxValueValidator(1024)
-                ]
+                    django.core.validators.MaxValueValidator(1024),
+                ],
             ),
         ),
     ]

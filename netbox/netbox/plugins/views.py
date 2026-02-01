@@ -16,12 +16,13 @@ class InstalledPluginsAPIView(APIView):
     """
     API view for listing all installed plugins
     """
+
     permission_classes = [IsSuperuser]
     _ignore_model_permissions = True
     schema = None
 
     def get_view_name(self):
-        return "Installed Plugins"
+        return 'Installed Plugins'
 
     @staticmethod
     def _get_plugin_data(plugin_app_config):
@@ -36,10 +37,9 @@ class InstalledPluginsAPIView(APIView):
         }
 
     def get(self, request, format=None):
-        return Response([
-            self._get_plugin_data(apps.get_app_config(plugin))
-            for plugin in registry['plugins']['installed']
-        ])
+        return Response(
+            [self._get_plugin_data(apps.get_app_config(plugin)) for plugin in registry['plugins']['installed']]
+        )
 
 
 @extend_schema(exclude=True)
@@ -48,18 +48,17 @@ class PluginsAPIRootView(APIView):
     schema = None
 
     def get_view_name(self):
-        return "Plugins"
+        return 'Plugins'
 
     @staticmethod
     def _get_plugin_entry(plugin, app_config, request, format):
         # Check if the plugin specifies any API URLs
         api_app_name = f'{app_config.name}-api'
         try:
-            entry = (getattr(app_config, 'base_url', app_config.label), reverse(
-                f"plugins-api:{api_app_name}:api-root",
-                request=request,
-                format=format
-            ))
+            entry = (
+                getattr(app_config, 'base_url', app_config.label),
+                reverse(f'plugins-api:{api_app_name}:api-root', request=request, format=format),
+            )
         except NoReverseMatch:
             # The plugin does not include an api-root url
             entry = None
@@ -67,7 +66,6 @@ class PluginsAPIRootView(APIView):
         return entry
 
     def get(self, request, format=None):
-
         entries = []
         for plugin in registry['plugins']['installed']:
             app_config = apps.get_app_config(plugin)
@@ -75,7 +73,8 @@ class PluginsAPIRootView(APIView):
             if entry is not None:
                 entries.append(entry)
 
-        return Response(OrderedDict((
-            ('installed-plugins', reverse('plugins-api:plugins-list', request=request, format=format)),
-            *entries
-        )))
+        return Response(
+            OrderedDict(
+                (('installed-plugins', reverse('plugins-api:plugins-list', request=request, format=format)), *entries)
+            )
+        )

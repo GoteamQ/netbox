@@ -30,6 +30,7 @@ class CoreRootView(APIRootView):
     """
     Core API root view
     """
+
     def get_view_name(self):
         return 'Core'
 
@@ -47,7 +48,7 @@ class DataSourceViewSet(NetBoxModelViewSet):
         datasource = get_object_or_404(DataSource, pk=pk)
 
         if not request.user.has_perm('core.sync_datasource', obj=datasource):
-            raise PermissionDenied(_("This user does not have permission to synchronize this data source."))
+            raise PermissionDenied(_('This user does not have permission to synchronize this data source.'))
 
         # Enqueue the sync job
         SyncDataSourceJob.enqueue(instance=datasource, user=request.user)
@@ -67,6 +68,7 @@ class JobViewSet(NetBoxReadOnlyModelViewSet):
     """
     Retrieve a list of job results
     """
+
     queryset = Job.objects.all()
     serializer_class = serializers.JobSerializer
     filterset_class = filtersets.JobFilterSet
@@ -76,6 +78,7 @@ class ObjectChangeViewSet(NetBoxReadOnlyModelViewSet):
     """
     Retrieve a list of recent changes.
     """
+
     metadata_class = ContentTypeMetadata
     queryset = ObjectChange.objects.all()
     serializer_class = serializers.ObjectChangeSerializer
@@ -89,6 +92,7 @@ class ObjectTypeViewSet(NetBoxReadOnlyModelViewSet):
     """
     Read-only list of ObjectTypes.
     """
+
     permission_classes = [IsAuthenticatedOrLoginNotRequired]
     queryset = ObjectType.objects.order_by('app_label', 'model')
     serializer_class = serializers.ObjectTypeSerializer
@@ -102,6 +106,7 @@ class ObjectTypeViewSet(NetBoxReadOnlyModelViewSet):
         # Call GenericViewSet.initial() directly, skipping BaseViewSet.initial()
         # which would try to call restrict() on the queryset
         from rest_framework.viewsets import GenericViewSet
+
         GenericViewSet.initial(self, request, *args, **kwargs)
 
 
@@ -109,6 +114,7 @@ class BaseRQViewSet(viewsets.ViewSet):
     """
     Base class for RQ view sets. Provides a list() method. Subclasses must implement get_data().
     """
+
     permission_classes = [IsSuperuser]
     serializer_class = None
 
@@ -155,6 +161,7 @@ class BackgroundQueueViewSet(BaseRQViewSet):
     Retrieve a list of RQ Queues.
     Note: Queue names are not URL safe, so not returning a detail view.
     """
+
     serializer_class = serializers.BackgroundQueueSerializer
     lookup_field = 'name'
     lookup_value_regex = r'[\w.@+-]+'
@@ -187,6 +194,7 @@ class BackgroundWorkerViewSet(BaseRQViewSet):
     """
     Retrieve a list of RQ Workers.
     """
+
     serializer_class = serializers.BackgroundWorkerSerializer
     lookup_field = 'name'
 
@@ -218,6 +226,7 @@ class BackgroundTaskViewSet(BaseRQViewSet):
     """
     Retrieve a list of RQ Tasks.
     """
+
     serializer_class = serializers.BackgroundTaskSerializer
     lookup_field = 'id'
 

@@ -25,12 +25,10 @@ __all__ = (
 
 class VLANGroupSerializer(OrganizationalModelSerializer):
     scope_type = ContentTypeField(
-        queryset=ContentType.objects.filter(
-            model__in=VLANGROUP_SCOPE_TYPES
-        ),
+        queryset=ContentType.objects.filter(model__in=VLANGROUP_SCOPE_TYPES),
         allow_null=True,
         required=False,
-        default=None
+        default=None,
     )
     scope_id = serializers.IntegerField(allow_null=True, required=False, default=None)
     scope = GFKSerializerField(read_only=True)
@@ -44,9 +42,26 @@ class VLANGroupSerializer(OrganizationalModelSerializer):
     class Meta:
         model = VLANGroup
         fields = [
-            'id', 'url', 'display_url', 'display', 'name', 'slug', 'scope_type', 'scope_id', 'scope', 'vid_ranges',
-            'tenant', 'description', 'owner', 'comments', 'tags', 'custom_fields', 'created', 'last_updated',
-            'vlan_count', 'utilization',
+            'id',
+            'url',
+            'display_url',
+            'display',
+            'name',
+            'slug',
+            'scope_type',
+            'scope_id',
+            'scope',
+            'vid_ranges',
+            'tenant',
+            'description',
+            'owner',
+            'comments',
+            'tags',
+            'custom_fields',
+            'created',
+            'last_updated',
+            'vlan_count',
+            'utilization',
         ]
         brief_fields = ('id', 'url', 'display', 'name', 'slug', 'description', 'vlan_count')
         validators = []
@@ -68,9 +83,28 @@ class VLANSerializer(PrimaryModelSerializer):
     class Meta:
         model = VLAN
         fields = [
-            'id', 'url', 'display_url', 'display', 'site', 'group', 'vid', 'name', 'tenant', 'status', 'role',
-            'description', 'qinq_role', 'qinq_svlan', 'owner', 'comments', 'l2vpn_termination', 'tags', 'custom_fields',
-            'created', 'last_updated', 'prefix_count',
+            'id',
+            'url',
+            'display_url',
+            'display',
+            'site',
+            'group',
+            'vid',
+            'name',
+            'tenant',
+            'status',
+            'role',
+            'description',
+            'qinq_role',
+            'qinq_svlan',
+            'owner',
+            'comments',
+            'l2vpn_termination',
+            'tags',
+            'custom_fields',
+            'created',
+            'last_updated',
+            'prefix_count',
         ]
         brief_fields = ('id', 'url', 'display', 'vid', 'name', 'description')
 
@@ -79,6 +113,7 @@ class AvailableVLANSerializer(serializers.Serializer):
     """
     Representation of a VLAN which does not exist in the database.
     """
+
     vid = serializers.IntegerField(read_only=True)
     group = VLANGroupSerializer(nested=True, read_only=True, allow_null=True)
 
@@ -86,9 +121,7 @@ class AvailableVLANSerializer(serializers.Serializer):
         return {
             'vid': instance,
             'group': VLANGroupSerializer(
-                self.context['group'],
-                nested=True,
-                context={'request': self.context['request']}
+                self.context['group'], nested=True, context={'request': self.context['request']}
             ).data,
         }
 
@@ -102,7 +135,14 @@ class CreateAvailableVLANSerializer(NetBoxModelSerializer):
     class Meta:
         model = VLAN
         fields = [
-            'name', 'site', 'tenant', 'status', 'role', 'description', 'tags', 'custom_fields',
+            'name',
+            'site',
+            'tenant',
+            'status',
+            'role',
+            'description',
+            'tags',
+            'custom_fields',
         ]
 
     def validate(self, data):
@@ -111,7 +151,6 @@ class CreateAvailableVLANSerializer(NetBoxModelSerializer):
 
 
 class VLANTranslationRuleSerializer(NetBoxModelSerializer):
-
     class Meta:
         model = VLANTranslationRule
         fields = ['id', 'url', 'display', 'policy', 'local_vid', 'remote_vid', 'description']

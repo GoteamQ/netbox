@@ -1,9 +1,7 @@
 from django.template.loader import get_template
 from django.utils.translation import gettext as _
 
-__all__ = (
-    'PluginTemplateExtension',
-)
+__all__ = ('PluginTemplateExtension',)
 
 
 class PluginTemplateExtension:
@@ -26,6 +24,7 @@ class PluginTemplateExtension:
     * settings - Global NetBox settings
     * config - Plugin-specific configuration parameters
     """
+
     models = None
 
     def __init__(self, context):
@@ -39,7 +38,7 @@ class PluginTemplateExtension:
         if extra_context is None:
             extra_context = {}
         elif not isinstance(extra_context, dict):
-            raise TypeError(_("extra_context must be a dictionary"))
+            raise TypeError(_('extra_context must be a dictionary'))
 
         return get_template(template_name).render({**self.context, **extra_context})
 

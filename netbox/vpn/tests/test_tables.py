@@ -8,11 +8,12 @@ from vpn.tables import TunnelTerminationTable
 class TunnelTerminationTableTest(TestCase):
     def test_every_orderable_field_does_not_throw_exception(self):
         terminations = TunnelTermination.objects.all()
-        fake_request = RequestFactory().get("/")
+        fake_request = RequestFactory().get('/')
         disallowed = {'actions'}
 
         orderable_columns = [
-            column.name for column in TunnelTerminationTable(terminations).columns
+            column.name
+            for column in TunnelTerminationTable(terminations).columns
             if column.orderable and column.name not in disallowed
         ]
 

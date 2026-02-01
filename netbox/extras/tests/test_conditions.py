@@ -11,7 +11,6 @@ from extras.models import EventRule, Webhook
 
 
 class ConditionTestCase(TestCase):
-
     def test_undefined_attr(self):
         c = Condition('x', 1, 'eq')
         self.assertTrue(c.eval({'x': 1}))
@@ -135,7 +134,6 @@ class ConditionTestCase(TestCase):
 
 
 class ConditionSetTest(TestCase):
-
     def test_empty(self):
         with self.assertRaises(ValueError):
             ConditionSet({})
@@ -145,91 +143,113 @@ class ConditionSetTest(TestCase):
             ConditionSet({'foo': []})
 
     def test_null_value(self):
-        cs = ConditionSet({
-            'and': [
-                {'attr': 'a', 'value': None, 'op': 'eq', 'negate': True},
-            ]
-        })
+        cs = ConditionSet(
+            {
+                'and': [
+                    {'attr': 'a', 'value': None, 'op': 'eq', 'negate': True},
+                ]
+            }
+        )
         self.assertFalse(cs.eval({'a': None}))
-        self.assertTrue(cs.eval({'a': "string"}))
-        self.assertTrue(cs.eval({'a': {"key": "value"}}))
+        self.assertTrue(cs.eval({'a': 'string'}))
+        self.assertTrue(cs.eval({'a': {'key': 'value'}}))
 
     def test_and_single_depth(self):
-        cs = ConditionSet({
-            'and': [
-                {'attr': 'a', 'value': 1, 'op': 'eq'},
-                {'attr': 'b', 'value': 1, 'op': 'eq', 'negate': True},
-            ]
-        })
+        cs = ConditionSet(
+            {
+                'and': [
+                    {'attr': 'a', 'value': 1, 'op': 'eq'},
+                    {'attr': 'b', 'value': 1, 'op': 'eq', 'negate': True},
+                ]
+            }
+        )
         self.assertTrue(cs.eval({'a': 1, 'b': 2}))
         self.assertFalse(cs.eval({'a': 1, 'b': 1}))
 
     def test_or_single_depth(self):
-        cs = ConditionSet({
-            'or': [
-                {'attr': 'a', 'value': 1, 'op': 'eq'},
-                {'attr': 'b', 'value': 1, 'op': 'eq'},
-            ]
-        })
+        cs = ConditionSet(
+            {
+                'or': [
+                    {'attr': 'a', 'value': 1, 'op': 'eq'},
+                    {'attr': 'b', 'value': 1, 'op': 'eq'},
+                ]
+            }
+        )
         self.assertTrue(cs.eval({'a': 1, 'b': 2}))
         self.assertTrue(cs.eval({'a': 2, 'b': 1}))
         self.assertFalse(cs.eval({'a': 2, 'b': 2}))
 
     def test_and_multi_depth(self):
-        cs = ConditionSet({
-            'and': [
-                {'attr': 'a', 'value': 1, 'op': 'eq'},
-                {'and': [
-                    {'attr': 'b', 'value': 2, 'op': 'eq'},
-                    {'attr': 'c', 'value': 3, 'op': 'eq'},
-                ]}
-            ]
-        })
+        cs = ConditionSet(
+            {
+                'and': [
+                    {'attr': 'a', 'value': 1, 'op': 'eq'},
+                    {
+                        'and': [
+                            {'attr': 'b', 'value': 2, 'op': 'eq'},
+                            {'attr': 'c', 'value': 3, 'op': 'eq'},
+                        ]
+                    },
+                ]
+            }
+        )
         self.assertTrue(cs.eval({'a': 1, 'b': 2, 'c': 3}))
         self.assertFalse(cs.eval({'a': 9, 'b': 2, 'c': 3}))
         self.assertFalse(cs.eval({'a': 1, 'b': 9, 'c': 3}))
         self.assertFalse(cs.eval({'a': 1, 'b': 2, 'c': 9}))
 
     def test_or_multi_depth(self):
-        cs = ConditionSet({
-            'or': [
-                {'attr': 'a', 'value': 1, 'op': 'eq'},
-                {'or': [
-                    {'attr': 'b', 'value': 2, 'op': 'eq'},
-                    {'attr': 'c', 'value': 3, 'op': 'eq'},
-                ]}
-            ]
-        })
+        cs = ConditionSet(
+            {
+                'or': [
+                    {'attr': 'a', 'value': 1, 'op': 'eq'},
+                    {
+                        'or': [
+                            {'attr': 'b', 'value': 2, 'op': 'eq'},
+                            {'attr': 'c', 'value': 3, 'op': 'eq'},
+                        ]
+                    },
+                ]
+            }
+        )
         self.assertTrue(cs.eval({'a': 1, 'b': 9, 'c': 9}))
         self.assertTrue(cs.eval({'a': 9, 'b': 2, 'c': 9}))
         self.assertTrue(cs.eval({'a': 9, 'b': 9, 'c': 3}))
         self.assertFalse(cs.eval({'a': 9, 'b': 9, 'c': 9}))
 
     def test_mixed_and(self):
-        cs = ConditionSet({
-            'and': [
-                {'attr': 'a', 'value': 1, 'op': 'eq'},
-                {'or': [
-                    {'attr': 'b', 'value': 2, 'op': 'eq'},
-                    {'attr': 'c', 'value': 3, 'op': 'eq'},
-                ]}
-            ]
-        })
+        cs = ConditionSet(
+            {
+                'and': [
+                    {'attr': 'a', 'value': 1, 'op': 'eq'},
+                    {
+                        'or': [
+                            {'attr': 'b', 'value': 2, 'op': 'eq'},
+                            {'attr': 'c', 'value': 3, 'op': 'eq'},
+                        ]
+                    },
+                ]
+            }
+        )
         self.assertTrue(cs.eval({'a': 1, 'b': 2, 'c': 9}))
         self.assertTrue(cs.eval({'a': 1, 'b': 9, 'c': 3}))
         self.assertFalse(cs.eval({'a': 1, 'b': 9, 'c': 9}))
         self.assertFalse(cs.eval({'a': 9, 'b': 2, 'c': 3}))
 
     def test_mixed_or(self):
-        cs = ConditionSet({
-            'or': [
-                {'attr': 'a', 'value': 1, 'op': 'eq'},
-                {'and': [
-                    {'attr': 'b', 'value': 2, 'op': 'eq'},
-                    {'attr': 'c', 'value': 3, 'op': 'eq'},
-                ]}
-            ]
-        })
+        cs = ConditionSet(
+            {
+                'or': [
+                    {'attr': 'a', 'value': 1, 'op': 'eq'},
+                    {
+                        'and': [
+                            {'attr': 'b', 'value': 2, 'op': 'eq'},
+                            {'attr': 'c', 'value': 3, 'op': 'eq'},
+                        ]
+                    },
+                ]
+            }
+        )
         self.assertTrue(cs.eval({'a': 1, 'b': 9, 'c': 9}))
         self.assertTrue(cs.eval({'a': 9, 'b': 2, 'c': 3}))
         self.assertTrue(cs.eval({'a': 1, 'b': 2, 'c': 9}))
@@ -246,7 +266,7 @@ class ConditionSetTest(TestCase):
             conditions={
                 'attr': 'status.value',
                 'value': 'active',
-            }
+            },
         )
 
         # Create a Site to evaluate - Status = active
@@ -264,10 +284,10 @@ class ConditionSetTest(TestCase):
             name='Event Rule 1',
             event_types=[OBJECT_CREATED, OBJECT_UPDATED],
             conditions={
-                "attr": "status.value",
-                "value": ["planned", "staging"],
-                "op": "in",
-            }
+                'attr': 'status.value',
+                'value': ['planned', 'staging'],
+                'op': 'in',
+            },
         )
 
         # Create a Site to evaluate - Status = active
@@ -285,11 +305,11 @@ class ConditionSetTest(TestCase):
             name='Event Rule 1',
             event_types=[OBJECT_CREATED, OBJECT_UPDATED],
             conditions={
-                "attr": "status.value",
-                "value": ["planned", "staging"],
-                "op": "in",
-                "negate": True,
-            }
+                'attr': 'status.value',
+                'value': ['planned', 'staging'],
+                'op': 'in',
+                'negate': True,
+            },
         )
 
         # Create a Site to evaluate - Status = active
@@ -307,17 +327,16 @@ class ConditionSetTest(TestCase):
         ct = ContentType.objects.get(app_label='extras', model='webhook')
         site_ct = ContentType.objects.get_for_model(Site)
         webhook = Webhook.objects.create(name='Webhook 100', payload_url='http://example.com/?1', http_method='POST')
-        form = EventRuleForm({
-            "name": "Event Rule 1",
-            "event_types": [OBJECT_CREATED, OBJECT_UPDATED],
-            "action_object_type": ct.pk,
-            "action_type": "webhook",
-            "action_choice": webhook.pk,
-            "content_types": [site_ct.pk],
-            "conditions": {
-                "foo": "status.value",
-                "value": "active"
+        form = EventRuleForm(
+            {
+                'name': 'Event Rule 1',
+                'event_types': [OBJECT_CREATED, OBJECT_UPDATED],
+                'action_object_type': ct.pk,
+                'action_type': 'webhook',
+                'action_choice': webhook.pk,
+                'content_types': [site_ct.pk],
+                'conditions': {'foo': 'status.value', 'value': 'active'},
             }
-        })
+        )
 
         self.assertFalse(form.is_valid())

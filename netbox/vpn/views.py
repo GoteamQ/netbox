@@ -11,11 +11,10 @@ from .models import *
 # Tunnel groups
 #
 
+
 @register_model_view(TunnelGroup, 'list', path='', detail=False)
 class TunnelGroupListView(generic.ObjectListView):
-    queryset = TunnelGroup.objects.annotate(
-        tunnel_count=count_related(Tunnel, 'group')
-    )
+    queryset = TunnelGroup.objects.annotate(tunnel_count=count_related(Tunnel, 'group'))
     filterset = filtersets.TunnelGroupFilterSet
     filterset_form = forms.TunnelGroupFilterForm
     table = tables.TunnelGroupTable
@@ -51,9 +50,7 @@ class TunnelGroupBulkImportView(generic.BulkImportView):
 
 @register_model_view(TunnelGroup, 'bulk_edit', path='edit', detail=False)
 class TunnelGroupBulkEditView(generic.BulkEditView):
-    queryset = TunnelGroup.objects.annotate(
-        tunnel_count=count_related(Tunnel, 'group')
-    )
+    queryset = TunnelGroup.objects.annotate(tunnel_count=count_related(Tunnel, 'group'))
     filterset = filtersets.TunnelGroupFilterSet
     table = tables.TunnelGroupTable
     form = forms.TunnelGroupBulkEditForm
@@ -67,9 +64,7 @@ class TunnelGroupBulkRenameView(generic.BulkRenameView):
 
 @register_model_view(TunnelGroup, 'bulk_delete', path='delete', detail=False)
 class TunnelGroupBulkDeleteView(generic.BulkDeleteView):
-    queryset = TunnelGroup.objects.annotate(
-        tunnel_count=count_related(Tunnel, 'group')
-    )
+    queryset = TunnelGroup.objects.annotate(tunnel_count=count_related(Tunnel, 'group'))
     filterset = filtersets.TunnelGroupFilterSet
     table = tables.TunnelGroupTable
 
@@ -78,11 +73,10 @@ class TunnelGroupBulkDeleteView(generic.BulkDeleteView):
 # Tunnels
 #
 
+
 @register_model_view(Tunnel, 'list', path='', detail=False)
 class TunnelListView(generic.ObjectListView):
-    queryset = Tunnel.objects.annotate(
-        count_terminations=count_related(TunnelTermination, 'tunnel')
-    )
+    queryset = Tunnel.objects.annotate(count_terminations=count_related(TunnelTermination, 'tunnel'))
     filterset = filtersets.TunnelFilterSet
     filterset_form = forms.TunnelFilterForm
     table = tables.TunnelTable
@@ -100,7 +94,6 @@ class TunnelEditView(generic.ObjectEditView):
     form = forms.TunnelForm
 
     def dispatch(self, request, *args, **kwargs):
-
         # If creating a new Tunnel, use the creation form
         if 'pk' not in kwargs:
             self.form = forms.TunnelCreateForm
@@ -121,9 +114,7 @@ class TunnelBulkImportView(generic.BulkImportView):
 
 @register_model_view(Tunnel, 'bulk_edit', path='edit', detail=False)
 class TunnelBulkEditView(generic.BulkEditView):
-    queryset = Tunnel.objects.annotate(
-        count_terminations=count_related(TunnelTermination, 'tunnel')
-    )
+    queryset = Tunnel.objects.annotate(count_terminations=count_related(TunnelTermination, 'tunnel'))
     filterset = filtersets.TunnelFilterSet
     table = tables.TunnelTable
     form = forms.TunnelBulkEditForm
@@ -137,9 +128,7 @@ class TunnelBulkRenameView(generic.BulkRenameView):
 
 @register_model_view(Tunnel, 'bulk_delete', path='delete', detail=False)
 class TunnelBulkDeleteView(generic.BulkDeleteView):
-    queryset = Tunnel.objects.annotate(
-        count_terminations=count_related(TunnelTermination, 'tunnel')
-    )
+    queryset = Tunnel.objects.annotate(count_terminations=count_related(TunnelTermination, 'tunnel'))
     filterset = filtersets.TunnelFilterSet
     table = tables.TunnelTable
 
@@ -147,6 +136,7 @@ class TunnelBulkDeleteView(generic.BulkDeleteView):
 #
 # Tunnel terminations
 #
+
 
 @register_model_view(TunnelTermination, 'list', path='', detail=False)
 class TunnelTerminationListView(generic.ObjectListView):
@@ -197,6 +187,7 @@ class TunnelTerminationBulkDeleteView(generic.BulkDeleteView):
 #
 # IKE proposals
 #
+
 
 @register_model_view(IKEProposal, 'list', path='', detail=False)
 class IKEProposalListView(generic.ObjectListView):
@@ -254,6 +245,7 @@ class IKEProposalBulkDeleteView(generic.BulkDeleteView):
 # IKE policies
 #
 
+
 @register_model_view(IKEPolicy, 'list', path='', detail=False)
 class IKEPolicyListView(generic.ObjectListView):
     queryset = IKEPolicy.objects.all()
@@ -309,6 +301,7 @@ class IKEPolicyBulkDeleteView(generic.BulkDeleteView):
 #
 # IPSec proposals
 #
+
 
 @register_model_view(IPSecProposal, 'list', path='', detail=False)
 class IPSecProposalListView(generic.ObjectListView):
@@ -366,6 +359,7 @@ class IPSecProposalBulkDeleteView(generic.BulkDeleteView):
 # IPSec policies
 #
 
+
 @register_model_view(IPSecPolicy, 'list', path='', detail=False)
 class IPSecPolicyListView(generic.ObjectListView):
     queryset = IPSecPolicy.objects.all()
@@ -421,6 +415,7 @@ class IPSecPolicyBulkDeleteView(generic.BulkDeleteView):
 #
 # IPSec profiles
 #
+
 
 @register_model_view(IPSecProfile, 'list', path='', detail=False)
 class IPSecProfileListView(generic.ObjectListView):
@@ -478,6 +473,7 @@ class IPSecProfileBulkDeleteView(generic.BulkDeleteView):
 # L2VPN
 #
 
+
 @register_model_view(L2VPN, 'list', path='', detail=False)
 class L2VPNListView(generic.ObjectListView):
     queryset = L2VPN.objects.all()
@@ -491,15 +487,9 @@ class L2VPNView(generic.ObjectView):
     queryset = L2VPN.objects.all()
 
     def get_extra_context(self, request, instance):
-        import_targets_table = RouteTargetTable(
-            instance.import_targets.prefetch_related('tenant'),
-            orderable=False
-        )
+        import_targets_table = RouteTargetTable(instance.import_targets.prefetch_related('tenant'), orderable=False)
         import_targets_table.configure(request)
-        export_targets_table = RouteTargetTable(
-            instance.export_targets.prefetch_related('tenant'),
-            orderable=False
-        )
+        export_targets_table = RouteTargetTable(instance.export_targets.prefetch_related('tenant'), orderable=False)
         export_targets_table.configure(request)
 
         return {
@@ -550,6 +540,7 @@ class L2VPNBulkDeleteView(generic.BulkDeleteView):
 #
 # L2VPN terminations
 #
+
 
 @register_model_view(L2VPNTermination, 'list', path='', detail=False)
 class L2VPNTerminationListView(generic.ObjectListView):

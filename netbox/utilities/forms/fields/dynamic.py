@@ -18,16 +18,14 @@ __all__ = (
 # Choice fields
 #
 
-class DynamicChoiceField(forms.ChoiceField):
 
+class DynamicChoiceField(forms.ChoiceField):
     def get_bound_field(self, form, field_name):
         bound_field = BoundField(form, self, field_name)
         data = bound_field.value()
 
         if data is not None:
-            self.choices = [
-                choice for choice in self.choices if choice[0] == data
-            ]
+            self.choices = [choice for choice in self.choices if choice[0] == data]
         else:
             self.choices = []
 
@@ -35,15 +33,12 @@ class DynamicChoiceField(forms.ChoiceField):
 
 
 class DynamicMultipleChoiceField(forms.MultipleChoiceField):
-
     def get_bound_field(self, form, field_name):
         bound_field = BoundField(form, self, field_name)
         data = bound_field.value()
 
         if data is not None:
-            self.choices = [
-                choice for choice in self.choices if choice[0] and choice[0] in data
-            ]
+            self.choices = [choice for choice in self.choices if choice[0] and choice[0] in data]
 
         return bound_field
 
@@ -51,6 +46,7 @@ class DynamicMultipleChoiceField(forms.MultipleChoiceField):
 #
 # Model choice fields
 #
+
 
 class DynamicModelChoiceMixin:
     """
@@ -80,22 +76,23 @@ class DynamicModelChoiceMixin:
         parent: The name of the attribute which represents the object's parent object (e.g. device for an interface)
         count: The name of the attribute which contains a numeric count of related objects
     """
+
     filter = django_filters.ModelChoiceFilter
     widget = widgets.APISelect
 
     def __init__(
-            self,
-            queryset,
-            *,
-            query_params=None,
-            initial_params=None,
-            null_option=None,
-            disabled_indicator=None,
-            context=None,
-            selector=False,
-            quick_add=False,
-            quick_add_params=None,
-            **kwargs
+        self,
+        queryset,
+        *,
+        query_params=None,
+        initial_params=None,
+        null_option=None,
+        disabled_indicator=None,
+        context=None,
+        selector=False,
+        quick_add=False,
+        quick_add_params=None,
+        **kwargs,
     ):
         self.model = queryset.model
         self.query_params = query_params or {}
@@ -165,10 +162,7 @@ class DynamicModelChoiceMixin:
 
         # Normalize the widget choices to a list to accommodate the "null" option, if set
         if self.null_option:
-            widget.choices = [
-                (settings.FILTERS_NULL_CHOICE_VALUE, self.null_option),
-                *[c for c in widget.choices]
-            ]
+            widget.choices = [(settings.FILTERS_NULL_CHOICE_VALUE, self.null_option), *[c for c in widget.choices]]
 
         # Set the data URL on the APISelect widget (if not already set)
         if not widget.attrs.get('data-url'):
@@ -195,6 +189,7 @@ class DynamicModelChoiceField(DynamicModelChoiceMixin, forms.ModelChoiceField):
     """
     Dynamic selection field for a single object, backed by NetBox's REST API.
     """
+
     def clean(self, value):
         """
         When null option is enabled and "None" is sent as part of a form to be submitted, it is sent as the
@@ -209,6 +204,7 @@ class DynamicModelMultipleChoiceField(DynamicModelChoiceMixin, forms.ModelMultip
     """
     A multiple-choice version of `DynamicModelChoiceField`.
     """
+
     filter = django_filters.ModelMultipleChoiceFilter
     widget = widgets.APISelectMultiple
 

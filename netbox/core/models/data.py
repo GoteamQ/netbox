@@ -35,52 +35,28 @@ class DataSource(JobsMixin, PrimaryModel):
     """
     A remote source, such as a git repository, from which DataFiles are synchronized.
     """
-    name = models.CharField(
-        verbose_name=_('name'),
-        max_length=100,
-        unique=True
-    )
-    type = models.CharField(
-        verbose_name=_('type'),
-        max_length=50
-    )
-    source_url = models.CharField(
-        max_length=200,
-        verbose_name=_('URL')
-    )
+
+    name = models.CharField(verbose_name=_('name'), max_length=100, unique=True)
+    type = models.CharField(verbose_name=_('type'), max_length=50)
+    source_url = models.CharField(max_length=200, verbose_name=_('URL'))
     status = models.CharField(
         verbose_name=_('status'),
         max_length=50,
         choices=DataSourceStatusChoices,
         default=DataSourceStatusChoices.NEW,
-        editable=False
+        editable=False,
     )
-    enabled = models.BooleanField(
-        verbose_name=_('enabled'),
-        default=True
-    )
+    enabled = models.BooleanField(verbose_name=_('enabled'), default=True)
     sync_interval = models.PositiveSmallIntegerField(
-        verbose_name=_('sync interval'),
-        choices=JobIntervalChoices,
-        blank=True,
-        null=True
+        verbose_name=_('sync interval'), choices=JobIntervalChoices, blank=True, null=True
     )
     ignore_rules = models.TextField(
         verbose_name=_('ignore rules'),
         blank=True,
-        help_text=_("Patterns (one per line) matching files to ignore when syncing")
+        help_text=_('Patterns (one per line) matching files to ignore when syncing'),
     )
-    parameters = models.JSONField(
-        verbose_name=_('parameters'),
-        blank=True,
-        null=True
-    )
-    last_synced = models.DateTimeField(
-        verbose_name=_('last synced'),
-        blank=True,
-        null=True,
-        editable=False
-    )
+    parameters = models.JSONField(verbose_name=_('parameters'), blank=True, null=True)
+    last_synced = models.DateTimeField(verbose_name=_('last synced'), blank=True, null=True, editable=False)
 
     class Meta:
         ordering = ('name',)
@@ -111,30 +87,26 @@ class DataSource(JobsMixin, PrimaryModel):
 
     @property
     def ready_for_sync(self):
-        return self.enabled and self.status not in (
-            DataSourceStatusChoices.QUEUED,
-            DataSourceStatusChoices.SYNCING
-        )
+        return self.enabled and self.status not in (DataSourceStatusChoices.QUEUED, DataSourceStatusChoices.SYNCING)
 
     def clean(self):
         super().clean()
 
         # Validate data backend type
         if self.type and self.type not in registry['data_backends']:
-            raise ValidationError({
-                'type': _("Unknown backend type: {type}".format(type=self.type))
-            })
+            raise ValidationError({'type': _('Unknown backend type: {type}'.format(type=self.type))})
 
         # Ensure URL scheme matches selected type
         if self.backend_class.is_local and self.url_scheme not in ('file', ''):
-            raise ValidationError({
-                'source_url': _("URLs for local sources must start with {scheme} (or specify no scheme)").format(
-                    scheme='file://'
-                )
-            })
+            raise ValidationError(
+                {
+                    'source_url': _('URLs for local sources must start with {scheme} (or specify no scheme)').format(
+                        scheme='file://'
+                    )
+                }
+            )
 
     def save(self, *args, **kwargs):
-
         # If recurring sync is disabled for an existing DataSource, clear any pending sync jobs for it and reset its
         # "queued" status
         if not self._state.adding and not self.sync_interval:
@@ -179,7 +151,7 @@ class DataSource(JobsMixin, PrimaryModel):
         from core.signals import post_sync, pre_sync
 
         if self.status == DataSourceStatusChoices.SYNCING:
-            raise SyncError(_("Cannot initiate sync; syncing already in progress."))
+            raise SyncError(_('Cannot initiate sync; syncing already in progress.'))
 
         # Emit the pre_sync signal
         pre_sync.send(sender=self.__class__, instance=self)
@@ -192,10 +164,9 @@ class DataSource(JobsMixin, PrimaryModel):
             backend = self.get_backend()
         except ModuleNotFoundError as e:
             raise SyncError(
-                _("There was an error initializing the backend. A dependency needs to be installed: ") + str(e)
+                _('There was an error initializing the backend. A dependency needs to be installed: ') + str(e)
             )
         with backend.fetch() as local_path:
-
             logger.debug(f'Syncing files from source root {local_path}')
             data_files = self.datafiles.all()
             known_paths = {df.path for df in data_files}
@@ -205,7 +176,6 @@ class DataSource(JobsMixin, PrimaryModel):
             updated_files = []
             deleted_file_ids = []
             for datafile in data_files:
-
                 try:
                     if datafile.refresh_from_disk(source_root=local_path):
                         updated_files.append(datafile)
@@ -216,11 +186,11 @@ class DataSource(JobsMixin, PrimaryModel):
 
             # Bulk update modified files
             updated_count = DataFile.objects.bulk_update(updated_files, ('last_updated', 'size', 'hash', 'data'))
-            logger.debug(f"Updated {updated_count} files")
+            logger.debug(f'Updated {updated_count} files')
 
             # Bulk delete deleted files
             deleted_count, __ = DataFile.objects.filter(pk__in=deleted_file_ids).delete()
-            logger.debug(f"Deleted {deleted_count} files")
+            logger.debug(f'Deleted {deleted_count} files')
 
             # Walk the local replication to find new files
             new_paths = self._walk(local_path) - known_paths
@@ -233,7 +203,7 @@ class DataSource(JobsMixin, PrimaryModel):
                 datafile.full_clean()
                 new_datafiles.append(datafile)
             created_count = len(DataFile.objects.bulk_create(new_datafiles, batch_size=100))
-            logger.debug(f"Created {created_count} data files")
+            logger.debug(f'Created {created_count} data files')
 
         # Update status & last_synced time
         self.status = DataSourceStatusChoices.COMPLETED
@@ -242,13 +212,14 @@ class DataSource(JobsMixin, PrimaryModel):
 
         # Emit the post_sync signal
         post_sync.send(sender=self.__class__, instance=self)
+
     sync.alters_data = True
 
     def _walk(self, root):
         """
         Return a set of all non-excluded files within the root path.
         """
-        logger.debug(f"Walking {root}...")
+        logger.debug(f'Walking {root}...')
         paths = set()
 
         for path, dir_names, file_names in os.walk(root):
@@ -259,7 +230,7 @@ class DataSource(JobsMixin, PrimaryModel):
                 if not self._ignore(file_name):
                     paths.add(os.path.join(path, file_name))
 
-        logger.debug(f"Found {len(paths)} files")
+        logger.debug(f'Found {len(paths)} files')
         return paths
 
     def _ignore(self, filename):
@@ -280,38 +251,23 @@ class DataFile(models.Model):
     The database representation of a remote file fetched from a remote DataSource. DataFile instances should be created,
     updated, or deleted only by calling DataSource.sync().
     """
-    created = models.DateTimeField(
-        verbose_name=_('created'),
-        auto_now_add=True
-    )
-    last_updated = models.DateTimeField(
-        verbose_name=_('last updated'),
-        editable=False
-    )
-    source = models.ForeignKey(
-        to='core.DataSource',
-        on_delete=models.CASCADE,
-        related_name='datafiles',
-        editable=False
-    )
+
+    created = models.DateTimeField(verbose_name=_('created'), auto_now_add=True)
+    last_updated = models.DateTimeField(verbose_name=_('last updated'), editable=False)
+    source = models.ForeignKey(to='core.DataSource', on_delete=models.CASCADE, related_name='datafiles', editable=False)
     path = models.CharField(
         verbose_name=_('path'),
         max_length=1000,
         editable=False,
-        help_text=_("File path relative to the data source's root")
+        help_text=_("File path relative to the data source's root"),
     )
-    size = models.PositiveIntegerField(
-        editable=False,
-        verbose_name=_('size')
-    )
+    size = models.PositiveIntegerField(editable=False, verbose_name=_('size'))
     hash = models.CharField(
         verbose_name=_('hash'),
         max_length=64,
         editable=False,
-        validators=[
-            RegexValidator(regex='^[0-9a-f]{64}$', message=_("Length must be 64 hexadecimal characters."))
-        ],
-        help_text=_('SHA256 hash of the file data')
+        validators=[RegexValidator(regex='^[0-9a-f]{64}$', message=_('Length must be 64 hexadecimal characters.'))],
+        help_text=_('SHA256 hash of the file data'),
     )
     data = models.BinaryField()
 
@@ -320,10 +276,7 @@ class DataFile(models.Model):
     class Meta:
         ordering = ('source', 'path')
         constraints = (
-            models.UniqueConstraint(
-                fields=('source', 'path'),
-                name='%(app_label)s_%(class)s_unique_source_path'
-            ),
+            models.UniqueConstraint(fields=('source', 'path'), name='%(app_label)s_%(class)s_unique_source_path'),
         )
         verbose_name = _('data file')
         verbose_name_plural = _('data files')
@@ -374,30 +327,17 @@ class AutoSyncRecord(models.Model):
     """
     Maps a DataFile to a synced object for efficient automatic updating.
     """
-    datafile = models.ForeignKey(
-        to=DataFile,
-        on_delete=models.CASCADE,
-        related_name='+'
-    )
-    object_type = models.ForeignKey(
-        to='contenttypes.ContentType',
-        on_delete=models.CASCADE,
-        related_name='+'
-    )
+
+    datafile = models.ForeignKey(to=DataFile, on_delete=models.CASCADE, related_name='+')
+    object_type = models.ForeignKey(to='contenttypes.ContentType', on_delete=models.CASCADE, related_name='+')
     object_id = models.PositiveBigIntegerField()
-    object = GenericForeignKey(
-        ct_field='object_type',
-        fk_field='object_id'
-    )
+    object = GenericForeignKey(ct_field='object_type', fk_field='object_id')
 
     _netbox_private = True
 
     class Meta:
         constraints = (
-            models.UniqueConstraint(
-                fields=('object_type', 'object_id'),
-                name='%(app_label)s_%(class)s_object'
-            ),
+            models.UniqueConstraint(fields=('object_type', 'object_id'), name='%(app_label)s_%(class)s_object'),
         )
         verbose_name = _('auto sync record')
         verbose_name_plural = _('auto sync records')

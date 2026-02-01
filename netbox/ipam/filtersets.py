@@ -12,11 +12,18 @@ from circuits.models import Provider
 from dcim.base_filtersets import ScopedFilterSet
 from dcim.models import Device, Interface, Region, Site, SiteGroup
 from netbox.filtersets import (
-    ChangeLoggedModelFilterSet, OrganizationalModelFilterSet, NetBoxModelFilterSet, PrimaryModelFilterSet,
+    ChangeLoggedModelFilterSet,
+    OrganizationalModelFilterSet,
+    NetBoxModelFilterSet,
+    PrimaryModelFilterSet,
 )
 from tenancy.filtersets import ContactModelFilterSet, TenancyFilterSet
 from utilities.filters import (
-    ContentTypeFilter, MultiValueCharFilter, MultiValueNumberFilter, NumericArrayFilter, TreeNodeMultipleChoiceFilter,
+    ContentTypeFilter,
+    MultiValueCharFilter,
+    MultiValueNumberFilter,
+    NumericArrayFilter,
+    TreeNodeMultipleChoiceFilter,
 )
 from utilities.filtersets import register_filterset
 from virtualization.models import VirtualMachine, VMInterface
@@ -75,11 +82,7 @@ class VRFFilterSet(PrimaryModelFilterSet, TenancyFilterSet):
     def search(self, queryset, name, value):
         if not value.strip():
             return queryset
-        return queryset.filter(
-            Q(name__icontains=value) |
-            Q(rd__icontains=value) |
-            Q(description__icontains=value)
-        )
+        return queryset.filter(Q(name__icontains=value) | Q(rd__icontains=value) | Q(description__icontains=value))
 
     class Meta:
         model = VRF
@@ -136,10 +139,7 @@ class RouteTargetFilterSet(PrimaryModelFilterSet, TenancyFilterSet):
     def search(self, queryset, name, value):
         if not value.strip():
             return queryset
-        return queryset.filter(
-            Q(name__icontains=value) |
-            Q(description__icontains=value)
-        )
+        return queryset.filter(Q(name__icontains=value) | Q(description__icontains=value))
 
     class Meta:
         model = RouteTarget
@@ -148,7 +148,6 @@ class RouteTargetFilterSet(PrimaryModelFilterSet, TenancyFilterSet):
 
 @register_filterset
 class RIRFilterSet(OrganizationalModelFilterSet):
-
     class Meta:
         model = RIR
         fields = ('id', 'name', 'slug', 'is_private', 'description')
@@ -156,10 +155,7 @@ class RIRFilterSet(OrganizationalModelFilterSet):
 
 @register_filterset
 class AggregateFilterSet(PrimaryModelFilterSet, TenancyFilterSet, ContactModelFilterSet):
-    family = django_filters.NumberFilter(
-        field_name='prefix',
-        lookup_expr='family'
-    )
+    family = django_filters.NumberFilter(field_name='prefix', lookup_expr='family')
     prefix = django_filters.CharFilter(
         method='filter_prefix',
         label=_('Prefix'),
@@ -222,10 +218,7 @@ class ASNRangeFilterSet(OrganizationalModelFilterSet, TenancyFilterSet):
     def search(self, queryset, name, value):
         if not value.strip():
             return queryset
-        return queryset.filter(
-            Q(name__icontains=value) |
-            Q(description__icontains=value)
-        )
+        return queryset.filter(Q(name__icontains=value) | Q(description__icontains=value))
 
 
 @register_filterset
@@ -293,7 +286,6 @@ class ASNFilterSet(PrimaryModelFilterSet, TenancyFilterSet):
 
 @register_filterset
 class RoleFilterSet(OrganizationalModelFilterSet):
-
     class Meta:
         model = Role
         fields = ('id', 'name', 'slug', 'description', 'weight')
@@ -301,10 +293,7 @@ class RoleFilterSet(OrganizationalModelFilterSet):
 
 @register_filterset
 class PrefixFilterSet(PrimaryModelFilterSet, ScopedFilterSet, TenancyFilterSet, ContactModelFilterSet):
-    family = django_filters.NumberFilter(
-        field_name='prefix',
-        lookup_expr='family'
-    )
+    family = django_filters.NumberFilter(field_name='prefix', lookup_expr='family')
     prefix = MultiValueCharFilter(
         method='filter_prefix',
         label=_('Prefix'),
@@ -321,25 +310,11 @@ class PrefixFilterSet(PrimaryModelFilterSet, ScopedFilterSet, TenancyFilterSet, 
         method='search_contains',
         label=_('Prefixes which contain this prefix or IP'),
     )
-    depth = MultiValueNumberFilter(
-        field_name='_depth'
-    )
-    children = MultiValueNumberFilter(
-        field_name='_children'
-    )
-    mask_length = MultiValueNumberFilter(
-        field_name='prefix',
-        lookup_expr='net_mask_length',
-        label=_('Mask length')
-    )
-    mask_length__gte = django_filters.NumberFilter(
-        field_name='prefix',
-        lookup_expr='net_mask_length__gte'
-    )
-    mask_length__lte = django_filters.NumberFilter(
-        field_name='prefix',
-        lookup_expr='net_mask_length__lte'
-    )
+    depth = MultiValueNumberFilter(field_name='_depth')
+    children = MultiValueNumberFilter(field_name='_children')
+    mask_length = MultiValueNumberFilter(field_name='prefix', lookup_expr='net_mask_length', label=_('Mask length'))
+    mask_length__gte = django_filters.NumberFilter(field_name='prefix', lookup_expr='net_mask_length__gte')
+    mask_length__lte = django_filters.NumberFilter(field_name='prefix', lookup_expr='net_mask_length__lte')
     vrf_id = django_filters.ModelMultipleChoiceFilter(
         queryset=VRF.objects.all(),
         label=_('VRF'),
@@ -351,9 +326,7 @@ class PrefixFilterSet(PrimaryModelFilterSet, ScopedFilterSet, TenancyFilterSet, 
         label=_('VRF (RD)'),
     )
     present_in_vrf_id = django_filters.ModelChoiceFilter(
-        queryset=VRF.objects.all(),
-        method='filter_present_in_vrf',
-        label=_('VRF')
+        queryset=VRF.objects.all(), method='filter_present_in_vrf', label=_('VRF')
     )
     present_in_vrf = django_filters.ModelChoiceFilter(
         queryset=VRF.objects.all(),
@@ -391,10 +364,7 @@ class PrefixFilterSet(PrimaryModelFilterSet, ScopedFilterSet, TenancyFilterSet, 
         to_field_name='slug',
         label=_('Role (slug)'),
     )
-    status = django_filters.MultipleChoiceFilter(
-        choices=PrefixStatusChoices,
-        null_value=None
-    )
+    status = django_filters.MultipleChoiceFilter(choices=PrefixStatusChoices, null_value=None)
 
     class Meta:
         model = Prefix
@@ -460,18 +430,12 @@ class PrefixFilterSet(PrimaryModelFilterSet, ScopedFilterSet, TenancyFilterSet, 
     def filter_present_in_vrf(self, queryset, name, vrf):
         if vrf is None:
             return queryset.none()
-        return queryset.filter(
-            Q(vrf=vrf) |
-            Q(vrf__export_targets__in=vrf.import_targets.all())
-        ).distinct()
+        return queryset.filter(Q(vrf=vrf) | Q(vrf__export_targets__in=vrf.import_targets.all())).distinct()
 
 
 @register_filterset
 class IPRangeFilterSet(PrimaryModelFilterSet, TenancyFilterSet, ContactModelFilterSet):
-    family = django_filters.NumberFilter(
-        field_name='start_address',
-        lookup_expr='family'
-    )
+    family = django_filters.NumberFilter(field_name='start_address', lookup_expr='family')
     start_address = MultiValueCharFilter(
         method='filter_address',
         label=_('Address'),
@@ -504,10 +468,7 @@ class IPRangeFilterSet(PrimaryModelFilterSet, TenancyFilterSet, ContactModelFilt
         to_field_name='slug',
         label=_('Role (slug)'),
     )
-    status = django_filters.MultipleChoiceFilter(
-        choices=IPRangeStatusChoices,
-        null_value=None
-    )
+    status = django_filters.MultipleChoiceFilter(choices=IPRangeStatusChoices, null_value=None)
     parent = MultiValueCharFilter(
         method='search_by_parent',
         label=_('Parent prefix'),
@@ -561,10 +522,7 @@ class IPRangeFilterSet(PrimaryModelFilterSet, TenancyFilterSet, ContactModelFilt
 
 @register_filterset
 class IPAddressFilterSet(PrimaryModelFilterSet, TenancyFilterSet, ContactModelFilterSet):
-    family = django_filters.NumberFilter(
-        field_name='address',
-        lookup_expr='family'
-    )
+    family = django_filters.NumberFilter(field_name='address', lookup_expr='family')
     parent = MultiValueCharFilter(
         method='search_by_parent',
         label=_('Parent prefix'),
@@ -573,19 +531,9 @@ class IPAddressFilterSet(PrimaryModelFilterSet, TenancyFilterSet, ContactModelFi
         method='filter_address',
         label=_('Address'),
     )
-    mask_length = MultiValueNumberFilter(
-        field_name='address',
-        lookup_expr='net_mask_length',
-        label=_('Mask length')
-    )
-    mask_length__gte = django_filters.NumberFilter(
-        field_name='address',
-        lookup_expr='net_mask_length__gte'
-    )
-    mask_length__lte = django_filters.NumberFilter(
-        field_name='address',
-        lookup_expr='net_mask_length__lte'
-    )
+    mask_length = MultiValueNumberFilter(field_name='address', lookup_expr='net_mask_length', label=_('Mask length'))
+    mask_length__gte = django_filters.NumberFilter(field_name='address', lookup_expr='net_mask_length__gte')
+    mask_length__lte = django_filters.NumberFilter(field_name='address', lookup_expr='net_mask_length__lte')
     vrf_id = django_filters.ModelMultipleChoiceFilter(
         queryset=VRF.objects.all(),
         label=_('VRF'),
@@ -597,9 +545,7 @@ class IPAddressFilterSet(PrimaryModelFilterSet, TenancyFilterSet, ContactModelFi
         label=_('VRF (RD)'),
     )
     present_in_vrf_id = django_filters.ModelChoiceFilter(
-        queryset=VRF.objects.all(),
-        method='filter_present_in_vrf',
-        label=_('VRF')
+        queryset=VRF.objects.all(), method='filter_present_in_vrf', label=_('VRF')
     )
     present_in_vrf = django_filters.ModelChoiceFilter(
         queryset=VRF.objects.all(),
@@ -663,13 +609,8 @@ class IPAddressFilterSet(PrimaryModelFilterSet, TenancyFilterSet, ContactModelFi
         method='_assigned',
         label=_('Is assigned'),
     )
-    status = django_filters.MultipleChoiceFilter(
-        choices=IPAddressStatusChoices,
-        null_value=None
-    )
-    role = django_filters.MultipleChoiceFilter(
-        choices=IPAddressRoleChoices
-    )
+    status = django_filters.MultipleChoiceFilter(choices=IPAddressStatusChoices, null_value=None)
+    role = django_filters.MultipleChoiceFilter(choices=IPAddressRoleChoices)
     service_id = django_filters.ModelMultipleChoiceFilter(
         field_name='services',
         queryset=Service.objects.all(),
@@ -688,11 +629,7 @@ class IPAddressFilterSet(PrimaryModelFilterSet, TenancyFilterSet, ContactModelFi
     def search(self, queryset, name, value):
         if not value.strip():
             return queryset
-        qs_filter = (
-            Q(dns_name__icontains=value) |
-            Q(description__icontains=value) |
-            Q(address__istartswith=value)
-        )
+        qs_filter = Q(dns_name__icontains=value) | Q(description__icontains=value) | Q(address__istartswith=value)
         return queryset.filter(qs_filter)
 
     def search_by_parent(self, queryset, name, value):
@@ -743,10 +680,7 @@ class IPAddressFilterSet(PrimaryModelFilterSet, TenancyFilterSet, ContactModelFi
     def filter_present_in_vrf(self, queryset, name, vrf):
         if vrf is None:
             return queryset.none()
-        return queryset.filter(
-            Q(vrf=vrf) |
-            Q(vrf__export_targets__in=vrf.import_targets.all())
-        ).distinct()
+        return queryset.filter(Q(vrf=vrf) | Q(vrf__export_targets__in=vrf.import_targets.all())).distinct()
 
     def filter_device(self, queryset, name, value):
         devices = Device.objects.filter(**{'{}__in'.format(name): value})
@@ -755,9 +689,7 @@ class IPAddressFilterSet(PrimaryModelFilterSet, TenancyFilterSet, ContactModelFi
         interface_ids = []
         for device in devices:
             interface_ids.extend(device.vc_interfaces().values_list('id', flat=True))
-        return queryset.filter(
-            interface__in=interface_ids
-        )
+        return queryset.filter(interface__in=interface_ids)
 
     def filter_virtual_machine(self, queryset, name, value):
         virtual_machines = VirtualMachine.objects.filter(**{'{}__in'.format(name): value})
@@ -766,48 +698,27 @@ class IPAddressFilterSet(PrimaryModelFilterSet, TenancyFilterSet, ContactModelFi
         interface_ids = []
         for vm in virtual_machines:
             interface_ids.extend(vm.interfaces.values_list('id', flat=True))
-        return queryset.filter(
-            vminterface__in=interface_ids
-        )
+        return queryset.filter(vminterface__in=interface_ids)
 
     def _assigned_to_interface(self, queryset, name, value):
         content_types = ContentType.objects.get_for_models(Interface, VMInterface).values()
         if value:
-            return queryset.filter(
-                assigned_object_type__in=content_types,
-                assigned_object_id__isnull=False
-            )
+            return queryset.filter(assigned_object_type__in=content_types, assigned_object_id__isnull=False)
         else:
-            return queryset.exclude(
-                assigned_object_type__in=content_types,
-                assigned_object_id__isnull=False
-            )
+            return queryset.exclude(assigned_object_type__in=content_types, assigned_object_id__isnull=False)
 
     def _assigned(self, queryset, name, value):
         if value:
-            return queryset.exclude(
-                assigned_object_type__isnull=True,
-                assigned_object_id__isnull=True
-            )
+            return queryset.exclude(assigned_object_type__isnull=True, assigned_object_id__isnull=True)
         else:
-            return queryset.filter(
-                assigned_object_type__isnull=True,
-                assigned_object_id__isnull=True
-            )
+            return queryset.filter(assigned_object_type__isnull=True, assigned_object_id__isnull=True)
 
 
 @register_filterset
 class FHRPGroupFilterSet(PrimaryModelFilterSet):
-    protocol = django_filters.MultipleChoiceFilter(
-        choices=FHRPGroupProtocolChoices
-    )
-    auth_type = django_filters.MultipleChoiceFilter(
-        choices=FHRPGroupAuthTypeChoices
-    )
-    related_ip = django_filters.ModelMultipleChoiceFilter(
-        queryset=IPAddress.objects.all(),
-        method='filter_related_ip'
-    )
+    protocol = django_filters.MultipleChoiceFilter(choices=FHRPGroupProtocolChoices)
+    auth_type = django_filters.MultipleChoiceFilter(choices=FHRPGroupAuthTypeChoices)
+    related_ip = django_filters.ModelMultipleChoiceFilter(queryset=IPAddress.objects.all(), method='filter_related_ip')
 
     class Meta:
         model = FHRPGroup
@@ -816,11 +727,7 @@ class FHRPGroupFilterSet(PrimaryModelFilterSet):
     def search(self, queryset, name, value):
         if not value.strip():
             return queryset
-        return queryset.filter(
-            Q(description__icontains=value) |
-            Q(group_id__contains=value) |
-            Q(name__icontains=value)
-        )
+        return queryset.filter(Q(description__icontains=value) | Q(group_id__contains=value) | Q(name__icontains=value))
 
     @extend_schema_field(OpenApiTypes.STR)
     def filter_related_ip(self, queryset, name, value):
@@ -830,15 +737,9 @@ class FHRPGroupFilterSet(PrimaryModelFilterSet):
         ip_filter = Q()
         for ipaddress in value:
             if ipaddress.vrf:
-                q = Q(
-                    ip_addresses__address__net_contained_or_equal=ipaddress.address,
-                    ip_addresses__vrf=ipaddress.vrf
-                )
+                q = Q(ip_addresses__address__net_contained_or_equal=ipaddress.address, ip_addresses__vrf=ipaddress.vrf)
             else:
-                q = Q(
-                    ip_addresses__address__net_contained_or_equal=ipaddress.address,
-                    ip_addresses__vrf__isnull=True
-                )
+                q = Q(ip_addresses__address__net_contained_or_equal=ipaddress.address, ip_addresses__vrf__isnull=True)
             ip_filter |= q
 
         return queryset.filter(ip_filter)
@@ -902,27 +803,13 @@ class FHRPGroupAssignmentFilterSet(ChangeLoggedModelFilterSet):
 @register_filterset
 class VLANGroupFilterSet(OrganizationalModelFilterSet, TenancyFilterSet):
     scope_type = ContentTypeFilter()
-    region = django_filters.NumberFilter(
-        method='filter_scope'
-    )
-    site_group = django_filters.NumberFilter(
-        method='filter_scope'
-    )
-    site = django_filters.NumberFilter(
-        method='filter_scope'
-    )
-    location = django_filters.NumberFilter(
-        method='filter_scope'
-    )
-    rack = django_filters.NumberFilter(
-        method='filter_scope'
-    )
-    cluster_group = django_filters.NumberFilter(
-        method='filter_scope'
-    )
-    cluster = django_filters.NumberFilter(
-        method='filter_scope'
-    )
+    region = django_filters.NumberFilter(method='filter_scope')
+    site_group = django_filters.NumberFilter(method='filter_scope')
+    site = django_filters.NumberFilter(method='filter_scope')
+    location = django_filters.NumberFilter(method='filter_scope')
+    rack = django_filters.NumberFilter(method='filter_scope')
+    cluster_group = django_filters.NumberFilter(method='filter_scope')
+    cluster = django_filters.NumberFilter(method='filter_scope')
     contains_vid = django_filters.NumberFilter(
         field_name='vid_ranges',
         lookup_expr='range_contains',
@@ -935,18 +822,12 @@ class VLANGroupFilterSet(OrganizationalModelFilterSet, TenancyFilterSet):
     def search(self, queryset, name, value):
         if not value.strip():
             return queryset
-        qs_filter = (
-            Q(name__icontains=value) |
-            Q(description__icontains=value)
-        )
+        qs_filter = Q(name__icontains=value) | Q(description__icontains=value)
         return queryset.filter(qs_filter)
 
     def filter_scope(self, queryset, name, value):
         model_name = name.replace('_', '')
-        return queryset.filter(
-            scope_type=ContentType.objects.get(model=model_name),
-            scope_id=value
-        )
+        return queryset.filter(scope_type=ContentType.objects.get(model=model_name), scope_id=value)
 
 
 @register_filterset
@@ -1007,25 +888,13 @@ class VLANFilterSet(PrimaryModelFilterSet, TenancyFilterSet):
         to_field_name='slug',
         label=_('Role (slug)'),
     )
-    status = django_filters.MultipleChoiceFilter(
-        choices=VLANStatusChoices,
-        null_value=None
-    )
-    available_at_site = django_filters.ModelChoiceFilter(
-        queryset=Site.objects.all(),
-        method='get_for_site'
-    )
-    available_on_device = django_filters.ModelChoiceFilter(
-        queryset=Device.objects.all(),
-        method='get_for_device'
-    )
+    status = django_filters.MultipleChoiceFilter(choices=VLANStatusChoices, null_value=None)
+    available_at_site = django_filters.ModelChoiceFilter(queryset=Site.objects.all(), method='get_for_site')
+    available_on_device = django_filters.ModelChoiceFilter(queryset=Device.objects.all(), method='get_for_device')
     available_on_virtualmachine = django_filters.ModelChoiceFilter(
-        queryset=VirtualMachine.objects.all(),
-        method='get_for_virtualmachine'
+        queryset=VirtualMachine.objects.all(), method='get_for_virtualmachine'
     )
-    qinq_role = django_filters.MultipleChoiceFilter(
-        choices=VLANQinQRoleChoices
-    )
+    qinq_role = django_filters.MultipleChoiceFilter(choices=VLANQinQRoleChoices)
     qinq_svlan_id = django_filters.ModelMultipleChoiceFilter(
         queryset=VLAN.objects.all(),
         label=_('Q-in-Q SVLAN (ID)'),
@@ -1046,14 +915,10 @@ class VLANFilterSet(PrimaryModelFilterSet, TenancyFilterSet):
         label=_('L2VPN'),
     )
     interface_id = django_filters.ModelChoiceFilter(
-        queryset=Interface.objects.all(),
-        method='filter_interface_id',
-        label=_('Assigned interface')
+        queryset=Interface.objects.all(), method='filter_interface_id', label=_('Assigned interface')
     )
     vminterface_id = django_filters.ModelChoiceFilter(
-        queryset=VMInterface.objects.all(),
-        method='filter_vminterface_id',
-        label=_('Assigned VM interface')
+        queryset=VMInterface.objects.all(), method='filter_vminterface_id', label=_('Assigned VM interface')
     )
 
     class Meta:
@@ -1086,24 +951,17 @@ class VLANFilterSet(PrimaryModelFilterSet, TenancyFilterSet):
     def filter_interface_id(self, queryset, name, value):
         if value is None:
             return queryset.none()
-        return queryset.filter(
-            Q(interfaces_as_tagged=value) |
-            Q(interfaces_as_untagged=value)
-        ).distinct()
+        return queryset.filter(Q(interfaces_as_tagged=value) | Q(interfaces_as_untagged=value)).distinct()
 
     @extend_schema_field(OpenApiTypes.INT)
     def filter_vminterface_id(self, queryset, name, value):
         if value is None:
             return queryset.none()
-        return queryset.filter(
-            Q(vminterfaces_as_tagged=value) |
-            Q(vminterfaces_as_untagged=value)
-        ).distinct()
+        return queryset.filter(Q(vminterfaces_as_tagged=value) | Q(vminterfaces_as_untagged=value)).distinct()
 
 
 @register_filterset
 class VLANTranslationPolicyFilterSet(PrimaryModelFilterSet):
-
     class Meta:
         model = VLANTranslationPolicy
         fields = ('id', 'name', 'description')
@@ -1111,10 +969,7 @@ class VLANTranslationPolicyFilterSet(PrimaryModelFilterSet):
     def search(self, queryset, name, value):
         if not value.strip():
             return queryset
-        qs_filter = (
-            Q(name__icontains=value) |
-            Q(description__icontains=value)
-        )
+        qs_filter = Q(name__icontains=value) | Q(description__icontains=value)
         return queryset.filter(qs_filter)
 
 
@@ -1138,9 +993,7 @@ class VLANTranslationRuleFilterSet(NetBoxModelFilterSet):
     def search(self, queryset, name, value):
         if not value.strip():
             return queryset
-        qs_filter = (
-            Q(policy__name__icontains=value)
-        )
+        qs_filter = Q(policy__name__icontains=value)
         try:
             int_value = int(value.strip())
             qs_filter |= Q(local_vid=int_value)
@@ -1152,10 +1005,7 @@ class VLANTranslationRuleFilterSet(NetBoxModelFilterSet):
 
 @register_filterset
 class ServiceTemplateFilterSet(PrimaryModelFilterSet):
-    port = NumericArrayFilter(
-        field_name='ports',
-        lookup_expr='contains'
-    )
+    port = NumericArrayFilter(field_name='ports', lookup_expr='contains')
 
     class Meta:
         model = ServiceTemplate
@@ -1164,10 +1014,7 @@ class ServiceTemplateFilterSet(PrimaryModelFilterSet):
     def search(self, queryset, name, value):
         if not value.strip():
             return queryset
-        qs_filter = (
-            Q(name__icontains=value) |
-            Q(description__icontains=value)
-        )
+        qs_filter = Q(name__icontains=value) | Q(description__icontains=value)
         return queryset.filter(qs_filter)
 
 
@@ -1215,10 +1062,7 @@ class ServiceFilterSet(ContactModelFilterSet, PrimaryModelFilterSet):
         to_field_name='address',
         label=_('IP address'),
     )
-    port = NumericArrayFilter(
-        field_name='ports',
-        lookup_expr='contains'
-    )
+    port = NumericArrayFilter(field_name='ports', lookup_expr='contains')
 
     class Meta:
         model = Service
@@ -1262,6 +1106,7 @@ class PrimaryIPFilterSet(django_filters.FilterSet):
     """
     An inheritable FilterSet for models which support primary IP assignment.
     """
+
     primary_ip4_id = django_filters.ModelMultipleChoiceFilter(
         field_name='primary_ip4',
         queryset=IPAddress.objects.all(),

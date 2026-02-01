@@ -17,19 +17,11 @@ __all__ = (
 # Device connections
 #
 
+
 class ConsoleConnectionTable(PathEndpointTable):
-    device = tables.Column(
-        verbose_name=_('Device'),
-        linkify=True
-    )
-    name = tables.Column(
-        linkify=True,
-        verbose_name=_('Console Port')
-    )
-    reachable = columns.BooleanColumn(
-        accessor=Accessor('_path__is_active'),
-        verbose_name=_('Reachable')
-    )
+    device = tables.Column(verbose_name=_('Device'), linkify=True)
+    name = tables.Column(linkify=True, verbose_name=_('Console Port'))
+    reachable = columns.BooleanColumn(accessor=Accessor('_path__is_active'), verbose_name=_('Reachable'))
 
     class Meta(BaseTable.Meta):
         model = ConsolePort
@@ -37,18 +29,9 @@ class ConsoleConnectionTable(PathEndpointTable):
 
 
 class PowerConnectionTable(PathEndpointTable):
-    device = tables.Column(
-        verbose_name=_('Device'),
-        linkify=True
-    )
-    name = tables.Column(
-        linkify=True,
-        verbose_name=_('Power Port')
-    )
-    reachable = columns.BooleanColumn(
-        accessor=Accessor('_path__is_active'),
-        verbose_name=_('Reachable')
-    )
+    device = tables.Column(verbose_name=_('Device'), linkify=True)
+    name = tables.Column(linkify=True, verbose_name=_('Power Port'))
+    reachable = columns.BooleanColumn(accessor=Accessor('_path__is_active'), verbose_name=_('Reachable'))
 
     class Meta(BaseTable.Meta):
         model = PowerPort
@@ -56,20 +39,9 @@ class PowerConnectionTable(PathEndpointTable):
 
 
 class InterfaceConnectionTable(PathEndpointTable):
-    device = tables.Column(
-        verbose_name=_('Device'),
-        accessor=Accessor('device'),
-        linkify=True
-    )
-    interface = tables.Column(
-        verbose_name=_('Interface'),
-        accessor=Accessor('name'),
-        linkify=True
-    )
-    reachable = columns.BooleanColumn(
-        accessor=Accessor('_path__is_active'),
-        verbose_name=_('Reachable')
-    )
+    device = tables.Column(verbose_name=_('Device'), accessor=Accessor('device'), linkify=True)
+    interface = tables.Column(verbose_name=_('Interface'), accessor=Accessor('name'), linkify=True)
+    reachable = columns.BooleanColumn(accessor=Accessor('_path__is_active'), verbose_name=_('Reachable'))
 
     class Meta(BaseTable.Meta):
         model = Interface

@@ -37,6 +37,7 @@ class BaseViewSet(GenericViewSet):
     """
     Base class for all API ViewSets. This is responsible for the enforcement of object-based permissions.
     """
+
     brief = False
 
     def initial(self, request, *args, **kwargs):
@@ -48,7 +49,6 @@ class BaseViewSet(GenericViewSet):
                 self.queryset = self.queryset.restrict(request.user, action)
 
     def initialize_request(self, request, *args, **kwargs):
-
         # Annotate whether brief mode is active
         self.brief = request.method == 'GET' and request.GET.get('brief')
 
@@ -98,7 +98,7 @@ class NetBoxReadOnlyModelViewSet(
     mixins.ExportTemplatesMixin,
     drf_mixins.RetrieveModelMixin,
     drf_mixins.ListModelMixin,
-    BaseViewSet
+    BaseViewSet,
 ):
     pass
 
@@ -114,11 +114,12 @@ class NetBoxModelViewSet(
     drf_mixins.UpdateModelMixin,
     drf_mixins.DestroyModelMixin,
     drf_mixins.ListModelMixin,
-    BaseViewSet
+    BaseViewSet,
 ):
     """
     Extend DRF's ModelViewSet to support bulk update and delete functions.
     """
+
     def get_object_with_snapshot(self):
         """
         Save a pre-change snapshot of the object immediately after retrieving it. This snapshot will be used to
@@ -153,27 +154,17 @@ class NetBoxModelViewSet(
             msg = f'Unable to delete object. {len(protected_objects)} dependent objects were found: '
             msg += ', '.join([f'{obj} ({obj.pk})' for obj in protected_objects])
             logger.warning(msg)
-            return self.finalize_response(
-                request,
-                Response({'detail': msg}, status=409),
-                *args,
-                **kwargs
-            )
+            return self.finalize_response(request, Response({'detail': msg}, status=409), *args, **kwargs)
         except AbortRequest as e:
             logger.debug(e.message)
-            return self.finalize_response(
-                request,
-                Response({'detail': e.message}, status=400),
-                *args,
-                **kwargs
-            )
+            return self.finalize_response(request, Response({'detail': e.message}, status=400), *args, **kwargs)
 
     # Creates
 
     def perform_create(self, serializer):
         model = self.queryset.model
         logger = logging.getLogger(f'netbox.api.views.{self.__class__.__name__}')
-        logger.info(f"Creating new {model._meta.verbose_name}")
+        logger.info(f'Creating new {model._meta.verbose_name}')
 
         # Enforce object-level permissions on save()
         try:
@@ -193,7 +184,7 @@ class NetBoxModelViewSet(
     def perform_update(self, serializer):
         model = self.queryset.model
         logger = logging.getLogger(f'netbox.api.views.{self.__class__.__name__}')
-        logger.info(f"Updating {model._meta.verbose_name} {serializer.instance} (PK: {serializer.instance.pk})")
+        logger.info(f'Updating {model._meta.verbose_name} {serializer.instance} (PK: {serializer.instance.pk})')
 
         # Enforce object-level permissions on save()
         try:
@@ -220,7 +211,7 @@ class NetBoxModelViewSet(
     def perform_destroy(self, instance):
         model = self.queryset.model
         logger = logging.getLogger(f'netbox.api.views.{self.__class__.__name__}')
-        logger.info(f"Deleting {model._meta.verbose_name} {instance} (PK: {instance.pk})")
+        logger.info(f'Deleting {model._meta.verbose_name} {instance} (PK: {instance.pk})')
 
         return super().perform_destroy(instance)
 

@@ -42,7 +42,7 @@ class CustomFieldTestCase(TestCase, ChangeLoggedFilterSetTests):
                 filter_logic=CustomFieldFilterLogicChoices.FILTER_LOOSE,
                 ui_visible=CustomFieldUIVisibleChoices.ALWAYS,
                 ui_editable=CustomFieldUIEditableChoices.YES,
-                description='foobar1'
+                description='foobar1',
             ),
             CustomField(
                 name='Custom Field 2',
@@ -52,7 +52,7 @@ class CustomFieldTestCase(TestCase, ChangeLoggedFilterSetTests):
                 filter_logic=CustomFieldFilterLogicChoices.FILTER_EXACT,
                 ui_visible=CustomFieldUIVisibleChoices.IF_SET,
                 ui_editable=CustomFieldUIEditableChoices.NO,
-                description='foobar2'
+                description='foobar2',
             ),
             CustomField(
                 name='Custom Field 3',
@@ -62,7 +62,7 @@ class CustomFieldTestCase(TestCase, ChangeLoggedFilterSetTests):
                 filter_logic=CustomFieldFilterLogicChoices.FILTER_DISABLED,
                 ui_visible=CustomFieldUIVisibleChoices.HIDDEN,
                 ui_editable=CustomFieldUIEditableChoices.HIDDEN,
-                description='foobar3'
+                description='foobar3',
             ),
             CustomField(
                 name='Custom Field 4',
@@ -72,7 +72,7 @@ class CustomFieldTestCase(TestCase, ChangeLoggedFilterSetTests):
                 filter_logic=CustomFieldFilterLogicChoices.FILTER_DISABLED,
                 ui_visible=CustomFieldUIVisibleChoices.HIDDEN,
                 ui_editable=CustomFieldUIEditableChoices.HIDDEN,
-                choice_set=choice_sets[0]
+                choice_set=choice_sets[0],
             ),
             CustomField(
                 name='Custom Field 5',
@@ -82,7 +82,7 @@ class CustomFieldTestCase(TestCase, ChangeLoggedFilterSetTests):
                 filter_logic=CustomFieldFilterLogicChoices.FILTER_DISABLED,
                 ui_visible=CustomFieldUIVisibleChoices.HIDDEN,
                 ui_editable=CustomFieldUIEditableChoices.HIDDEN,
-                choice_set=choice_sets[1]
+                choice_set=choice_sets[1],
             ),
             CustomField(
                 name='Custom Field 6',
@@ -92,7 +92,7 @@ class CustomFieldTestCase(TestCase, ChangeLoggedFilterSetTests):
                 weight=600,
                 filter_logic=CustomFieldFilterLogicChoices.FILTER_DISABLED,
                 ui_visible=CustomFieldUIVisibleChoices.HIDDEN,
-                ui_editable=CustomFieldUIEditableChoices.HIDDEN
+                ui_editable=CustomFieldUIEditableChoices.HIDDEN,
             ),
         )
         CustomField.objects.bulk_create(custom_fields)
@@ -197,21 +197,21 @@ class WebhookTestCase(TestCase, BaseFilterSetTests):
                 payload_url='http://example.com/?1',
                 http_method='GET',
                 ssl_verification=True,
-                description='foobar1'
+                description='foobar1',
             ),
             Webhook(
                 name='Webhook 2',
                 payload_url='http://example.com/?2',
                 http_method='POST',
                 ssl_verification=True,
-                description='foobar2'
+                description='foobar2',
             ),
             Webhook(
                 name='Webhook 3',
                 payload_url='http://example.com/?3',
                 http_method='PATCH',
                 ssl_verification=False,
-                description='foobar3'
+                description='foobar3',
             ),
             Webhook(
                 name='Webhook 4',
@@ -256,9 +256,7 @@ class EventRuleTestCase(TestCase, BaseFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
-        object_types = ObjectType.objects.filter(
-            model__in=['region', 'site', 'rack', 'location', 'device']
-        )
+        object_types = ObjectType.objects.filter(model__in=['region', 'site', 'rack', 'location', 'device'])
 
         webhooks = (
             Webhook(
@@ -277,14 +275,8 @@ class EventRuleTestCase(TestCase, BaseFilterSetTests):
         Webhook.objects.bulk_create(webhooks)
 
         scripts = (
-            ScriptModule(
-                file_root=ManagedFileRootPathChoices.SCRIPTS,
-                file_path='/var/tmp/script1.py'
-            ),
-            ScriptModule(
-                file_root=ManagedFileRootPathChoices.SCRIPTS,
-                file_path='/var/tmp/script2.py'
-            ),
+            ScriptModule(file_root=ManagedFileRootPathChoices.SCRIPTS, file_path='/var/tmp/script1.py'),
+            ScriptModule(file_root=ManagedFileRootPathChoices.SCRIPTS, file_path='/var/tmp/script2.py'),
         )
         ScriptModule.objects.bulk_create(scripts)
 
@@ -295,7 +287,7 @@ class EventRuleTestCase(TestCase, BaseFilterSetTests):
                 enabled=True,
                 event_types=[OBJECT_CREATED],
                 action_type=EventRuleActionChoices.WEBHOOK,
-                description='foobar1'
+                description='foobar1',
             ),
             EventRule(
                 name='Event Rule 2',
@@ -303,7 +295,7 @@ class EventRuleTestCase(TestCase, BaseFilterSetTests):
                 enabled=True,
                 event_types=[OBJECT_UPDATED],
                 action_type=EventRuleActionChoices.WEBHOOK,
-                description='foobar2'
+                description='foobar2',
             ),
             EventRule(
                 name='Event Rule 3',
@@ -311,7 +303,7 @@ class EventRuleTestCase(TestCase, BaseFilterSetTests):
                 enabled=False,
                 event_types=[OBJECT_DELETED],
                 action_type=EventRuleActionChoices.WEBHOOK,
-                description='foobar3'
+                description='foobar3',
             ),
             EventRule(
                 name='Event Rule 4',
@@ -385,7 +377,7 @@ class CustomLinkTestCase(TestCase, ChangeLoggedFilterSetTests):
                 weight=100,
                 new_window=False,
                 link_text='Link 1',
-                link_url='http://example.com/?1'
+                link_url='http://example.com/?1',
             ),
             CustomLink(
                 name='Custom Link 2',
@@ -393,7 +385,7 @@ class CustomLinkTestCase(TestCase, ChangeLoggedFilterSetTests):
                 weight=200,
                 new_window=False,
                 link_text='Link 1',
-                link_url='http://example.com/?2'
+                link_url='http://example.com/?2',
             ),
             CustomLink(
                 name='Custom Link 3',
@@ -401,7 +393,7 @@ class CustomLinkTestCase(TestCase, ChangeLoggedFilterSetTests):
                 weight=300,
                 new_window=True,
                 link_text='Link 1',
-                link_url='http://example.com/?3'
+                link_url='http://example.com/?3',
             ),
         )
         CustomLink.objects.bulk_create(custom_links)
@@ -464,7 +456,7 @@ class SavedFilterTestCase(TestCase, ChangeLoggedFilterSetTests):
                 enabled=True,
                 shared=True,
                 parameters={'status': ['active']},
-                description='foobar1'
+                description='foobar1',
             ),
             SavedFilter(
                 name='Saved Filter 2',
@@ -474,7 +466,7 @@ class SavedFilterTestCase(TestCase, ChangeLoggedFilterSetTests):
                 enabled=True,
                 shared=True,
                 parameters={'status': ['planned']},
-                description='foobar2'
+                description='foobar2',
             ),
             SavedFilter(
                 name='Saved Filter 3',
@@ -484,7 +476,7 @@ class SavedFilterTestCase(TestCase, ChangeLoggedFilterSetTests):
                 enabled=False,
                 shared=False,
                 parameters={'status': ['retired']},
-                description='foobar3'
+                description='foobar3',
             ),
         )
         SavedFilter.objects.bulk_create(saved_filters)
@@ -696,7 +688,6 @@ class ImageAttachmentTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
-
         site_ct = ContentType.objects.get(app_label='dcim', model='site')
         rack_ct = ContentType.objects.get(app_label='dcim', model='rack')
 
@@ -719,7 +710,7 @@ class ImageAttachmentTestCase(TestCase, ChangeLoggedFilterSetTests):
                 name='Image Attachment 1',
                 image='http://example.com/image1.png',
                 image_height=100,
-                image_width=100
+                image_width=100,
             ),
             ImageAttachment(
                 object_type=site_ct,
@@ -727,7 +718,7 @@ class ImageAttachmentTestCase(TestCase, ChangeLoggedFilterSetTests):
                 name='Image Attachment 2',
                 image='http://example.com/image2.png',
                 image_height=100,
-                image_width=100
+                image_width=100,
             ),
             ImageAttachment(
                 object_type=rack_ct,
@@ -735,7 +726,7 @@ class ImageAttachmentTestCase(TestCase, ChangeLoggedFilterSetTests):
                 name='Image Attachment 3',
                 image='http://example.com/image3.png',
                 image_height=100,
-                image_width=100
+                image_width=100,
             ),
             ImageAttachment(
                 object_type=rack_ct,
@@ -743,8 +734,8 @@ class ImageAttachmentTestCase(TestCase, ChangeLoggedFilterSetTests):
                 name='Image Attachment 4',
                 image='http://example.com/image4.png',
                 image_height=100,
-                image_width=100
-            )
+                image_width=100,
+            ),
         )
         ImageAttachment.objects.bulk_create(image_attachments)
 
@@ -798,37 +789,37 @@ class JournalEntryTestCase(TestCase, ChangeLoggedFilterSetTests):
                 assigned_object=sites[0],
                 created_by=users[0],
                 kind=JournalEntryKindChoices.KIND_INFO,
-                comments='foobar1'
+                comments='foobar1',
             ),
             JournalEntry(
                 assigned_object=sites[0],
                 created_by=users[1],
                 kind=JournalEntryKindChoices.KIND_SUCCESS,
-                comments='foobar2'
+                comments='foobar2',
             ),
             JournalEntry(
                 assigned_object=sites[1],
                 created_by=users[2],
                 kind=JournalEntryKindChoices.KIND_WARNING,
-                comments='foobar3'
+                comments='foobar3',
             ),
             JournalEntry(
                 assigned_object=racks[0],
                 created_by=users[0],
                 kind=JournalEntryKindChoices.KIND_INFO,
-                comments='foobar4'
+                comments='foobar4',
             ),
             JournalEntry(
                 assigned_object=racks[0],
                 created_by=users[1],
                 kind=JournalEntryKindChoices.KIND_SUCCESS,
-                comments='foobar5'
+                comments='foobar5',
             ),
             JournalEntry(
                 assigned_object=racks[1],
                 created_by=users[2],
                 kind=JournalEntryKindChoices.KIND_WARNING,
-                comments='foobar6'
+                comments='foobar6',
             ),
         )
         JournalEntry.objects.bulk_create(journal_entries)
@@ -1014,11 +1005,11 @@ class ConfigContextTestCase(TestCase, ChangeLoggedFilterSetTests):
         for i in range(0, 3):
             is_active = bool(i % 2)
             c = ConfigContext.objects.create(
-                name=f"Config Context {i + 1}",
+                name=f'Config Context {i + 1}',
                 profile=profiles[i],
                 is_active=is_active,
                 data='{"foo": 123}',
-                description=f"foobar{i + 1}"
+                description=f'foobar{i + 1}',
             )
             c.regions.set([regions[i]])
             c.site_groups.set([site_groups[i]])
@@ -1218,7 +1209,6 @@ class TagTestCase(TestCase, ChangeLoggedFilterSetTests):
     filterset = TagFilterSet
     ignore_fields = (
         'object_types',
-
         # Reverse relationships (to tagged models) we can ignore
         'aggregate',
         'asn',
@@ -1370,13 +1360,11 @@ class TagTestCase(TestCase, ChangeLoggedFilterSetTests):
     def test_object_types(self):
         params = {'for_object_type_id': [ObjectType.objects.get_by_natural_key('dcim', 'site').pk]}
         self.assertEqual(
-            list(self.filterset(params, self.queryset).qs.values_list('name', flat=True)),
-            ['Tag 1', 'Tag 3']
+            list(self.filterset(params, self.queryset).qs.values_list('name', flat=True)), ['Tag 1', 'Tag 3']
         )
         params = {'for_object_type_id': [ObjectType.objects.get_by_natural_key('circuits', 'provider').pk]}
         self.assertEqual(
-            list(self.filterset(params, self.queryset).qs.values_list('name', flat=True)),
-            ['Tag 2', 'Tag 3']
+            list(self.filterset(params, self.queryset).qs.values_list('name', flat=True)), ['Tag 2', 'Tag 3']
         )
 
     def test_weight(self):
@@ -1444,6 +1432,7 @@ class ChangeLoggedFilterSetTestCase(TestCase):
     """
     Evaluate base ChangeLoggedFilterSet filters using the Site model.
     """
+
     queryset = Site.objects.all()
     filterset = SiteFilterSet
 
@@ -1468,13 +1457,13 @@ class ChangeLoggedFilterSetTestCase(TestCase):
                 changed_object_type=content_type,
                 changed_object_id=sites[0].pk,
                 action=ObjectChangeActionChoices.ACTION_CREATE,
-                request_id=request_id
+                request_id=request_id,
             ),
             ObjectChange(
                 changed_object_type=content_type,
                 changed_object_id=sites[1].pk,
                 action=ObjectChangeActionChoices.ACTION_CREATE,
-                request_id=request_id
+                request_id=request_id,
             ),
         )
         ObjectChange.objects.bulk_create(objectchanges)
@@ -1487,13 +1476,13 @@ class ChangeLoggedFilterSetTestCase(TestCase):
                 changed_object_type=content_type,
                 changed_object_id=sites[0].pk,
                 action=ObjectChangeActionChoices.ACTION_UPDATE,
-                request_id=request_id
+                request_id=request_id,
             ),
             ObjectChange(
                 changed_object_type=content_type,
                 changed_object_id=sites[1].pk,
                 action=ObjectChangeActionChoices.ACTION_UPDATE,
-                request_id=request_id
+                request_id=request_id,
             ),
         )
         ObjectChange.objects.bulk_create(objectchanges)
@@ -1506,13 +1495,13 @@ class ChangeLoggedFilterSetTestCase(TestCase):
                 changed_object_type=content_type,
                 changed_object_id=sites[2].pk,
                 action=ObjectChangeActionChoices.ACTION_CREATE,
-                request_id=request_id
+                request_id=request_id,
             ),
             ObjectChange(
                 changed_object_type=content_type,
                 changed_object_id=sites[3].pk,
                 action=ObjectChangeActionChoices.ACTION_UPDATE,
-                request_id=request_id
+                request_id=request_id,
             ),
         )
         ObjectChange.objects.bulk_create(objectchanges)

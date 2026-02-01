@@ -22,7 +22,6 @@ __all__ = (
 
 
 class ObjectTypeQuerySet(models.QuerySet):
-
     def create(self, **kwargs):
         # If attempting to create a new ObjectType for a given app_label & model, replace those kwargs
         # with a reference to the ContentType (if one exists).
@@ -35,7 +34,6 @@ class ObjectTypeQuerySet(models.QuerySet):
 
 
 class ObjectTypeManager(models.Manager):
-
     # TODO: Remove this in NetBox v5.0
     # Cache the result of introspection to avoid repeated queries.
     _table_exists = False
@@ -116,6 +114,7 @@ class ObjectTypeManager(models.Manager):
         This method exists to provide parity with ContentTypeManager.
         """
         from netbox.models.features import get_model_features, model_is_public
+
         results = {}
 
         # Compile the model and options mappings
@@ -174,7 +173,7 @@ class ObjectTypeManager(models.Manager):
         """
         if feature not in registry['model_features']:
             raise KeyError(
-                f"{feature} is not a registered model feature! Valid features are: {registry['model_features'].keys()}"
+                f'{feature} is not a registered model feature! Valid features are: {registry["model_features"].keys()}'
             )
         return self.get_queryset().filter(features__contains=[feature])
 
@@ -183,6 +182,7 @@ class ObjectType(ContentType):
     """
     Wrap Django's native ContentType model to use our custom manager.
     """
+
     contenttype_ptr = models.OneToOneField(
         on_delete=models.CASCADE,
         to='contenttypes.ContentType',
@@ -212,7 +212,7 @@ class ObjectType(ContentType):
     @property
     def app_labeled_name(self):
         # Override ContentType's "app | model" representation style.
-        return f"{self.app_verbose_name} > {title(self.model_verbose_name)}"
+        return f'{self.app_verbose_name} > {title(self.model_verbose_name)}'
 
     @property
     def app_verbose_name(self):

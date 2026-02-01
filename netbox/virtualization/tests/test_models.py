@@ -7,23 +7,16 @@ from tenancy.models import Tenant
 
 
 class VirtualMachineTestCase(TestCase):
-
     @classmethod
     def setUpTestData(cls):
         cluster_type = ClusterType.objects.create(name='Cluster Type 1', slug='cluster-type-1')
         Cluster.objects.create(name='Cluster 1', type=cluster_type)
 
     def test_vm_duplicate_name_per_cluster(self):
-        vm1 = VirtualMachine(
-            cluster=Cluster.objects.first(),
-            name='Test VM 1'
-        )
+        vm1 = VirtualMachine(cluster=Cluster.objects.first(), name='Test VM 1')
         vm1.save()
 
-        vm2 = VirtualMachine(
-            cluster=vm1.cluster,
-            name=vm1.name
-        )
+        vm2 = VirtualMachine(cluster=vm1.cluster, name=vm1.name)
 
         # Two VMs assigned to the same Cluster and no Tenant should fail validation
         with self.assertRaises(ValidationError):
@@ -80,26 +73,17 @@ class VirtualMachineTestCase(TestCase):
         self.assertEqual(vm.site, sites[0])
 
     def test_vm_name_case_sensitivity(self):
-        vm1 = VirtualMachine(
-            cluster=Cluster.objects.first(),
-            name='virtual machine 1'
-        )
+        vm1 = VirtualMachine(cluster=Cluster.objects.first(), name='virtual machine 1')
         vm1.save()
 
-        vm2 = VirtualMachine(
-            cluster=vm1.cluster,
-            name='VIRTUAL MACHINE 1'
-        )
+        vm2 = VirtualMachine(cluster=vm1.cluster, name='VIRTUAL MACHINE 1')
 
         # Uniqueness validation for name should ignore case
         with self.assertRaises(ValidationError):
             vm2.full_clean()
 
     def test_disk_size(self):
-        vm = VirtualMachine(
-            cluster=Cluster.objects.first(),
-            name='Virtual Machine 1'
-        )
+        vm = VirtualMachine(cluster=Cluster.objects.first(), name='Virtual Machine 1')
         vm.save()
         vm.refresh_from_db()
         self.assertEqual(vm.disk, None)

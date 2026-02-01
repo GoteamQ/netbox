@@ -2,9 +2,7 @@ from django.db import models
 
 from netbox.config import ConfigItem
 
-__all__ = (
-    'custom_deconstruct',
-)
+__all__ = ('custom_deconstruct',)
 
 
 EXEMPT_ATTRS = (
@@ -27,8 +25,6 @@ def custom_deconstruct(field):
         kwargs.pop(attr, None)
 
     # Ignore any field defaults which reference a ConfigItem
-    kwargs = {
-        k: v for k, v in kwargs.items() if not isinstance(v, ConfigItem)
-    }
+    kwargs = {k: v for k, v in kwargs.items() if not isinstance(v, ConfigItem)}
 
     return name, path, args, kwargs

@@ -23,18 +23,9 @@ __all__ = (
 
 @register_filterset
 class DataSourceFilterSet(PrimaryModelFilterSet):
-    type = django_filters.MultipleChoiceFilter(
-        choices=get_data_backend_choices,
-        null_value=None
-    )
-    status = django_filters.MultipleChoiceFilter(
-        choices=DataSourceStatusChoices,
-        null_value=None
-    )
-    sync_interval = django_filters.MultipleChoiceFilter(
-        choices=JobIntervalChoices,
-        null_value=None
-    )
+    type = django_filters.MultipleChoiceFilter(choices=get_data_backend_choices, null_value=None)
+    status = django_filters.MultipleChoiceFilter(choices=DataSourceStatusChoices, null_value=None)
+    sync_interval = django_filters.MultipleChoiceFilter(choices=JobIntervalChoices, null_value=None)
 
     class Meta:
         model = DataSource
@@ -44,17 +35,13 @@ class DataSourceFilterSet(PrimaryModelFilterSet):
         if not value.strip():
             return queryset
         return queryset.filter(
-            Q(name__icontains=value) |
-            Q(description__icontains=value) |
-            Q(comments__icontains=value)
+            Q(name__icontains=value) | Q(description__icontains=value) | Q(comments__icontains=value)
         )
 
 
 @register_filterset
 class DataFileFilterSet(ChangeLoggedModelFilterSet):
-    q = django_filters.CharFilter(
-        method='search'
-    )
+    q = django_filters.CharFilter(method='search')
     source_id = django_filters.ModelMultipleChoiceFilter(
         queryset=DataSource.objects.all(),
         label=_('Data source (ID)'),
@@ -73,9 +60,7 @@ class DataFileFilterSet(ChangeLoggedModelFilterSet):
     def search(self, queryset, name, value):
         if not value.strip():
             return queryset
-        return queryset.filter(
-            Q(path__icontains=value)
-        )
+        return queryset.filter(Q(path__icontains=value))
 
 
 @register_filterset
@@ -90,45 +75,18 @@ class JobFilterSet(BaseFilterSet):
     )
     object_type = ContentTypeFilter()
     created = django_filters.DateTimeFilter()
-    created__before = django_filters.DateTimeFilter(
-        field_name='created',
-        lookup_expr='lte'
-    )
-    created__after = django_filters.DateTimeFilter(
-        field_name='created',
-        lookup_expr='gte'
-    )
+    created__before = django_filters.DateTimeFilter(field_name='created', lookup_expr='lte')
+    created__after = django_filters.DateTimeFilter(field_name='created', lookup_expr='gte')
     scheduled = django_filters.DateTimeFilter()
-    scheduled__before = django_filters.DateTimeFilter(
-        field_name='scheduled',
-        lookup_expr='lte'
-    )
-    scheduled__after = django_filters.DateTimeFilter(
-        field_name='scheduled',
-        lookup_expr='gte'
-    )
+    scheduled__before = django_filters.DateTimeFilter(field_name='scheduled', lookup_expr='lte')
+    scheduled__after = django_filters.DateTimeFilter(field_name='scheduled', lookup_expr='gte')
     started = django_filters.DateTimeFilter()
-    started__before = django_filters.DateTimeFilter(
-        field_name='started',
-        lookup_expr='lte'
-    )
-    started__after = django_filters.DateTimeFilter(
-        field_name='started',
-        lookup_expr='gte'
-    )
+    started__before = django_filters.DateTimeFilter(field_name='started', lookup_expr='lte')
+    started__after = django_filters.DateTimeFilter(field_name='started', lookup_expr='gte')
     completed = django_filters.DateTimeFilter()
-    completed__before = django_filters.DateTimeFilter(
-        field_name='completed',
-        lookup_expr='lte'
-    )
-    completed__after = django_filters.DateTimeFilter(
-        field_name='completed',
-        lookup_expr='gte'
-    )
-    status = django_filters.MultipleChoiceFilter(
-        choices=JobStatusChoices,
-        null_value=None
-    )
+    completed__before = django_filters.DateTimeFilter(field_name='completed', lookup_expr='lte')
+    completed__after = django_filters.DateTimeFilter(field_name='completed', lookup_expr='gte')
+    status = django_filters.MultipleChoiceFilter(choices=JobStatusChoices, null_value=None)
 
     class Meta:
         model = Job
@@ -137,10 +95,7 @@ class JobFilterSet(BaseFilterSet):
     def search(self, queryset, name, value):
         if not value.strip():
             return queryset
-        return queryset.filter(
-            Q(user__username__icontains=value) |
-            Q(name__icontains=value)
-        )
+        return queryset.filter(Q(user__username__icontains=value) | Q(name__icontains=value))
 
 
 @register_filterset
@@ -149,9 +104,7 @@ class ObjectTypeFilterSet(BaseFilterSet):
         method='search',
         label=_('Search'),
     )
-    features = django_filters.CharFilter(
-        method='filter_features'
-    )
+    features = django_filters.CharFilter(method='filter_features')
 
     class Meta:
         model = ObjectType
@@ -160,10 +113,7 @@ class ObjectTypeFilterSet(BaseFilterSet):
     def search(self, queryset, name, value):
         if not value.strip():
             return queryset
-        return queryset.filter(
-            Q(app_label__icontains=value) |
-            Q(model__icontains=value)
-        )
+        return queryset.filter(Q(app_label__icontains=value) | Q(model__icontains=value))
 
     def filter_features(self, queryset, name, value):
         return queryset.filter(features__icontains=value)
@@ -177,9 +127,7 @@ class ObjectChangeFilterSet(BaseFilterSet):
     )
     time = django_filters.DateTimeFromToRangeFilter()
     changed_object_type = ContentTypeFilter()
-    changed_object_type_id = django_filters.ModelMultipleChoiceFilter(
-        queryset=ContentType.objects.all()
-    )
+    changed_object_type_id = django_filters.ModelMultipleChoiceFilter(queryset=ContentType.objects.all())
     related_object_type = ContentTypeFilter()
     user_id = django_filters.ModelMultipleChoiceFilter(
         queryset=User.objects.all(),
@@ -195,17 +143,23 @@ class ObjectChangeFilterSet(BaseFilterSet):
     class Meta:
         model = ObjectChange
         fields = (
-            'id', 'user', 'user_name', 'request_id', 'action', 'changed_object_type_id', 'changed_object_id',
-            'related_object_type', 'related_object_id', 'object_repr',
+            'id',
+            'user',
+            'user_name',
+            'request_id',
+            'action',
+            'changed_object_type_id',
+            'changed_object_id',
+            'related_object_type',
+            'related_object_id',
+            'object_repr',
         )
 
     def search(self, queryset, name, value):
         if not value.strip():
             return queryset
         return queryset.filter(
-            Q(user_name__icontains=value) |
-            Q(object_repr__icontains=value) |
-            Q(message__icontains=value)
+            Q(user_name__icontains=value) | Q(object_repr__icontains=value) | Q(message__icontains=value)
         )
 
 
@@ -223,6 +177,4 @@ class ConfigRevisionFilterSet(BaseFilterSet):
     def search(self, queryset, name, value):
         if not value.strip():
             return queryset
-        return queryset.filter(
-            Q(comment__icontains=value)
-        )
+        return queryset.filter(Q(comment__icontains=value))

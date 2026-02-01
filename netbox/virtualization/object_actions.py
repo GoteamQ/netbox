@@ -2,15 +2,14 @@ from django.utils.translation import gettext_lazy as _
 
 from netbox.object_actions import ObjectAction
 
-__all__ = (
-    'BulkAddComponents',
-)
+__all__ = ('BulkAddComponents',)
 
 
 class BulkAddComponents(ObjectAction):
     """
     Add components to the selected virtual machines.
     """
+
     label = _('Add Components')
     multi = True
     permissions_required = {'change'}

@@ -2,6 +2,7 @@ class UserPreference:
     """
     Represents a configurable user preference.
     """
+
     def __init__(self, label, choices, default=None, description='', coerce=lambda x: x, warning=''):
         self.label = label
         self.choices = choices

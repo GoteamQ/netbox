@@ -5,7 +5,6 @@ import utilities.json
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('extras', '0001_initial'),
         ('gcp', '0001_initial'),
@@ -18,7 +17,10 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False)),
                 ('created', models.DateTimeField(auto_now_add=True, null=True)),
                 ('last_updated', models.DateTimeField(auto_now=True, null=True)),
-                ('custom_field_data', models.JSONField(blank=True, default=dict, encoder=utilities.json.CustomFieldJSONEncoder)),
+                (
+                    'custom_field_data',
+                    models.JSONField(blank=True, default=dict, encoder=utilities.json.CustomFieldJSONEncoder),
+                ),
                 ('name', models.CharField(max_length=255)),
                 ('organization_id', models.CharField(max_length=50, unique=True)),
                 ('service_account_json', models.TextField(blank=True)),
@@ -48,7 +50,10 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False)),
                 ('created', models.DateTimeField(auto_now_add=True, null=True)),
                 ('last_updated', models.DateTimeField(auto_now=True, null=True)),
-                ('custom_field_data', models.JSONField(blank=True, default=dict, encoder=utilities.json.CustomFieldJSONEncoder)),
+                (
+                    'custom_field_data',
+                    models.JSONField(blank=True, default=dict, encoder=utilities.json.CustomFieldJSONEncoder),
+                ),
                 ('started_at', models.DateTimeField(auto_now_add=True)),
                 ('completed_at', models.DateTimeField(blank=True, null=True)),
                 ('status', models.CharField(default='running', max_length=20)),
@@ -61,7 +66,14 @@ class Migration(migrations.Migration):
                 ('total_resources', models.IntegerField(default=0)),
                 ('error_message', models.TextField(blank=True)),
                 ('log_output', models.TextField(blank=True)),
-                ('organization', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='discovery_logs', to='gcp.gcporganization')),
+                (
+                    'organization',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='discovery_logs',
+                        to='gcp.gcporganization',
+                    ),
+                ),
                 ('tags', taggit.managers.TaggableManager(through='extras.TaggedItem', to='extras.Tag')),
             ],
             options={
@@ -73,7 +85,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='gcpproject',
             name='organization',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='projects', to='gcp.gcporganization'),
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name='projects',
+                to='gcp.gcporganization',
+            ),
         ),
         migrations.AddField(
             model_name='gcpproject',

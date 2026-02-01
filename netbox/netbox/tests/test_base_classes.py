@@ -54,7 +54,6 @@ from netbox.tables import (
 
 
 class FormClassesTestCase(TestCase):
-
     @staticmethod
     def get_form_for_model(model, prefix=''):
         """
@@ -135,7 +134,7 @@ class FormClassesTestCase(TestCase):
         for model in apps.get_models():
             if base_class := self.get_model_form_base_class(model):
                 form_class = self.get_form_for_model(model)
-                self.assertTrue(issubclass(form_class, base_class), f"{form_class} does not inherit from {base_class}")
+                self.assertTrue(issubclass(form_class, base_class), f'{form_class} does not inherit from {base_class}')
 
     def test_bulk_edit_form_base_classes(self):
         """
@@ -144,7 +143,7 @@ class FormClassesTestCase(TestCase):
         for model in apps.get_models():
             if base_class := self.get_bulk_edit_form_base_class(model):
                 form_class = self.get_form_for_model(model, prefix='BulkEdit')
-                self.assertTrue(issubclass(form_class, base_class), f"{form_class} does not inherit from {base_class}")
+                self.assertTrue(issubclass(form_class, base_class), f'{form_class} does not inherit from {base_class}')
 
     def test_import_form_base_classes(self):
         """
@@ -153,7 +152,7 @@ class FormClassesTestCase(TestCase):
         for model in apps.get_models():
             if base_class := self.get_import_form_base_class(model):
                 form_class = self.get_form_for_model(model, prefix='Import')
-                self.assertTrue(issubclass(form_class, base_class), f"{form_class} does not inherit from {base_class}")
+                self.assertTrue(issubclass(form_class, base_class), f'{form_class} does not inherit from {base_class}')
 
     def test_filterset_form_base_classes(self):
         """
@@ -162,11 +161,10 @@ class FormClassesTestCase(TestCase):
         for model in apps.get_models():
             if base_class := self.get_filterset_form_base_class(model):
                 form_class = self.get_form_for_model(model, prefix='Filter')
-                self.assertTrue(issubclass(form_class, base_class), f"{form_class} does not inherit from {base_class}")
+                self.assertTrue(issubclass(form_class, base_class), f'{form_class} does not inherit from {base_class}')
 
 
 class FilterSetClassesTestCase(TestCase):
-
     @staticmethod
     def get_filterset_for_model(model):
         """
@@ -201,12 +199,11 @@ class FilterSetClassesTestCase(TestCase):
                 filterset = self.get_filterset_for_model(model)
                 self.assertTrue(
                     issubclass(filterset, base_class),
-                    f"{filterset} does not inherit from {base_class}",
+                    f'{filterset} does not inherit from {base_class}',
                 )
 
 
 class TableClassesTestCase(TestCase):
-
     @staticmethod
     def get_table_for_model(model):
         """
@@ -241,16 +238,15 @@ class TableClassesTestCase(TestCase):
                 table = self.get_table_for_model(model)
                 self.assertTrue(
                     issubclass(table, base_class),
-                    f"{table} does not inherit from {base_class}",
+                    f'{table} does not inherit from {base_class}',
                 )
                 self.assertTrue(
                     issubclass(table.Meta, base_class.Meta),
-                    f"{table}.Meta does not inherit from {base_class}.Meta",
+                    f'{table}.Meta does not inherit from {base_class}.Meta',
                 )
 
 
 class SerializerClassesTestCase(TestCase):
-
     @staticmethod
     def get_serializer_for_model(model):
         """
@@ -285,12 +281,11 @@ class SerializerClassesTestCase(TestCase):
                 serializer = self.get_serializer_for_model(model)
                 self.assertTrue(
                     issubclass(serializer, base_class),
-                    f"{serializer} does not inherit from {base_class}",
+                    f'{serializer} does not inherit from {base_class}',
                 )
 
 
 class GraphQLTypeClassesTestCase(TestCase):
-
     @staticmethod
     def get_type_for_model(model):
         """
@@ -325,5 +320,5 @@ class GraphQLTypeClassesTestCase(TestCase):
                 graphql_type = self.get_type_for_model(model)
                 self.assertTrue(
                     issubclass(graphql_type, base_class),
-                    f"{graphql_type} does not inherit from {base_class}",
+                    f'{graphql_type} does not inherit from {base_class}',
                 )

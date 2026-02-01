@@ -29,7 +29,7 @@ class RangeContains(Lookup):
             raise TypeError('range_contains is only valid for ArrayField(RangeField) columns')
 
         # Range-contains-element using EXISTS + UNNEST keeps the range on the LHS: r @> value
-        sql = f"EXISTS (SELECT 1 FROM unnest({lhs}) AS r WHERE r @> {rhs})"
+        sql = f'EXISTS (SELECT 1 FROM unnest({lhs}) AS r WHERE r @> {rhs})'
         params = lhs_params + rhs_params
         return sql, params
 
@@ -38,15 +38,16 @@ class Empty(Lookup):
     """
     Filter on whether a string is empty.
     """
+
     lookup_name = 'empty'
     prepare_rhs = False
 
     def as_sql(self, compiler, connection):
         sql, params = compiler.compile(self.lhs)
         if self.rhs:
-            return f"CAST(LENGTH({sql}) AS BOOLEAN) IS NOT TRUE", params
+            return f'CAST(LENGTH({sql}) AS BOOLEAN) IS NOT TRUE', params
         else:
-            return f"CAST(LENGTH({sql}) AS BOOLEAN) IS TRUE", params
+            return f'CAST(LENGTH({sql}) AS BOOLEAN) IS TRUE', params
 
 
 class JSONEmpty(Lookup):
@@ -55,6 +56,7 @@ class JSONEmpty(Lookup):
 
     A key is considered empty if it is "", null, or does not exist.
     """
+
     lookup_name = 'empty'
 
     def as_sql(self, compiler, connection):
@@ -77,6 +79,7 @@ class NetHost(Lookup):
     """
     Similar to ipam.lookups.NetHost, but casts the field to INET.
     """
+
     lookup_name = 'net_host'
 
     def as_sql(self, qn, connection):
@@ -90,6 +93,7 @@ class NetContainsOrEquals(Lookup):
     """
     Similar to ipam.lookups.NetContainsOrEquals, but casts the field to INET.
     """
+
     lookup_name = 'net_contains_or_equals'
 
     def as_sql(self, qn, connection):

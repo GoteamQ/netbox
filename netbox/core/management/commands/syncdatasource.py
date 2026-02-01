@@ -5,17 +5,13 @@ from core.models import DataSource
 
 
 class Command(BaseCommand):
-    help = "Synchronize a data source from its remote upstream"
+    help = 'Synchronize a data source from its remote upstream'
 
     def add_arguments(self, parser):
-        parser.add_argument('name', nargs='*', help="Data source(s) to synchronize")
-        parser.add_argument(
-            "--all", action='store_true', dest='sync_all',
-            help="Synchronize all data sources"
-        )
+        parser.add_argument('name', nargs='*', help='Data source(s) to synchronize')
+        parser.add_argument('--all', action='store_true', dest='sync_all', help='Synchronize all data sources')
 
     def handle(self, *args, **options):
-
         # Find DataSources to sync
         if options['sync_all']:
             datasources = DataSource.objects.all()
@@ -24,15 +20,15 @@ class Command(BaseCommand):
             # Check for invalid names
             found_names = {ds['name'] for ds in datasources.values('name')}
             if invalid_names := set(options['name']) - found_names:
-                raise CommandError(f"Invalid data source names: {', '.join(invalid_names)}")
+                raise CommandError(f'Invalid data source names: {", ".join(invalid_names)}')
         else:
-            raise CommandError("Must specify at least one data source, or set --all.")
+            raise CommandError('Must specify at least one data source, or set --all.')
 
         if len(options['name']) > 1:
-            self.stdout.write(f"Syncing {len(datasources)} data sources.")
+            self.stdout.write(f'Syncing {len(datasources)} data sources.')
 
         for i, datasource in enumerate(datasources, start=1):
-            self.stdout.write(f"[{i}] Syncing {datasource}... ", ending='')
+            self.stdout.write(f'[{i}] Syncing {datasource}... ', ending='')
             self.stdout.flush()
             try:
                 datasource.sync()
@@ -43,4 +39,4 @@ class Command(BaseCommand):
                 raise e
 
         if len(options['name']) > 1:
-            self.stdout.write("Finished.")
+            self.stdout.write('Finished.')

@@ -13,93 +13,59 @@ from utilities.request import NetBoxFakeRequest
 
 
 class MyValidator(CustomValidator):
-
     def validate(self, instance, request):
         if instance.name != 'foo':
-            self.fail("Name must be foo!")
+            self.fail('Name must be foo!')
 
 
-eq_validator = CustomValidator({
-    'asn': {
-        'eq': 100
+eq_validator = CustomValidator({'asn': {'eq': 100}})
+
+
+neq_validator = CustomValidator({'asn': {'neq': 100}})
+
+
+min_validator = CustomValidator({'asn': {'min': 65000}})
+
+
+max_validator = CustomValidator({'asn': {'max': 65100}})
+
+
+min_length_validator = CustomValidator({'name': {'min_length': 5}})
+
+
+max_length_validator = CustomValidator({'name': {'max_length': 10}})
+
+
+regex_validator = CustomValidator(
+    {
+        'name': {
+            'regex': r'\d{3}$'  # Ends with three digits
+        }
     }
-})
+)
 
 
-neq_validator = CustomValidator({
-    'asn': {
-        'neq': 100
+required_validator = CustomValidator({'description': {'required': True}})
+
+
+prohibited_validator = CustomValidator({'description': {'prohibited': True}})
+
+
+region_validator = CustomValidator(
+    {
+        'region.name': {
+            'eq': 'Bar',
+        }
     }
-})
+)
 
 
-min_validator = CustomValidator({
-    'asn': {
-        'min': 65000
-    }
-})
-
-
-max_validator = CustomValidator({
-    'asn': {
-        'max': 65100
-    }
-})
-
-
-min_length_validator = CustomValidator({
-    'name': {
-        'min_length': 5
-    }
-})
-
-
-max_length_validator = CustomValidator({
-    'name': {
-        'max_length': 10
-    }
-})
-
-
-regex_validator = CustomValidator({
-    'name': {
-        'regex': r'\d{3}$'  # Ends with three digits
-    }
-})
-
-
-required_validator = CustomValidator({
-    'description': {
-        'required': True
-    }
-})
-
-
-prohibited_validator = CustomValidator({
-    'description': {
-        'prohibited': True
-    }
-})
-
-
-region_validator = CustomValidator({
-    'region.name': {
-        'eq': 'Bar',
-    }
-})
-
-
-request_validator = CustomValidator({
-    'request.user.username': {
-        'eq': 'Bob'
-    }
-})
+request_validator = CustomValidator({'request.user.username': {'eq': 'Bob'}})
 
 custom_validator = MyValidator()
 
 
 class CustomValidatorTest(TestCase):
-
     @classmethod
     def setUpTestData(cls):
         RIR.objects.create(name='RIR 1', slug='rir-1')
@@ -188,14 +154,16 @@ class CustomValidatorTest(TestCase):
     def test_request_validation(self):
         alice = User.objects.create(username='Alice')
         bob = User.objects.create(username='Bob')
-        request = NetBoxFakeRequest({
-            'META': {},
-            'POST': {},
-            'GET': {},
-            'FILES': {},
-            'user': alice,
-            'path': '',
-        })
+        request = NetBoxFakeRequest(
+            {
+                'META': {},
+                'POST': {},
+                'GET': {},
+                'FILES': {},
+                'user': alice,
+                'path': '',
+            }
+        )
         site = Site(name='abc', slug='abc')
 
         # Attempt to create the Site as Alice
@@ -208,14 +176,7 @@ class CustomValidatorTest(TestCase):
 
 
 class CustomValidatorConfigTest(TestCase):
-
-    @override_settings(
-        CUSTOM_VALIDATORS={
-            'dcim.site': [
-                {'name': {'min_length': 5}}
-            ]
-        }
-    )
+    @override_settings(CUSTOM_VALIDATORS={'dcim.site': [{'name': {'min_length': 5}}]})
     def test_plain_data(self):
         """
         Test custom validator configuration using plain data (as opposed to a CustomValidator
@@ -225,13 +186,7 @@ class CustomValidatorConfigTest(TestCase):
             Site(name='abcd', slug='abcd').clean()
         Site(name='abcde', slug='abcde').clean()
 
-    @override_settings(
-        CUSTOM_VALIDATORS={
-            'dcim.site': (
-                'extras.tests.test_customvalidators.MyValidator',
-            )
-        }
-    )
+    @override_settings(CUSTOM_VALIDATORS={'dcim.site': ('extras.tests.test_customvalidators.MyValidator',)})
     def test_dotted_path(self):
         """
         Test custom validator configuration using a dotted path (string) reference to a
@@ -243,14 +198,7 @@ class CustomValidatorConfigTest(TestCase):
 
 
 class ProtectionRulesConfigTest(TestCase):
-
-    @override_settings(
-        PROTECTION_RULES={
-            'dcim.site': [
-                {'status': {'eq': SiteStatusChoices.STATUS_DECOMMISSIONING}}
-            ]
-        }
-    )
+    @override_settings(PROTECTION_RULES={'dcim.site': [{'status': {'eq': SiteStatusChoices.STATUS_DECOMMISSIONING}}]})
     def test_plain_data(self):
         """
         Test custom validator configuration using plain data (as opposed to a CustomValidator
@@ -272,13 +220,7 @@ class ProtectionRulesConfigTest(TestCase):
         # Deletion should now succeed
         site.delete()
 
-    @override_settings(
-        PROTECTION_RULES={
-            'dcim.site': (
-                'extras.tests.test_customvalidators.MyValidator',
-            )
-        }
-    )
+    @override_settings(PROTECTION_RULES={'dcim.site': ('extras.tests.test_customvalidators.MyValidator',)})
     def test_dotted_path(self):
         """
         Test custom validator configuration using a dotted path (string) reference to a

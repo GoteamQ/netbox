@@ -17,9 +17,7 @@ def populate_denormalized_fields(apps, schema_editor):
         # Note: Location cannot be set prior to migration
 
     CircuitTermination.objects.using(db_alias).bulk_update(
-        terminations,
-        ['_region', '_site_group', '_site'],
-        batch_size=100
+        terminations, ['_region', '_site_group', '_site'], batch_size=100
     )
 
 

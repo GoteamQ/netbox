@@ -53,15 +53,13 @@ class WritableNestedSerializerTest(APITestCase):
             response = self.client.post(url, data, format='json', **self.header)
         self.assertHttpStatus(response, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(VLAN.objects.count(), 0)
-        self.assertTrue(response.data['site'][0].startswith("Related object not found"))
+        self.assertTrue(response.data['site'][0].startswith('Related object not found'))
 
     def test_related_by_attributes(self):
         data = {
             'vid': 100,
             'name': 'Test VLAN 100',
-            'site': {
-                'name': 'Site 1'
-            },
+            'site': {'name': 'Site 1'},
         }
         url = reverse('ipam-api:vlan-list')
         self.add_permissions('ipam.add_vlan')
@@ -76,9 +74,7 @@ class WritableNestedSerializerTest(APITestCase):
         data = {
             'vid': 100,
             'name': 'Test VLAN 100',
-            'site': {
-                'name': 'Site X'
-            },
+            'site': {'name': 'Site X'},
         }
         url = reverse('ipam-api:vlan-list')
         self.add_permissions('ipam.add_vlan')
@@ -87,7 +83,7 @@ class WritableNestedSerializerTest(APITestCase):
             response = self.client.post(url, data, format='json', **self.header)
         self.assertHttpStatus(response, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(VLAN.objects.count(), 0)
-        self.assertTrue(response.data['site'][0].startswith("Related object not found"))
+        self.assertTrue(response.data['site'][0].startswith('Related object not found'))
 
     def test_related_by_attributes_multiple_matches(self):
         data = {
@@ -95,7 +91,7 @@ class WritableNestedSerializerTest(APITestCase):
             'name': 'Test VLAN 100',
             'site': {
                 'region': {
-                    "name": "Region A",
+                    'name': 'Region A',
                 },
             },
         }
@@ -106,7 +102,7 @@ class WritableNestedSerializerTest(APITestCase):
             response = self.client.post(url, data, format='json', **self.header)
         self.assertHttpStatus(response, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(VLAN.objects.count(), 0)
-        self.assertTrue(response.data['site'][0].startswith("Multiple objects match"))
+        self.assertTrue(response.data['site'][0].startswith('Multiple objects match'))
 
     def test_related_by_invalid(self):
         data = {
@@ -131,14 +127,12 @@ class APIPaginationTestCase(APITestCase):
         cls.url = reverse('dcim-api:site-list')
 
         # Create a large number of Sites for testing
-        Site.objects.bulk_create([
-            Site(name=f'Site {i}', slug=f'site-{i}') for i in range(1, 101)
-        ])
+        Site.objects.bulk_create([Site(name=f'Site {i}', slug=f'site-{i}') for i in range(1, 101)])
 
     def test_default_page_size(self):
         response = self.client.get(self.url, format='json', **self.header)
         page_size = get_config().PAGINATE_COUNT
-        self.assertLess(page_size, 100, "Default page size not sufficient for data set")
+        self.assertLess(page_size, 100, 'Default page size not sufficient for data set')
 
         self.assertHttpStatus(response, status.HTTP_200_OK)
         self.assertEqual(response.data['count'], 100)
@@ -150,7 +144,7 @@ class APIPaginationTestCase(APITestCase):
     def test_default_page_size_with_small_max_page_size(self):
         response = self.client.get(self.url, format='json', **self.header)
         page_size = get_config().MAX_PAGE_SIZE
-        self.assertLess(page_size, 100, "Default page size not sufficient for data set")
+        self.assertLess(page_size, 100, 'Default page size not sufficient for data set')
 
         self.assertHttpStatus(response, status.HTTP_200_OK)
         self.assertEqual(response.data['count'], 100)
@@ -211,8 +205,7 @@ class APIOrderingTestCase(APITestCase):
         self.assertHttpStatus(response, status.HTTP_200_OK)
         self.assertEqual(response.data['count'], 6)
         self.assertListEqual(
-            [s['name'] for s in response.data['results']],
-            ['Site 1', 'Site 2', 'Site 3', 'Site 4', 'Site 5', 'Site 6']
+            [s['name'] for s in response.data['results']], ['Site 1', 'Site 2', 'Site 3', 'Site 4', 'Site 5', 'Site 6']
         )
 
     def test_order_single_field(self):
@@ -221,8 +214,7 @@ class APIOrderingTestCase(APITestCase):
         self.assertHttpStatus(response, status.HTTP_200_OK)
         self.assertEqual(response.data['count'], 6)
         self.assertListEqual(
-            [s['name'] for s in response.data['results']],
-            ['Site 6', 'Site 5', 'Site 4', 'Site 3', 'Site 2', 'Site 1']
+            [s['name'] for s in response.data['results']], ['Site 6', 'Site 5', 'Site 4', 'Site 3', 'Site 2', 'Site 1']
         )
 
     def test_order_reversed(self):
@@ -231,8 +223,7 @@ class APIOrderingTestCase(APITestCase):
         self.assertHttpStatus(response, status.HTTP_200_OK)
         self.assertEqual(response.data['count'], 6)
         self.assertListEqual(
-            [s['name'] for s in response.data['results']],
-            ['Site 6', 'Site 5', 'Site 4', 'Site 3', 'Site 2', 'Site 1']
+            [s['name'] for s in response.data['results']], ['Site 6', 'Site 5', 'Site 4', 'Site 3', 'Site 2', 'Site 1']
         )
 
     def test_order_multiple_fields(self):
@@ -241,13 +232,11 @@ class APIOrderingTestCase(APITestCase):
         self.assertHttpStatus(response, status.HTTP_200_OK)
         self.assertEqual(response.data['count'], 6)
         self.assertListEqual(
-            [s['name'] for s in response.data['results']],
-            ['Site 5', 'Site 6', 'Site 3', 'Site 4', 'Site 1', 'Site 2']
+            [s['name'] for s in response.data['results']], ['Site 5', 'Site 6', 'Site 3', 'Site 4', 'Site 1', 'Site 2']
         )
 
 
 class APIDocsTestCase(TestCase):
-
     def setUp(self):
         self.client = Client()
 
@@ -259,7 +248,6 @@ class APIDocsTestCase(TestCase):
         self.cf_text.save()
 
     def test_api_docs(self):
-
         url = reverse('api_docs')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
@@ -271,7 +259,6 @@ class APIDocsTestCase(TestCase):
 
 
 class GetViewNameTestCase(TestCase):
-
     @tag('regression')
     def test_get_view_name_with_none_queryset(self):
         from rest_framework.viewsets import ReadOnlyModelViewSet

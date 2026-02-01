@@ -35,12 +35,7 @@ __all__ = (
 class DeviceSerializer(PrimaryModelSerializer):
     device_type = DeviceTypeSerializer(nested=True)
     role = DeviceRoleSerializer(nested=True)
-    tenant = TenantSerializer(
-        nested=True,
-        required=False,
-        allow_null=True,
-        default=None
-    )
+    tenant = TenantSerializer(nested=True, required=False, allow_null=True, default=None)
     platform = PlatformSerializer(nested=True, required=False, allow_null=True)
     site = SiteSerializer(nested=True)
     location = LocationSerializer(nested=True, required=False, allow_null=True, default=None)
@@ -52,7 +47,7 @@ class DeviceSerializer(PrimaryModelSerializer):
         allow_null=True,
         label=_('Position (U)'),
         min_value=decimal.Decimal(0.5),
-        default=None
+        default=None,
     )
     status = ChoiceField(choices=DeviceStatusChoices, required=False)
     airflow = ChoiceField(choices=DeviceAirflowChoices, allow_blank=True, required=False)
@@ -81,13 +76,54 @@ class DeviceSerializer(PrimaryModelSerializer):
     class Meta:
         model = Device
         fields = [
-            'id', 'url', 'display_url', 'display', 'name', 'device_type', 'role', 'tenant', 'platform', 'serial',
-            'asset_tag', 'site', 'location', 'rack', 'position', 'face', 'latitude', 'longitude', 'parent_device',
-            'status', 'airflow', 'primary_ip', 'primary_ip4', 'primary_ip6', 'oob_ip', 'cluster', 'virtual_chassis',
-            'vc_position', 'vc_priority', 'description', 'owner', 'comments', 'config_template', 'local_context_data',
-            'tags', 'custom_fields', 'created', 'last_updated', 'console_port_count', 'console_server_port_count',
-            'power_port_count', 'power_outlet_count', 'interface_count', 'front_port_count', 'rear_port_count',
-            'device_bay_count', 'module_bay_count', 'inventory_item_count',
+            'id',
+            'url',
+            'display_url',
+            'display',
+            'name',
+            'device_type',
+            'role',
+            'tenant',
+            'platform',
+            'serial',
+            'asset_tag',
+            'site',
+            'location',
+            'rack',
+            'position',
+            'face',
+            'latitude',
+            'longitude',
+            'parent_device',
+            'status',
+            'airflow',
+            'primary_ip',
+            'primary_ip4',
+            'primary_ip6',
+            'oob_ip',
+            'cluster',
+            'virtual_chassis',
+            'vc_position',
+            'vc_priority',
+            'description',
+            'owner',
+            'comments',
+            'config_template',
+            'local_context_data',
+            'tags',
+            'custom_fields',
+            'created',
+            'last_updated',
+            'console_port_count',
+            'console_server_port_count',
+            'power_port_count',
+            'power_outlet_count',
+            'interface_count',
+            'front_port_count',
+            'rear_port_count',
+            'device_bay_count',
+            'module_bay_count',
+            'inventory_item_count',
         ]
         brief_fields = ('id', 'url', 'display', 'name', 'description')
 
@@ -108,13 +144,55 @@ class DeviceWithConfigContextSerializer(DeviceSerializer):
 
     class Meta(DeviceSerializer.Meta):
         fields = [
-            'id', 'url', 'display_url', 'display', 'name', 'device_type', 'role', 'tenant', 'platform', 'serial',
-            'asset_tag', 'site', 'location', 'rack', 'position', 'face', 'latitude', 'longitude', 'parent_device',
-            'status', 'airflow', 'primary_ip', 'primary_ip4', 'primary_ip6', 'oob_ip', 'cluster', 'virtual_chassis',
-            'vc_position', 'vc_priority', 'description', 'owner', 'comments', 'config_template', 'config_context',
-            'local_context_data', 'tags', 'custom_fields', 'created', 'last_updated', 'console_port_count',
-            'console_server_port_count', 'power_port_count', 'power_outlet_count', 'interface_count',
-            'front_port_count', 'rear_port_count', 'device_bay_count', 'module_bay_count', 'inventory_item_count',
+            'id',
+            'url',
+            'display_url',
+            'display',
+            'name',
+            'device_type',
+            'role',
+            'tenant',
+            'platform',
+            'serial',
+            'asset_tag',
+            'site',
+            'location',
+            'rack',
+            'position',
+            'face',
+            'latitude',
+            'longitude',
+            'parent_device',
+            'status',
+            'airflow',
+            'primary_ip',
+            'primary_ip4',
+            'primary_ip6',
+            'oob_ip',
+            'cluster',
+            'virtual_chassis',
+            'vc_position',
+            'vc_priority',
+            'description',
+            'owner',
+            'comments',
+            'config_template',
+            'config_context',
+            'local_context_data',
+            'tags',
+            'custom_fields',
+            'created',
+            'last_updated',
+            'console_port_count',
+            'console_server_port_count',
+            'power_port_count',
+            'power_outlet_count',
+            'interface_count',
+            'front_port_count',
+            'rear_port_count',
+            'device_bay_count',
+            'module_bay_count',
+            'inventory_item_count',
         ]
 
     @extend_schema_field(serializers.JSONField(allow_null=True))
@@ -137,9 +215,26 @@ class VirtualDeviceContextSerializer(PrimaryModelSerializer):
     class Meta:
         model = VirtualDeviceContext
         fields = [
-            'id', 'url', 'display_url', 'display', 'name', 'device', 'identifier', 'tenant', 'primary_ip',
-            'primary_ip4', 'primary_ip6', 'status', 'description', 'owner', 'comments', 'tags', 'custom_fields',
-            'created', 'last_updated', 'interface_count',
+            'id',
+            'url',
+            'display_url',
+            'display',
+            'name',
+            'device',
+            'identifier',
+            'tenant',
+            'primary_ip',
+            'primary_ip4',
+            'primary_ip6',
+            'status',
+            'description',
+            'owner',
+            'comments',
+            'tags',
+            'custom_fields',
+            'created',
+            'last_updated',
+            'interface_count',
         ]
         brief_fields = ('id', 'url', 'display', 'name', 'identifier', 'device', 'description')
 
@@ -153,24 +248,50 @@ class ModuleSerializer(PrimaryModelSerializer):
     class Meta:
         model = Module
         fields = [
-            'id', 'url', 'display_url', 'display', 'device', 'module_bay', 'module_type', 'status', 'serial',
-            'asset_tag', 'description', 'owner', 'comments', 'tags', 'custom_fields', 'created', 'last_updated',
+            'id',
+            'url',
+            'display_url',
+            'display',
+            'device',
+            'module_bay',
+            'module_type',
+            'status',
+            'serial',
+            'asset_tag',
+            'description',
+            'owner',
+            'comments',
+            'tags',
+            'custom_fields',
+            'created',
+            'last_updated',
         ]
         brief_fields = ('id', 'url', 'display', 'device', 'module_bay', 'module_type', 'description')
 
 
 class MACAddressSerializer(PrimaryModelSerializer):
     assigned_object_type = ContentTypeField(
-        queryset=ContentType.objects.filter(MACADDRESS_ASSIGNMENT_MODELS),
-        required=False,
-        allow_null=True
+        queryset=ContentType.objects.filter(MACADDRESS_ASSIGNMENT_MODELS), required=False, allow_null=True
     )
     assigned_object = GFKSerializerField(read_only=True)
 
     class Meta:
         model = MACAddress
         fields = [
-            'id', 'url', 'display_url', 'display', 'mac_address', 'assigned_object_type', 'assigned_object_id',
-            'assigned_object', 'description', 'owner', 'comments', 'tags', 'custom_fields', 'created', 'last_updated',
+            'id',
+            'url',
+            'display_url',
+            'display',
+            'mac_address',
+            'assigned_object_type',
+            'assigned_object_id',
+            'assigned_object',
+            'description',
+            'owner',
+            'comments',
+            'tags',
+            'custom_fields',
+            'created',
+            'last_updated',
         ]
         brief_fields = ('id', 'url', 'display', 'mac_address', 'description')

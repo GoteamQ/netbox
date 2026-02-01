@@ -51,7 +51,6 @@ def custom_links(context, obj):
     group_names = {}
 
     for cl in custom_links:
-
         # Organize custom links by group
         if cl.group_name and cl.group_name in group_names:
             group_names[cl.group_name].append(cl)
@@ -67,12 +66,13 @@ def custom_links(context, obj):
                         rendered['link'], rendered['link_target'], button_class, rendered['text']
                     )
             except Exception as e:
-                template_code += f'<a class="btn btn-sm btn-outline-secondary" disabled="disabled" title="{e}">' \
-                                 f'<i class="mdi mdi-alert"></i> {cl.name}</a>\n'
+                template_code += (
+                    f'<a class="btn btn-sm btn-outline-secondary" disabled="disabled" title="{e}">'
+                    f'<i class="mdi mdi-alert"></i> {cl.name}</a>\n'
+                )
 
     # Add grouped links to template
     for group, links in group_names.items():
-
         links_rendered = []
 
         for cl in links:
@@ -88,8 +88,6 @@ def custom_links(context, obj):
                 )
 
         if links_rendered:
-            template_code += GROUP_BUTTON.format(
-                links[0].button_class, escape(group), ''.join(links_rendered)
-            )
+            template_code += GROUP_BUTTON.format(links[0].button_class, escape(group), ''.join(links_rendered))
 
     return mark_safe(template_code)

@@ -13,7 +13,6 @@ class TenantGroupTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
-
         parent_tenant_groups = (
             TenantGroup(name='Tenant Group 1', slug='tenant-group-1'),
             TenantGroup(name='Tenant Group 2', slug='tenant-group-2', comments='Parent group 2 comment'),
@@ -31,16 +30,10 @@ class TenantGroupTestCase(TestCase, ChangeLoggedFilterSetTests):
                 comments='Tenant Group 1A comment',
             ),
             TenantGroup(
-                name='Tenant Group 2A',
-                slug='tenant-group-2a',
-                parent=parent_tenant_groups[1],
-                description='foobar2'
+                name='Tenant Group 2A', slug='tenant-group-2a', parent=parent_tenant_groups[1], description='foobar2'
             ),
             TenantGroup(
-                name='Tenant Group 3A',
-                slug='tenant-group-3a',
-                parent=parent_tenant_groups[2],
-                description='foobar3'
+                name='Tenant Group 3A', slug='tenant-group-3a', parent=parent_tenant_groups[2], description='foobar3'
             ),
         )
         for tenant_group in tenant_groups:
@@ -50,7 +43,9 @@ class TenantGroupTestCase(TestCase, ChangeLoggedFilterSetTests):
             TenantGroup(name='Tenant Group 1A1', slug='tenant-group-1a1', parent=tenant_groups[0]),
             TenantGroup(name='Tenant Group 2A1', slug='tenant-group-2a1', parent=tenant_groups[1]),
             TenantGroup(
-                name='Tenant Group 3A1', slug='tenant-group-3a1', parent=tenant_groups[2],
+                name='Tenant Group 3A1',
+                slug='tenant-group-3a1',
+                parent=tenant_groups[2],
                 comments='Tenant Group 3A1 comment',
             ),
         )
@@ -101,7 +96,6 @@ class TenantTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
-
         tenant_groups = (
             TenantGroup(name='Tenant Group 1', slug='tenant-group-1'),
             TenantGroup(name='Tenant Group 2', slug='tenant-group-2'),
@@ -147,7 +141,6 @@ class ContactGroupTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
-
         parent_contact_groups = (
             ContactGroup(name='Contact Group 1', slug='contact-group-1'),
             ContactGroup(name='Contact Group 2', slug='contact-group-2', comments='Parent group 2'),
@@ -158,16 +151,10 @@ class ContactGroupTestCase(TestCase, ChangeLoggedFilterSetTests):
 
         contact_groups = (
             ContactGroup(
-                name='Contact Group 1A',
-                slug='contact-group-1a',
-                parent=parent_contact_groups[0],
-                description='foobar1'
+                name='Contact Group 1A', slug='contact-group-1a', parent=parent_contact_groups[0], description='foobar1'
             ),
             ContactGroup(
-                name='Contact Group 2A',
-                slug='contact-group-2a',
-                parent=parent_contact_groups[1],
-                description='foobar2'
+                name='Contact Group 2A', slug='contact-group-2a', parent=parent_contact_groups[1], description='foobar2'
             ),
             ContactGroup(
                 name='Contact Group 3A',
@@ -182,7 +169,9 @@ class ContactGroupTestCase(TestCase, ChangeLoggedFilterSetTests):
 
         child_contact_groups = (
             ContactGroup(
-                name='Contact Group 1A1', slug='contact-group-1a1', parent=contact_groups[0],
+                name='Contact Group 1A1',
+                slug='contact-group-1a1',
+                parent=contact_groups[0],
                 comments='Contact Group 1A1 comment',
             ),
             ContactGroup(name='Contact Group 2A1', slug='contact-group-2a1', parent=contact_groups[1]),
@@ -235,7 +224,6 @@ class ContactRoleTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
-
         contact_roles = (
             ContactRole(name='Contact Role 1', slug='contact-role-1', description='foobar1'),
             ContactRole(name='Contact Role 2', slug='contact-role-2', description='foobar2'),
@@ -267,7 +255,6 @@ class ContactTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
-
         contact_groups = (
             ContactGroup(name='Contact Group 1', slug='contact-group-1'),
             ContactGroup(name='Contact Group 2', slug='contact-group-2'),
@@ -312,7 +299,6 @@ class ContactAssignmentTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
-
         manufacturer = Manufacturer.objects.create(name='Manufacturer 1', slug='manufacturer-1')
         sites = (
             Site(name='Site 1', slug='site-1'),

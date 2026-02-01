@@ -3,7 +3,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('contenttypes', '0002_remove_content_type_name'),
         ('ipam', '0078_iprange_mark_utilized'),
@@ -23,7 +22,7 @@ class Migration(migrations.Migration):
                 null=True,
                 on_delete=django.db.models.deletion.PROTECT,
                 related_name='+',
-                to='contenttypes.contenttype'
+                to='contenttypes.contenttype',
             ),
         ),
     ]

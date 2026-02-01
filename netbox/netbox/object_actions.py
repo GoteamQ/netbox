@@ -34,6 +34,7 @@ class ObjectAction:
         permissions_required: The set of permissions a user must have to perform the action
         url_kwargs: The set of URL keyword arguments to pass when resolving the view's URL
     """
+
     name = ''
     label = None
     template_name = None
@@ -43,9 +44,7 @@ class ObjectAction:
 
     @classmethod
     def get_url(cls, obj):
-        kwargs = {
-            kwarg: getattr(obj, kwarg) for kwarg in cls.url_kwargs
-        }
+        kwargs = {kwarg: getattr(obj, kwarg) for kwarg in cls.url_kwargs}
         try:
             return get_action_url(obj, action=cls.name, kwargs=kwargs)
         except NoReverseMatch:
@@ -84,6 +83,7 @@ class AddObject(ObjectAction):
     """
     Create a new object.
     """
+
     name = 'add'
     label = _('Add')
     permissions_required = {'add'}
@@ -94,6 +94,7 @@ class CloneObject(ObjectAction):
     """
     Populate the new object form with select details from an existing object.
     """
+
     name = 'add'
     label = _('Clone')
     permissions_required = {'add'}
@@ -110,6 +111,7 @@ class EditObject(ObjectAction):
     """
     Edit a single object.
     """
+
     name = 'edit'
     label = _('Edit')
     permissions_required = {'change'}
@@ -121,6 +123,7 @@ class DeleteObject(ObjectAction):
     """
     Delete a single object.
     """
+
     name = 'delete'
     label = _('Delete')
     permissions_required = {'delete'}
@@ -132,6 +135,7 @@ class BulkImport(ObjectAction):
     """
     Import multiple objects at once.
     """
+
     name = 'bulk_import'
     label = _('Import')
     permissions_required = {'add'}
@@ -142,6 +146,7 @@ class BulkExport(ObjectAction):
     """
     Export multiple objects at once.
     """
+
     name = 'export'
     label = _('Export')
     permissions_required = {'view'}
@@ -170,6 +175,7 @@ class BulkEdit(ObjectAction):
     """
     Change the value of one or more fields on a set of objects.
     """
+
     name = 'bulk_edit'
     label = _('Edit Selected')
     multi = True
@@ -196,6 +202,7 @@ class BulkRename(ObjectAction):
     """
     Rename multiple objects at once.
     """
+
     name = 'bulk_rename'
     label = _('Rename Selected')
     multi = True
@@ -207,6 +214,7 @@ class BulkDelete(ObjectAction):
     """
     Delete each of a set of objects.
     """
+
     name = 'bulk_delete'
     label = _('Delete Selected')
     multi = True

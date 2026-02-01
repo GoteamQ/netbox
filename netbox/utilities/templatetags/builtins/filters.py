@@ -43,6 +43,7 @@ register = template.Library()
 # General
 #
 
+
 @register.filter()
 def linkify(instance, attr=None):
     """
@@ -145,6 +146,7 @@ def tzoffset(value):
 # Content types
 #
 
+
 @register.filter()
 def content_type(model):
     """
@@ -168,6 +170,7 @@ def content_type_id(model):
 # Rendering
 #
 
+
 @register.filter('markdown', is_safe=True)
 def render_markdown(value):
     """
@@ -179,12 +182,15 @@ def render_markdown(value):
         return ''
 
     # Render Markdown
-    html = markdown(value, extensions=[
-        'def_list',
-        'fenced_code',
-        StrikethroughExtension(),
-        TableExtension(use_align_attribute=True),
-    ])
+    html = markdown(
+        value,
+        extensions=[
+            'def_list',
+            'fenced_code',
+            StrikethroughExtension(),
+            TableExtension(use_align_attribute=True),
+        ],
+    )
 
     # If the string is not empty wrap it in rendered-markdown to style tables
     if html:
@@ -221,6 +227,7 @@ def render_yaml(value):
 #
 # Time & date
 #
+
 
 @register.filter()
 def isodate(value):
@@ -262,6 +269,6 @@ def truncate_middle(value, length):
     # Calculate split points for the two parts
     half_len = (length - 1) // 2  # 1 for the ellipsis
     first_part = value[:half_len]
-    second_part = value[len(value) - (length - 1 - half_len):]
+    second_part = value[len(value) - (length - 1 - half_len) :]
 
-    return mark_safe(f"{first_part}&hellip;{second_part}")
+    return mark_safe(f'{first_part}&hellip;{second_part}')

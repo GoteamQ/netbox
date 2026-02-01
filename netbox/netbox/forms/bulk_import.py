@@ -14,7 +14,7 @@ __all__ = (
     'NetBoxModelImportForm',
     'OrganizationalModelImportForm',
     'OwnerCSVMixin',
-    'PrimaryModelImportForm'
+    'PrimaryModelImportForm',
 )
 
 
@@ -22,19 +22,17 @@ class NetBoxModelImportForm(CSVModelForm, NetBoxModelForm):
     """
     Base form for creating NetBox objects from CSV data. Used for bulk importing.
     """
+
     tags = CSVModelMultipleChoiceField(
         label=_('Tags'),
         queryset=Tag.objects.all(),
         required=False,
         to_field_name='slug',
-        help_text=_('Tag slugs separated by commas, encased with double quotes (e.g. "tag1,tag2,tag3")')
+        help_text=_('Tag slugs separated by commas, encased with double quotes (e.g. "tag1,tag2,tag3")'),
     )
 
     def _get_custom_fields(self, content_type):
-        return CustomField.objects.filter(
-            object_types=content_type,
-            ui_editable=CustomFieldUIEditableChoices.YES
-        )
+        return CustomField.objects.filter(object_types=content_type, ui_editable=CustomFieldUIEditableChoices.YES)
 
     def _get_form_field(self, customfield):
         return customfield.to_form_field(for_csv_import=True)
@@ -48,7 +46,7 @@ class NetBoxModelImportForm(CSVModelForm, NetBoxModelForm):
         super().clean()
         cleaned = self.cleaned_data
 
-        model = getattr(self._meta, "model", None)
+        model = getattr(self._meta, 'model', None)
         if not model:
             return cleaned
 
@@ -57,13 +55,13 @@ class NetBoxModelImportForm(CSVModelForm, NetBoxModelForm):
             if not isinstance(f, models.Field) or not f.concrete or f.many_to_many:
                 continue
 
-            if getattr(f, "null", False):
+            if getattr(f, 'null', False):
                 name = f.name
                 if name not in cleaned:
                     continue
                 val = cleaned[name]
                 # Only coerce empty strings; leave other types alone
-                if isinstance(val, str) and val.strip() == "":
+                if isinstance(val, str) and val.strip() == '':
                     cleaned[name] = None
 
         return cleaned
@@ -71,10 +69,7 @@ class NetBoxModelImportForm(CSVModelForm, NetBoxModelForm):
 
 class OwnerCSVMixin(forms.Form):
     owner = CSVModelChoiceField(
-        queryset=Owner.objects.all(),
-        required=False,
-        to_field_name='name',
-        help_text=_("Name of the object's owner")
+        queryset=Owner.objects.all(), required=False, to_field_name='name', help_text=_("Name of the object's owner")
     )
 
 
@@ -82,6 +77,7 @@ class PrimaryModelImportForm(OwnerCSVMixin, NetBoxModelImportForm):
     """
     Bulk import form for models which inherit from PrimaryModel.
     """
+
     pass
 
 
@@ -89,6 +85,7 @@ class OrganizationalModelImportForm(OwnerCSVMixin, NetBoxModelImportForm):
     """
     Bulk import form for models which inherit from OrganizationalModel.
     """
+
     slug = SlugField()
 
 
@@ -96,4 +93,5 @@ class NestedGroupModelImportForm(OwnerCSVMixin, NetBoxModelImportForm):
     """
     Bulk import form for models which inherit from NestedGroupModel.
     """
+
     slug = SlugField()

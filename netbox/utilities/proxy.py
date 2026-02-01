@@ -12,6 +12,7 @@ class DefaultProxyRouter:
     """
     Base class for a proxy router.
     """
+
     @staticmethod
     def _get_protocol_from_url(url):
         """
@@ -32,9 +33,7 @@ class DefaultProxyRouter:
         if url and protocol is None:
             protocol = self._get_protocol_from_url(url)
         if protocol and protocol in settings.HTTP_PROXIES:
-            return {
-                protocol: settings.HTTP_PROXIES[protocol]
-            }
+            return {protocol: settings.HTTP_PROXIES[protocol]}
         return settings.HTTP_PROXIES
 
 

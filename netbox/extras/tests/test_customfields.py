@@ -20,15 +20,15 @@ from virtualization.models import VirtualMachine
 
 
 class CustomFieldTest(TestCase):
-
     @classmethod
     def setUpTestData(cls):
-
-        Site.objects.bulk_create([
-            Site(name='Site A', slug='site-a'),
-            Site(name='Site B', slug='site-b'),
-            Site(name='Site C', slug='site-c'),
-        ])
+        Site.objects.bulk_create(
+            [
+                Site(name='Site A', slug='site-a'),
+                Site(name='Site B', slug='site-b'),
+                Site(name='Site C', slug='site-c'),
+            ]
+        )
 
         cls.object_type = ObjectType.objects.get_for_model(Site)
 
@@ -47,11 +47,7 @@ class CustomFieldTest(TestCase):
         value = 'Foobar!'
 
         # Create a custom field & check that initial value is null
-        cf = CustomField.objects.create(
-            name='text_field',
-            type=CustomFieldTypeChoices.TYPE_TEXT,
-            required=False
-        )
+        cf = CustomField.objects.create(name='text_field', type=CustomFieldTypeChoices.TYPE_TEXT, required=False)
         cf.object_types.set([self.object_type])
         instance = Site.objects.first()
         self.assertIsNone(instance.custom_field_data[cf.name])
@@ -73,9 +69,7 @@ class CustomFieldTest(TestCase):
 
         # Create a custom field & check that initial value is null
         cf = CustomField.objects.create(
-            name='longtext_field',
-            type=CustomFieldTypeChoices.TYPE_LONGTEXT,
-            required=False
+            name='longtext_field', type=CustomFieldTypeChoices.TYPE_LONGTEXT, required=False
         )
         cf.object_types.set([self.object_type])
         instance = Site.objects.first()
@@ -94,19 +88,13 @@ class CustomFieldTest(TestCase):
         self.assertIsNone(instance.custom_field_data.get(cf.name))
 
     def test_integer_field(self):
-
         # Create a custom field & check that initial value is null
-        cf = CustomField.objects.create(
-            name='integer_field',
-            type=CustomFieldTypeChoices.TYPE_INTEGER,
-            required=False
-        )
+        cf = CustomField.objects.create(name='integer_field', type=CustomFieldTypeChoices.TYPE_INTEGER, required=False)
         cf.object_types.set([self.object_type])
         instance = Site.objects.first()
         self.assertIsNone(instance.custom_field_data[cf.name])
 
         for value in (123456, 0, -123456):
-
             # Assign a value and check that it is saved
             instance.custom_field_data[cf.name] = value
             instance.save()
@@ -120,19 +108,13 @@ class CustomFieldTest(TestCase):
             self.assertIsNone(instance.custom_field_data.get(cf.name))
 
     def test_decimal_field(self):
-
         # Create a custom field & check that initial value is null
-        cf = CustomField.objects.create(
-            name='decimal_field',
-            type=CustomFieldTypeChoices.TYPE_DECIMAL,
-            required=False
-        )
+        cf = CustomField.objects.create(name='decimal_field', type=CustomFieldTypeChoices.TYPE_DECIMAL, required=False)
         cf.object_types.set([self.object_type])
         instance = Site.objects.first()
         self.assertIsNone(instance.custom_field_data[cf.name])
 
         for value in (123456.54, 0, -123456.78):
-
             # Assign a value and check that it is saved
             instance.custom_field_data[cf.name] = value
             instance.save()
@@ -146,19 +128,13 @@ class CustomFieldTest(TestCase):
             self.assertIsNone(instance.custom_field_data.get(cf.name))
 
     def test_boolean_field(self):
-
         # Create a custom field & check that initial value is null
-        cf = CustomField.objects.create(
-            name='boolean_field',
-            type=CustomFieldTypeChoices.TYPE_INTEGER,
-            required=False
-        )
+        cf = CustomField.objects.create(name='boolean_field', type=CustomFieldTypeChoices.TYPE_INTEGER, required=False)
         cf.object_types.set([self.object_type])
         instance = Site.objects.first()
         self.assertIsNone(instance.custom_field_data[cf.name])
 
         for value in (True, False):
-
             # Assign a value and check that it is saved
             instance.custom_field_data[cf.name] = value
             instance.save()
@@ -175,11 +151,7 @@ class CustomFieldTest(TestCase):
         value = datetime.date(2016, 6, 23)
 
         # Create a custom field & check that initial value is null
-        cf = CustomField.objects.create(
-            name='date_field',
-            type=CustomFieldTypeChoices.TYPE_DATE,
-            required=False
-        )
+        cf = CustomField.objects.create(name='date_field', type=CustomFieldTypeChoices.TYPE_DATE, required=False)
         cf.object_types.set([self.object_type])
         instance = Site.objects.first()
         self.assertIsNone(instance.custom_field_data[cf.name])
@@ -200,11 +172,7 @@ class CustomFieldTest(TestCase):
         value = datetime.datetime(2016, 6, 23, 9, 45, 0)
 
         # Create a custom field & check that initial value is null
-        cf = CustomField.objects.create(
-            name='date_field',
-            type=CustomFieldTypeChoices.TYPE_DATETIME,
-            required=False
-        )
+        cf = CustomField.objects.create(name='date_field', type=CustomFieldTypeChoices.TYPE_DATETIME, required=False)
         cf.object_types.set([self.object_type])
         instance = Site.objects.first()
         self.assertIsNone(instance.custom_field_data[cf.name])
@@ -225,11 +193,7 @@ class CustomFieldTest(TestCase):
         value = 'http://example.com/'
 
         # Create a custom field & check that initial value is null
-        cf = CustomField.objects.create(
-            name='url_field',
-            type=CustomFieldTypeChoices.TYPE_URL,
-            required=False
-        )
+        cf = CustomField.objects.create(name='url_field', type=CustomFieldTypeChoices.TYPE_URL, required=False)
         cf.object_types.set([self.object_type])
         instance = Site.objects.first()
         self.assertIsNone(instance.custom_field_data[cf.name])
@@ -250,11 +214,7 @@ class CustomFieldTest(TestCase):
         value = '{"foo": 1, "bar": 2}'
 
         # Create a custom field & check that initial value is null
-        cf = CustomField.objects.create(
-            name='json_field',
-            type=CustomFieldTypeChoices.TYPE_JSON,
-            required=False
-        )
+        cf = CustomField.objects.create(name='json_field', type=CustomFieldTypeChoices.TYPE_JSON, required=False)
         cf.object_types.set([self.object_type])
         instance = Site.objects.first()
         self.assertIsNone(instance.custom_field_data[cf.name])
@@ -279,16 +239,13 @@ class CustomFieldTest(TestCase):
             ([], 'empty_array'),
             (0, 'zero'),
             (False, 'false_bool'),
-            ("", 'empty_string'),
+            ('', 'empty_string'),
         ]
 
         for default, suffix in falsy_test_cases:
             with self.subTest(default=default, suffix=suffix):
                 cf = CustomField.objects.create(
-                    name=f'json_falsy_{suffix}',
-                    type=CustomFieldTypeChoices.TYPE_JSON,
-                    default=default,
-                    required=False
+                    name=f'json_falsy_{suffix}', type=CustomFieldTypeChoices.TYPE_JSON, default=default, required=False
                 )
                 cf.object_types.set([self.object_type])
 
@@ -309,16 +266,13 @@ class CustomFieldTest(TestCase):
             ([], json.dumps([]), 'empty_array'),
             (0, json.dumps(0), 'zero'),
             (False, json.dumps(False), 'false_bool'),
-            ("", '""', 'empty_string'),
+            ('', '""', 'empty_string'),
         )
 
         for default, expected, suffix in falsy_test_cases:
             with self.subTest(default=default, expected=expected, suffix=suffix):
                 cf = CustomField.objects.create(
-                    name=f'json_falsy_{suffix}',
-                    type=CustomFieldTypeChoices.TYPE_JSON,
-                    default=default,
-                    required=False
+                    name=f'json_falsy_{suffix}', type=CustomFieldTypeChoices.TYPE_JSON, default=default, required=False
                 )
                 cf.object_types.set([self.object_type])
 
@@ -334,17 +288,11 @@ class CustomFieldTest(TestCase):
         value = 'a'
 
         # Create a set of custom field choices
-        choice_set = CustomFieldChoiceSet.objects.create(
-            name='Custom Field Choice Set 1',
-            extra_choices=CHOICES
-        )
+        choice_set = CustomFieldChoiceSet.objects.create(name='Custom Field Choice Set 1', extra_choices=CHOICES)
 
         # Create a custom field & check that initial value is null
         cf = CustomField.objects.create(
-            name='select_field',
-            type=CustomFieldTypeChoices.TYPE_SELECT,
-            required=False,
-            choice_set=choice_set
+            name='select_field', type=CustomFieldTypeChoices.TYPE_SELECT, required=False, choice_set=choice_set
         )
         cf.object_types.set([self.object_type])
         instance = Site.objects.first()
@@ -371,17 +319,14 @@ class CustomFieldTest(TestCase):
         value = ['a', 'b']
 
         # Create a set of custom field choices
-        choice_set = CustomFieldChoiceSet.objects.create(
-            name='Custom Field Choice Set 1',
-            extra_choices=CHOICES
-        )
+        choice_set = CustomFieldChoiceSet.objects.create(name='Custom Field Choice Set 1', extra_choices=CHOICES)
 
         # Create a custom field & check that initial value is null
         cf = CustomField.objects.create(
             name='multiselect_field',
             type=CustomFieldTypeChoices.TYPE_MULTISELECT,
             required=False,
-            choice_set=choice_set
+            choice_set=choice_set,
         )
         cf.object_types.set([self.object_type])
         instance = Site.objects.first()
@@ -412,17 +357,11 @@ class CustomFieldTest(TestCase):
         )
 
         # Create a set of custom field choices
-        choice_set = CustomFieldChoiceSet.objects.create(
-            name='Custom Field Choice Set 1',
-            extra_choices=CHOICES
-        )
+        choice_set = CustomFieldChoiceSet.objects.create(name='Custom Field Choice Set 1', extra_choices=CHOICES)
 
         # Create a select custom field
         cf = CustomField.objects.create(
-            name='select_field',
-            type=CustomFieldTypeChoices.TYPE_SELECT,
-            required=False,
-            choice_set=choice_set
+            name='select_field', type=CustomFieldTypeChoices.TYPE_SELECT, required=False, choice_set=choice_set
         )
         cf.object_types.set([self.object_type])
 
@@ -431,7 +370,7 @@ class CustomFieldTest(TestCase):
             name='multiselect_field',
             type=CustomFieldTypeChoices.TYPE_MULTISELECT,
             required=False,
-            choice_set=choice_set
+            choice_set=choice_set,
         )
         cf_multiselect.object_types.set([self.object_type])
 
@@ -475,7 +414,7 @@ class CustomFieldTest(TestCase):
             name='object_field',
             type=CustomFieldTypeChoices.TYPE_OBJECT,
             related_object_type=ObjectType.objects.get_for_model(VLAN),
-            required=False
+            required=False,
         )
         cf.object_types.set([self.object_type])
         instance = Site.objects.first()
@@ -507,7 +446,7 @@ class CustomFieldTest(TestCase):
             name='object_field',
             type=CustomFieldTypeChoices.TYPE_MULTIOBJECT,
             related_object_type=ObjectType.objects.get_for_model(VLAN),
-            required=False
+            required=False,
         )
         cf.object_types.set([self.object_type])
         instance = Site.objects.first()
@@ -535,11 +474,7 @@ class CustomFieldTest(TestCase):
         cf.object_types.set([obj_type])
 
         # Assign custom field data to an object
-        site = Site.objects.create(
-            name='Site 1',
-            slug='site-1',
-            custom_field_data={'field1': FIELD_DATA}
-        )
+        site = Site.objects.create(name='Site 1', slug='site-1', custom_field_data={'field1': FIELD_DATA})
         site.refresh_from_db()
         self.assertEqual(site.custom_field_data['field1'], FIELD_DATA)
 
@@ -554,17 +489,17 @@ class CustomFieldTest(TestCase):
 
     def test_default_value_validation(self):
         choiceset = CustomFieldChoiceSet.objects.create(
-            name="Test Choice Set",
+            name='Test Choice Set',
             extra_choices=(
                 ('choice1', 'Choice 1'),
                 ('choice2', 'Choice 2'),
-            )
+            ),
         )
         site = Site.objects.create(name='Site 1', slug='site-1')
         object_type = ObjectType.objects.get_for_model(Site)
 
         # Text
-        CustomField(name='test', type='text', required=True, default="Default text").full_clean()
+        CustomField(name='test', type='text', required=True, default='Default text').full_clean()
 
         # Integer
         CustomField(name='test', type='integer', required=True, default=1).full_clean()
@@ -577,17 +512,17 @@ class CustomFieldTest(TestCase):
             CustomField(name='test', type='boolean', required=True, default='xxx').full_clean()
 
         # Date
-        CustomField(name='test', type='date', required=True, default="2023-02-25").full_clean()
+        CustomField(name='test', type='date', required=True, default='2023-02-25').full_clean()
         with self.assertRaises(ValidationError):
             CustomField(name='test', type='date', required=True, default='xxx').full_clean()
 
         # Datetime
-        CustomField(name='test', type='datetime', required=True, default="2023-02-25 02:02:02").full_clean()
+        CustomField(name='test', type='datetime', required=True, default='2023-02-25 02:02:02').full_clean()
         with self.assertRaises(ValidationError):
             CustomField(name='test', type='datetime', required=True, default='xxx').full_clean()
 
         # URL
-        CustomField(name='test', type='url', required=True, default="https://www.netbox.dev").full_clean()
+        CustomField(name='test', type='url', required=True, default='https://www.netbox.dev').full_clean()
 
         # JSON
         CustomField(name='test', type='json', required=True, default='{"test": "object"}').full_clean()
@@ -603,61 +538,40 @@ class CustomFieldTest(TestCase):
             type='multiselect',
             required=True,
             choice_set=choiceset,
-            default=['choice1']  # Single default choice
+            default=['choice1'],  # Single default choice
         ).full_clean()
         CustomField(
             name='test',
             type='multiselect',
             required=True,
             choice_set=choiceset,
-            default=['choice1', 'choice2']  # Multiple default choices
+            default=['choice1', 'choice2'],  # Multiple default choices
         ).full_clean()
         with self.assertRaises(ValidationError):
             CustomField(
-                name='test',
-                type='multiselect',
-                required=True,
-                choice_set=choiceset,
-                default=['xxx']
+                name='test', type='multiselect', required=True, choice_set=choiceset, default=['xxx']
             ).full_clean()
 
         # Object
         CustomField(
-            name='test',
-            type='object',
-            required=True,
-            related_object_type=object_type,
-            default=site.pk
+            name='test', type='object', required=True, related_object_type=object_type, default=site.pk
         ).full_clean()
-        with (self.assertRaises(ValidationError)):
+        with self.assertRaises(ValidationError):
             CustomField(
-                name='test',
-                type='object',
-                required=True,
-                related_object_type=object_type,
-                default="xxx"
+                name='test', type='object', required=True, related_object_type=object_type, default='xxx'
             ).full_clean()
 
         # Multi-object
         CustomField(
-            name='test',
-            type='multiobject',
-            required=True,
-            related_object_type=object_type,
-            default=[site.pk]
+            name='test', type='multiobject', required=True, related_object_type=object_type, default=[site.pk]
         ).full_clean()
         with self.assertRaises(ValidationError):
             CustomField(
-                name='test',
-                type='multiobject',
-                required=True,
-                related_object_type=object_type,
-                default=["xxx"]
+                name='test', type='multiobject', required=True, related_object_type=object_type, default=['xxx']
             ).full_clean()
 
 
 class CustomFieldManagerTest(TestCase):
-
     @classmethod
     def setUpTestData(cls):
         object_type = ObjectType.objects.get_for_model(Site)
@@ -671,7 +585,6 @@ class CustomFieldManagerTest(TestCase):
 
 
 class CustomFieldAPITest(APITestCase):
-
     @classmethod
     def setUpTestData(cls):
         object_type = ObjectType.objects.get_for_model(Site)
@@ -688,61 +601,23 @@ class CustomFieldAPITest(APITestCase):
 
         # Create a set of custom field choices
         choice_set = CustomFieldChoiceSet.objects.create(
-            name='Custom Field Choice Set 1',
-            extra_choices=(('foo', 'Foo'), ('bar', 'Bar'), ('baz', 'Baz'))
+            name='Custom Field Choice Set 1', extra_choices=(('foo', 'Foo'), ('bar', 'Bar'), ('baz', 'Baz'))
         )
 
         custom_fields = (
+            CustomField(type=CustomFieldTypeChoices.TYPE_TEXT, name='text_field', default='foo'),
+            CustomField(type=CustomFieldTypeChoices.TYPE_LONGTEXT, name='longtext_field', default='ABC'),
+            CustomField(type=CustomFieldTypeChoices.TYPE_INTEGER, name='integer_field', default=123),
+            CustomField(type=CustomFieldTypeChoices.TYPE_DECIMAL, name='decimal_field', default=123.45),
+            CustomField(type=CustomFieldTypeChoices.TYPE_BOOLEAN, name='boolean_field', default=False),
+            CustomField(type=CustomFieldTypeChoices.TYPE_DATE, name='date_field', default='2020-01-01'),
             CustomField(
-                type=CustomFieldTypeChoices.TYPE_TEXT,
-                name='text_field',
-                default='foo'
+                type=CustomFieldTypeChoices.TYPE_DATETIME, name='datetime_field', default='2020-01-01T01:23:45'
             ),
+            CustomField(type=CustomFieldTypeChoices.TYPE_URL, name='url_field', default='http://example.com/1'),
+            CustomField(type=CustomFieldTypeChoices.TYPE_JSON, name='json_field', default='{"x": "y"}'),
             CustomField(
-                type=CustomFieldTypeChoices.TYPE_LONGTEXT,
-                name='longtext_field',
-                default='ABC'
-            ),
-            CustomField(
-                type=CustomFieldTypeChoices.TYPE_INTEGER,
-                name='integer_field',
-                default=123
-            ),
-            CustomField(
-                type=CustomFieldTypeChoices.TYPE_DECIMAL,
-                name='decimal_field',
-                default=123.45
-            ),
-            CustomField(
-                type=CustomFieldTypeChoices.TYPE_BOOLEAN,
-                name='boolean_field',
-                default=False
-            ),
-            CustomField(
-                type=CustomFieldTypeChoices.TYPE_DATE,
-                name='date_field',
-                default='2020-01-01'
-            ),
-            CustomField(
-                type=CustomFieldTypeChoices.TYPE_DATETIME,
-                name='datetime_field',
-                default='2020-01-01T01:23:45'
-            ),
-            CustomField(
-                type=CustomFieldTypeChoices.TYPE_URL,
-                name='url_field',
-                default='http://example.com/1'
-            ),
-            CustomField(
-                type=CustomFieldTypeChoices.TYPE_JSON,
-                name='json_field',
-                default='{"x": "y"}'
-            ),
-            CustomField(
-                type=CustomFieldTypeChoices.TYPE_SELECT,
-                name='select_field',
-                default='foo',
-                choice_set=choice_set
+                type=CustomFieldTypeChoices.TYPE_SELECT, name='select_field', default='foo', choice_set=choice_set
             ),
             CustomField(
                 type=CustomFieldTypeChoices.TYPE_MULTISELECT,
@@ -830,21 +705,24 @@ class CustomFieldAPITest(APITestCase):
 
         response = self.client.get(url, **self.header)
         self.assertEqual(response.data['name'], site1.name)
-        self.assertEqual(response.data['custom_fields'], {
-            'text_field': None,
-            'longtext_field': None,
-            'integer_field': None,
-            'decimal_field': None,
-            'boolean_field': None,
-            'date_field': None,
-            'datetime_field': None,
-            'url_field': None,
-            'json_field': None,
-            'select_field': None,
-            'multiselect_field': None,
-            'object_field': None,
-            'multiobject_field': None,
-        })
+        self.assertEqual(
+            response.data['custom_fields'],
+            {
+                'text_field': None,
+                'longtext_field': None,
+                'integer_field': None,
+                'decimal_field': None,
+                'boolean_field': None,
+                'date_field': None,
+                'datetime_field': None,
+                'url_field': None,
+                'json_field': None,
+                'select_field': None,
+                'multiselect_field': None,
+                'object_field': None,
+                'multiobject_field': None,
+            },
+        )
 
     def test_get_single_object_with_custom_field_data(self):
         """
@@ -871,16 +749,14 @@ class CustomFieldAPITest(APITestCase):
         self.assertEqual(response.data['custom_fields']['object_field']['id'], site2_cfvs['object_field'].pk)
         self.assertEqual(
             [obj['id'] for obj in response.data['custom_fields']['multiobject_field']],
-            [obj.pk for obj in site2_cfvs['multiobject_field']]
+            [obj.pk for obj in site2_cfvs['multiobject_field']],
         )
 
     def test_create_single_object_with_defaults(self):
         """
         Create a new site with no specified custom field values and check that it received the default values.
         """
-        cf_defaults = {
-            cf.name: cf.default for cf in CustomField.objects.all()
-        }
+        cf_defaults = {cf.name: cf.default for cf in CustomField.objects.all()}
         data = {
             'name': 'Site 3',
             'slug': 'site-3',
@@ -906,8 +782,7 @@ class CustomFieldAPITest(APITestCase):
         self.assertEqual(response_cf['multiselect_field'], cf_defaults['multiselect_field'])
         self.assertEqual(response_cf['object_field']['id'], cf_defaults['object_field'])
         self.assertEqual(
-            [obj['id'] for obj in response.data['custom_fields']['multiobject_field']],
-            cf_defaults['multiobject_field']
+            [obj['id'] for obj in response.data['custom_fields']['multiobject_field']], cf_defaults['multiobject_field']
         )
 
         # Validate database data
@@ -970,10 +845,7 @@ class CustomFieldAPITest(APITestCase):
         self.assertEqual(response_cf['select_field'], data_cf['select_field'])
         self.assertEqual(response_cf['multiselect_field'], data_cf['multiselect_field'])
         self.assertEqual(response_cf['object_field']['id'], data_cf['object_field'])
-        self.assertEqual(
-            [obj['id'] for obj in response_cf['multiobject_field']],
-            data_cf['multiobject_field']
-        )
+        self.assertEqual([obj['id'] for obj in response_cf['multiobject_field']], data_cf['multiobject_field'])
 
         # Validate database data
         site = Site.objects.get(pk=response.data['id'])
@@ -996,9 +868,7 @@ class CustomFieldAPITest(APITestCase):
         Create three new sites with no specified custom field values and check that each received
         the default custom field values.
         """
-        cf_defaults = {
-            cf.name: cf.default for cf in CustomField.objects.all()
-        }
+        cf_defaults = {cf.name: cf.default for cf in CustomField.objects.all()}
         data = (
             {
                 'name': 'Site 3',
@@ -1021,7 +891,6 @@ class CustomFieldAPITest(APITestCase):
         self.assertEqual(len(response.data), len(data))
 
         for i, obj in enumerate(data):
-
             # Validate response data
             response_cf = response.data[i]['custom_fields']
             self.assertEqual(response_cf['text_field'], cf_defaults['text_field'])
@@ -1036,10 +905,7 @@ class CustomFieldAPITest(APITestCase):
             self.assertEqual(response_cf['select_field'], cf_defaults['select_field'])
             self.assertEqual(response_cf['multiselect_field'], cf_defaults['multiselect_field'])
             self.assertEqual(response_cf['object_field']['id'], cf_defaults['object_field'])
-            self.assertEqual(
-                [obj['id'] for obj in response_cf['multiobject_field']],
-                cf_defaults['multiobject_field']
-            )
+            self.assertEqual([obj['id'] for obj in response_cf['multiobject_field']], cf_defaults['multiobject_field'])
 
             # Validate database data
             site = Site.objects.get(pk=response.data[i]['id'])
@@ -1101,7 +967,6 @@ class CustomFieldAPITest(APITestCase):
         self.assertEqual(len(response.data), len(data))
 
         for i, obj in enumerate(data):
-
             # Validate response data
             response_cf = response.data[i]['custom_fields']
             self.assertEqual(response_cf['text_field'], custom_field_data['text_field'])
@@ -1117,8 +982,7 @@ class CustomFieldAPITest(APITestCase):
             self.assertEqual(response_cf['multiselect_field'], custom_field_data['multiselect_field'])
             self.assertEqual(response_cf['object_field']['id'], custom_field_data['object_field'])
             self.assertEqual(
-                [obj['id'] for obj in response_cf['multiobject_field']],
-                custom_field_data['multiobject_field']
+                [obj['id'] for obj in response_cf['multiobject_field']], custom_field_data['multiobject_field']
             )
 
             # Validate database data
@@ -1172,7 +1036,7 @@ class CustomFieldAPITest(APITestCase):
         self.assertEqual(response_cf['object_field']['id'], original_cfvs['object_field'].pk)
         self.assertListEqual(
             [obj['id'] for obj in response_cf['multiobject_field']],
-            [obj.pk for obj in original_cfvs['multiobject_field']]
+            [obj.pk for obj in original_cfvs['multiobject_field']],
         )
 
         # Validate database data
@@ -1189,10 +1053,7 @@ class CustomFieldAPITest(APITestCase):
         self.assertEqual(site2.cf['select_field'], original_cfvs['select_field'])
         self.assertEqual(site2.cf['multiselect_field'], original_cfvs['multiselect_field'])
         self.assertEqual(site2.cf['object_field'], original_cfvs['object_field'])
-        self.assertListEqual(
-            list(site2.cf['multiobject_field']),
-            list(original_cfvs['multiobject_field'])
-        )
+        self.assertListEqual(list(site2.cf['multiobject_field']), list(original_cfvs['multiobject_field']))
 
     def test_specify_related_object_by_attr(self):
         site1 = Site.objects.get(name='Site 1')
@@ -1209,13 +1070,9 @@ class CustomFieldAPITest(APITestCase):
         }
         response = self.client.patch(url, data, format='json', **self.header)
         self.assertHttpStatus(response, status.HTTP_200_OK)
-        self.assertEqual(
-            response.data['custom_fields']['object_field']['id'],
-            vlans[0].pk
-        )
+        self.assertEqual(response.data['custom_fields']['object_field']['id'], vlans[0].pk)
         self.assertListEqual(
-            [obj['id'] for obj in response.data['custom_fields']['multiobject_field']],
-            [vlans[1].pk, vlans[2].pk]
+            [obj['id'] for obj in response.data['custom_fields']['multiobject_field']], [vlans[1].pk, vlans[2].pk]
         )
 
         # Set related objects by name
@@ -1225,24 +1082,16 @@ class CustomFieldAPITest(APITestCase):
                     'name': vlans[0].name,
                 },
                 'multiobject_field': [
-                    {
-                        'name': vlans[1].name
-                    },
-                    {
-                        'name': vlans[2].name
-                    },
+                    {'name': vlans[1].name},
+                    {'name': vlans[2].name},
                 ],
             },
         }
         response = self.client.patch(url, data, format='json', **self.header)
         self.assertHttpStatus(response, status.HTTP_200_OK)
-        self.assertEqual(
-            response.data['custom_fields']['object_field']['id'],
-            vlans[0].pk
-        )
+        self.assertEqual(response.data['custom_fields']['object_field']['id'], vlans[0].pk)
         self.assertListEqual(
-            [obj['id'] for obj in response.data['custom_fields']['multiobject_field']],
-            [vlans[1].pk, vlans[2].pk]
+            [obj['id'] for obj in response.data['custom_fields']['multiobject_field']], [vlans[1].pk, vlans[2].pk]
         )
 
         # Clear related objects
@@ -1354,7 +1203,6 @@ class CustomFieldImportTest(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-
         # Create a set of custom field choices
         choice_set = CustomFieldChoiceSet.objects.create(
             name='Custom Field Choice Set 1',
@@ -1362,7 +1210,7 @@ class CustomFieldImportTest(TestCase):
                 ('a', 'Option A'),
                 ('b', 'Option B'),
                 ('c', 'Option C'),
-            )
+            ),
         )
 
         custom_fields = (
@@ -1388,26 +1236,65 @@ class CustomFieldImportTest(TestCase):
         """
         data = (
             (
-                'name', 'slug', 'status', 'cf_text', 'cf_longtext', 'cf_integer', 'cf_decimal', 'cf_boolean', 'cf_date',
-                'cf_datetime', 'cf_url', 'cf_json', 'cf_select', 'cf_multiselect',
+                'name',
+                'slug',
+                'status',
+                'cf_text',
+                'cf_longtext',
+                'cf_integer',
+                'cf_decimal',
+                'cf_boolean',
+                'cf_date',
+                'cf_datetime',
+                'cf_url',
+                'cf_json',
+                'cf_select',
+                'cf_multiselect',
             ),
             (
-                'Site 1', 'site-1', 'active', 'ABC', 'Foo', '123', '123.45', 'True', '2020-01-01',
-                '2020-01-01 12:00:00', 'http://example.com/1', '{"foo": 123}', 'a', '"a,b"',
+                'Site 1',
+                'site-1',
+                'active',
+                'ABC',
+                'Foo',
+                '123',
+                '123.45',
+                'True',
+                '2020-01-01',
+                '2020-01-01 12:00:00',
+                'http://example.com/1',
+                '{"foo": 123}',
+                'a',
+                '"a,b"',
             ),
             (
-                'Site 2', 'site-2', 'active', 'DEF', 'Bar', '456', '456.78', 'False', '2020-01-02',
-                '2020-01-02 12:00:00', 'http://example.com/2', '{"bar": 456}', 'b', '"b,c"',
+                'Site 2',
+                'site-2',
+                'active',
+                'DEF',
+                'Bar',
+                '456',
+                '456.78',
+                'False',
+                '2020-01-02',
+                '2020-01-02 12:00:00',
+                'http://example.com/2',
+                '{"bar": 456}',
+                'b',
+                '"b,c"',
             ),
             ('Site 3', 'site-3', 'active', '', '', '', '', '', '', '', '', '', '', ''),
         )
         csv_data = '\n'.join(','.join(row) for row in data)
 
-        response = self.client.post(reverse('dcim:site_bulk_import'), {
-            'data': csv_data,
-            'format': ImportFormatChoices.CSV,
-            'csv_delimiter': CSVDelimiterChoices.AUTO,
-        })
+        response = self.client.post(
+            reverse('dcim:site_bulk_import'),
+            {
+                'data': csv_data,
+                'format': ImportFormatChoices.CSV,
+                'csv_delimiter': CSVDelimiterChoices.AUTO,
+            },
+        )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(Site.objects.count(), 3)
 
@@ -1422,7 +1309,7 @@ class CustomFieldImportTest(TestCase):
         self.assertEqual(site1.cf['date'].isoformat(), '2020-01-01')
         self.assertEqual(site1.cf['datetime'].isoformat(), '2020-01-01T12:00:00+00:00')
         self.assertEqual(site1.custom_field_data['url'], 'http://example.com/1')
-        self.assertEqual(site1.custom_field_data['json'], {"foo": 123})
+        self.assertEqual(site1.custom_field_data['json'], {'foo': 123})
         self.assertEqual(site1.custom_field_data['select'], 'a')
         self.assertEqual(site1.custom_field_data['multiselect'], ['a', 'b'])
 
@@ -1437,7 +1324,7 @@ class CustomFieldImportTest(TestCase):
         self.assertEqual(site2.cf['date'].isoformat(), '2020-01-02')
         self.assertEqual(site2.cf['datetime'].isoformat(), '2020-01-02T12:00:00+00:00')
         self.assertEqual(site2.custom_field_data['url'], 'http://example.com/2')
-        self.assertEqual(site2.custom_field_data['json'], {"bar": 456})
+        self.assertEqual(site2.custom_field_data['json'], {'bar': 456})
         self.assertEqual(site2.custom_field_data['select'], 'b')
         self.assertEqual(site2.custom_field_data['multiselect'], ['b', 'c'])
 
@@ -1465,11 +1352,7 @@ class CustomFieldImportTest(TestCase):
         """
         Attempt to import an object with an invalid choice selection.
         """
-        form_data = {
-            'name': 'Site 1',
-            'slug': 'site-1',
-            'cf_select': 'Choice X'
-        }
+        form_data = {'name': 'Site 1', 'slug': 'site-1', 'cf_select': 'Choice X'}
 
         form = SiteImportForm(data=form_data)
         self.assertFalse(form.is_valid())
@@ -1477,7 +1360,6 @@ class CustomFieldImportTest(TestCase):
 
 
 class CustomFieldModelTest(TestCase):
-
     @classmethod
     def setUpTestData(cls):
         cf1 = CustomField(type=CustomFieldTypeChoices.TYPE_TEXT, name='foo')
@@ -1545,16 +1427,17 @@ class CustomFieldModelFilterTest(TestCase):
     def setUpTestData(cls):
         object_type = ObjectType.objects.get_for_model(Site)
 
-        manufacturers = Manufacturer.objects.bulk_create((
-            Manufacturer(name='Manufacturer 1', slug='manufacturer-1'),
-            Manufacturer(name='Manufacturer 2', slug='manufacturer-2'),
-            Manufacturer(name='Manufacturer 3', slug='manufacturer-3'),
-            Manufacturer(name='Manufacturer 4', slug='manufacturer-4'),
-        ))
+        manufacturers = Manufacturer.objects.bulk_create(
+            (
+                Manufacturer(name='Manufacturer 1', slug='manufacturer-1'),
+                Manufacturer(name='Manufacturer 2', slug='manufacturer-2'),
+                Manufacturer(name='Manufacturer 3', slug='manufacturer-3'),
+                Manufacturer(name='Manufacturer 4', slug='manufacturer-4'),
+            )
+        )
 
         choice_set = CustomFieldChoiceSet.objects.create(
-            name='Custom Field Choice Set 1',
-            extra_choices=(('a', 'A'), ('b', 'B'), ('c', 'C'))
+            name='Custom Field Choice Set 1', extra_choices=(('a', 'A'), ('b', 'B'), ('c', 'C'))
         )
 
         # Integer filtering
@@ -1574,18 +1457,14 @@ class CustomFieldModelFilterTest(TestCase):
 
         # Exact text filtering
         cf = CustomField(
-            name='cf4',
-            type=CustomFieldTypeChoices.TYPE_TEXT,
-            filter_logic=CustomFieldFilterLogicChoices.FILTER_EXACT
+            name='cf4', type=CustomFieldTypeChoices.TYPE_TEXT, filter_logic=CustomFieldFilterLogicChoices.FILTER_EXACT
         )
         cf.save()
         cf.object_types.set([object_type])
 
         # Loose text filtering
         cf = CustomField(
-            name='cf5',
-            type=CustomFieldTypeChoices.TYPE_TEXT,
-            filter_logic=CustomFieldFilterLogicChoices.FILTER_LOOSE
+            name='cf5', type=CustomFieldTypeChoices.TYPE_TEXT, filter_logic=CustomFieldFilterLogicChoices.FILTER_LOOSE
         )
         cf.save()
         cf.object_types.set([object_type])
@@ -1597,37 +1476,25 @@ class CustomFieldModelFilterTest(TestCase):
 
         # Exact URL filtering
         cf = CustomField(
-            name='cf7',
-            type=CustomFieldTypeChoices.TYPE_URL,
-            filter_logic=CustomFieldFilterLogicChoices.FILTER_EXACT
+            name='cf7', type=CustomFieldTypeChoices.TYPE_URL, filter_logic=CustomFieldFilterLogicChoices.FILTER_EXACT
         )
         cf.save()
         cf.object_types.set([object_type])
 
         # Loose URL filtering
         cf = CustomField(
-            name='cf8',
-            type=CustomFieldTypeChoices.TYPE_URL,
-            filter_logic=CustomFieldFilterLogicChoices.FILTER_LOOSE
+            name='cf8', type=CustomFieldTypeChoices.TYPE_URL, filter_logic=CustomFieldFilterLogicChoices.FILTER_LOOSE
         )
         cf.save()
         cf.object_types.set([object_type])
 
         # Selection filtering
-        cf = CustomField(
-            name='cf9',
-            type=CustomFieldTypeChoices.TYPE_SELECT,
-            choice_set=choice_set
-        )
+        cf = CustomField(name='cf9', type=CustomFieldTypeChoices.TYPE_SELECT, choice_set=choice_set)
         cf.save()
         cf.object_types.set([object_type])
 
         # Multiselect filtering
-        cf = CustomField(
-            name='cf10',
-            type=CustomFieldTypeChoices.TYPE_MULTISELECT,
-            choice_set=choice_set
-        )
+        cf = CustomField(name='cf10', type=CustomFieldTypeChoices.TYPE_MULTISELECT, choice_set=choice_set)
         cf.save()
         cf.object_types.set([object_type])
 
@@ -1635,7 +1502,7 @@ class CustomFieldModelFilterTest(TestCase):
         cf = CustomField(
             name='cf11',
             type=CustomFieldTypeChoices.TYPE_OBJECT,
-            related_object_type=ObjectType.objects.get_for_model(Manufacturer)
+            related_object_type=ObjectType.objects.get_for_model(Manufacturer),
         )
         cf.save()
         cf.object_types.set([object_type])
@@ -1644,56 +1511,70 @@ class CustomFieldModelFilterTest(TestCase):
         cf = CustomField(
             name='cf12',
             type=CustomFieldTypeChoices.TYPE_MULTIOBJECT,
-            related_object_type=ObjectType.objects.get_for_model(Manufacturer)
+            related_object_type=ObjectType.objects.get_for_model(Manufacturer),
         )
         cf.save()
         cf.object_types.set([object_type])
 
-        Site.objects.bulk_create([
-            Site(name='Site 1', slug='site-1', custom_field_data={
-                'cf1': 100,
-                'cf2': 100.1,
-                'cf3': True,
-                'cf4': 'foo',
-                'cf5': 'foo',
-                'cf6': '2016-06-26',
-                'cf7': 'http://a.example.com',
-                'cf8': 'http://a.example.com',
-                'cf9': 'A',
-                'cf10': ['A', 'B'],
-                'cf11': manufacturers[0].pk,
-                'cf12': [manufacturers[0].pk, manufacturers[3].pk],
-            }),
-            Site(name='Site 2', slug='site-2', custom_field_data={
-                'cf1': 200,
-                'cf2': 200.2,
-                'cf3': True,
-                'cf4': 'foobar',
-                'cf5': 'foobar',
-                'cf6': '2016-06-27',
-                'cf7': 'http://b.example.com',
-                'cf8': 'http://b.example.com',
-                'cf9': 'B',
-                'cf10': ['B', 'C'],
-                'cf11': manufacturers[1].pk,
-                'cf12': [manufacturers[1].pk, manufacturers[3].pk],
-            }),
-            Site(name='Site 3', slug='site-3', custom_field_data={
-                'cf1': 300,
-                'cf2': 300.3,
-                'cf3': False,
-                'cf4': 'bar',
-                'cf5': 'bar',
-                'cf6': '2016-06-28',
-                'cf7': 'http://c.example.com',
-                'cf8': 'http://c.example.com',
-                'cf9': 'C',
-                'cf10': None,
-                'cf11': manufacturers[2].pk,
-                'cf12': [manufacturers[2].pk, manufacturers[3].pk],
-            }),
-            Site(name='Site 4', slug='site-4'),
-        ])
+        Site.objects.bulk_create(
+            [
+                Site(
+                    name='Site 1',
+                    slug='site-1',
+                    custom_field_data={
+                        'cf1': 100,
+                        'cf2': 100.1,
+                        'cf3': True,
+                        'cf4': 'foo',
+                        'cf5': 'foo',
+                        'cf6': '2016-06-26',
+                        'cf7': 'http://a.example.com',
+                        'cf8': 'http://a.example.com',
+                        'cf9': 'A',
+                        'cf10': ['A', 'B'],
+                        'cf11': manufacturers[0].pk,
+                        'cf12': [manufacturers[0].pk, manufacturers[3].pk],
+                    },
+                ),
+                Site(
+                    name='Site 2',
+                    slug='site-2',
+                    custom_field_data={
+                        'cf1': 200,
+                        'cf2': 200.2,
+                        'cf3': True,
+                        'cf4': 'foobar',
+                        'cf5': 'foobar',
+                        'cf6': '2016-06-27',
+                        'cf7': 'http://b.example.com',
+                        'cf8': 'http://b.example.com',
+                        'cf9': 'B',
+                        'cf10': ['B', 'C'],
+                        'cf11': manufacturers[1].pk,
+                        'cf12': [manufacturers[1].pk, manufacturers[3].pk],
+                    },
+                ),
+                Site(
+                    name='Site 3',
+                    slug='site-3',
+                    custom_field_data={
+                        'cf1': 300,
+                        'cf2': 300.3,
+                        'cf3': False,
+                        'cf4': 'bar',
+                        'cf5': 'bar',
+                        'cf6': '2016-06-28',
+                        'cf7': 'http://c.example.com',
+                        'cf8': 'http://c.example.com',
+                        'cf9': 'C',
+                        'cf10': None,
+                        'cf11': manufacturers[2].pk,
+                        'cf12': [manufacturers[2].pk, manufacturers[3].pk],
+                    },
+                ),
+                Site(name='Site 4', slug='site-4'),
+            ]
+        )
 
     def test_filter_integer(self):
         self.assertEqual(self.filterset({'cf_cf1': [100, 200]}, self.queryset).qs.count(), 2)
@@ -1744,8 +1625,7 @@ class CustomFieldModelFilterTest(TestCase):
 
     def test_filter_url_strict(self):
         self.assertEqual(
-            self.filterset({'cf_cf7': ['http://a.example.com', 'http://b.example.com']}, self.queryset).qs.count(),
-            2
+            self.filterset({'cf_cf7': ['http://a.example.com', 'http://b.example.com']}, self.queryset).qs.count(), 2
         )
         self.assertEqual(self.filterset({'cf_cf7__n': ['http://b.example.com']}, self.queryset).qs.count(), 2)
         self.assertEqual(self.filterset({'cf_cf7__ic': ['b']}, self.queryset).qs.count(), 1)
@@ -1774,19 +1654,14 @@ class CustomFieldModelFilterTest(TestCase):
     def test_filter_object(self):
         manufacturer_ids = Manufacturer.objects.values_list('id', flat=True)
         self.assertEqual(
-            self.filterset({'cf_cf11': [manufacturer_ids[0], manufacturer_ids[1]]}, self.queryset).qs.count(),
-            2
+            self.filterset({'cf_cf11': [manufacturer_ids[0], manufacturer_ids[1]]}, self.queryset).qs.count(), 2
         )
         self.assertEqual(self.filterset({'cf_cf11__empty': True}, self.queryset).qs.count(), 1)
 
     def test_filter_multiobject(self):
         manufacturer_ids = Manufacturer.objects.values_list('id', flat=True)
         self.assertEqual(
-            self.filterset({'cf_cf12': [manufacturer_ids[0], manufacturer_ids[1]]}, self.queryset).qs.count(),
-            2
+            self.filterset({'cf_cf12': [manufacturer_ids[0], manufacturer_ids[1]]}, self.queryset).qs.count(), 2
         )
-        self.assertEqual(
-            self.filterset({'cf_cf12': [manufacturer_ids[3]]}, self.queryset).qs.count(),
-            3
-        )
+        self.assertEqual(self.filterset({'cf_cf12': [manufacturer_ids[3]]}, self.queryset).qs.count(), 3)
         self.assertEqual(self.filterset({'cf_cf12__empty': True}, self.queryset).qs.count(), 1)

@@ -3,7 +3,9 @@ from django.contrib.contenttypes.models import ContentType
 from django.utils.translation import gettext_lazy as _
 
 from netbox.forms import (
-    NestedGroupModelImportForm, NetBoxModelImportForm, OrganizationalModelImportForm,
+    NestedGroupModelImportForm,
+    NetBoxModelImportForm,
+    OrganizationalModelImportForm,
     PrimaryModelImportForm,
 )
 from tenancy.models import *
@@ -22,6 +24,7 @@ __all__ = (
 #
 # Tenants
 #
+
 
 class TenantGroupImportForm(NestedGroupModelImportForm):
     parent = CSVModelChoiceField(
@@ -56,6 +59,7 @@ class TenantImportForm(PrimaryModelImportForm):
 # Contacts
 #
 
+
 class ContactGroupImportForm(NestedGroupModelImportForm):
     parent = CSVModelChoiceField(
         label=_('Parent'),
@@ -71,7 +75,6 @@ class ContactGroupImportForm(NestedGroupModelImportForm):
 
 
 class ContactRoleImportForm(OrganizationalModelImportForm):
-
     class Meta:
         model = ContactRole
         fields = ('name', 'slug', 'description', 'owner', 'comments', 'tags')
@@ -93,25 +96,26 @@ class ContactImportForm(PrimaryModelImportForm):
     class Meta:
         model = Contact
         fields = (
-            'name', 'title', 'phone', 'email', 'address', 'link', 'groups', 'description', 'owner', 'comments', 'tags',
+            'name',
+            'title',
+            'phone',
+            'email',
+            'address',
+            'link',
+            'groups',
+            'description',
+            'owner',
+            'comments',
+            'tags',
         )
 
 
 class ContactAssignmentImportForm(NetBoxModelImportForm):
     object_type = CSVContentTypeField(
-        queryset=ContentType.objects.all(),
-        help_text=_("One or more assigned object types")
+        queryset=ContentType.objects.all(), help_text=_('One or more assigned object types')
     )
-    contact = CSVModelChoiceField(
-        queryset=Contact.objects.all(),
-        to_field_name='name',
-        help_text=_('Assigned contact')
-    )
-    role = CSVModelChoiceField(
-        queryset=ContactRole.objects.all(),
-        to_field_name='name',
-        help_text=_('Assigned role')
-    )
+    contact = CSVModelChoiceField(queryset=Contact.objects.all(), to_field_name='name', help_text=_('Assigned contact'))
+    role = CSVModelChoiceField(queryset=ContactRole.objects.all(), to_field_name='name', help_text=_('Assigned role'))
 
     class Meta:
         model = ContactAssignment

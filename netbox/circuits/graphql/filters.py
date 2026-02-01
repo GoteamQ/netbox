@@ -48,9 +48,7 @@ class CircuitTerminationFilter(
     )
     term_side: (
         BaseFilterLookup[Annotated['CircuitTerminationSideEnum', strawberry.lazy('circuits.graphql.enums')]] | None
-    ) = (
-        strawberry_django.filter_field()
-    )
+    ) = strawberry_django.filter_field()
     termination_type: Annotated['ContentTypeFilter', strawberry.lazy('core.graphql.filters')] | None = (
         strawberry_django.filter_field()
     )
@@ -72,24 +70,20 @@ class CircuitTerminationFilter(
     _location: Annotated['LocationFilter', strawberry.lazy('dcim.graphql.filters')] | None = (
         strawberry_django.filter_field(name='location')
     )
-    _region: Annotated['RegionFilter', strawberry.lazy('dcim.graphql.filters')] | None = (
-        strawberry_django.filter_field(name='region')
+    _region: Annotated['RegionFilter', strawberry.lazy('dcim.graphql.filters')] | None = strawberry_django.filter_field(
+        name='region'
     )
     _site_group: Annotated['SiteGroupFilter', strawberry.lazy('dcim.graphql.filters')] | None = (
         strawberry_django.filter_field(name='site_group')
     )
-    _site: Annotated['SiteFilter', strawberry.lazy('dcim.graphql.filters')] | None = (
-        strawberry_django.filter_field(name='site')
+    _site: Annotated['SiteFilter', strawberry.lazy('dcim.graphql.filters')] | None = strawberry_django.filter_field(
+        name='site'
     )
 
 
 @strawberry_django.filter_type(models.Circuit, lookups=True)
 class CircuitFilter(
-    ContactFilterMixin,
-    ImageAttachmentFilterMixin,
-    DistanceFilterMixin,
-    TenancyFilterMixin,
-    PrimaryModelFilter
+    ContactFilterMixin, ImageAttachmentFilterMixin, DistanceFilterMixin, TenancyFilterMixin, PrimaryModelFilter
 ):
     cid: FilterLookup[str] | None = strawberry_django.filter_field()
     provider: Annotated['ProviderFilter', strawberry.lazy('circuits.graphql.filters')] | None = (
@@ -207,12 +201,9 @@ class VirtualCircuitTerminationFilter(CustomFieldsFilterMixin, TagsFilterMixin, 
     )
     virtual_circuit_id: ID | None = strawberry_django.filter_field()
     role: (
-        BaseFilterLookup[
-            Annotated['VirtualCircuitTerminationRoleEnum', strawberry.lazy('circuits.graphql.enums')]
-        ] | None
-    ) = (
-        strawberry_django.filter_field()
-    )
+        BaseFilterLookup[Annotated['VirtualCircuitTerminationRoleEnum', strawberry.lazy('circuits.graphql.enums')]]
+        | None
+    ) = strawberry_django.filter_field()
     interface: Annotated['InterfaceFilter', strawberry.lazy('dcim.graphql.filters')] | None = (
         strawberry_django.filter_field()
     )

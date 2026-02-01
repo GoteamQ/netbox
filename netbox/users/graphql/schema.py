@@ -6,7 +6,7 @@ import strawberry_django
 from .types import *
 
 
-@strawberry.type(name="Query")
+@strawberry.type(name='Query')
 class UsersQuery:
     group: GroupType = strawberry_django.field()
     group_list: List[GroupType] = strawberry_django.field()

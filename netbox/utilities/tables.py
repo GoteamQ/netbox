@@ -6,13 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from core.models import ObjectType
 from netbox.registry import registry
 
-__all__ = (
-    'get_table_configs',
-    'get_table_for_model',
-    'get_table_ordering',
-    'linkify_phone',
-    'register_table_column'
-)
+__all__ = ('get_table_configs', 'get_table_for_model', 'get_table_ordering', 'linkify_phone', 'register_table_column')
 
 
 def get_table_configs(table, user):
@@ -57,7 +51,7 @@ def linkify_phone(value):
     """
     if value is None:
         return None
-    return f"tel:{value.replace(' ', '')}"
+    return f'tel:{value.replace(" ", "")}'
 
 
 def register_table_column(column, name, *tables):
@@ -72,7 +66,9 @@ def register_table_column(column, name, *tables):
     for table in tables:
         reg = registry['tables'][table]
         if name in reg:
-            raise ValueError(_("A column named {name} is already defined for table {table_name}").format(
-                name=name, table_name=table.__name__
-            ))
+            raise ValueError(
+                _('A column named {name} is already defined for table {table_name}').format(
+                    name=name, table_name=table.__name__
+                )
+            )
         reg[name] = column

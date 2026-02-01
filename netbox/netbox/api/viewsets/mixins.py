@@ -22,14 +22,17 @@ class CustomFieldsMixin:
     """
     For models which support custom fields, populate the `custom_fields` context.
     """
+
     def get_serializer_context(self):
         context = super().get_serializer_context()
 
         if hasattr(self.queryset.model, 'custom_fields'):
             object_type = ObjectType.objects.get_for_model(self.queryset.model)
-            context.update({
-                'custom_fields': object_type.custom_fields.all(),
-            })
+            context.update(
+                {
+                    'custom_fields': object_type.custom_fields.all(),
+                }
+            )
 
         return context
 
@@ -38,6 +41,7 @@ class ExportTemplatesMixin:
     """
     Enable ExportTemplate support for list views.
     """
+
     def list(self, request, *args, **kwargs):
         if 'export' in request.GET:
             object_type = ObjectType.objects.get_for_model(self.get_serializer_class().Meta.model)
@@ -56,6 +60,7 @@ class SequentialBulkCreatesMixin:
     which depends on the evaluation of existing objects (such as checking for free space within a rack) functions
     appropriately.
     """
+
     def create(self, request, *args, **kwargs):
         with transaction.atomic(using=router.db_for_write(self.queryset.model)):
             if not isinstance(request.data, list):
@@ -92,6 +97,7 @@ class BulkUpdateModelMixin:
         }
     ]
     """
+
     def get_bulk_update_queryset(self):
         return self.get_queryset()
 
@@ -99,14 +105,10 @@ class BulkUpdateModelMixin:
         partial = kwargs.pop('partial', False)
         serializer = BulkOperationSerializer(data=request.data, many=True)
         serializer.is_valid(raise_exception=True)
-        qs = self.get_bulk_update_queryset().filter(
-            pk__in=[o['id'] for o in serializer.data]
-        )
+        qs = self.get_bulk_update_queryset().filter(pk__in=[o['id'] for o in serializer.data])
 
         # Map update data by object ID
-        update_data = {
-            obj.pop('id'): obj for obj in request.data
-        }
+        update_data = {obj.pop('id'): obj for obj in request.data}
 
         data = self.perform_bulk_update(qs, update_data, partial=partial)
 
@@ -142,20 +144,17 @@ class BulkDestroyModelMixin:
         {"id": 456}
     ]
     """
+
     def get_bulk_destroy_queryset(self):
         return self.get_queryset()
 
     def bulk_destroy(self, request, *args, **kwargs):
         serializer = BulkOperationSerializer(data=request.data, many=True)
         serializer.is_valid(raise_exception=True)
-        qs = self.get_bulk_destroy_queryset().filter(
-            pk__in=[o['id'] for o in serializer.validated_data]
-        )
+        qs = self.get_bulk_destroy_queryset().filter(pk__in=[o['id'] for o in serializer.validated_data])
 
         # Compile any changelog messages to be recorded on the objects being deleted
-        changelog_messages = {
-            o['id']: o.get('changelog_message') for o in serializer.validated_data
-        }
+        changelog_messages = {o['id']: o.get('changelog_message') for o in serializer.validated_data}
 
         self.perform_bulk_destroy(qs, changelog_messages)
 
@@ -172,7 +171,6 @@ class BulkDestroyModelMixin:
 
 
 class ObjectValidationMixin:
-
     def _validate_objects(self, instance):
         """
         Check that the provided instance or list of instances are matched by the current queryset. This confirms that

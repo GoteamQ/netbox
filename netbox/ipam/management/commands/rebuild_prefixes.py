@@ -5,7 +5,7 @@ from ipam.utils import rebuild_prefixes
 
 
 class Command(BaseCommand):
-    help = "Rebuild the prefix hierarchy (depth and children counts)"
+    help = 'Rebuild the prefix hierarchy (depth and children counts)'
 
     def handle(self, *model_names, **options):
         self.stdout.write(f'Rebuilding {Prefix.objects.count()} prefixes...')

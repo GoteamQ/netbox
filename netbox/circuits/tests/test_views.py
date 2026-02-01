@@ -20,11 +20,8 @@ class ProviderTestCase(ViewTestCases.PrimaryObjectViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
-
         rir = RIR.objects.create(name='RFC 6996', is_private=True)
-        asns = [
-            ASN(asn=65000 + i, rir=rir) for i in range(8)
-        ]
+        asns = [ASN(asn=65000 + i, rir=rir) for i in range(8)]
         ASN.objects.bulk_create(asns)
 
         providers = (
@@ -48,17 +45,17 @@ class ProviderTestCase(ViewTestCases.PrimaryObjectViewTestCase):
         }
 
         cls.csv_data = (
-            "name,slug",
-            "Provider 4,provider-4",
-            "Provider 5,provider-5",
-            "Provider 6,provider-6",
+            'name,slug',
+            'Provider 4,provider-4',
+            'Provider 5,provider-5',
+            'Provider 6,provider-6',
         )
 
         cls.csv_update_data = (
-            "id,name,comments",
-            f"{providers[0].pk},Provider 7,New comment7",
-            f"{providers[1].pk},Provider 8,New comment8",
-            f"{providers[2].pk},Provider 9,New comment9",
+            'id,name,comments',
+            f'{providers[0].pk},Provider 7,New comment7',
+            f'{providers[1].pk},Provider 8,New comment8',
+            f'{providers[2].pk},Provider 9,New comment9',
         )
 
         cls.bulk_edit_data = {
@@ -71,7 +68,6 @@ class CircuitTypeTestCase(ViewTestCases.OrganizationalObjectViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
-
         circuit_types = (
             CircuitType(name='Circuit Type 1', slug='circuit-type-1'),
             CircuitType(name='Circuit Type 2', slug='circuit-type-2'),
@@ -90,17 +86,17 @@ class CircuitTypeTestCase(ViewTestCases.OrganizationalObjectViewTestCase):
         }
 
         cls.csv_data = (
-            "name,slug",
-            "Circuit Type 4,circuit-type-4",
-            "Circuit Type 5,circuit-type-5",
-            "Circuit Type 6,circuit-type-6",
+            'name,slug',
+            'Circuit Type 4,circuit-type-4',
+            'Circuit Type 5,circuit-type-5',
+            'Circuit Type 6,circuit-type-6',
         )
 
         cls.csv_update_data = (
-            "id,name,description",
-            f"{circuit_types[0].pk},Circuit Type 7,New description7",
-            f"{circuit_types[1].pk},Circuit Type 8,New description8",
-            f"{circuit_types[2].pk},Circuit Type 9,New description9",
+            'id,name,description',
+            f'{circuit_types[0].pk},Circuit Type 7,New description7',
+            f'{circuit_types[1].pk},Circuit Type 8,New description8',
+            f'{circuit_types[2].pk},Circuit Type 9,New description9',
         )
 
         cls.bulk_edit_data = {
@@ -172,17 +168,17 @@ class CircuitTestCase(ViewTestCases.PrimaryObjectViewTestCase):
         }
 
         cls.csv_data = (
-            "cid,provider,provider_account,type,status",
-            "Circuit 4,Provider 1,Provider Account 1,Circuit Type 1,active",
-            "Circuit 5,Provider 1,Provider Account 1,Circuit Type 1,active",
-            "Circuit 6,Provider 1,Provider Account 1,Circuit Type 1,active",
+            'cid,provider,provider_account,type,status',
+            'Circuit 4,Provider 1,Provider Account 1,Circuit Type 1,active',
+            'Circuit 5,Provider 1,Provider Account 1,Circuit Type 1,active',
+            'Circuit 6,Provider 1,Provider Account 1,Circuit Type 1,active',
         )
 
         cls.csv_update_data = (
-            "id,cid,description,status",
-            f"{circuits[0].pk},Circuit 7,New description7,{CircuitStatusChoices.STATUS_DECOMMISSIONED}",
-            f"{circuits[1].pk},Circuit 8,New description8,{CircuitStatusChoices.STATUS_DECOMMISSIONED}",
-            f"{circuits[2].pk},Circuit 9,New description9,{CircuitStatusChoices.STATUS_DECOMMISSIONED}",
+            'id,cid,description,status',
+            f'{circuits[0].pk},Circuit 7,New description7,{CircuitStatusChoices.STATUS_DECOMMISSIONED}',
+            f'{circuits[1].pk},Circuit 8,New description8,{CircuitStatusChoices.STATUS_DECOMMISSIONED}',
+            f'{circuits[2].pk},Circuit 9,New description9,{CircuitStatusChoices.STATUS_DECOMMISSIONED}',
         )
 
         cls.bulk_edit_data = {
@@ -230,10 +226,7 @@ class CircuitTestCase(ViewTestCases.PrimaryObjectViewTestCase):
         }
 
         # Assign model-level permission
-        obj_perm = ObjectPermission(
-            name='Test permission',
-            actions=['add']
-        )
+        obj_perm = ObjectPermission(name='Test permission', actions=['add'])
         obj_perm.save()
         obj_perm.users.add(self.user)
         obj_perm.object_types.add(ObjectType.objects.get_for_model(self.model))
@@ -251,7 +244,6 @@ class ProviderAccountTestCase(ViewTestCases.PrimaryObjectViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
-
         providers = (
             Provider(name='Provider 1', slug='provider-1'),
             Provider(name='Provider 2', slug='provider-2'),
@@ -277,17 +269,17 @@ class ProviderAccountTestCase(ViewTestCases.PrimaryObjectViewTestCase):
         }
 
         cls.csv_data = (
-            "name,provider,account,description",
-            "Provider Account 4,Provider 1,4567,Foo",
-            "Provider Account 5,Provider 1,5678,Bar",
-            "Provider Account 6,Provider 1,6789,Baz",
+            'name,provider,account,description',
+            'Provider Account 4,Provider 1,4567,Foo',
+            'Provider Account 5,Provider 1,5678,Bar',
+            'Provider Account 6,Provider 1,6789,Baz',
         )
 
         cls.csv_update_data = (
-            "id,name,account,description",
-            f"{provider_accounts[0].pk},Provider Network 7,7890,New description7",
-            f"{provider_accounts[1].pk},Provider Network 8,8901,New description8",
-            f"{provider_accounts[2].pk},Provider Network 9,9012,New description9",
+            'id,name,account,description',
+            f'{provider_accounts[0].pk},Provider Network 7,7890,New description7',
+            f'{provider_accounts[1].pk},Provider Network 8,8901,New description8',
+            f'{provider_accounts[2].pk},Provider Network 9,9012,New description9',
         )
 
         cls.bulk_edit_data = {
@@ -302,7 +294,6 @@ class ProviderNetworkTestCase(ViewTestCases.PrimaryObjectViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
-
         providers = (
             Provider(name='Provider 1', slug='provider-1'),
             Provider(name='Provider 2', slug='provider-2'),
@@ -328,17 +319,17 @@ class ProviderNetworkTestCase(ViewTestCases.PrimaryObjectViewTestCase):
         }
 
         cls.csv_data = (
-            "name,provider,description",
-            "Provider Network 4,Provider 1,Foo",
-            "Provider Network 5,Provider 1,Bar",
-            "Provider Network 6,Provider 1,Baz",
+            'name,provider,description',
+            'Provider Network 4,Provider 1,Foo',
+            'Provider Network 5,Provider 1,Bar',
+            'Provider Network 6,Provider 1,Baz',
         )
 
         cls.csv_update_data = (
-            "id,name,description",
-            f"{provider_networks[0].pk},Provider Network 7,New description7",
-            f"{provider_networks[1].pk},Provider Network 8,New description8",
-            f"{provider_networks[2].pk},Provider Network 9,New description9",
+            'id,name,description',
+            f'{provider_networks[0].pk},Provider Network 7,New description7',
+            f'{provider_networks[1].pk},Provider Network 8,New description8',
+            f'{provider_networks[2].pk},Provider Network 9,New description9',
         )
 
         cls.bulk_edit_data = {
@@ -353,7 +344,6 @@ class CircuitTerminationTestCase(ViewTestCases.PrimaryObjectViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
-
         sites = (
             Site(name='Site 1', slug='site-1'),
             Site(name='Site 2', slug='site-2'),
@@ -389,16 +379,16 @@ class CircuitTerminationTestCase(ViewTestCases.PrimaryObjectViewTestCase):
 
         site = sites[0].pk
         cls.csv_data = (
-            "circuit,term_side,termination_type,termination_id,description",
-            f"Circuit 3,A,dcim.site,{site},Foo",
-            f"Circuit 3,Z,dcim.site,{site},Bar",
+            'circuit,term_side,termination_type,termination_id,description',
+            f'Circuit 3,A,dcim.site,{site},Foo',
+            f'Circuit 3,Z,dcim.site,{site},Bar',
         )
 
         cls.csv_update_data = (
-            "id,port_speed,description",
-            f"{circuit_terminations[0].pk},100,New description7",
-            f"{circuit_terminations[1].pk},200,New description8",
-            f"{circuit_terminations[2].pk},300,New description9",
+            'id,port_speed,description',
+            f'{circuit_terminations[0].pk},100,New description7',
+            f'{circuit_terminations[1].pk},200,New description8',
+            f'{circuit_terminations[2].pk},300,New description9',
         )
 
         cls.bulk_edit_data = {
@@ -411,10 +401,7 @@ class CircuitTerminationTestCase(ViewTestCases.PrimaryObjectViewTestCase):
         device = create_test_device('Device 1')
 
         circuittermination = CircuitTermination.objects.first()
-        interface = Interface.objects.create(
-            device=device,
-            name='Interface 1'
-        )
+        interface = Interface.objects.create(device=device, name='Interface 1')
         Cable(a_terminations=[circuittermination], b_terminations=[interface]).save()
 
         response = self.client.get(reverse('circuits:circuittermination_trace', kwargs={'pk': circuittermination.pk}))
@@ -426,7 +413,6 @@ class CircuitGroupTestCase(ViewTestCases.OrganizationalObjectViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
-
         circuit_groups = (
             CircuitGroup(name='Circuit Group 1', slug='circuit-group-1'),
             CircuitGroup(name='Circuit Group 2', slug='circuit-group-2'),
@@ -444,17 +430,17 @@ class CircuitGroupTestCase(ViewTestCases.OrganizationalObjectViewTestCase):
         }
 
         cls.csv_data = (
-            "name,slug",
-            "Circuit Group 4,circuit-group-4",
-            "Circuit Group 5,circuit-group-5",
-            "Circuit Group 6,circuit-group-6",
+            'name,slug',
+            'Circuit Group 4,circuit-group-4',
+            'Circuit Group 5,circuit-group-5',
+            'Circuit Group 6,circuit-group-6',
         )
 
         cls.csv_update_data = (
-            "id,name,description",
-            f"{circuit_groups[0].pk},Circuit Group 7,New description7",
-            f"{circuit_groups[1].pk},Circuit Group 8,New description8",
-            f"{circuit_groups[2].pk},Circuit Group 9,New description9",
+            'id,name,description',
+            f'{circuit_groups[0].pk},Circuit Group 7,New description7',
+            f'{circuit_groups[1].pk},Circuit Group 8,New description8',
+            f'{circuit_groups[2].pk},Circuit Group 9,New description9',
         )
 
         cls.bulk_edit_data = {
@@ -469,13 +455,12 @@ class CircuitGroupAssignmentTestCase(
     ViewTestCases.ListObjectsViewTestCase,
     ViewTestCases.BulkEditObjectsViewTestCase,
     ViewTestCases.BulkImportObjectsViewTestCase,
-    ViewTestCases.BulkDeleteObjectsViewTestCase
+    ViewTestCases.BulkDeleteObjectsViewTestCase,
 ):
     model = CircuitGroupAssignment
 
     @classmethod
     def setUpTestData(cls):
-
         circuit_groups = (
             CircuitGroup(name='Circuit Group 1', slug='circuit-group-1'),
             CircuitGroup(name='Circuit Group 2', slug='circuit-group-2'),
@@ -497,19 +482,13 @@ class CircuitGroupAssignmentTestCase(
 
         assignments = (
             CircuitGroupAssignment(
-                group=circuit_groups[0],
-                member=circuits[0],
-                priority=CircuitPriorityChoices.PRIORITY_PRIMARY
+                group=circuit_groups[0], member=circuits[0], priority=CircuitPriorityChoices.PRIORITY_PRIMARY
             ),
             CircuitGroupAssignment(
-                group=circuit_groups[1],
-                member=circuits[1],
-                priority=CircuitPriorityChoices.PRIORITY_SECONDARY
+                group=circuit_groups[1], member=circuits[1], priority=CircuitPriorityChoices.PRIORITY_SECONDARY
             ),
             CircuitGroupAssignment(
-                group=circuit_groups[2],
-                member=circuits[2],
-                priority=CircuitPriorityChoices.PRIORITY_TERTIARY
+                group=circuit_groups[2], member=circuits[2], priority=CircuitPriorityChoices.PRIORITY_TERTIARY
             ),
         )
         CircuitGroupAssignment.objects.bulk_create(assignments)
@@ -525,17 +504,17 @@ class CircuitGroupAssignmentTestCase(
         }
 
         cls.csv_data = (
-            "member_type,member_id,group,priority",
-            f"circuits.circuit,{circuits[0].pk},{circuit_groups[3].pk},primary",
-            f"circuits.circuit,{circuits[1].pk},{circuit_groups[3].pk},secondary",
-            f"circuits.circuit,{circuits[2].pk},{circuit_groups[3].pk},tertiary",
+            'member_type,member_id,group,priority',
+            f'circuits.circuit,{circuits[0].pk},{circuit_groups[3].pk},primary',
+            f'circuits.circuit,{circuits[1].pk},{circuit_groups[3].pk},secondary',
+            f'circuits.circuit,{circuits[2].pk},{circuit_groups[3].pk},tertiary',
         )
 
         cls.csv_update_data = (
-            "id,priority",
-            f"{assignments[0].pk},inactive",
-            f"{assignments[1].pk},inactive",
-            f"{assignments[2].pk},inactive",
+            'id,priority',
+            f'{assignments[0].pk},inactive',
+            f'{assignments[1].pk},inactive',
+            f'{assignments[2].pk},inactive',
         )
 
         cls.bulk_edit_data = {
@@ -548,7 +527,6 @@ class VirtualCircuitTypeTestCase(ViewTestCases.OrganizationalObjectViewTestCase)
 
     @classmethod
     def setUpTestData(cls):
-
         virtual_circuit_types = (
             VirtualCircuitType(name='Virtual Circuit Type 1', slug='circuit-type-1'),
             VirtualCircuitType(name='Virtual Circuit Type 2', slug='circuit-type-2'),
@@ -566,17 +544,17 @@ class VirtualCircuitTypeTestCase(ViewTestCases.OrganizationalObjectViewTestCase)
         }
 
         cls.csv_data = (
-            "name,slug",
-            "Virtual Circuit Type 4,circuit-type-4",
-            "Virtual Circuit Type 5,circuit-type-5",
-            "Virtual Circuit Type 6,circuit-type-6",
+            'name,slug',
+            'Virtual Circuit Type 4,circuit-type-4',
+            'Virtual Circuit Type 5,circuit-type-5',
+            'Virtual Circuit Type 6,circuit-type-6',
         )
 
         cls.csv_update_data = (
-            "id,name,description",
-            f"{virtual_circuit_types[0].pk},Virtual Circuit Type 7,New description7",
-            f"{virtual_circuit_types[1].pk},Virtual Circuit Type 8,New description8",
-            f"{virtual_circuit_types[2].pk},Virtual Circuit Type 9,New description9",
+            'id,name,description',
+            f'{virtual_circuit_types[0].pk},Virtual Circuit Type 7,New description7',
+            f'{virtual_circuit_types[1].pk},Virtual Circuit Type 8,New description8',
+            f'{virtual_circuit_types[2].pk},Virtual Circuit Type 9,New description9',
         )
 
         cls.bulk_edit_data = {
@@ -618,19 +596,19 @@ class VirtualCircuitTestCase(ViewTestCases.PrimaryObjectViewTestCase):
                 provider_network=provider_networks[0],
                 provider_account=provider_accounts[0],
                 cid='Virtual Circuit 1',
-                type=virtual_circuit_types[0]
+                type=virtual_circuit_types[0],
             ),
             VirtualCircuit(
                 provider_network=provider_networks[0],
                 provider_account=provider_accounts[0],
                 cid='Virtual Circuit 2',
-                type=virtual_circuit_types[0]
+                type=virtual_circuit_types[0],
             ),
             VirtualCircuit(
                 provider_network=provider_networks[0],
                 provider_account=provider_accounts[0],
                 cid='Virtual Circuit 3',
-                type=virtual_circuit_types[0]
+                type=virtual_circuit_types[0],
             ),
         )
         VirtualCircuit.objects.bulk_create(virtual_circuits)
@@ -657,34 +635,34 @@ class VirtualCircuitTestCase(ViewTestCases.PrimaryObjectViewTestCase):
         }
 
         cls.csv_data = (
-            "cid,provider_network,provider_account,type,status",
+            'cid,provider_network,provider_account,type,status',
             (
-                f"Virtual Circuit 4,Provider Network 1,Provider Account 1,{virtual_circuit_types[0].name},"
-                f"{CircuitStatusChoices.STATUS_PLANNED}"
+                f'Virtual Circuit 4,Provider Network 1,Provider Account 1,{virtual_circuit_types[0].name},'
+                f'{CircuitStatusChoices.STATUS_PLANNED}'
             ),
             (
-                f"Virtual Circuit 5,Provider Network 1,Provider Account 1,{virtual_circuit_types[0].name},"
-                f"{CircuitStatusChoices.STATUS_PLANNED}"
+                f'Virtual Circuit 5,Provider Network 1,Provider Account 1,{virtual_circuit_types[0].name},'
+                f'{CircuitStatusChoices.STATUS_PLANNED}'
             ),
             (
-                f"Virtual Circuit 6,Provider Network 1,Provider Account 1,{virtual_circuit_types[0].name},"
-                f"{CircuitStatusChoices.STATUS_PLANNED}"
+                f'Virtual Circuit 6,Provider Network 1,Provider Account 1,{virtual_circuit_types[0].name},'
+                f'{CircuitStatusChoices.STATUS_PLANNED}'
             ),
         )
 
         cls.csv_update_data = (
-            "id,cid,description,type,status",
+            'id,cid,description,type,status',
             (
-                f"{virtual_circuits[0].pk},Virtual Circuit A,New description,{virtual_circuit_types[1].name},"
-                f"{CircuitStatusChoices.STATUS_DECOMMISSIONED}"
+                f'{virtual_circuits[0].pk},Virtual Circuit A,New description,{virtual_circuit_types[1].name},'
+                f'{CircuitStatusChoices.STATUS_DECOMMISSIONED}'
             ),
             (
-                f"{virtual_circuits[1].pk},Virtual Circuit B,New description,{virtual_circuit_types[1].name},"
-                f"{CircuitStatusChoices.STATUS_DECOMMISSIONED}"
+                f'{virtual_circuits[1].pk},Virtual Circuit B,New description,{virtual_circuit_types[1].name},'
+                f'{CircuitStatusChoices.STATUS_DECOMMISSIONED}'
             ),
             (
-                f"{virtual_circuits[2].pk},Virtual Circuit C,New description,{virtual_circuit_types[1].name},"
-                f"{CircuitStatusChoices.STATUS_DECOMMISSIONED}"
+                f'{virtual_circuits[2].pk},Virtual Circuit C,New description,{virtual_circuit_types[1].name},'
+                f'{CircuitStatusChoices.STATUS_DECOMMISSIONED}'
             ),
         )
 
@@ -732,10 +710,7 @@ class VirtualCircuitTestCase(ViewTestCases.PrimaryObjectViewTestCase):
         }
 
         # Assign model-level permission
-        obj_perm = ObjectPermission(
-            name='Test permission',
-            actions=['add']
-        )
+        obj_perm = ObjectPermission(name='Test permission', actions=['add'])
         obj_perm.save()
         obj_perm.users.add(self.user)
         obj_perm.object_types.add(ObjectType.objects.get_for_model(self.model))
@@ -777,66 +752,35 @@ class VirtualCircuitTerminationTestCase(ViewTestCases.PrimaryObjectViewTestCase)
         virtual_interfaces = (
             # Point-to-point VCs
             Interface(
-                device=devices[0],
-                name='eth0.1',
-                parent=physical_interfaces[0],
-                type=InterfaceTypeChoices.TYPE_VIRTUAL
+                device=devices[0], name='eth0.1', parent=physical_interfaces[0], type=InterfaceTypeChoices.TYPE_VIRTUAL
             ),
             Interface(
-                device=devices[0],
-                name='eth0.2',
-                parent=physical_interfaces[0],
-                type=InterfaceTypeChoices.TYPE_VIRTUAL
+                device=devices[0], name='eth0.2', parent=physical_interfaces[0], type=InterfaceTypeChoices.TYPE_VIRTUAL
             ),
             Interface(
-                device=devices[0],
-                name='eth0.3',
-                parent=physical_interfaces[0],
-                type=InterfaceTypeChoices.TYPE_VIRTUAL
+                device=devices[0], name='eth0.3', parent=physical_interfaces[0], type=InterfaceTypeChoices.TYPE_VIRTUAL
             ),
             Interface(
-                device=devices[1],
-                name='eth0.1',
-                parent=physical_interfaces[1],
-                type=InterfaceTypeChoices.TYPE_VIRTUAL
+                device=devices[1], name='eth0.1', parent=physical_interfaces[1], type=InterfaceTypeChoices.TYPE_VIRTUAL
             ),
             Interface(
-                device=devices[2],
-                name='eth0.1',
-                parent=physical_interfaces[2],
-                type=InterfaceTypeChoices.TYPE_VIRTUAL
+                device=devices[2], name='eth0.1', parent=physical_interfaces[2], type=InterfaceTypeChoices.TYPE_VIRTUAL
             ),
             Interface(
-                device=devices[3],
-                name='eth0.1',
-                parent=physical_interfaces[3],
-                type=InterfaceTypeChoices.TYPE_VIRTUAL
+                device=devices[3], name='eth0.1', parent=physical_interfaces[3], type=InterfaceTypeChoices.TYPE_VIRTUAL
             ),
-
             # Hub and spoke VCs
             Interface(
-                device=devices[0],
-                name='eth0.9',
-                parent=physical_interfaces[0],
-                type=InterfaceTypeChoices.TYPE_VIRTUAL
+                device=devices[0], name='eth0.9', parent=physical_interfaces[0], type=InterfaceTypeChoices.TYPE_VIRTUAL
             ),
             Interface(
-                device=devices[1],
-                name='eth0.9',
-                parent=physical_interfaces[0],
-                type=InterfaceTypeChoices.TYPE_VIRTUAL
+                device=devices[1], name='eth0.9', parent=physical_interfaces[0], type=InterfaceTypeChoices.TYPE_VIRTUAL
             ),
             Interface(
-                device=devices[2],
-                name='eth0.9',
-                parent=physical_interfaces[0],
-                type=InterfaceTypeChoices.TYPE_VIRTUAL
+                device=devices[2], name='eth0.9', parent=physical_interfaces[0], type=InterfaceTypeChoices.TYPE_VIRTUAL
             ),
             Interface(
-                device=devices[3],
-                name='eth0.9',
-                parent=physical_interfaces[0],
-                type=InterfaceTypeChoices.TYPE_VIRTUAL
+                device=devices[3], name='eth0.9', parent=physical_interfaces[0], type=InterfaceTypeChoices.TYPE_VIRTUAL
             ),
         )
         Interface.objects.bulk_create(virtual_interfaces)
@@ -845,8 +789,7 @@ class VirtualCircuitTerminationTestCase(ViewTestCases.PrimaryObjectViewTestCase)
         provider_network = ProviderNetwork.objects.create(provider=provider, name='Provider Network 1')
         provider_account = ProviderAccount.objects.create(provider=provider, account='Provider Account 1')
         virtual_circuit_type = VirtualCircuitType.objects.create(
-            name='Virtual Circuit Type 1',
-            slug='virtual-circuit-type-1'
+            name='Virtual Circuit Type 1', slug='virtual-circuit-type-1'
         )
 
         virtual_circuits = (
@@ -854,25 +797,25 @@ class VirtualCircuitTerminationTestCase(ViewTestCases.PrimaryObjectViewTestCase)
                 provider_network=provider_network,
                 provider_account=provider_account,
                 cid='Virtual Circuit 1',
-                type=virtual_circuit_type
+                type=virtual_circuit_type,
             ),
             VirtualCircuit(
                 provider_network=provider_network,
                 provider_account=provider_account,
                 cid='Virtual Circuit 2',
-                type=virtual_circuit_type
+                type=virtual_circuit_type,
             ),
             VirtualCircuit(
                 provider_network=provider_network,
                 provider_account=provider_account,
                 cid='Virtual Circuit 3',
-                type=virtual_circuit_type
+                type=virtual_circuit_type,
             ),
             VirtualCircuit(
                 provider_network=provider_network,
                 provider_account=provider_account,
                 cid='Virtual Circuit 4',
-                type=virtual_circuit_type
+                type=virtual_circuit_type,
             ),
         )
         VirtualCircuit.objects.bulk_create(virtual_circuits)
@@ -881,32 +824,32 @@ class VirtualCircuitTerminationTestCase(ViewTestCases.PrimaryObjectViewTestCase)
             VirtualCircuitTermination(
                 virtual_circuit=virtual_circuits[0],
                 role=VirtualCircuitTerminationRoleChoices.ROLE_PEER,
-                interface=virtual_interfaces[0]
+                interface=virtual_interfaces[0],
             ),
             VirtualCircuitTermination(
                 virtual_circuit=virtual_circuits[0],
                 role=VirtualCircuitTerminationRoleChoices.ROLE_PEER,
-                interface=virtual_interfaces[3]
+                interface=virtual_interfaces[3],
             ),
             VirtualCircuitTermination(
                 virtual_circuit=virtual_circuits[1],
                 role=VirtualCircuitTerminationRoleChoices.ROLE_PEER,
-                interface=virtual_interfaces[1]
+                interface=virtual_interfaces[1],
             ),
             VirtualCircuitTermination(
                 virtual_circuit=virtual_circuits[1],
                 role=VirtualCircuitTerminationRoleChoices.ROLE_PEER,
-                interface=virtual_interfaces[4]
+                interface=virtual_interfaces[4],
             ),
             VirtualCircuitTermination(
                 virtual_circuit=virtual_circuits[2],
                 role=VirtualCircuitTerminationRoleChoices.ROLE_PEER,
-                interface=virtual_interfaces[2]
+                interface=virtual_interfaces[2],
             ),
             VirtualCircuitTermination(
                 virtual_circuit=virtual_circuits[2],
                 role=VirtualCircuitTerminationRoleChoices.ROLE_PEER,
-                interface=virtual_interfaces[5]
+                interface=virtual_interfaces[5],
             ),
         )
         VirtualCircuitTermination.objects.bulk_create(virtual_circuit_terminations)
@@ -914,22 +857,22 @@ class VirtualCircuitTerminationTestCase(ViewTestCases.PrimaryObjectViewTestCase)
         cls.form_data = {
             'virtual_circuit': virtual_circuits[3].pk,
             'role': VirtualCircuitTerminationRoleChoices.ROLE_HUB,
-            'interface': virtual_interfaces[6].pk
+            'interface': virtual_interfaces[6].pk,
         }
 
         cls.csv_data = (
-            "virtual_circuit,role,interface,description",
-            f"Virtual Circuit 4,{VirtualCircuitTerminationRoleChoices.ROLE_HUB},{virtual_interfaces[6].pk},Hub",
-            f"Virtual Circuit 4,{VirtualCircuitTerminationRoleChoices.ROLE_SPOKE},{virtual_interfaces[7].pk},Spoke 1",
-            f"Virtual Circuit 4,{VirtualCircuitTerminationRoleChoices.ROLE_SPOKE},{virtual_interfaces[8].pk},Spoke 2",
-            f"Virtual Circuit 4,{VirtualCircuitTerminationRoleChoices.ROLE_SPOKE},{virtual_interfaces[9].pk},Spoke 3",
+            'virtual_circuit,role,interface,description',
+            f'Virtual Circuit 4,{VirtualCircuitTerminationRoleChoices.ROLE_HUB},{virtual_interfaces[6].pk},Hub',
+            f'Virtual Circuit 4,{VirtualCircuitTerminationRoleChoices.ROLE_SPOKE},{virtual_interfaces[7].pk},Spoke 1',
+            f'Virtual Circuit 4,{VirtualCircuitTerminationRoleChoices.ROLE_SPOKE},{virtual_interfaces[8].pk},Spoke 2',
+            f'Virtual Circuit 4,{VirtualCircuitTerminationRoleChoices.ROLE_SPOKE},{virtual_interfaces[9].pk},Spoke 3',
         )
 
         cls.csv_update_data = (
-            "id,role,description",
-            f"{virtual_circuit_terminations[0].pk},{VirtualCircuitTerminationRoleChoices.ROLE_SPOKE},New description",
-            f"{virtual_circuit_terminations[1].pk},{VirtualCircuitTerminationRoleChoices.ROLE_SPOKE},New description",
-            f"{virtual_circuit_terminations[2].pk},{VirtualCircuitTerminationRoleChoices.ROLE_SPOKE},New description",
+            'id,role,description',
+            f'{virtual_circuit_terminations[0].pk},{VirtualCircuitTerminationRoleChoices.ROLE_SPOKE},New description',
+            f'{virtual_circuit_terminations[1].pk},{VirtualCircuitTerminationRoleChoices.ROLE_SPOKE},New description',
+            f'{virtual_circuit_terminations[2].pk},{VirtualCircuitTerminationRoleChoices.ROLE_SPOKE},New description',
         )
 
         cls.bulk_edit_data = {

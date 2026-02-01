@@ -6,7 +6,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('gcp', '0003_cancel_discovery'),
     ]
@@ -388,7 +387,9 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='gkecluster',
             name='subnetwork',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='gcp.subnet'),
+            field=models.ForeignKey(
+                blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='gcp.subnet'
+            ),
         ),
         migrations.AddField(
             model_name='gkenodepool',
@@ -508,7 +509,9 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='loadbalancer',
             name='network',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='gcp.vpcnetwork'),
+            field=models.ForeignKey(
+                blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='gcp.vpcnetwork'
+            ),
         ),
         migrations.AddField(
             model_name='loadbalancer',
@@ -528,7 +531,9 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='memorystoreinstance',
             name='network',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='gcp.vpcnetwork'),
+            field=models.ForeignKey(
+                blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='gcp.vpcnetwork'
+            ),
         ),
         migrations.AddField(
             model_name='memorystoreinstance',
@@ -673,7 +678,9 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='cloudnat',
             name='router',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='nats', to='gcp.cloudrouter'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, related_name='nats', to='gcp.cloudrouter'
+            ),
         ),
         migrations.AlterField(
             model_name='cloudrouter',
@@ -738,7 +745,9 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='gcporganization',
             name='organization_id',
-            field=models.CharField(max_length=50, unique=True, validators=[django.core.validators.MinLengthValidator(1)]),
+            field=models.CharField(
+                max_length=50, unique=True, validators=[django.core.validators.MinLengthValidator(1)]
+            ),
         ),
         migrations.AlterField(
             model_name='gcporganization',
@@ -748,12 +757,20 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='gcpproject',
             name='organization',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='projects', to='gcp.gcporganization'),
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='projects',
+                to='gcp.gcporganization',
+            ),
         ),
         migrations.AlterField(
             model_name='gkecluster',
             name='network',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='gcp.vpcnetwork'),
+            field=models.ForeignKey(
+                blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='gcp.vpcnetwork'
+            ),
         ),
         migrations.AlterField(
             model_name='gkenodepool',
@@ -783,7 +800,9 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='instancegroup',
             name='template',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='gcp.instancetemplate'),
+            field=models.ForeignKey(
+                blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='gcp.instancetemplate'
+            ),
         ),
         migrations.AlterField(
             model_name='interconnectattachment',

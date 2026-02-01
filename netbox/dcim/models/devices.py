@@ -49,10 +49,12 @@ __all__ = (
 # Device Types
 #
 
+
 class Manufacturer(ContactsMixin, OrganizationalModel):
     """
     A Manufacturer represents a company which produces hardware devices; for example, Juniper or Dell.
     """
+
     class Meta:
         ordering = ('name',)
         verbose_name = _('manufacturer')
@@ -74,48 +76,29 @@ class DeviceType(ImageAttachmentsMixin, PrimaryModel, WeightMixin):
     When a new Device of this type is created, the appropriate console, power, and interface objects (as defined by the
     DeviceType) are automatically created as well.
     """
-    manufacturer = models.ForeignKey(
-        to='dcim.Manufacturer',
-        on_delete=models.PROTECT,
-        related_name='device_types'
-    )
-    model = models.CharField(
-        verbose_name=_('model'),
-        max_length=100
-    )
-    slug = models.SlugField(
-        verbose_name=_('slug'),
-        max_length=100
-    )
+
+    manufacturer = models.ForeignKey(to='dcim.Manufacturer', on_delete=models.PROTECT, related_name='device_types')
+    model = models.CharField(verbose_name=_('model'), max_length=100)
+    slug = models.SlugField(verbose_name=_('slug'), max_length=100)
     default_platform = models.ForeignKey(
         to='dcim.Platform',
         on_delete=models.SET_NULL,
         related_name='+',
         blank=True,
         null=True,
-        verbose_name=_('default platform')
+        verbose_name=_('default platform'),
     )
     part_number = models.CharField(
-        verbose_name=_('part number'),
-        max_length=50,
-        blank=True,
-        help_text=_('Discrete part number (optional)')
+        verbose_name=_('part number'), max_length=50, blank=True, help_text=_('Discrete part number (optional)')
     )
-    u_height = models.DecimalField(
-        max_digits=4,
-        decimal_places=1,
-        default=1.0,
-        verbose_name=_('height (U)')
-    )
+    u_height = models.DecimalField(max_digits=4, decimal_places=1, default=1.0, verbose_name=_('height (U)'))
     exclude_from_utilization = models.BooleanField(
         default=False,
         verbose_name=_('exclude from utilization'),
-        help_text=_('Devices of this type are excluded when calculating rack utilization.')
+        help_text=_('Devices of this type are excluded when calculating rack utilization.'),
     )
     is_full_depth = models.BooleanField(
-        default=True,
-        verbose_name=_('is full depth'),
-        help_text=_('Device consumes both front and rear rack faces.')
+        default=True, verbose_name=_('is full depth'), help_text=_('Device consumes both front and rear rack faces.')
     )
     subdevice_role = models.CharField(
         max_length=50,
@@ -123,89 +106,52 @@ class DeviceType(ImageAttachmentsMixin, PrimaryModel, WeightMixin):
         blank=True,
         null=True,
         verbose_name=_('parent/child status'),
-        help_text=_('Parent devices house child devices in device bays. Leave blank '
-                    'if this device type is neither a parent nor a child.')
+        help_text=_(
+            'Parent devices house child devices in device bays. Leave blank '
+            'if this device type is neither a parent nor a child.'
+        ),
     )
     airflow = models.CharField(
-        verbose_name=_('airflow'),
-        max_length=50,
-        choices=DeviceAirflowChoices,
-        blank=True,
-        null=True
+        verbose_name=_('airflow'), max_length=50, choices=DeviceAirflowChoices, blank=True, null=True
     )
-    front_image = models.ImageField(
-        upload_to='devicetype-images',
-        blank=True
-    )
-    rear_image = models.ImageField(
-        upload_to='devicetype-images',
-        blank=True
-    )
+    front_image = models.ImageField(upload_to='devicetype-images', blank=True)
+    rear_image = models.ImageField(upload_to='devicetype-images', blank=True)
 
     # Counter fields
-    console_port_template_count = CounterCacheField(
-        to_model='dcim.ConsolePortTemplate',
-        to_field='device_type'
-    )
+    console_port_template_count = CounterCacheField(to_model='dcim.ConsolePortTemplate', to_field='device_type')
     console_server_port_template_count = CounterCacheField(
-        to_model='dcim.ConsoleServerPortTemplate',
-        to_field='device_type'
+        to_model='dcim.ConsoleServerPortTemplate', to_field='device_type'
     )
-    power_port_template_count = CounterCacheField(
-        to_model='dcim.PowerPortTemplate',
-        to_field='device_type'
-    )
-    power_outlet_template_count = CounterCacheField(
-        to_model='dcim.PowerOutletTemplate',
-        to_field='device_type'
-    )
-    interface_template_count = CounterCacheField(
-        to_model='dcim.InterfaceTemplate',
-        to_field='device_type'
-    )
-    front_port_template_count = CounterCacheField(
-        to_model='dcim.FrontPortTemplate',
-        to_field='device_type'
-    )
-    rear_port_template_count = CounterCacheField(
-        to_model='dcim.RearPortTemplate',
-        to_field='device_type'
-    )
-    device_bay_template_count = CounterCacheField(
-        to_model='dcim.DeviceBayTemplate',
-        to_field='device_type'
-    )
-    module_bay_template_count = CounterCacheField(
-        to_model='dcim.ModuleBayTemplate',
-        to_field='device_type'
-    )
-    inventory_item_template_count = CounterCacheField(
-        to_model='dcim.InventoryItemTemplate',
-        to_field='device_type'
-    )
-    device_count = CounterCacheField(
-        to_model='dcim.Device',
-        to_field='device_type'
-    )
+    power_port_template_count = CounterCacheField(to_model='dcim.PowerPortTemplate', to_field='device_type')
+    power_outlet_template_count = CounterCacheField(to_model='dcim.PowerOutletTemplate', to_field='device_type')
+    interface_template_count = CounterCacheField(to_model='dcim.InterfaceTemplate', to_field='device_type')
+    front_port_template_count = CounterCacheField(to_model='dcim.FrontPortTemplate', to_field='device_type')
+    rear_port_template_count = CounterCacheField(to_model='dcim.RearPortTemplate', to_field='device_type')
+    device_bay_template_count = CounterCacheField(to_model='dcim.DeviceBayTemplate', to_field='device_type')
+    module_bay_template_count = CounterCacheField(to_model='dcim.ModuleBayTemplate', to_field='device_type')
+    inventory_item_template_count = CounterCacheField(to_model='dcim.InventoryItemTemplate', to_field='device_type')
+    device_count = CounterCacheField(to_model='dcim.Device', to_field='device_type')
 
     clone_fields = (
-        'manufacturer', 'default_platform', 'u_height', 'is_full_depth', 'subdevice_role', 'airflow', 'weight',
+        'manufacturer',
+        'default_platform',
+        'u_height',
+        'is_full_depth',
+        'subdevice_role',
+        'airflow',
+        'weight',
         'weight_unit',
     )
-    prerequisite_models = (
-        'dcim.Manufacturer',
-    )
+    prerequisite_models = ('dcim.Manufacturer',)
 
     class Meta:
         ordering = ['manufacturer', 'model']
         constraints = (
             models.UniqueConstraint(
-                fields=('manufacturer', 'model'),
-                name='%(app_label)s_%(class)s_unique_manufacturer_model'
+                fields=('manufacturer', 'model'), name='%(app_label)s_%(class)s_unique_manufacturer_model'
             ),
             models.UniqueConstraint(
-                fields=('manufacturer', 'slug'),
-                name='%(app_label)s_%(class)s_unique_manufacturer_slug'
+                fields=('manufacturer', 'slug'), name='%(app_label)s_%(class)s_unique_manufacturer_slug'
             ),
         )
         verbose_name = _('device type')
@@ -226,7 +172,7 @@ class DeviceType(ImageAttachmentsMixin, PrimaryModel, WeightMixin):
 
     @property
     def full_name(self):
-        return f"{self.manufacturer} {self.model}"
+        return f'{self.manufacturer} {self.model}'
 
     def to_yaml(self):
         data = {
@@ -247,41 +193,23 @@ class DeviceType(ImageAttachmentsMixin, PrimaryModel, WeightMixin):
 
         # Component templates
         if self.consoleporttemplates.exists():
-            data['console-ports'] = [
-                c.to_yaml() for c in self.consoleporttemplates.all()
-            ]
+            data['console-ports'] = [c.to_yaml() for c in self.consoleporttemplates.all()]
         if self.consoleserverporttemplates.exists():
-            data['console-server-ports'] = [
-                c.to_yaml() for c in self.consoleserverporttemplates.all()
-            ]
+            data['console-server-ports'] = [c.to_yaml() for c in self.consoleserverporttemplates.all()]
         if self.powerporttemplates.exists():
-            data['power-ports'] = [
-                c.to_yaml() for c in self.powerporttemplates.all()
-            ]
+            data['power-ports'] = [c.to_yaml() for c in self.powerporttemplates.all()]
         if self.poweroutlettemplates.exists():
-            data['power-outlets'] = [
-                c.to_yaml() for c in self.poweroutlettemplates.all()
-            ]
+            data['power-outlets'] = [c.to_yaml() for c in self.poweroutlettemplates.all()]
         if self.interfacetemplates.exists():
-            data['interfaces'] = [
-                c.to_yaml() for c in self.interfacetemplates.all()
-            ]
+            data['interfaces'] = [c.to_yaml() for c in self.interfacetemplates.all()]
         if self.frontporttemplates.exists():
-            data['front-ports'] = [
-                c.to_yaml() for c in self.frontporttemplates.all()
-            ]
+            data['front-ports'] = [c.to_yaml() for c in self.frontporttemplates.all()]
         if self.rearporttemplates.exists():
-            data['rear-ports'] = [
-                c.to_yaml() for c in self.rearporttemplates.all()
-            ]
+            data['rear-ports'] = [c.to_yaml() for c in self.rearporttemplates.all()]
         if self.modulebaytemplates.exists():
-            data['module-bays'] = [
-                c.to_yaml() for c in self.modulebaytemplates.all()
-            ]
+            data['module-bays'] = [c.to_yaml() for c in self.modulebaytemplates.all()]
         if self.devicebaytemplates.exists():
-            data['device-bays'] = [
-                c.to_yaml() for c in self.devicebaytemplates.all()
-            ]
+            data['device-bays'] = [c.to_yaml() for c in self.devicebaytemplates.all()]
 
         return yaml.dump(dict(data), sort_keys=False)
 
@@ -290,9 +218,7 @@ class DeviceType(ImageAttachmentsMixin, PrimaryModel, WeightMixin):
 
         # U height must be divisible by 0.5
         if decimal.Decimal(self.u_height) % decimal.Decimal(0.5):
-            raise ValidationError({
-                'u_height': _("U height must be in increments of 0.5 rack units.")
-            })
+            raise ValidationError({'u_height': _('U height must be in increments of 0.5 rack units.')})
 
         # If editing an existing DeviceType to have a larger u_height, first validate that *all* instances of it have
         # room to expand within their racks. This validation will impose a very high performance penalty when there are
@@ -301,45 +227,46 @@ class DeviceType(ImageAttachmentsMixin, PrimaryModel, WeightMixin):
             for d in Device.objects.filter(device_type=self, position__isnull=False):
                 face_required = None if self.is_full_depth else d.face
                 u_available = d.rack.get_available_units(
-                    u_height=self.u_height,
-                    rack_face=face_required,
-                    exclude=[d.pk]
+                    u_height=self.u_height, rack_face=face_required, exclude=[d.pk]
                 )
                 if d.position not in u_available:
-                    raise ValidationError({
-                        'u_height': _(
-                            "Device {device} in rack {rack} does not have sufficient space to accommodate a "
-                            "height of {height}U"
-                        ).format(device=d, rack=d.rack, height=self.u_height)
-                    })
+                    raise ValidationError(
+                        {
+                            'u_height': _(
+                                'Device {device} in rack {rack} does not have sufficient space to accommodate a '
+                                'height of {height}U'
+                            ).format(device=d, rack=d.rack, height=self.u_height)
+                        }
+                    )
 
         # If modifying the height of an existing DeviceType to 0U, check for any instances assigned to a rack position.
         elif not self._state.adding and self._original_u_height > 0 and self.u_height == 0:
-            racked_instance_count = Device.objects.filter(
-                device_type=self,
-                position__isnull=False
-            ).count()
+            racked_instance_count = Device.objects.filter(device_type=self, position__isnull=False).count()
             if racked_instance_count:
-                url = f"{reverse('dcim:device_list')}?manufactuer_id={self.manufacturer_id}&device_type_id={self.pk}"
-                raise ValidationError({
-                    'u_height': mark_safe(_(
-                        'Unable to set 0U height: Found <a href="{url}">{racked_instance_count} instances</a> already '
-                        'mounted within racks.'
-                    ).format(url=url, racked_instance_count=racked_instance_count))
-                })
+                url = f'{reverse("dcim:device_list")}?manufactuer_id={self.manufacturer_id}&device_type_id={self.pk}'
+                raise ValidationError(
+                    {
+                        'u_height': mark_safe(
+                            _(
+                                'Unable to set 0U height: Found <a href="{url}">{racked_instance_count} instances</a> already '
+                                'mounted within racks.'
+                            ).format(url=url, racked_instance_count=racked_instance_count)
+                        )
+                    }
+                )
 
-        if (
-                self.subdevice_role != SubdeviceRoleChoices.ROLE_PARENT
-        ) and self.pk and self.devicebaytemplates.count():
-            raise ValidationError({
-                'subdevice_role': _("Must delete all device bay templates associated with this device before "
-                                  "declassifying it as a parent device.")
-            })
+        if (self.subdevice_role != SubdeviceRoleChoices.ROLE_PARENT) and self.pk and self.devicebaytemplates.count():
+            raise ValidationError(
+                {
+                    'subdevice_role': _(
+                        'Must delete all device bay templates associated with this device before '
+                        'declassifying it as a parent device.'
+                    )
+                }
+            )
 
         if self.u_height and self.subdevice_role == SubdeviceRoleChoices.ROLE_CHILD:
-            raise ValidationError({
-                'u_height': _("Child device types must be 0U.")
-            })
+            raise ValidationError({'u_height': _('Child device types must be 0U.')})
 
     def save(self, *args, **kwargs):
         ret = super().save(*args, **kwargs)
@@ -374,27 +301,20 @@ class DeviceType(ImageAttachmentsMixin, PrimaryModel, WeightMixin):
 # Devices
 #
 
+
 class DeviceRole(NestedGroupModel):
     """
     Devices are organized by functional role; for example, "Core Switch" or "File Server". Each DeviceRole is assigned a
     color to be used when displaying rack elevations. The vm_role field determines whether the role is applicable to
     virtual machines as well.
     """
-    color = ColorField(
-        verbose_name=_('color'),
-        default=ColorChoices.COLOR_GREY
-    )
+
+    color = ColorField(verbose_name=_('color'), default=ColorChoices.COLOR_GREY)
     vm_role = models.BooleanField(
-        default=True,
-        verbose_name=_('VM role'),
-        help_text=_('Virtual machines may be assigned to this role')
+        default=True, verbose_name=_('VM role'), help_text=_('Virtual machines may be assigned to this role')
     )
     config_template = models.ForeignKey(
-        to='extras.ConfigTemplate',
-        on_delete=models.PROTECT,
-        related_name='device_roles',
-        blank=True,
-        null=True
+        to='extras.ConfigTemplate', on_delete=models.PROTECT, related_name='device_roles', blank=True, null=True
     )
 
     clone_fields = ('parent', 'description')
@@ -402,25 +322,19 @@ class DeviceRole(NestedGroupModel):
     class Meta:
         ordering = ('name',)
         constraints = (
-            models.UniqueConstraint(
-                fields=('parent', 'name'),
-                name='%(app_label)s_%(class)s_parent_name'
-            ),
+            models.UniqueConstraint(fields=('parent', 'name'), name='%(app_label)s_%(class)s_parent_name'),
             models.UniqueConstraint(
                 fields=('name',),
                 name='%(app_label)s_%(class)s_name',
                 condition=Q(parent__isnull=True),
-                violation_error_message=_("A top-level device role with this name already exists.")
+                violation_error_message=_('A top-level device role with this name already exists.'),
             ),
-            models.UniqueConstraint(
-                fields=('parent', 'slug'),
-                name='%(app_label)s_%(class)s_parent_slug'
-            ),
+            models.UniqueConstraint(fields=('parent', 'slug'), name='%(app_label)s_%(class)s_parent_slug'),
             models.UniqueConstraint(
                 fields=('slug',),
                 name='%(app_label)s_%(class)s_slug',
                 condition=Q(parent__isnull=True),
-                violation_error_message=_("A top-level device role with this slug already exists.")
+                violation_error_message=_('A top-level device role with this slug already exists.'),
             ),
         )
         verbose_name = _('device role')
@@ -432,20 +346,17 @@ class Platform(NestedGroupModel):
     Platform refers to the software or firmware running on a Device. For example, "Cisco IOS-XR" or "Juniper Junos". A
     Platform may optionally be associated with a particular Manufacturer.
     """
+
     manufacturer = models.ForeignKey(
         to='dcim.Manufacturer',
         on_delete=models.PROTECT,
         related_name='platforms',
         blank=True,
         null=True,
-        help_text=_('Optionally limit this platform to devices of a certain manufacturer')
+        help_text=_('Optionally limit this platform to devices of a certain manufacturer'),
     )
     config_template = models.ForeignKey(
-        to='extras.ConfigTemplate',
-        on_delete=models.PROTECT,
-        related_name='platforms',
-        blank=True,
-        null=True
+        to='extras.ConfigTemplate', on_delete=models.PROTECT, related_name='platforms', blank=True, null=True
     )
 
     clone_fields = ('parent', 'description')
@@ -463,7 +374,7 @@ class Platform(NestedGroupModel):
                 fields=('name',),
                 name='%(app_label)s_%(class)s_name',
                 condition=Q(manufacturer__isnull=True),
-                violation_error_message=_("Platform name must be unique.")
+                violation_error_message=_('Platform name must be unique.'),
             ),
             models.UniqueConstraint(
                 fields=('manufacturer', 'slug'),
@@ -473,18 +384,13 @@ class Platform(NestedGroupModel):
                 fields=('slug',),
                 name='%(app_label)s_%(class)s_slug',
                 condition=Q(manufacturer__isnull=True),
-                violation_error_message=_("Platform slug must be unique.")
+                violation_error_message=_('Platform slug must be unique.'),
             ),
         )
 
 
 class Device(
-    ContactsMixin,
-    ImageAttachmentsMixin,
-    RenderConfigMixin,
-    ConfigContextModel,
-    TrackingModelMixin,
-    PrimaryModel
+    ContactsMixin, ImageAttachmentsMixin, RenderConfigMixin, ConfigContextModel, TrackingModelMixin, PrimaryModel
 ):
     """
     A Device represents a piece of physical hardware mounted within a Rack. Each Device is assigned a DeviceType,
@@ -497,43 +403,26 @@ class Device(
     by the component templates assigned to its DeviceType. Components can also be added, modified, or deleted after the
     creation of a Device.
     """
-    device_type = models.ForeignKey(
-        to='dcim.DeviceType',
-        on_delete=models.PROTECT,
-        related_name='instances'
-    )
+
+    device_type = models.ForeignKey(to='dcim.DeviceType', on_delete=models.PROTECT, related_name='instances')
     role = models.ForeignKey(
         to='dcim.DeviceRole',
         on_delete=models.PROTECT,
         related_name='devices',
-        help_text=_("The function this device serves")
+        help_text=_('The function this device serves'),
     )
     tenant = models.ForeignKey(
-        to='tenancy.Tenant',
-        on_delete=models.PROTECT,
-        related_name='devices',
-        blank=True,
-        null=True
+        to='tenancy.Tenant', on_delete=models.PROTECT, related_name='devices', blank=True, null=True
     )
     platform = models.ForeignKey(
-        to='dcim.Platform',
-        on_delete=models.SET_NULL,
-        related_name='devices',
-        blank=True,
-        null=True
+        to='dcim.Platform', on_delete=models.SET_NULL, related_name='devices', blank=True, null=True
     )
-    name = models.CharField(
-        verbose_name=_('name'),
-        max_length=64,
-        blank=True,
-        null=True,
-        db_collation="natural_sort"
-    )
+    name = models.CharField(verbose_name=_('name'), max_length=64, blank=True, null=True, db_collation='natural_sort')
     serial = models.CharField(
         max_length=50,
         blank=True,
         verbose_name=_('serial number'),
-        help_text=_("Chassis serial number, assigned by the manufacturer")
+        help_text=_('Chassis serial number, assigned by the manufacturer'),
     )
     asset_tag = models.CharField(
         max_length=50,
@@ -541,27 +430,13 @@ class Device(
         null=True,
         unique=True,
         verbose_name=_('asset tag'),
-        help_text=_('A unique tag used to identify this device')
+        help_text=_('A unique tag used to identify this device'),
     )
-    site = models.ForeignKey(
-        to='dcim.Site',
-        on_delete=models.PROTECT,
-        related_name='devices'
-    )
+    site = models.ForeignKey(to='dcim.Site', on_delete=models.PROTECT, related_name='devices')
     location = models.ForeignKey(
-        to='dcim.Location',
-        on_delete=models.PROTECT,
-        related_name='devices',
-        blank=True,
-        null=True
+        to='dcim.Location', on_delete=models.PROTECT, related_name='devices', blank=True, null=True
     )
-    rack = models.ForeignKey(
-        to='dcim.Rack',
-        on_delete=models.PROTECT,
-        related_name='devices',
-        blank=True,
-        null=True
-    )
+    rack = models.ForeignKey(to='dcim.Rack', on_delete=models.PROTECT, related_name='devices', blank=True, null=True)
     position = models.DecimalField(
         max_digits=4,
         decimal_places=1,
@@ -569,27 +444,16 @@ class Device(
         null=True,
         validators=[MinValueValidator(1), MaxValueValidator(RACK_U_HEIGHT_MAX + 0.5)],
         verbose_name=_('position (U)'),
-        help_text=_('The lowest-numbered unit occupied by the device')
+        help_text=_('The lowest-numbered unit occupied by the device'),
     )
     face = models.CharField(
-        max_length=50,
-        blank=True,
-        null=True,
-        choices=DeviceFaceChoices,
-        verbose_name=_('rack face')
+        max_length=50, blank=True, null=True, choices=DeviceFaceChoices, verbose_name=_('rack face')
     )
     status = models.CharField(
-        verbose_name=_('status'),
-        max_length=50,
-        choices=DeviceStatusChoices,
-        default=DeviceStatusChoices.STATUS_ACTIVE
+        verbose_name=_('status'), max_length=50, choices=DeviceStatusChoices, default=DeviceStatusChoices.STATUS_ACTIVE
     )
     airflow = models.CharField(
-        verbose_name=_('airflow'),
-        max_length=50,
-        choices=DeviceAirflowChoices,
-        blank=True,
-        null=True
+        verbose_name=_('airflow'), max_length=50, choices=DeviceAirflowChoices, blank=True, null=True
     )
     primary_ip4 = models.OneToOneField(
         to='ipam.IPAddress',
@@ -597,7 +461,7 @@ class Device(
         related_name='+',
         blank=True,
         null=True,
-        verbose_name=_('primary IPv4')
+        verbose_name=_('primary IPv4'),
     )
     primary_ip6 = models.OneToOneField(
         to='ipam.IPAddress',
@@ -605,7 +469,7 @@ class Device(
         related_name='+',
         blank=True,
         null=True,
-        verbose_name=_('primary IPv6')
+        verbose_name=_('primary IPv6'),
     )
     oob_ip = models.OneToOneField(
         to='ipam.IPAddress',
@@ -613,34 +477,23 @@ class Device(
         related_name='+',
         blank=True,
         null=True,
-        verbose_name=_('out-of-band IP')
+        verbose_name=_('out-of-band IP'),
     )
     cluster = models.ForeignKey(
-        to='virtualization.Cluster',
-        on_delete=models.SET_NULL,
-        related_name='devices',
-        blank=True,
-        null=True
+        to='virtualization.Cluster', on_delete=models.SET_NULL, related_name='devices', blank=True, null=True
     )
     virtual_chassis = models.ForeignKey(
-        to='VirtualChassis',
-        on_delete=models.SET_NULL,
-        related_name='members',
-        blank=True,
-        null=True
+        to='VirtualChassis', on_delete=models.SET_NULL, related_name='members', blank=True, null=True
     )
     vc_position = models.PositiveIntegerField(
-        verbose_name=_('VC position'),
-        blank=True,
-        null=True,
-        help_text=_('Virtual chassis position')
+        verbose_name=_('VC position'), blank=True, null=True, help_text=_('Virtual chassis position')
     )
     vc_priority = models.PositiveSmallIntegerField(
         verbose_name=_('VC priority'),
         blank=True,
         null=True,
         validators=[MaxValueValidator(255)],
-        help_text=_('Virtual chassis master election priority')
+        help_text=_('Virtual chassis master election priority'),
     )
     latitude = models.DecimalField(
         verbose_name=_('latitude'),
@@ -648,11 +501,8 @@ class Device(
         decimal_places=6,
         blank=True,
         null=True,
-        validators=[
-            MinValueValidator(decimal.Decimal('-90.0')),
-            MaxValueValidator(decimal.Decimal('90.0'))
-        ],
-        help_text=_("GPS coordinate in decimal format (xx.yyyyyy)")
+        validators=[MinValueValidator(decimal.Decimal('-90.0')), MaxValueValidator(decimal.Decimal('90.0'))],
+        help_text=_('GPS coordinate in decimal format (xx.yyyyyy)'),
     )
     longitude = models.DecimalField(
         verbose_name=_('longitude'),
@@ -660,11 +510,8 @@ class Device(
         decimal_places=6,
         blank=True,
         null=True,
-        validators=[
-            MinValueValidator(decimal.Decimal('-180.0')),
-            MaxValueValidator(decimal.Decimal('180.0'))
-        ],
-        help_text=_("GPS coordinate in decimal format (xx.yyyyyy)")
+        validators=[MinValueValidator(decimal.Decimal('-180.0')), MaxValueValidator(decimal.Decimal('180.0'))],
+        help_text=_('GPS coordinate in decimal format (xx.yyyyyy)'),
     )
     services = GenericRelation(
         to='ipam.Service',
@@ -674,52 +521,32 @@ class Device(
     )
 
     # Counter fields
-    console_port_count = CounterCacheField(
-        to_model='dcim.ConsolePort',
-        to_field='device'
-    )
-    console_server_port_count = CounterCacheField(
-        to_model='dcim.ConsoleServerPort',
-        to_field='device'
-    )
-    power_port_count = CounterCacheField(
-        to_model='dcim.PowerPort',
-        to_field='device'
-    )
-    power_outlet_count = CounterCacheField(
-        to_model='dcim.PowerOutlet',
-        to_field='device'
-    )
-    interface_count = CounterCacheField(
-        to_model='dcim.Interface',
-        to_field='device'
-    )
-    front_port_count = CounterCacheField(
-        to_model='dcim.FrontPort',
-        to_field='device'
-    )
-    rear_port_count = CounterCacheField(
-        to_model='dcim.RearPort',
-        to_field='device'
-    )
-    device_bay_count = CounterCacheField(
-        to_model='dcim.DeviceBay',
-        to_field='device'
-    )
-    module_bay_count = CounterCacheField(
-        to_model='dcim.ModuleBay',
-        to_field='device'
-    )
-    inventory_item_count = CounterCacheField(
-        to_model='dcim.InventoryItem',
-        to_field='device'
-    )
+    console_port_count = CounterCacheField(to_model='dcim.ConsolePort', to_field='device')
+    console_server_port_count = CounterCacheField(to_model='dcim.ConsoleServerPort', to_field='device')
+    power_port_count = CounterCacheField(to_model='dcim.PowerPort', to_field='device')
+    power_outlet_count = CounterCacheField(to_model='dcim.PowerOutlet', to_field='device')
+    interface_count = CounterCacheField(to_model='dcim.Interface', to_field='device')
+    front_port_count = CounterCacheField(to_model='dcim.FrontPort', to_field='device')
+    rear_port_count = CounterCacheField(to_model='dcim.RearPort', to_field='device')
+    device_bay_count = CounterCacheField(to_model='dcim.DeviceBay', to_field='device')
+    module_bay_count = CounterCacheField(to_model='dcim.ModuleBay', to_field='device')
+    inventory_item_count = CounterCacheField(to_model='dcim.InventoryItem', to_field='device')
 
     objects = ConfigContextModelQuerySet.as_manager()
 
     clone_fields = (
-        'device_type', 'role', 'tenant', 'platform', 'site', 'location', 'rack', 'face', 'status', 'airflow',
-        'cluster', 'virtual_chassis',
+        'device_type',
+        'role',
+        'tenant',
+        'platform',
+        'site',
+        'location',
+        'rack',
+        'face',
+        'status',
+        'airflow',
+        'cluster',
+        'virtual_chassis',
     )
     prerequisite_models = (
         'dcim.Site',
@@ -731,22 +558,21 @@ class Device(
         ordering = ('name', 'pk')  # Name may be null
         constraints = (
             models.UniqueConstraint(
-                Lower('name'), 'site', 'tenant',
-                name='%(app_label)s_%(class)s_unique_name_site_tenant'
+                Lower('name'), 'site', 'tenant', name='%(app_label)s_%(class)s_unique_name_site_tenant'
             ),
             models.UniqueConstraint(
-                Lower('name'), 'site',
+                Lower('name'),
+                'site',
                 name='%(app_label)s_%(class)s_unique_name_site',
                 condition=Q(tenant__isnull=True),
-                violation_error_message=_("Device name must be unique per site.")
+                violation_error_message=_('Device name must be unique per site.'),
             ),
             models.UniqueConstraint(
-                fields=('rack', 'position', 'face'),
-                name='%(app_label)s_%(class)s_unique_rack_position_face'
+                fields=('rack', 'position', 'face'), name='%(app_label)s_%(class)s_unique_rack_position_face'
             ),
             models.UniqueConstraint(
                 fields=('virtual_chassis', 'vc_position'),
-                name='%(app_label)s_%(class)s_unique_virtual_chassis_vc_position'
+                name='%(app_label)s_%(class)s_unique_virtual_chassis_vc_position',
             ),
         )
         verbose_name = _('device')
@@ -768,69 +594,84 @@ class Device(
 
         # Validate site/location/rack combination
         if self.rack and self.site != self.rack.site:
-            raise ValidationError({
-                'rack': _("Rack {rack} does not belong to site {site}.").format(rack=self.rack, site=self.site),
-            })
+            raise ValidationError(
+                {
+                    'rack': _('Rack {rack} does not belong to site {site}.').format(rack=self.rack, site=self.site),
+                }
+            )
         if self.location and self.site != self.location.site:
-            raise ValidationError({
-                'location': _(
-                    "Location {location} does not belong to site {site}."
-                ).format(location=self.location, site=self.site)
-            })
+            raise ValidationError(
+                {
+                    'location': _('Location {location} does not belong to site {site}.').format(
+                        location=self.location, site=self.site
+                    )
+                }
+            )
         if self.rack and self.location and self.rack.location != self.location:
-            raise ValidationError({
-                'rack': _(
-                    "Rack {rack} does not belong to location {location}."
-                ).format(rack=self.rack, location=self.location)
-            })
+            raise ValidationError(
+                {
+                    'rack': _('Rack {rack} does not belong to location {location}.').format(
+                        rack=self.rack, location=self.location
+                    )
+                }
+            )
 
         if self.rack is None:
             if self.face:
-                raise ValidationError({
-                    'face': _("Cannot select a rack face without assigning a rack."),
-                })
+                raise ValidationError(
+                    {
+                        'face': _('Cannot select a rack face without assigning a rack.'),
+                    }
+                )
             if self.position:
-                raise ValidationError({
-                    'position': _("Cannot select a rack position without assigning a rack."),
-                })
+                raise ValidationError(
+                    {
+                        'position': _('Cannot select a rack position without assigning a rack.'),
+                    }
+                )
 
         # Validate rack position and face
         if self.position and self.position % decimal.Decimal(0.5):
-            raise ValidationError({
-                'position': _("Position must be in increments of 0.5 rack units.")
-            })
+            raise ValidationError({'position': _('Position must be in increments of 0.5 rack units.')})
         if self.position and not self.face:
-            raise ValidationError({
-                'face': _("Must specify rack face when defining rack position."),
-            })
+            raise ValidationError(
+                {
+                    'face': _('Must specify rack face when defining rack position.'),
+                }
+            )
 
         # Prevent 0U devices from being assigned to a specific position
         if hasattr(self, 'device_type'):
             if self.position and self.device_type.u_height == 0:
-                raise ValidationError({
-                    'position': _(
-                        "A 0U device type ({device_type}) cannot be assigned to a rack position."
-                    ).format(device_type=self.device_type)
-                })
+                raise ValidationError(
+                    {
+                        'position': _('A 0U device type ({device_type}) cannot be assigned to a rack position.').format(
+                            device_type=self.device_type
+                        )
+                    }
+                )
 
         if self.rack:
-
             try:
                 # Child devices cannot be assigned to a rack face/unit
                 if self.device_type.is_child_device and self.face:
-                    raise ValidationError({
-                        'face': _(
-                            "Child device types cannot be assigned to a rack face. This is an attribute of the parent "
-                            "device."
-                        )
-                    })
+                    raise ValidationError(
+                        {
+                            'face': _(
+                                'Child device types cannot be assigned to a rack face. This is an attribute of the parent '
+                                'device.'
+                            )
+                        }
+                    )
                 if self.device_type.is_child_device and self.position:
-                    raise ValidationError({
-                        'position': _(
-                            "Child device types cannot be assigned to a rack position. This is an attribute of the "
-                            "parent device."
-                        )
-                    })
+                    raise ValidationError(
+                        {
+                            'position': _(
+                                'Child device types cannot be assigned to a rack position. This is an attribute of the '
+                                'parent device.'
+                            )
+                        }
+                    )
 
                 # Validate rack space
                 rack_face = self.face if not self.device_type.is_full_depth else None
@@ -839,14 +680,16 @@ class Device(
                     u_height=self.device_type.u_height, rack_face=rack_face, exclude=exclude_list
                 )
                 if self.position and self.position not in available_units:
-                    raise ValidationError({
-                        'position': _(
-                            "U{position} is already occupied or does not have sufficient space to accommodate this "
-                            "device type: {device_type} ({u_height}U)"
-                        ).format(
-                            position=self.position, device_type=self.device_type, u_height=self.device_type.u_height
-                        )
-                    })
+                    raise ValidationError(
+                        {
+                            'position': _(
+                                'U{position} is already occupied or does not have sufficient space to accommodate this '
+                                'device type: {device_type} ({u_height}U)'
+                            ).format(
+                                position=self.position, device_type=self.device_type, u_height=self.device_type.u_height
+                            )
+                        }
+                    )
 
             except DeviceType.DoesNotExist:
                 pass
@@ -855,91 +698,97 @@ class Device(
         vc_interfaces = self.vc_interfaces(if_master=False)
         if self.primary_ip4:
             if self.primary_ip4.family != 4:
-                raise ValidationError({
-                    'primary_ip4': _("{ip} is not an IPv4 address.").format(ip=self.primary_ip4)
-                })
+                raise ValidationError({'primary_ip4': _('{ip} is not an IPv4 address.').format(ip=self.primary_ip4)})
             if self.primary_ip4.assigned_object in vc_interfaces:
                 pass
             elif (
-                    self.primary_ip4.nat_inside is not None and
-                    self.primary_ip4.nat_inside.assigned_object in vc_interfaces
+                self.primary_ip4.nat_inside is not None and self.primary_ip4.nat_inside.assigned_object in vc_interfaces
             ):
                 pass
             else:
-                raise ValidationError({
-                    'primary_ip4': _(
-                        "The specified IP address ({ip}) is not assigned to this device."
-                    ).format(ip=self.primary_ip4)
-                })
+                raise ValidationError(
+                    {
+                        'primary_ip4': _('The specified IP address ({ip}) is not assigned to this device.').format(
+                            ip=self.primary_ip4
+                        )
+                    }
+                )
         if self.primary_ip6:
             if self.primary_ip6.family != 6:
-                raise ValidationError({
-                    'primary_ip6': _("{ip} is not an IPv6 address.").format(ip=self.primary_ip6)
-                })
+                raise ValidationError({'primary_ip6': _('{ip} is not an IPv6 address.').format(ip=self.primary_ip6)})
             if self.primary_ip6.assigned_object in vc_interfaces:
                 pass
             elif (
-                    self.primary_ip6.nat_inside is not None and
-                    self.primary_ip6.nat_inside.assigned_object in vc_interfaces
+                self.primary_ip6.nat_inside is not None and self.primary_ip6.nat_inside.assigned_object in vc_interfaces
             ):
                 pass
             else:
-                raise ValidationError({
-                    'primary_ip6': _(
-                        "The specified IP address ({ip}) is not assigned to this device."
-                    ).format(ip=self.primary_ip6)
-                })
+                raise ValidationError(
+                    {
+                        'primary_ip6': _('The specified IP address ({ip}) is not assigned to this device.').format(
+                            ip=self.primary_ip6
+                        )
+                    }
+                )
         if self.oob_ip:
             if self.oob_ip.assigned_object in vc_interfaces:
                 pass
             elif self.oob_ip.nat_inside is not None and self.oob_ip.nat_inside.assigned_object in vc_interfaces:
                 pass
             else:
-                raise ValidationError({
-                    'oob_ip': f"The specified IP address ({self.oob_ip}) is not assigned to this device."
-                })
+                raise ValidationError(
+                    {'oob_ip': f'The specified IP address ({self.oob_ip}) is not assigned to this device.'}
+                )
 
         # Validate manufacturer/platform
         if hasattr(self, 'device_type') and self.platform:
             if self.platform.manufacturer and self.platform.manufacturer != self.device_type.manufacturer:
-                raise ValidationError({
-                    'platform': _(
-                        "The assigned platform is limited to {platform_manufacturer} device types, but this device's "
-                        "type belongs to {devicetype_manufacturer}."
-                    ).format(
-                        platform_manufacturer=self.platform.manufacturer,
-                        devicetype_manufacturer=self.device_type.manufacturer
-                    )
-                })
+                raise ValidationError(
+                    {
+                        'platform': _(
+                            "The assigned platform is limited to {platform_manufacturer} device types, but this device's "
+                            'type belongs to {devicetype_manufacturer}.'
+                        ).format(
+                            platform_manufacturer=self.platform.manufacturer,
+                            devicetype_manufacturer=self.device_type.manufacturer,
+                        )
+                    }
+                )
 
         # A Device can only be assigned to a Cluster in the same Site (or no Site)
         if self.cluster and self.cluster._site is not None and self.cluster._site != self.site:
-            raise ValidationError({
-                'cluster': _("The assigned cluster belongs to a different site ({site})").format(
-                    site=self.cluster._site
-                )
-            })
+            raise ValidationError(
+                {
+                    'cluster': _('The assigned cluster belongs to a different site ({site})').format(
+                        site=self.cluster._site
+                    )
+                }
+            )
 
         if self.cluster and self.cluster._location is not None and self.cluster._location != self.location:
-            raise ValidationError({
-                'cluster': _("The assigned cluster belongs to a different location ({location})").format(
-                    site=self.cluster._location
-                )
-            })
+            raise ValidationError(
+                {
+                    'cluster': _('The assigned cluster belongs to a different location ({location})').format(
+                        site=self.cluster._location
+                    )
+                }
+            )
 
         # Validate virtual chassis assignment
         if self.virtual_chassis and self.vc_position is None:
-            raise ValidationError({
-                'vc_position': _("A device assigned to a virtual chassis must have its position defined.")
-            })
+            raise ValidationError(
+                {'vc_position': _('A device assigned to a virtual chassis must have its position defined.')}
+            )
 
         if hasattr(self, 'vc_master_for') and self.vc_master_for and self.vc_master_for != self.virtual_chassis:
-            raise ValidationError({
-                'virtual_chassis': _(
-                    'Device cannot be removed from virtual chassis {virtual_chassis} because it is currently '
-                    'designated as its master.'
-                ).format(virtual_chassis=self.vc_master_for)
-            })
+            raise ValidationError(
+                {
+                    'virtual_chassis': _(
+                        'Device cannot be removed from virtual chassis {virtual_chassis} because it is currently '
+                        'designated as its master.'
+                    ).format(virtual_chassis=self.vc_master_for)
+                }
+            )
 
     def _instantiate_components(self, queryset, bulk_create=True):
         """
@@ -971,12 +820,7 @@ class Device(
             # Manually send the post_save signal for each of the newly created components
             for component in components:
                 post_save.send(
-                    sender=model,
-                    instance=component,
-                    created=True,
-                    raw=False,
-                    using='default',
-                    update_fields=None
+                    sender=model, instance=component, created=True, raw=False, using='default', update_fields=None
                 )
         else:
             for obj in queryset:
@@ -1085,13 +929,12 @@ class Device(
         Return a QuerySet or PK list matching all Cables connected to a component of this Device.
         """
         from .cables import Cable
+
         cable_pks = []
-        for component_model in [
-            ConsolePort, ConsoleServerPort, PowerPort, PowerOutlet, Interface, FrontPort, RearPort
-        ]:
-            cable_pks += component_model.objects.filter(
-                device=self, cable__isnull=False
-            ).values_list('cable', flat=True)
+        for component_model in [ConsolePort, ConsoleServerPort, PowerPort, PowerOutlet, Interface, FrontPort, RearPort]:
+            cable_pks += component_model.objects.filter(device=self, cable__isnull=False).values_list(
+                'cable', flat=True
+            )
         if pk_list:
             return cable_pks
         return Cable.objects.filter(pk__in=cable_pks)
@@ -1122,33 +965,20 @@ class Device(
 # Virtual chassis
 #
 
+
 class VirtualChassis(PrimaryModel):
     """
     A collection of Devices which operate with a shared control plane (e.g. a switch stack).
     """
+
     master = models.OneToOneField(
-        to='Device',
-        on_delete=models.PROTECT,
-        related_name='vc_master_for',
-        blank=True,
-        null=True
+        to='Device', on_delete=models.PROTECT, related_name='vc_master_for', blank=True, null=True
     )
-    name = models.CharField(
-        verbose_name=_('name'),
-        max_length=64,
-        db_collation="natural_sort"
-    )
-    domain = models.CharField(
-        verbose_name=_('domain'),
-        max_length=30,
-        blank=True
-    )
+    name = models.CharField(verbose_name=_('name'), max_length=64, db_collation='natural_sort')
+    domain = models.CharField(verbose_name=_('domain'), max_length=30, blank=True)
 
     # Counter fields
-    member_count = CounterCacheField(
-        to_model='dcim.Device',
-        to_field='virtual_chassis'
-    )
+    member_count = CounterCacheField(to_model='dcim.Device', to_field='virtual_chassis')
 
     class Meta:
         ordering = ['name']
@@ -1164,25 +994,26 @@ class VirtualChassis(PrimaryModel):
         # Verify that the selected master device has been assigned to this VirtualChassis. (Skip when creating a new
         # VirtualChassis.)
         if not self._state.adding and self.master and self.master not in self.members.all():
-            raise ValidationError({
-                'master': _("The selected master ({master}) is not assigned to this virtual chassis.").format(
-                    master=self.master
-                )
-            })
+            raise ValidationError(
+                {
+                    'master': _('The selected master ({master}) is not assigned to this virtual chassis.').format(
+                        master=self.master
+                    )
+                }
+            )
 
     def delete(self, *args, **kwargs):
         # Check for LAG interfaces split across member chassis
-        interfaces = Interface.objects.filter(
-            device__in=self.members.all(),
-            lag__isnull=False
-        ).exclude(
+        interfaces = Interface.objects.filter(device__in=self.members.all(), lag__isnull=False).exclude(
             lag__device=F('device')
         )
         if interfaces:
-            raise ProtectedError(_(
-                "Unable to delete virtual chassis {self}. There are member interfaces which form a cross-chassis LAG "
-                "interfaces."
-            ).format(self=self, interfaces=InterfaceSpeedChoices))
+            raise ProtectedError(
+                _(
+                    'Unable to delete virtual chassis {self}. There are member interfaces which form a cross-chassis LAG '
+                    'interfaces.'
+                ).format(self=self, interfaces=InterfaceSpeedChoices)
+            )
 
         # Clear vc_position and vc_priority on member devices BEFORE calling super().delete()
         # This must be done here because on_delete=SET_NULL executes before pre_delete signal
@@ -1195,18 +1026,8 @@ class VirtualChassis(PrimaryModel):
 
 
 class VirtualDeviceContext(PrimaryModel):
-    device = models.ForeignKey(
-        to='Device',
-        on_delete=models.PROTECT,
-        related_name='vdcs',
-        blank=True,
-        null=True
-    )
-    name = models.CharField(
-        verbose_name=_('name'),
-        max_length=64,
-        db_collation="natural_sort"
-    )
+    device = models.ForeignKey(to='Device', on_delete=models.PROTECT, related_name='vdcs', blank=True, null=True)
+    name = models.CharField(verbose_name=_('name'), max_length=64, db_collation='natural_sort')
     status = models.CharField(
         verbose_name=_('status'),
         max_length=50,
@@ -1224,7 +1045,7 @@ class VirtualDeviceContext(PrimaryModel):
         related_name='+',
         blank=True,
         null=True,
-        verbose_name=_('primary IPv4')
+        verbose_name=_('primary IPv4'),
     )
     primary_ip6 = models.OneToOneField(
         to='ipam.IPAddress',
@@ -1232,30 +1053,29 @@ class VirtualDeviceContext(PrimaryModel):
         related_name='+',
         blank=True,
         null=True,
-        verbose_name=_('primary IPv6')
+        verbose_name=_('primary IPv6'),
     )
     tenant = models.ForeignKey(
-        to='tenancy.Tenant',
-        on_delete=models.PROTECT,
-        related_name='vdcs',
-        blank=True,
-        null=True
+        to='tenancy.Tenant', on_delete=models.PROTECT, related_name='vdcs', blank=True, null=True
     )
-    comments = models.TextField(
-        verbose_name=_('comments'),
-        blank=True
-    )
+    comments = models.TextField(verbose_name=_('comments'), blank=True)
 
     class Meta:
         ordering = ['name']
         constraints = (
             models.UniqueConstraint(
-                fields=('device', 'identifier',),
-                name='%(app_label)s_%(class)s_device_identifier'
+                fields=(
+                    'device',
+                    'identifier',
+                ),
+                name='%(app_label)s_%(class)s_device_identifier',
             ),
             models.UniqueConstraint(
-                fields=('device', 'name',),
-                name='%(app_label)s_%(class)s_device_name'
+                fields=(
+                    'device',
+                    'name',
+                ),
+                name='%(app_label)s_%(class)s_device_name',
             ),
         )
         verbose_name = _('virtual device context')
@@ -1286,47 +1106,36 @@ class VirtualDeviceContext(PrimaryModel):
             if not primary_ip:
                 continue
             if primary_ip.family != family:
-                raise ValidationError({
-                    f'primary_ip{family}': _(
-                        "{ip} is not an IPv{family} address."
-                    ).format(family=family, ip=primary_ip)
-                })
+                raise ValidationError(
+                    {
+                        f'primary_ip{family}': _('{ip} is not an IPv{family} address.').format(
+                            family=family, ip=primary_ip
+                        )
+                    }
+                )
             device_interfaces = self.device.vc_interfaces(if_master=False)
             if primary_ip.assigned_object not in device_interfaces:
-                raise ValidationError({
-                    f'primary_ip{family}': _('Primary IP address must belong to an interface on the assigned device.')
-                })
+                raise ValidationError(
+                    {f'primary_ip{family}': _('Primary IP address must belong to an interface on the assigned device.')}
+                )
 
 
 #
 # Addressing
 #
 
+
 class MACAddress(PrimaryModel):
-    mac_address = MACAddressField(
-        verbose_name=_('MAC address')
-    )
+    mac_address = MACAddressField(verbose_name=_('MAC address'))
     assigned_object_type = models.ForeignKey(
-        to='contenttypes.ContentType',
-        on_delete=models.PROTECT,
-        related_name='+',
-        blank=True,
-        null=True
+        to='contenttypes.ContentType', on_delete=models.PROTECT, related_name='+', blank=True, null=True
     )
-    assigned_object_id = models.PositiveBigIntegerField(
-        blank=True,
-        null=True
-    )
-    assigned_object = GenericForeignKey(
-        ct_field='assigned_object_type',
-        fk_field='assigned_object_id'
-    )
+    assigned_object_id = models.PositiveBigIntegerField(blank=True, null=True)
+    assigned_object = GenericForeignKey(ct_field='assigned_object_type', fk_field='assigned_object_id')
 
     class Meta:
         ordering = ('mac_address', 'pk')
-        indexes = (
-            models.Index(fields=('assigned_object_type', 'assigned_object_id')),
-        )
+        indexes = (models.Index(fields=('assigned_object_type', 'assigned_object_id')),)
         verbose_name = _('MAC address')
         verbose_name_plural = _('MAC addresses')
 
@@ -1360,9 +1169,9 @@ class MACAddress(PrimaryModel):
             ):
                 if not assigned_object:
                     raise ValidationError(
-                        _("Cannot unassign MAC Address while it is designated as the primary MAC for an object")
+                        _('Cannot unassign MAC Address while it is designated as the primary MAC for an object')
                     )
                 elif original_assigned_object != assigned_object:
                     raise ValidationError(
-                        _("Cannot reassign MAC Address while it is designated as the primary MAC for an object")
+                        _('Cannot reassign MAC Address while it is designated as the primary MAC for an object')
                     )

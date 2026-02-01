@@ -20,43 +20,38 @@ __all__ = (
 # Tunnels
 #
 
-class TunnelGroupSerializer(OrganizationalModelSerializer):
 
+class TunnelGroupSerializer(OrganizationalModelSerializer):
     # Related object counts
     tunnel_count = RelatedObjectCountField('tunnels')
 
     class Meta:
         model = TunnelGroup
         fields = [
-            'id', 'url', 'display_url', 'display', 'name', 'slug', 'description', 'owner', 'comments', 'tags',
-            'custom_fields', 'created', 'last_updated', 'tunnel_count',
+            'id',
+            'url',
+            'display_url',
+            'display',
+            'name',
+            'slug',
+            'description',
+            'owner',
+            'comments',
+            'tags',
+            'custom_fields',
+            'created',
+            'last_updated',
+            'tunnel_count',
         ]
         brief_fields = ('id', 'url', 'display', 'name', 'slug', 'description', 'tunnel_count')
 
 
 class TunnelSerializer(PrimaryModelSerializer):
-    status = ChoiceField(
-        choices=TunnelStatusChoices
-    )
-    group = TunnelGroupSerializer(
-        nested=True,
-        required=False,
-        allow_null=True,
-        default=None
-    )
-    encapsulation = ChoiceField(
-        choices=TunnelEncapsulationChoices
-    )
-    ipsec_profile = IPSecProfileSerializer(
-        nested=True,
-        required=False,
-        allow_null=True
-    )
-    tenant = TenantSerializer(
-        nested=True,
-        required=False,
-        allow_null=True
-    )
+    status = ChoiceField(choices=TunnelStatusChoices)
+    group = TunnelGroupSerializer(nested=True, required=False, allow_null=True, default=None)
+    encapsulation = ChoiceField(choices=TunnelEncapsulationChoices)
+    ipsec_profile = IPSecProfileSerializer(nested=True, required=False, allow_null=True)
+    tenant = TenantSerializer(nested=True, required=False, allow_null=True)
 
     # Related object counts
     terminations_count = RelatedObjectCountField('terminations')
@@ -64,34 +59,52 @@ class TunnelSerializer(PrimaryModelSerializer):
     class Meta:
         model = Tunnel
         fields = (
-            'id', 'url', 'display_url', 'display', 'name', 'status', 'group', 'encapsulation', 'ipsec_profile',
-            'tenant', 'tunnel_id', 'description', 'owner', 'comments', 'tags', 'custom_fields', 'created',
-            'last_updated', 'terminations_count',
+            'id',
+            'url',
+            'display_url',
+            'display',
+            'name',
+            'status',
+            'group',
+            'encapsulation',
+            'ipsec_profile',
+            'tenant',
+            'tunnel_id',
+            'description',
+            'owner',
+            'comments',
+            'tags',
+            'custom_fields',
+            'created',
+            'last_updated',
+            'terminations_count',
         )
         brief_fields = ('id', 'url', 'display', 'name', 'description')
 
 
 class TunnelTerminationSerializer(NetBoxModelSerializer):
-    tunnel = TunnelSerializer(
-        nested=True
-    )
-    role = ChoiceField(
-        choices=TunnelTerminationRoleChoices
-    )
-    termination_type = ContentTypeField(
-        queryset=ContentType.objects.all()
-    )
+    tunnel = TunnelSerializer(nested=True)
+    role = ChoiceField(choices=TunnelTerminationRoleChoices)
+    termination_type = ContentTypeField(queryset=ContentType.objects.all())
     termination = GFKSerializerField(read_only=True)
-    outside_ip = IPAddressSerializer(
-        nested=True,
-        required=False,
-        allow_null=True
-    )
+    outside_ip = IPAddressSerializer(nested=True, required=False, allow_null=True)
 
     class Meta:
         model = TunnelTermination
         fields = (
-            'id', 'url', 'display_url', 'display', 'tunnel', 'role', 'termination_type', 'termination_id',
-            'termination', 'outside_ip', 'tags', 'custom_fields', 'created', 'last_updated',
+            'id',
+            'url',
+            'display_url',
+            'display',
+            'tunnel',
+            'role',
+            'termination_type',
+            'termination_id',
+            'termination',
+            'outside_ip',
+            'tags',
+            'custom_fields',
+            'created',
+            'last_updated',
         )
         brief_fields = ('id', 'url', 'display')

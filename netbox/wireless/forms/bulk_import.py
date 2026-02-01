@@ -24,7 +24,7 @@ class WirelessLANGroupImportForm(NestedGroupModelImportForm):
         queryset=WirelessLANGroup.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_('Parent group')
+        help_text=_('Parent group'),
     )
 
     class Meta:
@@ -38,45 +38,49 @@ class WirelessLANImportForm(ScopedImportForm, PrimaryModelImportForm):
         queryset=WirelessLANGroup.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_('Assigned group')
+        help_text=_('Assigned group'),
     )
-    status = CSVChoiceField(
-        label=_('Status'),
-        choices=WirelessLANStatusChoices,
-        help_text=_('Operational status')
-    )
+    status = CSVChoiceField(label=_('Status'), choices=WirelessLANStatusChoices, help_text=_('Operational status'))
     vlan = CSVModelChoiceField(
-        label=_('VLAN'),
-        queryset=VLAN.objects.all(),
-        required=False,
-        to_field_name='name',
-        help_text=_('Bridged VLAN')
+        label=_('VLAN'), queryset=VLAN.objects.all(), required=False, to_field_name='name', help_text=_('Bridged VLAN')
     )
     tenant = CSVModelChoiceField(
         label=_('Tenant'),
         queryset=Tenant.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_('Assigned tenant')
+        help_text=_('Assigned tenant'),
     )
     auth_type = CSVChoiceField(
         label=_('Authentication type'),
         choices=WirelessAuthTypeChoices,
         required=False,
-        help_text=_('Authentication type')
+        help_text=_('Authentication type'),
     )
     auth_cipher = CSVChoiceField(
         label=_('Authentication cipher'),
         choices=WirelessAuthCipherChoices,
         required=False,
-        help_text=_('Authentication cipher')
+        help_text=_('Authentication cipher'),
     )
 
     class Meta:
         model = WirelessLAN
         fields = (
-            'ssid', 'group', 'status', 'vlan', 'tenant', 'auth_type', 'auth_cipher', 'auth_psk', 'scope_type',
-            'scope_id', 'description', 'owner', 'comments', 'tags',
+            'ssid',
+            'group',
+            'status',
+            'vlan',
+            'tenant',
+            'auth_type',
+            'auth_cipher',
+            'auth_psk',
+            'scope_type',
+            'scope_id',
+            'description',
+            'owner',
+            'comments',
+            'tags',
         )
         labels = {
             'scope_id': _('Scope ID'),
@@ -137,32 +141,44 @@ class WirelessLinkImportForm(PrimaryModelImportForm):
         queryset=Tenant.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_('Assigned tenant')
+        help_text=_('Assigned tenant'),
     )
     auth_type = CSVChoiceField(
         label=_('Authentication type'),
         choices=WirelessAuthTypeChoices,
         required=False,
-        help_text=_('Authentication type')
+        help_text=_('Authentication type'),
     )
     auth_cipher = CSVChoiceField(
         label=_('Authentication cipher'),
         choices=WirelessAuthCipherChoices,
         required=False,
-        help_text=_('Authentication cipher')
+        help_text=_('Authentication cipher'),
     )
     distance_unit = CSVChoiceField(
-        label=_('Distance unit'),
-        choices=DistanceUnitChoices,
-        required=False,
-        help_text=_('Distance unit')
+        label=_('Distance unit'), choices=DistanceUnitChoices, required=False, help_text=_('Distance unit')
     )
 
     class Meta:
         model = WirelessLink
         fields = (
-            'site_a', 'device_a', 'interface_a', 'site_b', 'device_b', 'interface_b', 'status', 'ssid', 'tenant',
-            'auth_type', 'auth_cipher', 'auth_psk', 'distance', 'distance_unit', 'description', 'owner', 'comments',
+            'site_a',
+            'device_a',
+            'interface_a',
+            'site_b',
+            'device_b',
+            'interface_b',
+            'status',
+            'ssid',
+            'tenant',
+            'auth_type',
+            'auth_cipher',
+            'auth_psk',
+            'distance',
+            'distance_unit',
+            'description',
+            'owner',
+            'comments',
             'tags',
         )
 

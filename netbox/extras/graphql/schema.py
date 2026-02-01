@@ -6,7 +6,7 @@ import strawberry_django
 from .types import *
 
 
-@strawberry.type(name="Query")
+@strawberry.type(name='Query')
 class ExtrasQuery:
     config_context: ConfigContextType = strawberry_django.field()
     config_context_list: List[ConfigContextType] = strawberry_django.field()

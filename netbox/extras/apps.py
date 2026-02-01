@@ -2,7 +2,7 @@ from django.apps import AppConfig
 
 
 class ExtrasConfig(AppConfig):
-    name = "extras"
+    name = 'extras'
 
     def ready(self):
         from netbox.models.features import register_models

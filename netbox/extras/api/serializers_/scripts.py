@@ -22,16 +22,23 @@ class ScriptSerializer(ValidatedModelSerializer):
     class Meta:
         model = Script
         fields = [
-            'id', 'url', 'display_url', 'module', 'name', 'description', 'vars', 'result', 'display', 'is_executable',
+            'id',
+            'url',
+            'display_url',
+            'module',
+            'name',
+            'description',
+            'vars',
+            'result',
+            'display',
+            'is_executable',
         ]
         brief_fields = ('id', 'url', 'display', 'name', 'description')
 
     @extend_schema_field(serializers.JSONField(allow_null=True))
     def get_vars(self, obj):
         if obj.python_class:
-            return {
-                k: v.__class__.__name__ for k, v in obj.python_class()._get_vars().items()
-            }
+            return {k: v.__class__.__name__ for k, v in obj.python_class()._get_vars().items()}
         else:
             return {}
 
@@ -53,9 +60,7 @@ class ScriptDetailSerializer(ScriptSerializer):
     @extend_schema_field(JobSerializer())
     def get_result(self, obj):
         job = obj.jobs.all().order_by('-created').first()
-        context = {
-            'request': self.context['request']
-        }
+        context = {'request': self.context['request']}
         data = JobSerializer(job, context=context).data
         return data
 

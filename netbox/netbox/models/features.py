@@ -53,22 +53,14 @@ __all__ = (
 # Feature mixins
 #
 
+
 class ChangeLoggingMixin(DeleteMixin, models.Model):
     """
     Provides change logging support for a model. Adds the `created` and `last_updated` fields.
     """
-    created = models.DateTimeField(
-        verbose_name=_('created'),
-        auto_now_add=True,
-        blank=True,
-        null=True
-    )
-    last_updated = models.DateTimeField(
-        verbose_name=_('last updated'),
-        auto_now=True,
-        blank=True,
-        null=True
-    )
+
+    created = models.DateTimeField(verbose_name=_('created'), auto_now_add=True, blank=True, null=True)
+    last_updated = models.DateTimeField(verbose_name=_('last updated'), auto_now=True, blank=True, null=True)
 
     class Meta:
         abstract = True
@@ -95,9 +87,12 @@ class ChangeLoggingMixin(DeleteMixin, models.Model):
         """
         exclude_fields = []
         if get_config().CHANGELOG_SKIP_EMPTY_CHANGES:
-            exclude_fields = ['last_updated',]
+            exclude_fields = [
+                'last_updated',
+            ]
 
         self._prechange_snapshot = self.serialize_object(exclude=exclude_fields)
+
     snapshot.alters_data = True
 
     def to_objectchange(self, action):
@@ -130,6 +125,7 @@ class CloningMixin(models.Model):
     """
     Provides the clone() method used to prepare a copy of existing objects.
     """
+
     class Meta:
         abstract = True
 
@@ -176,11 +172,8 @@ class CustomFieldsMixin(models.Model):
     """
     Enables support for custom fields.
     """
-    custom_field_data = models.JSONField(
-        encoder=CustomFieldJSONEncoder,
-        blank=True,
-        default=dict
-    )
+
+    custom_field_data = models.JSONField(encoder=CustomFieldJSONEncoder, blank=True, default=dict)
 
     class Meta:
         abstract = True
@@ -196,10 +189,7 @@ class CustomFieldsMixin(models.Model):
         {'primary_site': <Site: DM-NYC>, 'cust_id': 'DMI01', 'is_active': True}
         ```
         """
-        return {
-            cf.name: cf.deserialize(self.custom_field_data.get(cf.name))
-            for cf in self.custom_fields
-        }
+        return {cf.name: cf.deserialize(self.custom_field_data.get(cf.name)) for cf in self.custom_fields}
 
     @cached_property
     def custom_fields(self):
@@ -213,6 +203,7 @@ class CustomFieldsMixin(models.Model):
         ```
         """
         from extras.models import CustomField
+
         return CustomField.objects.get_for_model(self)
 
     def get_custom_fields(self, omit_hidden=False):
@@ -229,6 +220,7 @@ class CustomFieldsMixin(models.Model):
             omit_hidden: If True, custom fields with no UI visibility will be omitted.
         """
         from extras.models import CustomField
+
         data = {}
 
         for field in CustomField.objects.get_for_model(self):
@@ -258,6 +250,7 @@ class CustomFieldsMixin(models.Model):
         ```
         """
         from extras.models import CustomField
+
         groups = defaultdict(dict)
         visible_custom_fields = CustomField.objects.get_for_model(self).exclude(
             ui_visible=CustomFieldUIVisibleChoices.HIDDEN
@@ -278,38 +271,35 @@ class CustomFieldsMixin(models.Model):
         """
         for cf in self.custom_fields:
             self.custom_field_data[cf.name] = cf.default
+
     populate_custom_field_defaults.alters_data = True
 
     def clean(self):
         super().clean()
         from extras.models import CustomField
 
-        custom_fields = {
-            cf.name: cf for cf in CustomField.objects.get_for_model(self)
-        }
+        custom_fields = {cf.name: cf for cf in CustomField.objects.get_for_model(self)}
 
         # Remove any stale custom field data
-        self.custom_field_data = {
-            k: v for k, v in self.custom_field_data.items() if k in custom_fields.keys()
-        }
+        self.custom_field_data = {k: v for k, v in self.custom_field_data.items() if k in custom_fields.keys()}
 
         # Validate all field values
         for field_name, value in self.custom_field_data.items():
             try:
                 custom_fields[field_name].validate(value)
             except ValidationError as e:
-                raise ValidationError(_("Invalid value for custom field '{name}': {error}").format(
-                    name=field_name, error=e.message
-                ))
+                raise ValidationError(
+                    _("Invalid value for custom field '{name}': {error}").format(name=field_name, error=e.message)
+                )
 
             # Validate uniqueness if enforced
             if custom_fields[field_name].unique and value not in CUSTOMFIELD_EMPTY_VALUES:
-                if self._meta.model.objects.exclude(pk=self.pk).filter(**{
-                    f'custom_field_data__{field_name}': value
-                }).exists():
-                    raise ValidationError(_("Custom field '{name}' must have a unique value.").format(
-                        name=field_name
-                    ))
+                if (
+                    self._meta.model.objects.exclude(pk=self.pk)
+                    .filter(**{f'custom_field_data__{field_name}': value})
+                    .exists()
+                ):
+                    raise ValidationError(_("Custom field '{name}' must have a unique value.").format(name=field_name))
 
         # Check for missing required values
         for cf in custom_fields.values():
@@ -329,6 +319,7 @@ class CustomLinksMixin(models.Model):
     """
     Enables support for custom links.
     """
+
     class Meta:
         abstract = True
 
@@ -337,6 +328,7 @@ class CustomValidationMixin(models.Model):
     """
     Enables user-configured validation rules for models.
     """
+
     class Meta:
         abstract = True
 
@@ -355,6 +347,7 @@ class ExportTemplatesMixin(models.Model):
     """
     Enables support for export templates.
     """
+
     class Meta:
         abstract = True
 
@@ -363,11 +356,8 @@ class ImageAttachmentsMixin(models.Model):
     """
     Enables the assignments of ImageAttachments.
     """
-    images = GenericRelation(
-        to='extras.ImageAttachment',
-        content_type_field='object_type',
-        object_id_field='object_id'
-    )
+
+    images = GenericRelation(to='extras.ImageAttachment', content_type_field='object_type', object_id_field='object_id')
 
     class Meta:
         abstract = True
@@ -377,10 +367,9 @@ class ContactsMixin(models.Model):
     """
     Enables the assignment of Contacts to a model (via ContactAssignment).
     """
+
     contacts = GenericRelation(
-        to='tenancy.ContactAssignment',
-        content_type_field='object_type',
-        object_id_field='object_id'
+        to='tenancy.ContactAssignment', content_type_field='object_type', object_id_field='object_id'
     )
 
     class Meta:
@@ -412,11 +401,8 @@ class BookmarksMixin(models.Model):
     """
     Enables support for user bookmarks.
     """
-    bookmarks = GenericRelation(
-        to='extras.Bookmark',
-        content_type_field='object_type',
-        object_id_field='object_id'
-    )
+
+    bookmarks = GenericRelation(to='extras.Bookmark', content_type_field='object_type', object_id_field='object_id')
 
     class Meta:
         abstract = True
@@ -426,10 +412,9 @@ class NotificationsMixin(models.Model):
     """
     Enables support for user notifications.
     """
+
     subscriptions = GenericRelation(
-        to='extras.Subscription',
-        content_type_field='object_type',
-        object_id_field='object_id'
+        to='extras.Subscription', content_type_field='object_type', object_id_field='object_id'
     )
 
     class Meta:
@@ -440,11 +425,9 @@ class JobsMixin(models.Model):
     """
     Enables support for job results.
     """
+
     jobs = GenericRelation(
-        to='core.Job',
-        content_type_field='object_type',
-        object_id_field='object_id',
-        for_concrete_model=False
+        to='core.Job', content_type_field='object_type', object_id_field='object_id', for_concrete_model=False
     )
 
     class Meta:
@@ -462,10 +445,9 @@ class JournalingMixin(models.Model):
     Enables support for object journaling. Adds a generic relation (`journal_entries`)
     to NetBox's JournalEntry model.
     """
+
     journal_entries = GenericRelation(
-        to='extras.JournalEntry',
-        object_id_field='assigned_object_id',
-        content_type_field='assigned_object_type'
+        to='extras.JournalEntry', object_id_field='assigned_object_id', content_type_field='assigned_object_type'
     )
 
     class Meta:
@@ -477,6 +459,7 @@ class TagsMixin(models.Model):
     Enables support for tag assignment. Assigned tags can be managed via the `tags` attribute,
     which is a `TaggableManager` instance.
     """
+
     tags = TaggableManager(
         through='extras.TaggedItem',
         ordering=('weight', 'name'),
@@ -490,6 +473,7 @@ class EventRulesMixin(models.Model):
     """
     Enables support for event rules, which can be used to transmit webhooks or execute scripts automatically.
     """
+
     class Meta:
         abstract = True
 
@@ -498,39 +482,31 @@ class SyncedDataMixin(models.Model):
     """
     Enables population of local data from a DataFile object, synchronized from a remote DataSource.
     """
+
     data_source = models.ForeignKey(
         to='core.DataSource',
         on_delete=models.PROTECT,
         blank=True,
         null=True,
         related_name='+',
-        help_text=_("Remote data source")
+        help_text=_('Remote data source'),
     )
     data_file = models.ForeignKey(
-        to='core.DataFile',
-        on_delete=models.SET_NULL,
-        blank=True,
-        null=True,
-        related_name='+'
+        to='core.DataFile', on_delete=models.SET_NULL, blank=True, null=True, related_name='+'
     )
     data_path = models.CharField(
         verbose_name=_('data path'),
         max_length=1000,
         blank=True,
         editable=False,
-        help_text=_("Path to remote file (relative to data source root)")
+        help_text=_('Path to remote file (relative to data source root)'),
     )
     auto_sync_enabled = models.BooleanField(
         verbose_name=_('auto sync enabled'),
         default=False,
-        help_text=_("Enable automatic synchronization of data when the data file is updated")
+        help_text=_('Enable automatic synchronization of data when the data file is updated'),
     )
-    data_synced = models.DateTimeField(
-        verbose_name=_('date synced'),
-        blank=True,
-        null=True,
-        editable=False
-    )
+    data_synced = models.DateTimeField(verbose_name=_('date synced'), blank=True, null=True, editable=False)
 
     class Meta:
         abstract = True
@@ -540,7 +516,6 @@ class SyncedDataMixin(models.Model):
         return self.data_file and self.data_synced >= self.data_file.last_updated
 
     def clean(self):
-
         if self.data_file:
             self.data_source = self.data_file.source
             self.data_path = self.data_file.path
@@ -552,6 +527,7 @@ class SyncedDataMixin(models.Model):
             self.data_synced = None
 
         super().clean()
+
     clean.alters_data = True
 
     def save(self, *args, **kwargs):
@@ -563,15 +539,10 @@ class SyncedDataMixin(models.Model):
         object_type = ObjectType.objects.get_for_model(self)
         if self.auto_sync_enabled:
             AutoSyncRecord.objects.update_or_create(
-                object_type=object_type,
-                object_id=self.pk,
-                defaults={'datafile': self.data_file}
+                object_type=object_type, object_id=self.pk, defaults={'datafile': self.data_file}
             )
         else:
-            AutoSyncRecord.objects.filter(
-                object_type=object_type,
-                object_id=self.pk
-            ).delete()
+            AutoSyncRecord.objects.filter(object_type=object_type, object_id=self.pk).delete()
 
         return ret
 
@@ -580,10 +551,7 @@ class SyncedDataMixin(models.Model):
 
         # Delete AutoSyncRecord
         object_type = ObjectType.objects.get_for_model(self)
-        AutoSyncRecord.objects.filter(
-            object_type=object_type,
-            object_id=self.pk
-        ).delete()
+        AutoSyncRecord.objects.filter(object_type=object_type, object_id=self.pk).delete()
 
         return super().delete(*args, **kwargs)
 
@@ -611,6 +579,7 @@ class SyncedDataMixin(models.Model):
         self.data_synced = timezone.now()
         if save:
             self.save()
+
     sync.alters_data = True
 
     def sync_data(self):
@@ -618,9 +587,9 @@ class SyncedDataMixin(models.Model):
         Inheriting models must override this method with specific logic to copy data from the assigned DataFile
         to the local instance. This method should *NOT* call save() on the instance.
         """
-        raise NotImplementedError(_("{class_name} must implement a sync_data() method.").format(
-            class_name=self.__class__
-        ))
+        raise NotImplementedError(
+            _('{class_name} must implement a sync_data() method.').format(class_name=self.__class__)
+        )
 
 
 #
@@ -660,9 +629,7 @@ def get_model_features(model):
     """
     Return all features supported by the given model.
     """
-    return [
-        feature for feature, test_func in registry['model_features'].items() if test_func(model)
-    ]
+    return [feature for feature, test_func in registry['model_features'].items() if test_func(model)]
 
 
 def has_feature(model_or_ct, feature):
@@ -714,26 +681,16 @@ def register_models(*models):
 
         # Register applicable feature views for the model
         if issubclass(model, ContactsMixin):
-            register_model_view(model, 'contacts', kwargs={'model': model})(
-                'netbox.views.generic.ObjectContactsView'
-            )
+            register_model_view(model, 'contacts', kwargs={'model': model})('netbox.views.generic.ObjectContactsView')
         if issubclass(model, JournalingMixin):
-            register_model_view(model, 'journal', kwargs={'model': model})(
-                'netbox.views.generic.ObjectJournalView'
-            )
+            register_model_view(model, 'journal', kwargs={'model': model})('netbox.views.generic.ObjectJournalView')
         if issubclass(model, ChangeLoggingMixin):
-            register_model_view(model, 'changelog', kwargs={'model': model})(
-                'netbox.views.generic.ObjectChangeLogView'
-            )
+            register_model_view(model, 'changelog', kwargs={'model': model})('netbox.views.generic.ObjectChangeLogView')
         if issubclass(model, JobsMixin):
-            register_model_view(model, 'jobs', kwargs={'model': model})(
-                'netbox.views.generic.ObjectJobsView'
-            )
+            register_model_view(model, 'jobs', kwargs={'model': model})('netbox.views.generic.ObjectJobsView')
         if issubclass(model, ImageAttachmentsMixin):
             register_model_view(model, 'image-attachments', kwargs={'model': model})(
                 'netbox.views.generic.ObjectImageAttachmentsView'
             )
         if issubclass(model, SyncedDataMixin):
-            register_model_view(model, 'sync', kwargs={'model': model})(
-                'netbox.views.generic.ObjectSyncDataView'
-            )
+            register_model_view(model, 'sync', kwargs={'model': model})('netbox.views.generic.ObjectSyncDataView')

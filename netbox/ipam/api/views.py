@@ -31,6 +31,7 @@ class IPAMRootView(APIRootView):
     """
     IPAM API root view
     """
+
     def get_view_name(self):
         return 'IPAM'
 
@@ -38,6 +39,7 @@ class IPAMRootView(APIRootView):
 #
 # Viewsets
 #
+
 
 class ASNRangeViewSet(NetBoxModelViewSet):
     queryset = ASNRange.objects.all()
@@ -82,14 +84,14 @@ class RoleViewSet(NetBoxModelViewSet):
 
 
 class PrefixViewSet(NetBoxModelViewSet):
-    queryset = Prefix.objects.prefetch_related("scope")
+    queryset = Prefix.objects.prefetch_related('scope')
     serializer_class = serializers.PrefixSerializer
     filterset_class = filtersets.PrefixFilterSet
 
     parent_model = Prefix  # AvailableIPsMixin
 
     def get_serializer_class(self):
-        if self.action == "available_prefixes" and self.request.method == "POST":
+        if self.action == 'available_prefixes' and self.request.method == 'POST':
             return serializers.PrefixLengthSerializer
         return super().get_serializer_class()
 
@@ -105,12 +107,12 @@ class IPRangeViewSet(NetBoxModelViewSet):
 class IPAddressViewSet(NetBoxModelViewSet):
     queryset = IPAddress.objects.prefetch_related(
         GenericPrefetch(
-            "assigned_object",
+            'assigned_object',
             [
                 # serializers are taken according to IPADDRESS_ASSIGNMENT_MODELS
                 FHRPGroup.objects.all(),
-                Interface.objects.select_related("cable", "device"),
-                VMInterface.objects.select_related("virtual_machine"),
+                Interface.objects.select_related('cable', 'device'),
+                VMInterface.objects.select_related('virtual_machine'),
             ],
         ),
     )
@@ -184,6 +186,7 @@ class ServiceViewSet(NetBoxModelViewSet):
 # Views
 #
 
+
 def get_results_limit(request):
     """
     Return the lesser of the specified limit (if any) and the configured MAX_PAGE_SIZE.
@@ -203,6 +206,7 @@ class AvailableObjectsView(ObjectValidationMixin, APIView):
     """
     Return a list of dicts representing child objects that have not yet been created for a parent object.
     """
+
     read_serializer_class = None
     write_serializer_class = None
     advisory_lock_key = None
@@ -243,10 +247,14 @@ class AvailableObjectsView(ObjectValidationMixin, APIView):
         limit = get_results_limit(request)
         available_objects = self.get_available_objects(parent, limit)
 
-        serializer = self.read_serializer_class(available_objects, many=True, context={
-            'request': request,
-            **self.get_extra_context(parent),
-        })
+        serializer = self.read_serializer_class(
+            available_objects,
+            many=True,
+            context={
+                'request': request,
+                **self.get_extra_context(parent),
+            },
+        )
 
         return Response(serializer.data)
 
@@ -259,15 +267,16 @@ class AvailableObjectsView(ObjectValidationMixin, APIView):
         limit = len(requested_objects)
 
         # Serialize and validate the request data
-        serializer = self.write_serializer_class(data=requested_objects, many=True, context={
-            'request': request,
-            **self.get_extra_context(parent),
-        })
+        serializer = self.write_serializer_class(
+            data=requested_objects,
+            many=True,
+            context={
+                'request': request,
+                **self.get_extra_context(parent),
+            },
+        )
         if not serializer.is_valid():
-            return Response(
-                serializer.errors,
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
         with advisory_lock(ADVISORY_LOCK_KEYS[self.advisory_lock_key]):
             available_objects = self.get_available_objects(parent, limit)
@@ -275,8 +284,8 @@ class AvailableObjectsView(ObjectValidationMixin, APIView):
             # Determine if the requested number of objects is available
             if not self.check_sufficient_available(serializer.validated_data, available_objects):
                 return Response(
-                    {"detail": "Insufficient resources are available to satisfy the request"},
-                    status=status.HTTP_409_CONFLICT
+                    {'detail': 'Insufficient resources are available to satisfy the request'},
+                    status=status.HTTP_409_CONFLICT,
                 )
 
             # Prepare object data for deserialization
@@ -323,20 +332,22 @@ class AvailableASNsView(AvailableObjectsView):
 
     def prep_object_data(self, requested_objects, available_objects, parent):
         for i, request_data in enumerate(requested_objects):
-            request_data.update({
-                'rir': parent.rir.pk,
-                'range': parent.pk,
-                'asn': available_objects[i],
-            })
+            request_data.update(
+                {
+                    'rir': parent.rir.pk,
+                    'range': parent.pk,
+                    'asn': available_objects[i],
+                }
+            )
 
         return requested_objects
 
-    @extend_schema(methods=["get"], responses={200: serializers.AvailableASNSerializer(many=True)})
+    @extend_schema(methods=['get'], responses={200: serializers.AvailableASNSerializer(many=True)})
     def get(self, request, pk):
         return super().get(request, pk)
 
     @extend_schema(
-        methods=["post"],
+        methods=['post'],
         responses={201: serializers.ASNSerializer(many=True)},
         request=serializers.ASNSerializer(many=True),
     )
@@ -372,24 +383,25 @@ class AvailablePrefixesView(AvailableObjectsView):
     def prep_object_data(self, requested_objects, available_objects, parent):
         available_prefixes = IPSet(available_objects)
         for i, request_data in enumerate(requested_objects):
-
             # Find the first available prefix equal to or larger than the requested size
             if allocated_prefix := get_next_available_prefix(available_prefixes, request_data['prefix_length']):
-                request_data.update({
-                    'prefix': allocated_prefix,
-                    'vrf': parent.vrf.pk if parent.vrf else None,
-                })
+                request_data.update(
+                    {
+                        'prefix': allocated_prefix,
+                        'vrf': parent.vrf.pk if parent.vrf else None,
+                    }
+                )
             else:
-                raise ValidationError(_("Insufficient space is available to accommodate the requested prefix size(s)"))
+                raise ValidationError(_('Insufficient space is available to accommodate the requested prefix size(s)'))
 
         return requested_objects
 
-    @extend_schema(methods=["get"], responses={200: serializers.AvailablePrefixSerializer(many=True)})
+    @extend_schema(methods=['get'], responses={200: serializers.AvailablePrefixSerializer(many=True)})
     def get(self, request, pk):
         return super().get(request, pk)
 
     @extend_schema(
-        methods=["post"],
+        methods=['post'],
         responses={201: serializers.PrefixSerializer(many=True)},
         request=serializers.PrefixSerializer(many=True),
     )
@@ -422,19 +434,21 @@ class AvailableIPAddressesView(AvailableObjectsView):
         available_ips = iter(available_objects)
         for i, request_data in enumerate(requested_objects):
             prefix_length = request_data.pop('prefix_length', None) or parent.mask_length
-            request_data.update({
-                'address': f'{next(available_ips)}/{prefix_length}',
-                'vrf': parent.vrf.pk if parent.vrf else None,
-            })
+            request_data.update(
+                {
+                    'address': f'{next(available_ips)}/{prefix_length}',
+                    'vrf': parent.vrf.pk if parent.vrf else None,
+                }
+            )
 
         return requested_objects
 
-    @extend_schema(methods=["get"], responses={200: serializers.AvailableIPSerializer(many=True)})
+    @extend_schema(methods=['get'], responses={200: serializers.AvailableIPSerializer(many=True)})
     def get(self, request, pk):
         return super().get(request, pk)
 
     @extend_schema(
-        methods=["post"],
+        methods=['post'],
         responses={201: serializers.IPAddressSerializer(many=True)},
         request=serializers.AvailableIPRequestSerializer(many=True),
     )
@@ -443,13 +457,11 @@ class AvailableIPAddressesView(AvailableObjectsView):
 
 
 class PrefixAvailableIPAddressesView(AvailableIPAddressesView):
-
     def get_parent(self, request, pk):
         return get_object_or_404(Prefix.objects.restrict(request.user), pk=pk)
 
 
 class IPRangeAvailableIPAddressesView(AvailableIPAddressesView):
-
     def get_parent(self, request, pk):
         return get_object_or_404(IPRange.objects.restrict(request.user), pk=pk)
 
@@ -473,19 +485,21 @@ class AvailableVLANsView(AvailableObjectsView):
 
     def prep_object_data(self, requested_objects, available_objects, parent):
         for i, request_data in enumerate(requested_objects):
-            request_data.update({
-                'vid': available_objects.pop(0),
-                'group': parent.pk,
-            })
+            request_data.update(
+                {
+                    'vid': available_objects.pop(0),
+                    'group': parent.pk,
+                }
+            )
 
         return requested_objects
 
-    @extend_schema(methods=["get"], responses={200: serializers.AvailableVLANSerializer(many=True)})
+    @extend_schema(methods=['get'], responses={200: serializers.AvailableVLANSerializer(many=True)})
     def get(self, request, pk):
         return super().get(request, pk)
 
     @extend_schema(
-        methods=["post"],
+        methods=['post'],
         responses={201: serializers.VLANSerializer(many=True)},
         request=serializers.VLANSerializer(many=True),
     )

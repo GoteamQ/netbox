@@ -7,23 +7,14 @@ from ipam.utils import annotate_ip_space
 
 
 class AnnotatedIPAddressTableTest(TestCase):
-
     @classmethod
     def setUpTestData(cls):
-        cls.prefix = Prefix.objects.create(
-            prefix=IPNetwork('10.1.1.0/24'),
-            status='active'
-        )
+        cls.prefix = Prefix.objects.create(prefix=IPNetwork('10.1.1.0/24'), status='active')
 
-        cls.ip_address = IPAddress.objects.create(
-            address='10.1.1.1/24',
-            status='active'
-        )
+        cls.ip_address = IPAddress.objects.create(address='10.1.1.1/24', status='active')
 
         cls.ip_range = IPRange.objects.create(
-            start_address=IPNetwork('10.1.1.2/24'),
-            end_address=IPNetwork('10.1.1.10/24'),
-            status='active'
+            start_address=IPNetwork('10.1.1.2/24'), end_address=IPNetwork('10.1.1.10/24'), status='active'
         )
 
     def test_ipaddress_has_checkbox_iprange_does_not(self):

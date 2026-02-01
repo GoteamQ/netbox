@@ -30,8 +30,9 @@ def preferences(request):
     return {
         'preferences': user_preferences,
         'copilot_enabled': (
-            config.COPILOT_ENABLED and not django_settings.ISOLATED_DEPLOYMENT and
-            user_preferences.get('ui.copilot_enabled', False) == 'true'
+            config.COPILOT_ENABLED
+            and not django_settings.ISOLATED_DEPLOYMENT
+            and user_preferences.get('ui.copilot_enabled', False) == 'true'
         ),
     }
 

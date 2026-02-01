@@ -21,6 +21,7 @@ from tenancy.models import Tenant
 # Test model for FilterModifierMixin tests
 class TestModel(models.Model):
     """Dummy model for testing filter modifiers."""
+
     char_field = models.CharField(max_length=100, blank=True)
     integer_field = models.IntegerField(null=True, blank=True)
     decimal_field = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
@@ -49,8 +50,7 @@ class FilterModifierWidgetTest(TestCase):
         This is critical for form redisplay after validation errors.
         """
         widget = FilterModifierWidget(
-            widget=forms.TextInput(),
-            lookups=[('exact', 'Is'), ('ic', 'Contains'), ('isw', 'Starts With')]
+            widget=forms.TextInput(), lookups=[('exact', 'Is'), ('ic', 'Contains'), ('isw', 'Starts With')]
         )
         data = QueryDict('serial__ic=test123')
 
@@ -60,10 +60,7 @@ class FilterModifierWidgetTest(TestCase):
 
     def test_value_from_datadict_handles_exact_match(self):
         """Widget should detect exact match when field name has no modifier."""
-        widget = FilterModifierWidget(
-            widget=forms.TextInput(),
-            lookups=[('exact', 'Is'), ('ic', 'Contains')]
-        )
+        widget = FilterModifierWidget(widget=forms.TextInput(), lookups=[('exact', 'Is'), ('ic', 'Contains')])
         data = QueryDict('serial=test456')
 
         result = widget.value_from_datadict(data, {}, 'serial')
@@ -72,10 +69,7 @@ class FilterModifierWidgetTest(TestCase):
 
     def test_value_from_datadict_returns_none_when_no_value(self):
         """Widget should return None when no data present to avoid appearing in changed_data."""
-        widget = FilterModifierWidget(
-            widget=forms.TextInput(),
-            lookups=[('exact', 'Is'), ('ic', 'Contains')]
-        )
+        widget = FilterModifierWidget(widget=forms.TextInput(), lookups=[('exact', 'Is'), ('ic', 'Contains')])
         data = QueryDict('')
 
         result = widget.value_from_datadict(data, {}, 'serial')
@@ -85,18 +79,14 @@ class FilterModifierWidgetTest(TestCase):
     def test_get_context_includes_original_widget_and_lookups(self):
         """Widget context should include original widget context and lookup choices."""
         widget = FilterModifierWidget(
-            widget=forms.TextInput(),
-            lookups=[('exact', 'Is'), ('ic', 'Contains'), ('isw', 'Starts With')]
+            widget=forms.TextInput(), lookups=[('exact', 'Is'), ('ic', 'Contains'), ('isw', 'Starts With')]
         )
         value = 'test'
 
         context = widget.get_context('serial', value, {})
 
         self.assertIn('original_widget', context['widget'])
-        self.assertEqual(
-            context['widget']['lookups'],
-            [('exact', 'Is'), ('ic', 'Contains'), ('isw', 'Starts With')]
-        )
+        self.assertEqual(context['widget']['lookups'], [('exact', 'Is'), ('ic', 'Contains'), ('isw', 'Starts With')])
         self.assertEqual(context['widget']['field_name'], 'serial')
         self.assertEqual(context['widget']['current_modifier'], 'exact')  # Defaults to exact, JS updates from URL
         self.assertEqual(context['widget']['current_value'], 'test')
@@ -148,10 +138,7 @@ class FilterModifierWidgetTest(TestCase):
 
     def test_widget_renders_modifier_dropdown_and_input(self):
         """Widget should render modifier dropdown alongside original input."""
-        widget = FilterModifierWidget(
-            widget=forms.TextInput(),
-            lookups=[('exact', 'Is'), ('ic', 'Contains')]
-        )
+        widget = FilterModifierWidget(widget=forms.TextInput(), lookups=[('exact', 'Is'), ('ic', 'Contains')])
 
         html = widget.render('serial', 'test', {})
 
@@ -172,6 +159,7 @@ class FilterModifierMixinTest(TestCase):
 
     def test_mixin_enhances_char_field_with_modifiers(self):
         """CharField should be enhanced with contains/starts/ends modifiers."""
+
         class TestForm(FilterModifierMixin, forms.Form):
             char_field = forms.CharField(required=False)
             model = TestModel
@@ -185,6 +173,7 @@ class FilterModifierMixinTest(TestCase):
 
     def test_mixin_skips_boolean_fields(self):
         """Boolean fields should not be enhanced."""
+
         class TestForm(FilterModifierMixin, forms.Form):
             boolean_field = forms.BooleanField(required=False)
             model = TestModel
@@ -195,6 +184,7 @@ class FilterModifierMixinTest(TestCase):
 
     def test_mixin_enhances_tag_filter_field(self):
         """TagFilterField should be enhanced even though it's a MultipleChoiceField."""
+
         class TestForm(FilterModifierMixin, forms.Form):
             tag = TagFilterField(Device)
             model = Device
@@ -209,6 +199,7 @@ class FilterModifierMixinTest(TestCase):
 
     def test_mixin_enhances_integer_field(self):
         """IntegerField should be enhanced with comparison modifiers."""
+
         class TestForm(FilterModifierMixin, forms.Form):
             integer_field = forms.IntegerField(required=False)
             model = TestModel
@@ -222,6 +213,7 @@ class FilterModifierMixinTest(TestCase):
 
     def test_mixin_enhances_decimal_field(self):
         """DecimalField should be enhanced with comparison modifiers."""
+
         class TestForm(FilterModifierMixin, forms.Form):
             decimal_field = forms.DecimalField(required=False)
             model = TestModel
@@ -235,6 +227,7 @@ class FilterModifierMixinTest(TestCase):
 
     def test_mixin_enhances_date_field(self):
         """DateField should be enhanced with date-appropriate modifiers."""
+
         class TestForm(FilterModifierMixin, forms.Form):
             date_field = forms.DateField(required=False)
             model = TestModel

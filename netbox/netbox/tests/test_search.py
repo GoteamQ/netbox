@@ -8,7 +8,6 @@ from netbox.search.backends import search_backend
 
 
 class SearchBackendTestCase(TestCase):
-
     @classmethod
     def setUpTestData(cls):
         # Create sites with a value for each cacheable field defined on SiteIndex
@@ -20,7 +19,7 @@ class SearchBackendTestCase(TestCase):
                 description='First test site',
                 physical_address='123 Fake St Lincoln NE 68588',
                 shipping_address='123 Fake St Lincoln NE 68588',
-                comments='Lorem ipsum etcetera'
+                comments='Lorem ipsum etcetera',
             ),
             Site(
                 name='Site 2',
@@ -29,7 +28,7 @@ class SearchBackendTestCase(TestCase):
                 description='Second test site',
                 physical_address='725 Cyrus Valleys Suite 761 Douglasfort NE 57761',
                 shipping_address='725 Cyrus Valleys Suite 761 Douglasfort NE 57761',
-                comments='Lorem ipsum etcetera'
+                comments='Lorem ipsum etcetera',
             ),
             Site(
                 name='Site 3',
@@ -38,7 +37,7 @@ class SearchBackendTestCase(TestCase):
                 description='Third test site',
                 physical_address='2321 Dovie Dale East Cristobal AK 71959',
                 shipping_address='2321 Dovie Dale East Cristobal AK 71959',
-                comments='Lorem ipsum etcetera'
+                comments='Lorem ipsum etcetera',
             ),
         )
         Site.objects.bulk_create(sites)
@@ -52,8 +51,7 @@ class SearchBackendTestCase(TestCase):
 
         content_type = ContentType.objects.get_for_model(Site)
         self.assertEqual(
-            CachedValue.objects.filter(object_type=content_type, object_id=site.pk).count(),
-            len(SiteIndex.fields)
+            CachedValue.objects.filter(object_type=content_type, object_id=site.pk).count(), len(SiteIndex.fields)
         )
         for field_name, weight in SiteIndex.fields:
             self.assertTrue(
@@ -62,7 +60,7 @@ class SearchBackendTestCase(TestCase):
                     object_id=site.pk,
                     field=field_name,
                     value=getattr(site, field_name),
-                    weight=weight
+                    weight=weight,
                 ),
             )
 
@@ -75,8 +73,7 @@ class SearchBackendTestCase(TestCase):
 
         content_type = ContentType.objects.get_for_model(Site)
         self.assertEqual(
-            CachedValue.objects.filter(object_type=content_type).count(),
-            len(SiteIndex.fields) * sites.count()
+            CachedValue.objects.filter(object_type=content_type).count(), len(SiteIndex.fields) * sites.count()
         )
         for site in sites:
             for field_name, weight in SiteIndex.fields:
@@ -86,7 +83,7 @@ class SearchBackendTestCase(TestCase):
                         object_id=site.pk,
                         field=field_name,
                         value=getattr(site, field_name),
-                        weight=weight
+                        weight=weight,
                     ),
                 )
 
@@ -101,14 +98,13 @@ class SearchBackendTestCase(TestCase):
             description='Fourth test site',
             physical_address='7915 Lilla Plains West Ladariusport TX 19429',
             shipping_address='7915 Lilla Plains West Ladariusport TX 19429',
-            comments='Lorem ipsum etcetera'
+            comments='Lorem ipsum etcetera',
         )
         site.save()
 
         content_type = ContentType.objects.get_for_model(Site)
         self.assertEqual(
-            CachedValue.objects.filter(object_type=content_type, object_id=site.pk).count(),
-            len(SiteIndex.fields)
+            CachedValue.objects.filter(object_type=content_type, object_id=site.pk).count(), len(SiteIndex.fields)
         )
 
     def test_remove_on_delete(self):
@@ -119,9 +115,7 @@ class SearchBackendTestCase(TestCase):
         site.delete()
 
         content_type = ContentType.objects.get_for_model(Site)
-        self.assertFalse(
-            CachedValue.objects.filter(object_type=content_type, object_id=site.pk).exists()
-        )
+        self.assertFalse(CachedValue.objects.filter(object_type=content_type, object_id=site.pk).exists())
 
     def test_clear_all(self):
         """
@@ -129,14 +123,10 @@ class SearchBackendTestCase(TestCase):
         """
         sites = Site.objects.all()
         search_backend.cache(sites)
-        self.assertTrue(
-            CachedValue.objects.exists()
-        )
+        self.assertTrue(CachedValue.objects.exists())
 
         search_backend.clear()
-        self.assertFalse(
-            CachedValue.objects.exists()
-        )
+        self.assertFalse(CachedValue.objects.exists())
 
     def test_search(self):
         """

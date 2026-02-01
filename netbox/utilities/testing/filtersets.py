@@ -20,9 +20,9 @@ __all__ = (
 EXEMPT_MODEL_FIELDS = (
     'comments',
     'custom_field_data',
-    'level',    # MPTT
-    'lft',      # MPTT
-    'rght',     # MPTT
+    'level',  # MPTT
+    'lft',  # MPTT
+    'rght',  # MPTT
     'tree_id',  # MPTT
 )
 
@@ -54,7 +54,6 @@ class BaseFilterSetTests:
 
         # ForeignKey & OneToOneField
         if issubclass(field.__class__, ForeignKey) or type(field) is OneToOneRel:
-
             # Relationships to ContentType (used as part of a GFK) do not need a filter
             if field.related_model is ContentType:
                 return [(None, None)]
@@ -106,13 +105,12 @@ class BaseFilterSetTests:
 
         # Import the FilterSet class & sanity check it
         filterset = import_string(f'{app_label}.filtersets.{model_name}FilterSet')
-        self.assertEqual(model, filterset.Meta.model, "FilterSet model does not match!")
+        self.assertEqual(model, filterset.Meta.model, 'FilterSet model does not match!')
 
         filters = filterset.get_filters()
 
         # Check for missing filters
         for model_field in model._meta.get_fields():
-
             # Skip private fields
             if model_field.name.startswith('_'):
                 continue
@@ -130,17 +128,12 @@ class BaseFilterSetTests:
                 continue
 
             for filter_name, filter_class in self.get_filters_for_model_field(model_field):
-
                 if filter_name is None:
                     # Field is exempt
                     continue
 
                 # Check that the filter is defined
-                self.assertIn(
-                    filter_name,
-                    filters.keys(),
-                    f'No filter defined for {filter_name} ({model_field.name})!'
-                )
+                self.assertIn(filter_name, filters.keys(), f'No filter defined for {filter_name} ({model_field.name})!')
 
                 # Check that the filter class is correct
                 filter = filters[filter_name]
@@ -148,12 +141,11 @@ class BaseFilterSetTests:
                     self.assertIsInstance(
                         filter,
                         filter_class,
-                        f"Invalid filter class {type(filter)} for {filter_name} (should be {filter_class})!"
+                        f'Invalid filter class {type(filter)} for {filter_name} (should be {filter_class})!',
                     )
 
 
 class ChangeLoggedFilterSetTests(BaseFilterSetTests):
-
     def test_created(self):
         pk_list = self.queryset.values_list('pk', flat=True)[:2]
         self.queryset.filter(pk__in=pk_list).update(created=datetime(2021, 1, 1, 0, 0, 0, tzinfo=timezone.utc))

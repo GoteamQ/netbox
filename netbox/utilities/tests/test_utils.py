@@ -10,19 +10,15 @@ class DictToFilterParamsTest(TestCase):
     """
     Validate the operation of dict_to_filter_params().
     """
-    def test_dict_to_filter_params(self):
 
+    def test_dict_to_filter_params(self):
         input = {
             'a': True,
             'foo': {
                 'bar': 123,
                 'baz': 456,
             },
-            'x': {
-                'y': {
-                    'z': False
-                }
-            }
+            'x': {'y': {'z': False}},
         }
 
         output = {
@@ -43,10 +39,10 @@ class NormalizeQueryDictTest(TestCase):
     """
     Validate normalize_querydict() utility function.
     """
+
     def test_normalize_querydict(self):
         self.assertDictEqual(
-            normalize_querydict(QueryDict('foo=1&bar=2&bar=3&baz=')),
-            {'foo': '1', 'bar': ['2', '3'], 'baz': ''}
+            normalize_querydict(QueryDict('foo=1&bar=2&bar=3&baz=')), {'foo': '1', 'bar': ['2', '3'], 'baz': ''}
         )
 
 
@@ -54,8 +50,8 @@ class DeepMergeTest(TestCase):
     """
     Validate the behavior of the deepmerge() utility.
     """
-    def test_deepmerge(self):
 
+    def test_deepmerge(self):
         dict1 = {
             'active': True,
             'foo': 123,
@@ -126,7 +122,4 @@ class DeepMergeTest(TestCase):
             },
         }
 
-        self.assertEqual(
-            deepmerge(dict1, dict2),
-            merged
-        )
+        self.assertEqual(deepmerge(dict1, dict2), merged)

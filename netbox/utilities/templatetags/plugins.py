@@ -27,7 +27,6 @@ def _get_registered_content(obj, method, template_context):
         model_name = obj._meta.label_lower
         template_extensions.extend(registry['plugins']['template_extensions'].get(model_name, []))
     for template_extension in template_extensions:
-
         # If the class has not overridden the specified method, we can skip it (because we know it
         # will raise NotImplementedError).
         if getattr(template_extension, method) == getattr(PluginTemplateExtension, method):

@@ -7,7 +7,6 @@ from utilities.serialization import deserialize_object, serialize_object
 
 
 class SerializationTestCase(TestCase):
-
     @classmethod
     def setUpTestData(cls):
         tags = (

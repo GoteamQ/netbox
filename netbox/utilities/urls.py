@@ -4,9 +4,7 @@ from django.views.generic import View
 
 from netbox.registry import registry
 
-__all__ = (
-    'get_model_urls',
-)
+__all__ = ('get_model_urls',)
 
 
 def get_model_urls(app_label, model_name, detail=True):
@@ -23,10 +21,7 @@ def get_model_urls(app_label, model_name, detail=True):
 
     # Retrieve registered views for this model
     try:
-        views = [
-            view for view in registry['views'][app_label][model_name]
-            if view['detail'] == detail
-        ]
+        views = [view for view in registry['views'][app_label][model_name] if view['detail'] == detail]
     except KeyError:
         # No views have been registered for this model
         return []
@@ -41,10 +36,8 @@ def get_model_urls(app_label, model_name, detail=True):
             view_ = view_.as_view()
 
         # Create a path to the view
-        name = f"{model_name}_{config['name']}" if config['name'] else model_name
-        url_path = f"{config['path']}/" if config['path'] else ''
-        paths.append(
-            path(url_path, view_, name=name, kwargs=config['kwargs'])
-        )
+        name = f'{model_name}_{config["name"]}' if config['name'] else model_name
+        url_path = f'{config["path"]}/' if config['path'] else ''
+        paths.append(path(url_path, view_, name=name, kwargs=config['kwargs']))
 
     return paths

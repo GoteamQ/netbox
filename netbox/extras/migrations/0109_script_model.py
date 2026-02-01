@@ -103,20 +103,12 @@ def update_scripts(apps, schema_editor):
 
             # Update all Jobs associated with this ScriptModule & script name to point to the new Script object
             Job.objects.using(db_alias).filter(
-                object_type_id=scriptmodule_ct.id,
-                object_id=module.pk,
-                name=script_name
-            ).update(
-                object_type_id=script_ct.id, object_id=script.pk
-            )
+                object_type_id=scriptmodule_ct.id, object_id=module.pk, name=script_name
+            ).update(object_type_id=script_ct.id, object_id=script.pk)
             # Update all Jobs associated with this ScriptModule & script name to point to the new Script object
             Job.objects.using(db_alias).filter(
-                object_type_id=reportmodule_ct.id,
-                object_id=module.pk,
-                name=script_name
-            ).update(
-                object_type_id=script_ct.id, object_id=script.pk
-            )
+                object_type_id=reportmodule_ct.id, object_id=module.pk, name=script_name
+            ).update(object_type_id=script_ct.id, object_id=script.pk)
 
 
 def update_event_rules(apps, schema_editor):
@@ -136,13 +128,10 @@ def update_event_rules(apps, schema_editor):
     for eventrule in EventRule.objects.using(db_alias).filter(action_object_type=scriptmodule_ct):
         name = eventrule.action_parameters.get('script_name')
         obj, __ = Script.objects.using(db_alias).get_or_create(
-            module_id=eventrule.action_object_id,
-            name=name,
-            defaults={'is_executable': False}
+            module_id=eventrule.action_object_id, name=name, defaults={'is_executable': False}
         )
         EventRule.objects.using(db_alias).filter(pk=eventrule.pk).update(
-            action_object_type=script_ct,
-            action_object_id=obj.id
+            action_object_type=script_ct, action_object_id=obj.id
         )
 
 

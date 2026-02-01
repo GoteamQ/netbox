@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('ipam', '0076_natural_ordering'),
         ('tenancy', '0017_natural_ordering'),

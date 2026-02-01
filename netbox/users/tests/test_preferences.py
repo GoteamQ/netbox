@@ -46,7 +46,7 @@ class UserPreferencesTest(TestCase):
 
     def test_table_ordering(self):
         url = reverse('dcim:site_list')
-        response = self.client.get(f"{url}?sort=status")
+        response = self.client.get(f'{url}?sort=status')
         self.assertEqual(response.status_code, 200)
 
         # Check that table ordering preference has been recorded

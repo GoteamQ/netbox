@@ -17,9 +17,7 @@ class PluginMenu:
 
     def __init__(self, label, groups, icon_class=None):
         self.label = label
-        self.groups = [
-            MenuGroup(label, items) for label, items in groups
-        ]
+        self.groups = [MenuGroup(label, items) for label, items in groups]
         if icon_class is not None:
             self.icon_class = icon_class
 
@@ -37,11 +35,10 @@ class PluginMenuItem:
     Alternatively, a pre-generated url can be set on the object which will be rendered literally.
     Buttons are each specified as a list of PluginMenuButton instances.
     """
+
     _url = None
 
-    def __init__(
-        self, link, link_text, auth_required=False, staff_only=False, permissions=None, buttons=None
-    ):
+    def __init__(self, link, link_text, auth_required=False, staff_only=False, permissions=None, buttons=None):
         self.link = link
         self.link_text = link_text
         self.auth_required = auth_required
@@ -50,13 +47,13 @@ class PluginMenuItem:
             self._url = reverse_lazy(link)
         if permissions is not None:
             if type(permissions) not in (list, tuple):
-                raise TypeError(_("Permissions must be passed as a tuple or list."))
+                raise TypeError(_('Permissions must be passed as a tuple or list.'))
             self.permissions = permissions
         else:
             self.permissions = []
         if buttons is not None:
             if type(buttons) not in (list, tuple):
-                raise TypeError(_("Buttons must be passed as a tuple or list."))
+                raise TypeError(_('Buttons must be passed as a tuple or list.'))
             self.buttons = buttons
         else:
             self.buttons = []
@@ -75,6 +72,7 @@ class PluginMenuButton:
     This class represents a button within a PluginMenuItem. Note that button colors should come from
     ButtonColorChoices.
     """
+
     color = ButtonColorChoices.DEFAULT
     _url = None
 
@@ -86,13 +84,13 @@ class PluginMenuButton:
             self._url = reverse_lazy(link)
         if permissions is not None:
             if type(permissions) not in (list, tuple):
-                raise TypeError(_("Permissions must be passed as a tuple or list."))
+                raise TypeError(_('Permissions must be passed as a tuple or list.'))
             self.permissions = permissions
         else:
             self.permissions = []
         if color is not None:
             if color not in ButtonColorChoices.values():
-                raise ValueError(_("Button color must be a choice within ButtonColorChoices."))
+                raise ValueError(_('Button color must be a choice within ButtonColorChoices.'))
             self.color = color
 
     @property

@@ -6,7 +6,7 @@ import strawberry_django
 from .types import *
 
 
-@strawberry.type(name="Query")
+@strawberry.type(name='Query')
 class DCIMQuery:
     cable: CableType = strawberry_django.field()
     cable_list: List[CableType] = strawberry_django.field()

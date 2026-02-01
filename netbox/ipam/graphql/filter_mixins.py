@@ -9,9 +9,7 @@ if TYPE_CHECKING:
     from netbox.graphql.filter_lookups import IntegerLookup
     from .enums import *
 
-__all__ = (
-    'ServiceFilterMixin',
-)
+__all__ = ('ServiceFilterMixin',)
 
 
 @dataclass

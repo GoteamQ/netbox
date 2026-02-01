@@ -14,12 +14,7 @@ __all__ = (
 )
 
 
-@strawberry_django.type(
-    Group,
-    fields=['id', 'name'],
-    filters=GroupFilter,
-    pagination=True
-)
+@strawberry_django.type(Group, fields=['id', 'name'], filters=GroupFilter, pagination=True)
 class GroupType(BaseObjectType):
     pass
 
@@ -27,30 +22,29 @@ class GroupType(BaseObjectType):
 @strawberry_django.type(
     User,
     fields=[
-        'id', 'username', 'first_name', 'last_name', 'email', 'is_active', 'date_joined', 'groups',
+        'id',
+        'username',
+        'first_name',
+        'last_name',
+        'email',
+        'is_active',
+        'date_joined',
+        'groups',
     ],
     filters=UserFilter,
-    pagination=True
+    pagination=True,
 )
 class UserType(BaseObjectType):
     groups: List[GroupType]
 
 
-@strawberry_django.type(
-    OwnerGroup,
-    fields=['id', 'name', 'description'],
-    filters=OwnerGroupFilter,
-    pagination=True
-)
+@strawberry_django.type(OwnerGroup, fields=['id', 'name', 'description'], filters=OwnerGroupFilter, pagination=True)
 class OwnerGroupType(BaseObjectType):
     pass
 
 
 @strawberry_django.type(
-    Owner,
-    fields=['id', 'group', 'name', 'description', 'user_groups', 'users'],
-    filters=OwnerFilter,
-    pagination=True
+    Owner, fields=['id', 'group', 'name', 'description', 'user_groups', 'users'], filters=OwnerFilter, pagination=True
 )
 class OwnerType(BaseObjectType):
     group: OwnerGroupType | None
