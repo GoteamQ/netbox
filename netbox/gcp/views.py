@@ -28,6 +28,7 @@ class GCPOrganizationListView(generic.ObjectListView):
 @register_model_view(GCPOrganization)
 class GCPOrganizationView(generic.ObjectView):
     queryset = GCPOrganization.objects.all()
+    template_name = 'gcp/gcporganization.html'
 
     def get_extra_context(self, request, instance):
         discovery_logs = DiscoveryLog.objects.filter(organization=instance).order_by('-started_at')[:10]
@@ -90,6 +91,36 @@ class GCPOrganizationCancelView(View):
         organization.save()
 
         messages.warning(request, f"Cancellation requested for {organization.name}.")
+        return redirect('gcp:gcporganization', pk=pk)
+
+
+class GCPOrganizationClearView(generic.ObjectDeleteView):
+    queryset = GCPOrganization.objects.all()
+    template_name = 'gcp/gcporganization_clear.html'
+
+    def post(self, request, pk):
+        organization = get_object_or_404(GCPOrganization, pk=pk)
+        
+        # Delete logs
+        logs = DiscoveryLog.objects.filter(organization=organization)
+        logs_count = logs.count()
+        logs.delete()
+
+        # Delete projects (cascades)
+        projects = GCPProject.objects.filter(organization=organization)
+        proj_count = projects.count()
+        
+        # Iterate and delete to avoid OOM on large datasets
+        for project in projects:
+            project.delete()
+
+        # Reset org status
+        organization.discovery_status = 'pending'
+        organization.last_discovery = None
+        organization.discovery_error = ''
+        organization.save()
+        
+        messages.success(request, f"Cleared {proj_count} projects and {logs_count} logs for {organization.name}.")
         return redirect('gcp:gcporganization', pk=pk)
 
 
@@ -1243,3 +1274,70 @@ class InterconnectAttachmentBulkImportView(generic.BulkImportView):
 class InterconnectAttachmentBulkDeleteView(generic.BulkDeleteView):
     queryset = InterconnectAttachment.objects.all()
     table = tables.InterconnectAttachmentTable
+
+
+from .models import ServiceAttachment, ServiceConnectEndpoint
+
+
+class ServiceAttachmentListView(generic.ObjectListView):
+    queryset = ServiceAttachment.objects.all()
+    table = tables.ServiceAttachmentTable
+    filterset = filtersets.ServiceAttachmentFilterSet
+
+
+@register_model_view(ServiceAttachment)
+class ServiceAttachmentView(generic.ObjectView):
+    queryset = ServiceAttachment.objects.all()
+
+
+@register_model_view(ServiceAttachment, 'edit')
+class ServiceAttachmentEditView(generic.ObjectEditView):
+    queryset = ServiceAttachment.objects.all()
+    form = forms.ServiceAttachmentForm
+
+
+@register_model_view(ServiceAttachment, 'delete')
+class ServiceAttachmentDeleteView(generic.ObjectDeleteView):
+    queryset = ServiceAttachment.objects.all()
+
+
+class ServiceAttachmentBulkImportView(generic.BulkImportView):
+    queryset = ServiceAttachment.objects.all()
+    model_form = forms.ServiceAttachmentForm
+
+
+class ServiceAttachmentBulkDeleteView(generic.BulkDeleteView):
+    queryset = ServiceAttachment.objects.all()
+    table = tables.ServiceAttachmentTable
+
+
+class ServiceConnectEndpointListView(generic.ObjectListView):
+    queryset = ServiceConnectEndpoint.objects.all()
+    table = tables.ServiceConnectEndpointTable
+    filterset = filtersets.ServiceConnectEndpointFilterSet
+
+
+@register_model_view(ServiceConnectEndpoint)
+class ServiceConnectEndpointView(generic.ObjectView):
+    queryset = ServiceConnectEndpoint.objects.all()
+
+
+@register_model_view(ServiceConnectEndpoint, 'edit')
+class ServiceConnectEndpointEditView(generic.ObjectEditView):
+    queryset = ServiceConnectEndpoint.objects.all()
+    form = forms.ServiceConnectEndpointForm
+
+
+@register_model_view(ServiceConnectEndpoint, 'delete')
+class ServiceConnectEndpointDeleteView(generic.ObjectDeleteView):
+    queryset = ServiceConnectEndpoint.objects.all()
+
+
+class ServiceConnectEndpointBulkImportView(generic.BulkImportView):
+    queryset = ServiceConnectEndpoint.objects.all()
+    model_form = forms.ServiceConnectEndpointForm
+
+
+class ServiceConnectEndpointBulkDeleteView(generic.BulkDeleteView):
+    queryset = ServiceConnectEndpoint.objects.all()
+    table = tables.ServiceConnectEndpointTable

@@ -1,0 +1,27 @@
+{% extends 'generic/object.html' %}
+
+{% block extra_controls %}
+      {% if object.discovery_status == 'running' %}
+        <form action="{% url 'gcp:gcporganization_cancel' object.pk %}" method="post" style="display: inline-block;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-warning">
+                <i class="mdi mdi-close-circle"></i> Cancel
+            </button>
+        </form>
+      {% else %}
+        <form action="{% url 'gcp:gcporganization_discover' object.pk %}" method="post" style="display: inline-block;">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">
+                <i class="mdi mdi-refresh"></i> Discover
+            </button>
+        </form>
+      {% endif %}
+      
+      <a href="{% url 'gcp:gcporganization_clear' object.pk %}" class="btn btn-danger">
+          <i class="mdi mdi-delete-alert"></i> Clear
+      </a>
+{% endblock %}
+
+{% block content %}
+    {{ block.super }}
+{% endblock %}

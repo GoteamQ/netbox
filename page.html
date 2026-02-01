@@ -1,0 +1,1927 @@
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html
+  lang="en"
+  data-netbox-url-name="gcporganization"
+  data-netbox-version="4.5.1"
+  
+    data-netbox-user-name="admin"
+    data-netbox-user-id="1"
+  
+  >
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="initial-scale=1, maximum-scale=5, width=device-width, viewport-fit=cover" />
+    <meta name="htmx-config" content='{"scrollBehavior": "auto"}'>
+    <meta name="hostname" content="42f579db1828" />
+
+    
+    <title>qiddiya.sa (184251572882) | NetBox</title>
+
+    
+    <script
+      type="text/javascript"
+      src="/static/setmode.js?v=4.5.1"
+      onerror="window.location='/media-failure/?filename=setmode.js'">
+    </script>
+    <script type="text/javascript">
+      (function () {
+        initMode()
+      })();
+      window.CSRF_TOKEN = "LPsx8iKAYq8SHjiNHSeibGjY1A8iTAQFEZxoyqGwZx4u1GdebLW6qZvKTmtYMd53";
+    </script>
+
+    
+    <link
+      rel="stylesheet"
+      href="/static/netbox-external.css?v=4.5.1"
+      onerror="window.location='/media-failure/?filename=netbox-external.css'"
+    />
+    <link
+      rel="stylesheet"
+      href="/static/netbox.css?v=4.5.1"
+      onerror="window.location='/media-failure/?filename=netbox.css'"
+    />
+    <link rel="icon" type="image/png" href="/static/netbox.ico" />
+    <link rel="apple-touch-icon" type="image/png" href="/static/netbox_touch-icon-180.png" />
+
+    
+    <script
+      type="text/javascript"
+      src="/static/netbox.js?v=4.5.1"
+      onerror="window.location='/media-failure/?filename=netbox.js'">
+    </script>
+    
+
+    
+    
+    
+
+  </head>
+  <body>
+
+    
+    
+
+  <div class="page">
+
+    
+    <aside class="navbar navbar-vertical navbar-expand-lg d-print-none">
+
+      
+
+      <div class="container-fluid">
+
+        
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sidebar-menu" aria-controls="sidebar-menu" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        
+        <h1 class="navbar-brand pb-0">
+          <a href="/">
+            <img src="/static/logo_netbox_dark_teal.svg" alt="NetBox Logo" class="navbar-brand-image hide-theme-dark">
+            <img src="/static/logo_netbox_bright_teal.svg" alt="NetBox Logo" class="navbar-brand-image hide-theme-light">
+            <div class="netbox-edition fw-semibold text-center fs-5 my-1">Community</div>
+          </a>
+        </h1>
+
+        
+        <div class="navbar-nav flex-row align-items-center d-lg-none">
+          
+          
+
+<div class="d-flex ms-2">
+  <button class="nav-link color-mode-toggle hide-theme-dark fs-2 p-0 text-secondary" title="Enable dark mode" data-bs-toggle="tooltip" data-bs-placement="bottom">
+    <i class="mdi mdi-lightbulb"></i>
+  </button>
+  <button class="nav-link color-mode-toggle hide-theme-light fs-2 p-0 text-secondary" title="Enable light mode" data-bs-toggle="tooltip" data-bs-placement="bottom">
+    <i class="mdi mdi-lightbulb-on"></i>
+  </button>
+</div>
+
+          
+
+
+
+
+
+  
+  
+    <div class="dropdown">
+      <button class="nav-link fs-2 p-0" data-bs-toggle="dropdown" hx-get="/extras/notifications/" hx-target="next .notifications" aria-label="Notifications">
+        
+  <span class="text-muted" id="notifications-alert" hx-swap-oob="true">
+    <i class="mdi mdi-bell"></i>
+  </span>
+
+
+      </button>
+      <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications"></div>
+    </div>
+  
+
+  
+  <div class="nav-item dropdown">
+    <a href="#" class="nav-link d-flex lh-1 text-reset p-0" data-bs-toggle="dropdown" aria-label="Open user menu">
+      <div class="d-xl-block ps-2">
+        <div>admin</div>
+        <div class="mt-1 small text-secondary">
+          
+            Admin
+          
+        </div>
+      </div>
+    </a>
+    <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+      <a href="/user/profile/" class="dropdown-item">
+        <i class="dropdown-item-icon mdi mdi-account"></i> Profile
+      </a>
+      <a href="/user/bookmarks/" class="dropdown-item">
+        <i class="dropdown-item-icon mdi mdi-bookmark"></i> Bookmarks
+      </a>
+      <a href="/user/subscriptions/" class="dropdown-item">
+        <i class="dropdown-item-icon mdi mdi-bell"></i> Subscriptions
+      </a>
+      <a href="/user/preferences/" class="dropdown-item">
+        <i class="dropdown-item-icon mdi mdi-wrench"></i> Preferences
+      </a>
+      <a href="/user/api-tokens/" class="dropdown-item">
+        <i class="dropdown-item-icon mdi mdi-key"></i> API Tokens
+      </a>
+      <hr class="dropdown-divider" />
+      <a href="/logout/" hx-disable="true" class="dropdown-item">
+        <i class="dropdown-item-icon mdi mdi-logout-variant"></i> Log Out
+      </a>
+    </div>
+  </div>
+
+
+        </div>
+
+        
+        <div class="collapse navbar-collapse" id="sidebar-menu">
+          
+
+
+
+<ul class="navbar-nav pt-lg-2">
+  <li class="nav-item d-block d-lg-none">
+    <form action="/search/" method="get" autocomplete="off" novalidate>
+      <div class="input-group mb-1 mt-2">
+        <div class="input-group-prepend">
+          <span class="input-group-text">
+            <i class="mdi mdi-magnify"></i>
+          </span>
+        </div>
+        <input type="text" name="q" value="" class="form-control" placeholder="Search…" aria-label="Search NetBox">
+        <div class="input-group-append">
+          <button type="submit" class="form-control">Search</button>
+        </div>
+      </div>
+    </form>
+  </li>
+  
+    <li class="nav-item dropdown">
+
+      
+      <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" data-bs-auto-close="false" role="button" aria-expanded="false" >
+        <span class="nav-link-icon d-md-none d-lg-inline-block">
+          <i class="mdi mdi-google-cloud"></i>
+        </span>
+        <span class="nav-link-title">
+          Google Cloud
+        </span>
+      </a>
+
+      
+      <div class="dropdown-menu">
+        <div class="dropdown-menu-columns">
+          <div class="dropdown-menu-column pb-2">
+            
+              <div class="text-uppercase text-secondary fw-bold fs-5 ps-3 pt-3 pb-1">
+                Organizations
+              </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/gcp/organizations/" class="d-inline-flex flex-fill py-1">GCP Organizations</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/gcp/organizations/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/gcp/discovery-logs/" class="d-inline-flex flex-fill py-1">Discovery Logs</a>
+                  
+                </div>
+              
+            
+              <div class="text-uppercase text-secondary fw-bold fs-5 ps-3 pt-3 pb-1">
+                Projects
+              </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/gcp/projects/" class="d-inline-flex flex-fill py-1">GCP Projects</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/gcp/projects/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                        <a href="/gcp/projects/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+            
+              <div class="text-uppercase text-secondary fw-bold fs-5 ps-3 pt-3 pb-1">
+                Compute
+              </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/gcp/compute-instances/" class="d-inline-flex flex-fill py-1">Compute Instances</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/gcp/compute-instances/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                        <a href="/gcp/compute-instances/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/gcp/instance-templates/" class="d-inline-flex flex-fill py-1">Instance Templates</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/gcp/instance-templates/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                        <a href="/gcp/instance-templates/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/gcp/instance-groups/" class="d-inline-flex flex-fill py-1">Instance Groups</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/gcp/instance-groups/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                        <a href="/gcp/instance-groups/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+            
+              <div class="text-uppercase text-secondary fw-bold fs-5 ps-3 pt-3 pb-1">
+                Networking
+              </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/gcp/vpc-networks/" class="d-inline-flex flex-fill py-1">VPC Networks</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/gcp/vpc-networks/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                        <a href="/gcp/vpc-networks/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/gcp/subnets/" class="d-inline-flex flex-fill py-1">Subnets</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/gcp/subnets/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                        <a href="/gcp/subnets/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/gcp/firewall-rules/" class="d-inline-flex flex-fill py-1">Firewall Rules</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/gcp/firewall-rules/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                        <a href="/gcp/firewall-rules/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/gcp/cloud-routers/" class="d-inline-flex flex-fill py-1">Cloud Routers</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/gcp/cloud-routers/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                        <a href="/gcp/cloud-routers/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/gcp/cloud-nats/" class="d-inline-flex flex-fill py-1">Cloud NAT</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/gcp/cloud-nats/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                        <a href="/gcp/cloud-nats/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/gcp/load-balancers/" class="d-inline-flex flex-fill py-1">Load Balancers</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/gcp/load-balancers/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                        <a href="/gcp/load-balancers/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+            
+              <div class="text-uppercase text-secondary fw-bold fs-5 ps-3 pt-3 pb-1">
+                Network Connectivity
+              </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/gcp/ncc-hubs/" class="d-inline-flex flex-fill py-1">NCC Hubs</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/gcp/ncc-hubs/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                        <a href="/gcp/ncc-hubs/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/gcp/ncc-spokes/" class="d-inline-flex flex-fill py-1">NCC Spokes</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/gcp/ncc-spokes/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                        <a href="/gcp/ncc-spokes/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/gcp/interconnect-attachments/" class="d-inline-flex flex-fill py-1">Interconnect Attachments</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/gcp/interconnect-attachments/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                        <a href="/gcp/interconnect-attachments/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+            
+              <div class="text-uppercase text-secondary fw-bold fs-5 ps-3 pt-3 pb-1">
+                Hybrid Connectivity
+              </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/gcp/vpn-gateways/" class="d-inline-flex flex-fill py-1">VPN Gateways</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/gcp/vpn-gateways/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                        <a href="/gcp/vpn-gateways/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/gcp/external-vpn-gateways/" class="d-inline-flex flex-fill py-1">External VPN Gateways</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/gcp/external-vpn-gateways/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                        <a href="/gcp/external-vpn-gateways/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/gcp/vpn-tunnels/" class="d-inline-flex flex-fill py-1">VPN Tunnels</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/gcp/vpn-tunnels/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                        <a href="/gcp/vpn-tunnels/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+            
+              <div class="text-uppercase text-secondary fw-bold fs-5 ps-3 pt-3 pb-1">
+                Databases
+              </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/gcp/cloud-sql/" class="d-inline-flex flex-fill py-1">Cloud SQL</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/gcp/cloud-sql/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                        <a href="/gcp/cloud-sql/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/gcp/cloud-spanner/" class="d-inline-flex flex-fill py-1">Cloud Spanner</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/gcp/cloud-spanner/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                        <a href="/gcp/cloud-spanner/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/gcp/firestore/" class="d-inline-flex flex-fill py-1">Firestore</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/gcp/firestore/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                        <a href="/gcp/firestore/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/gcp/bigtable/" class="d-inline-flex flex-fill py-1">Bigtable</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/gcp/bigtable/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                        <a href="/gcp/bigtable/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/gcp/memorystore/" class="d-inline-flex flex-fill py-1">Memorystore</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/gcp/memorystore/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                        <a href="/gcp/memorystore/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+            
+              <div class="text-uppercase text-secondary fw-bold fs-5 ps-3 pt-3 pb-1">
+                Storage
+              </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/gcp/storage-buckets/" class="d-inline-flex flex-fill py-1">Cloud Storage Buckets</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/gcp/storage-buckets/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                        <a href="/gcp/storage-buckets/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/gcp/persistent-disks/" class="d-inline-flex flex-fill py-1">Persistent Disks</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/gcp/persistent-disks/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                        <a href="/gcp/persistent-disks/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+            
+              <div class="text-uppercase text-secondary fw-bold fs-5 ps-3 pt-3 pb-1">
+                Kubernetes
+              </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/gcp/gke-clusters/" class="d-inline-flex flex-fill py-1">GKE Clusters</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/gcp/gke-clusters/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                        <a href="/gcp/gke-clusters/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/gcp/gke-node-pools/" class="d-inline-flex flex-fill py-1">Node Pools</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/gcp/gke-node-pools/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                        <a href="/gcp/gke-node-pools/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+            
+              <div class="text-uppercase text-secondary fw-bold fs-5 ps-3 pt-3 pb-1">
+                Serverless
+              </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/gcp/cloud-functions/" class="d-inline-flex flex-fill py-1">Cloud Functions</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/gcp/cloud-functions/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                        <a href="/gcp/cloud-functions/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/gcp/cloud-run/" class="d-inline-flex flex-fill py-1">Cloud Run</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/gcp/cloud-run/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                        <a href="/gcp/cloud-run/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+            
+              <div class="text-uppercase text-secondary fw-bold fs-5 ps-3 pt-3 pb-1">
+                Messaging
+              </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/gcp/pubsub-topics/" class="d-inline-flex flex-fill py-1">Pub/Sub Topics</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/gcp/pubsub-topics/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                        <a href="/gcp/pubsub-topics/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/gcp/pubsub-subscriptions/" class="d-inline-flex flex-fill py-1">Pub/Sub Subscriptions</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/gcp/pubsub-subscriptions/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                        <a href="/gcp/pubsub-subscriptions/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+            
+              <div class="text-uppercase text-secondary fw-bold fs-5 ps-3 pt-3 pb-1">
+                Security
+              </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/gcp/secrets/" class="d-inline-flex flex-fill py-1">Secret Manager</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/gcp/secrets/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                        <a href="/gcp/secrets/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+            
+              <div class="text-uppercase text-secondary fw-bold fs-5 ps-3 pt-3 pb-1">
+                DNS
+              </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/gcp/dns-zones/" class="d-inline-flex flex-fill py-1">DNS Zones</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/gcp/dns-zones/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                        <a href="/gcp/dns-zones/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/gcp/dns-records/" class="d-inline-flex flex-fill py-1">DNS Records</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/gcp/dns-records/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                        <a href="/gcp/dns-records/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+            
+              <div class="text-uppercase text-secondary fw-bold fs-5 ps-3 pt-3 pb-1">
+                IAM
+              </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/gcp/service-accounts/" class="d-inline-flex flex-fill py-1">Service Accounts</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/gcp/service-accounts/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                        <a href="/gcp/service-accounts/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/gcp/iam-roles/" class="d-inline-flex flex-fill py-1">IAM Roles</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/gcp/iam-roles/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                        <a href="/gcp/iam-roles/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/gcp/iam-bindings/" class="d-inline-flex flex-fill py-1">IAM Bindings</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/gcp/iam-bindings/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                        <a href="/gcp/iam-bindings/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+            
+          </div>
+        </div>
+      </div>
+
+    </li>
+  
+    <li class="nav-item dropdown">
+
+      
+      <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" data-bs-auto-close="false" role="button" aria-expanded="false" >
+        <span class="nav-link-icon d-md-none d-lg-inline-block">
+          <i class="mdi mdi-toolbox-outline"></i>
+        </span>
+        <span class="nav-link-title">
+          Customization
+        </span>
+      </a>
+
+      
+      <div class="dropdown-menu">
+        <div class="dropdown-menu-columns">
+          <div class="dropdown-menu-column pb-2">
+            
+              <div class="text-uppercase text-secondary fw-bold fs-5 ps-3 pt-3 pb-1">
+                Customization
+              </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/extras/custom-fields/" class="d-inline-flex flex-fill py-1">Custom Fields</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/extras/custom-fields/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                        <a href="/extras/custom-fields/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/extras/custom-field-choices/" class="d-inline-flex flex-fill py-1">Custom Field Choices</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/extras/custom-field-choices/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                        <a href="/extras/custom-field-choices/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/extras/custom-links/" class="d-inline-flex flex-fill py-1">Custom Links</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/extras/custom-links/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                        <a href="/extras/custom-links/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/extras/export-templates/" class="d-inline-flex flex-fill py-1">Export Templates</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/extras/export-templates/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                        <a href="/extras/export-templates/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/extras/saved-filters/" class="d-inline-flex flex-fill py-1">Saved Filters</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/extras/saved-filters/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                        <a href="/extras/saved-filters/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/extras/table-configs/" class="d-inline-flex flex-fill py-1">Table Configs</a>
+                  
+                </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/extras/tags/" class="d-inline-flex flex-fill py-1">Tags</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/extras/tags/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                        <a href="/extras/tags/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/extras/image-attachments/" class="d-inline-flex flex-fill py-1">Image Attachments</a>
+                  
+                </div>
+              
+            
+              <div class="text-uppercase text-secondary fw-bold fs-5 ps-3 pt-3 pb-1">
+                Scripts
+              </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/extras/scripts/" class="d-inline-flex flex-fill py-1">Scripts</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/extras/scripts/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+            
+          </div>
+        </div>
+      </div>
+
+    </li>
+  
+    <li class="nav-item dropdown">
+
+      
+      <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" data-bs-auto-close="false" role="button" aria-expanded="false" >
+        <span class="nav-link-icon d-md-none d-lg-inline-block">
+          <i class="mdi mdi-cogs"></i>
+        </span>
+        <span class="nav-link-title">
+          Operations
+        </span>
+      </a>
+
+      
+      <div class="dropdown-menu">
+        <div class="dropdown-menu-columns">
+          <div class="dropdown-menu-column pb-2">
+            
+              <div class="text-uppercase text-secondary fw-bold fs-5 ps-3 pt-3 pb-1">
+                Integrations
+              </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/core/data-sources/" class="d-inline-flex flex-fill py-1">Data Sources</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/core/data-sources/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                        <a href="/core/data-sources/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/extras/event-rules/" class="d-inline-flex flex-fill py-1">Event Rules</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/extras/event-rules/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                        <a href="/extras/event-rules/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/extras/webhooks/" class="d-inline-flex flex-fill py-1">Webhooks</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/extras/webhooks/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                        <a href="/extras/webhooks/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+            
+              <div class="text-uppercase text-secondary fw-bold fs-5 ps-3 pt-3 pb-1">
+                Jobs
+              </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/core/jobs/" class="d-inline-flex flex-fill py-1">Jobs</a>
+                  
+                </div>
+              
+            
+              <div class="text-uppercase text-secondary fw-bold fs-5 ps-3 pt-3 pb-1">
+                Logging
+              </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/extras/notification-groups/" class="d-inline-flex flex-fill py-1">Notification Groups</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/extras/notification-groups/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                        <a href="/extras/notification-groups/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/extras/journal-entries/" class="d-inline-flex flex-fill py-1">Journal Entries</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/extras/journal-entries/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/core/changelog/" class="d-inline-flex flex-fill py-1">Change Log</a>
+                  
+                </div>
+              
+            
+          </div>
+        </div>
+      </div>
+
+    </li>
+  
+    <li class="nav-item dropdown">
+
+      
+      <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown" data-bs-auto-close="false" role="button" aria-expanded="false" >
+        <span class="nav-link-icon d-md-none d-lg-inline-block">
+          <i class="mdi mdi-account-multiple"></i>
+        </span>
+        <span class="nav-link-title">
+          Admin
+        </span>
+      </a>
+
+      
+      <div class="dropdown-menu">
+        <div class="dropdown-menu-columns">
+          <div class="dropdown-menu-column pb-2">
+            
+              <div class="text-uppercase text-secondary fw-bold fs-5 ps-3 pt-3 pb-1">
+                Authentication
+              </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/users/users/" class="d-inline-flex flex-fill py-1">Users</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/users/users/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                        <a href="/users/users/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/users/groups/" class="d-inline-flex flex-fill py-1">Groups</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/users/groups/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                        <a href="/users/groups/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/users/tokens/" class="d-inline-flex flex-fill py-1">API Tokens</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/users/tokens/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                        <a href="/users/tokens/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/users/permissions/" class="d-inline-flex flex-fill py-1">Permissions</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/users/permissions/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+            
+              <div class="text-uppercase text-secondary fw-bold fs-5 ps-3 pt-3 pb-1">
+                Ownership
+              </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/users/owner-groups/" class="d-inline-flex flex-fill py-1">Owner Groups</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/users/owner-groups/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                        <a href="/users/owner-groups/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/users/owners/" class="d-inline-flex flex-fill py-1">Owners</a>
+                  
+                    <div class="btn-group ms-1">
+                      
+                        <a href="/users/owners/add/" class="btn btn-sm btn-outline lh-2 px-2" title="Add">
+                          <i class="mdi mdi-plus-thick"></i>
+                        </a>
+                      
+                        <a href="/users/owners/import/" class="btn btn-sm btn-outline lh-2 px-2" title="Import">
+                          <i class="mdi mdi-upload"></i>
+                        </a>
+                      
+                    </div>
+                  
+                </div>
+              
+            
+              <div class="text-uppercase text-secondary fw-bold fs-5 ps-3 pt-3 pb-1">
+                System
+              </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/core/system/" class="d-inline-flex flex-fill py-1">System</a>
+                  
+                </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/core/plugins/" class="d-inline-flex flex-fill py-1">Plugins</a>
+                  
+                </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/core/config-revisions/" class="d-inline-flex flex-fill py-1">Configuration History</a>
+                  
+                </div>
+              
+                <div class="dropdown-item d-flex justify-content-between ps-3 py-0">
+                  <a href="/core/background-queues/" class="d-inline-flex flex-fill py-1">Background Tasks</a>
+                  
+                </div>
+              
+            
+          </div>
+        </div>
+      </div>
+
+    </li>
+  
+</ul>
+
+
+          
+          <div class="text-muted text-center fs-5 my-3">
+            NetBox Community v4.5.1
+            
+              <div>
+                <a href="https://netboxlabs.com/netbox-cloud/" class="text-muted">Get Cloud</a> |
+                <a href="https://netboxlabs.com/netbox-enterprise/" class="text-muted">Get Enterprise</a>
+              </div>
+            
+          </div>
+
+        </div>
+      </div>
+    </aside>
+
+    
+    <header class="navbar navbar-expand-md sticky-top d-none d-lg-flex d-print-none">
+      <div class="container-fluid">
+
+        
+        <div class="navbar-nav flex-row align-items-center order-md-last">
+          
+          
+
+<div class="d-flex ms-2">
+  <button class="nav-link color-mode-toggle hide-theme-dark fs-2 p-0 text-secondary" title="Enable dark mode" data-bs-toggle="tooltip" data-bs-placement="bottom">
+    <i class="mdi mdi-lightbulb"></i>
+  </button>
+  <button class="nav-link color-mode-toggle hide-theme-light fs-2 p-0 text-secondary" title="Enable light mode" data-bs-toggle="tooltip" data-bs-placement="bottom">
+    <i class="mdi mdi-lightbulb-on"></i>
+  </button>
+</div>
+
+          
+
+
+
+
+
+  
+  
+    <div class="dropdown">
+      <button class="nav-link fs-2 p-0" data-bs-toggle="dropdown" hx-get="/extras/notifications/" hx-target="next .notifications" aria-label="Notifications">
+        
+  <span class="text-muted" id="notifications-alert" hx-swap-oob="true">
+    <i class="mdi mdi-bell"></i>
+  </span>
+
+
+      </button>
+      <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow notifications"></div>
+    </div>
+  
+
+  
+  <div class="nav-item dropdown">
+    <a href="#" class="nav-link d-flex lh-1 text-reset p-0" data-bs-toggle="dropdown" aria-label="Open user menu">
+      <div class="d-xl-block ps-2">
+        <div>admin</div>
+        <div class="mt-1 small text-secondary">
+          
+            Admin
+          
+        </div>
+      </div>
+    </a>
+    <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
+      <a href="/user/profile/" class="dropdown-item">
+        <i class="dropdown-item-icon mdi mdi-account"></i> Profile
+      </a>
+      <a href="/user/bookmarks/" class="dropdown-item">
+        <i class="dropdown-item-icon mdi mdi-bookmark"></i> Bookmarks
+      </a>
+      <a href="/user/subscriptions/" class="dropdown-item">
+        <i class="dropdown-item-icon mdi mdi-bell"></i> Subscriptions
+      </a>
+      <a href="/user/preferences/" class="dropdown-item">
+        <i class="dropdown-item-icon mdi mdi-wrench"></i> Preferences
+      </a>
+      <a href="/user/api-tokens/" class="dropdown-item">
+        <i class="dropdown-item-icon mdi mdi-key"></i> API Tokens
+      </a>
+      <hr class="dropdown-divider" />
+      <a href="/logout/" hx-disable="true" class="dropdown-item">
+        <i class="dropdown-item-icon mdi mdi-logout-variant"></i> Log Out
+      </a>
+    </div>
+  </div>
+
+
+        </div>
+
+        
+        <div class="collapse navbar-collapse" id="navbar-menu">
+          <form action="/search/" method="get" autocomplete="off" novalidate>
+            <div class="input-icon">
+              <span class="input-icon-addon">
+                <i class="mdi mdi-magnify"></i>
+              </span>
+              <input type="text" name="q" value="" class="form-control" placeholder="Search…" aria-label="Search NetBox">
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </header>
+
+    
+    <div class="page-wrapper">
+      <div id="page-content">
+
+      
+      
+  <div class="page-header m-0">
+    
+
+        
+        
+        
+
+        
+        
+
+        
+        
+
+      
+
+    
+  <div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mt-2">
+
+      
+      <ol class="breadcrumb" aria-label="breadcrumbs">
+        
+          <li class="breadcrumb-item">
+            <a href="/gcp/organizations/">GCP Organizations</a>
+          </li>
+        
+      </ol>
+
+      
+      <code class="d-block text-muted bg-transparent px-0">
+        
+          gcp.gcporganization:5
+          
+        
+      </code>
+
+    </div>
+  </div>
+  
+      <div class="container-fluid mt-2 d-print-none">
+        <div class="d-flex justify-content-between">
+
+          
+          <div>
+            <h1 class="page-title">qiddiya.sa (184251572882)</h1>
+            
+  <div class="text-secondary fs-5">
+    <ul class="list-inline">
+      
+      <li class="list-inline-item">
+        <i class="mdi mdi-calendar-plus" title="Created"></i>
+        <span title="2 days, 21 hours ago"><span title="2 days, 21 hours ago">2026-01-29</span> 12:35</span>
+      </li>
+      
+        <li class="list-inline-item">
+          <i class="mdi mdi-calendar-edit" title="Last updated"></i>
+          <span title="43 minutes ago"><span title="43 minutes ago">2026-02-01</span> 09:50</span>
+        </li>
+      
+    </ul>
+  </div>
+
+          </div>
+
+          
+          <div class="d-print-none">
+            
+  <div class="btn-list justify-content-end mb-2">
+    
+
+    
+    
+
+      
+      
+    
+    <form action="/gcp/organizations/5/discover/" method="post" style="display: inline-block;">
+        <input type="hidden" name="csrfmiddlewaretoken" value="LPsx8iKAYq8SHjiNHSeibGjY1A8iTAQFEZxoyqGwZx4u1GdebLW6qZvKTmtYMd53">
+        <button type="submit" class="btn btn-primary">
+            <i class="mdi mdi-refresh"></i> Discover
+        </button>
+    </form>
+    
+    
+    <a href="/gcp/organizations/5/clear/" class="btn btn-danger">
+        <i class="mdi mdi-delete-alert"></i> Clear
+    </a>
+
+
+      
+      
+        
+<form action="/extras/bookmarks/add/?return_url=/gcp/organizations/5/" method="post">
+  <input type="hidden" name="csrfmiddlewaretoken" value="LPsx8iKAYq8SHjiNHSeibGjY1A8iTAQFEZxoyqGwZx4u1GdebLW6qZvKTmtYMd53">
+  
+    <input type="hidden" name="object_type" value="190" />
+  
+    <input type="hidden" name="object_id" value="5" />
+  
+  
+    <button type="submit" class="btn btn-cyan">
+      <i class="mdi mdi-bookmark-plus"></i> Bookmark
+    </button>
+  
+</form>
+
+      
+      
+        
+
+  <form action="/extras/subscriptions/add/?return_url=/gcp/organizations/5/" method="post">
+    <input type="hidden" name="csrfmiddlewaretoken" value="LPsx8iKAYq8SHjiNHSeibGjY1A8iTAQFEZxoyqGwZx4u1GdebLW6qZvKTmtYMd53">
+    
+      <input type="hidden" name="object_type" value="190" />
+    
+      <input type="hidden" name="object_id" value="5" />
+    
+    
+      <button type="submit" class="btn btn-cyan">
+        <i class="mdi mdi-bell-plus"></i> Subscribe
+      </button>
+    
+  </form>
+
+
+      
+      
+
+<a href="/gcp/organizations/5/edit/" class="btn btn-yellow" role="button">
+  <i class="mdi mdi-pencil" aria-hidden="true"></i> Edit
+</a>
+<a href="#"
+  hx-get="/gcp/organizations/5/delete/"
+  hx-target="#htmx-modal-content"
+  hx-swap="innerHTML"
+  hx-select="form"
+  class="btn btn-red"
+  role="button"
+  data-bs-toggle="modal"
+  data-bs-target="#htmx-modal"
+>
+  <i class="mdi mdi-trash-can-outline" aria-hidden="true"></i> Delete
+</a>
+
+    
+  </div>
+
+  
+  <div class="d-flex justify-content-end">
+    <div class="btn-list">
+      
+        
+      
+    </div>
+  </div>
+
+          </div>
+
+        </div>
+      </div>
+    
+
+
+    
+    <div class="page-tabs mt-3">
+      <div class="container-fluid">
+        
+  <ul class="nav nav-tabs" role="presentation">
+    
+    <li class="nav-item">
+      <a class="nav-link active" href="/gcp/organizations/5/">GCP Organization</a>
+    </li>
+
+    
+    
+  <li role="presentation" class="nav-item">
+    <a href="/gcp/organizations/5/journal/" class="nav-link">
+      Journal 
+
+    </a>
+  </li>
+
+  <li role="presentation" class="nav-item">
+    <a href="/gcp/organizations/5/changelog/" class="nav-link">
+      Changelog 
+
+    </a>
+  </li>
+
+
+  </ul>
+
+      </div>
+    </div>
+
+  </div>
+
+      
+
+      
+      
+        <div class="page-body my-1">
+          <div class="container-fluid tab-content py-3">
+
+            
+            
+  
+
+            
+
+            
+            
+<div class="row mb-3">
+    <div class="col-md-6">
+        <div class="card">
+            <h5 class="card-header">Organization Details</h5>
+            <div class="card-body">
+                <table class="table table-hover attr-table">
+                    <tr>
+                        <th scope="row">Name</th>
+                        <td>qiddiya.sa</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Organization ID</th>
+                        <td>184251572882</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Active</th>
+                        <td><span class="badge bg-success">Active</span></td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Auto Discovery</th>
+                        <td><span class="badge bg-secondary">Disabled</span></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <h5 class="card-header">Discovery Status</h5>
+            <div class="card-body">
+                <table class="table table-hover attr-table">
+                    <tr>
+                        <th scope="row">Status</th>
+                        <td>
+                            
+                                <span class="badge bg-success">Completed</span>
+                            
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Last Discovery</th>
+                        <td>Feb. 1, 2026, 9:50 a.m.</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Projects Discovered</th>
+                        <td>280</td>
+                    </tr>
+                    
+                </table>
+                <form method="post" action="/gcp/organizations/5/discover/">
+                    <input type="hidden" name="csrfmiddlewaretoken" value="LPsx8iKAYq8SHjiNHSeibGjY1A8iTAQFEZxoyqGwZx4u1GdebLW6qZvKTmtYMd53">
+                    <button type="submit" class="btn btn-primary" >
+                        <i class="mdi mdi-magnify"></i> Run Discovery
+                    </button>
+                </form>
+                    <form method="post" action="/gcp/organizations/5/cancel/" class="d-inline ms-2">
+                        <input type="hidden" name="csrfmiddlewaretoken" value="LPsx8iKAYq8SHjiNHSeibGjY1A8iTAQFEZxoyqGwZx4u1GdebLW6qZvKTmtYMd53">
+                        <button type="submit" class="btn btn-outline-danger" disabled>
+                            <i class="mdi mdi-cancel"></i> Cancel
+                        </button>
+                    </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-md-12">
+        <div class="card">
+            <h5 class="card-header">Discovery Options</h5>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <strong>Compute:</strong> <span class="badge bg-success">Yes</span>
+                    </div>
+                    <div class="col-md-3">
+                        <strong>Networking:</strong> <span class="badge bg-success">Yes</span>
+                    </div>
+                    <div class="col-md-3">
+                        <strong>Databases:</strong> <span class="badge bg-success">Yes</span>
+                    </div>
+                    <div class="col-md-3">
+                        <strong>Storage:</strong> <span class="badge bg-success">Yes</span>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md-3">
+                        <strong>Kubernetes:</strong> <span class="badge bg-success">Yes</span>
+                    </div>
+                    <div class="col-md-3">
+                        <strong>Serverless:</strong> <span class="badge bg-success">Yes</span>
+                    </div>
+                    <div class="col-md-3">
+                        <strong>IAM:</strong> <span class="badge bg-success">Yes</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row mb-3">
+    <div class="col-md-12">
+        <div class="card">
+            <h5 class="card-header">Recent Discovery Logs</h5>
+            <div class="card-body">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Started</th>
+                            <th>Completed</th>
+                            <th>Status</th>
+                            <th>Projects</th>
+                            <th>Instances</th>
+                            <th>Networks</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                        <tr>
+                            <td><a href="/gcp/discovery-logs/24/">Feb. 1, 2026, 9:48 a.m.</a></td>
+                            <td>Feb. 1, 2026, 9:50 a.m.</td>
+                            <td>
+                                
+                                    <span class="badge bg-success">Completed</span>
+                                
+                            </td>
+                            <td>280</td>
+                            <td>636</td>
+                            <td>142</td>
+                            <td>1820</td>
+                        </tr>
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+            
+
+          </div>
+        </div>
+      
+      
+
+      
+      
+      
+
+      
+      
+  <div class="modal modal-lg fade" id="htmx-modal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content" id="htmx-modal-content">
+      
+    </div>
+  </div>
+</div>
+
+
+
+      </div>
+
+      
+      <footer class="footer footer-transparent d-print-none py-2">
+        <div class="container-fluid d-flex justify-content-between align-items-center">
+          
+
+            
+            <ul class="list-inline mb-0 fs-2">
+              
+                
+                <li class="list-inline-item">
+                  <a href="/static/docs/" target="_blank" class="link-secondary" rel="noopener" aria-label="Docs">
+                    <i title="Docs" class="mdi mdi-book-open-variant text-primary" data-bs-placement="top" data-bs-toggle="tooltip"></i>
+                  </a>
+                </li>
+                
+                <li class="list-inline-item">
+                  <a href="/api/" target="_blank" class="link-secondary" rel="noopener" aria-label="REST API">
+                    <i title="REST API" class="mdi mdi-cloud-braces text-primary" data-bs-placement="top" data-bs-toggle="tooltip"></i>
+                  </a>
+                </li>
+                
+                <li class="list-inline-item">
+                  <a href="/api/schema/swagger-ui/" target="_blank" class="link-secondary" rel="noopener" aria-label="REST API documentation">
+                    <i title="REST API documentation" class="mdi mdi-book text-primary" data-bs-placement="top" data-bs-toggle="tooltip"></i>
+                  </a>
+                </li>
+                
+                
+                  <li class="list-inline-item">
+                    <a href="/graphql/" target="_blank" class="link-secondary" rel="noopener" aria-label="GraphQL API">
+                      <i title="GraphQL API" class="mdi mdi-graphql text-primary" data-bs-placement="top" data-bs-toggle="tooltip"></i>
+                    </a>
+                  </li>
+                
+
+                
+                
+                  
+                  <li class="list-inline-item">
+                    <a href="https://github.com/netbox-community/netbox" target="_blank" class="link-secondary" rel="noopener" aria-label="Source Code">
+                      <i title="Source Code" class="mdi mdi-github text-primary" data-bs-placement="top" data-bs-toggle="tooltip"></i>
+                    </a>
+                  </li>
+                  
+                  <li class="list-inline-item">
+                    <a href="https://netdev.chat" target="_blank" class="link-secondary" rel="noopener" aria-label="Community">
+                      <i title="Community" class="mdi mdi-slack text-primary" data-bs-placement="top" data-bs-toggle="tooltip"></i>
+                    </a>
+                  </li>
+                
+              
+            </ul>
+            
+
+            
+            <ul class="list-inline list-inline-dots fs-5 mb-0" id="footer-stamp" hx-swap-oob="true">
+              <li class="list-inline-item">2026-02-01 10:34:01 UTC</li>
+              <li class="list-inline-item">42f579db1828</li>
+            </ul>
+            
+
+          
+        </div>
+      </footer>
+      
+
+    
+    </div>
+
+  </div>
+
+
+    
+    
+    
+
+    
+    
+
+<div id="django-messages" class="toast-container position-fixed bottom-0 end-0 p-3" hx-swap-oob="true">
+
+  
+  
+
+  
+  
+
+</div>
+
+
+  </body>
+</html>

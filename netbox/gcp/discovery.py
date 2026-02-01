@@ -5,6 +5,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import threading
 import django_rq
 
+from googleapiclient.discovery import build
 from django.utils import timezone
 
 logger = logging.getLogger(__name__)
@@ -31,10 +32,31 @@ class GCPDiscoveryService:
         
         # Try to connect to Redis
         try:
-            from django_rq.queues import get_redis_connection
-            self.redis_conn = get_redis_connection('default')
+            import django_rq
+            # Try multiple ways to get the connection
+            try:
+                self.redis_conn = django_rq.get_connection('default')
+            except Exception:
+                # Fallback: try getting it from the queue object directly
+                self.redis_conn = django_rq.get_queue('default').connection
+                
         except Exception as e:
-            logger.warning(f"Failed to connect to Redis: {e}")
+            logger.warning(f"Failed to connect to Redis: {e} - trying manual connection")
+            try:
+                from django.conf import settings
+                import redis
+                config = settings.RQ_QUEUES.get('default', {})
+                if config:
+                    self.redis_conn = redis.Redis(
+                        host=config.get('HOST', 'localhost'),
+                        port=config.get('PORT', 6379),
+                        db=config.get('DB', 0),
+                        password=config.get('PASSWORD'),
+                        ssl=config.get('SSL', False),
+                        socket_timeout=config.get('DEFAULT_TIMEOUT', 300)
+                    )
+            except Exception as e2:
+                logger.error(f"Manual Redis connection also failed: {e2}")
 
     def _setup_redis(self, log_id):
         if self.redis_conn:
@@ -131,13 +153,25 @@ class GCPDiscoveryService:
                     self.discover_subnets(project)
                     self.discover_firewall_rules(project)
                     self.discover_cloud_routers(project)
+                    self.discover_cloud_nats(project)
                     self.discover_vpn_gateways(project)
+                    self.discover_external_vpn_gateways(project)
                     self.discover_vpn_tunnels(project)
+                    self.discover_load_balancers(project)
+                    self.discover_service_attachments(project)
+                    self.discover_psc_endpoints(project)
+                    self.discover_interconnect_attachments(project)
+                    
+                    if is_enabled('networkconnectivity.googleapis.com'):
+                         self.discover_ncc_hubs(project)
+                         self.discover_ncc_spokes(project)
+                         
                     if self.organization.cancel_requested: return
 
                 if self.organization.discover_compute and is_enabled('compute.googleapis.com'):
                     self.discover_compute_instances(project)
                     self.discover_instance_templates(project)
+                    self.discover_instance_groups(project)
                     self.discover_persistent_disks(project)
                     if self.organization.cancel_requested: return
 
@@ -146,6 +180,12 @@ class GCPDiscoveryService:
                         self.discover_cloud_sql(project)
                     if is_enabled('spanner.googleapis.com'):
                         self.discover_cloud_spanner(project)
+                    if is_enabled('firestore.googleapis.com'):
+                        self.discover_firestore(project)
+                    if is_enabled('bigtableadmin.googleapis.com'):
+                        self.discover_bigtable(project)
+                    if is_enabled('redis.googleapis.com'):
+                        self.discover_memorystore(project)
                     if self.organization.cancel_requested: return
 
                 if self.organization.discover_storage and is_enabled('storage.googleapis.com'):
@@ -161,6 +201,8 @@ class GCPDiscoveryService:
                         self.discover_cloud_functions(project)
                     if is_enabled('run.googleapis.com'):
                         self.discover_cloud_run(project)
+                    if is_enabled('pubsub.googleapis.com'):
+                        self.discover_pubsub(project)
                     if self.organization.cancel_requested: return
 
                 if self.organization.discover_iam and is_enabled('iam.googleapis.com'):
@@ -1302,6 +1344,739 @@ class GCPDiscoveryService:
         except Exception as e:
             self.log(f"Error discovering Service Accounts: {str(e)}", 'error')
 
+    def discover_instance_groups(self, project):
+        from .models import InstanceGroup, InstanceTemplate
+        from googleapiclient.errors import HttpError
+        
+        self.log(f"Discovering Instance Groups in {project.project_id}...")
+        
+        try:
+            service = build('compute', 'v1', credentials=self.credentials)
+            # Managed Instance Groups
+            request = service.instanceGroupManagers().aggregatedList(project=project.project_id)
+            while request is not None:
+                response = request.execute()
+                for location, igms in response.get('items', {}).items():
+                    for igm in igms.get('instanceGroupManagers', []):
+                        # location is usually 'regions/us-central1' or 'zones/us-central1-a'
+                        loc_parts = location.split('/')
+                        loc_type = loc_parts[0] # zones or regions
+                        loc_name = loc_parts[1] if len(loc_parts) > 1 else ''
+                        
+                        zone = loc_name if loc_type == 'zones' else ''
+                        region = loc_name if loc_type == 'regions' else ''
+                        
+                        template_name = igm.get('instanceTemplate', '').split('/')[-1]
+                        template = None
+                        if template_name:
+                            try:
+                                template = InstanceTemplate.objects.get(project=project, name=template_name)
+                            except InstanceTemplate.DoesNotExist:
+                                pass
+                                
+                        ig, created = InstanceGroup.objects.update_or_create(
+                            project=project,
+                            name=igm['name'],
+                            defaults={
+                                'zone': zone,
+                                'region': region,
+                                'template': template,
+                                'target_size': igm.get('targetSize', 0),
+                                'is_managed': True,
+                                'self_link': igm.get('selfLink', ''),
+                                'discovered': True,
+                                'last_synced': timezone.now()
+                            }
+                        )
+                        self.log(f"{'Created' if created else 'Updated'} Managed Instance Group: {ig.name}")
+                request = service.instanceGroupManagers().aggregatedList_next(previous_request=request, previous_response=response)
+
+            # Unmanaged Instance Groups (and checking for ones missed by MIGs)
+            request = service.instanceGroups().aggregatedList(project=project.project_id)
+            while request is not None:
+                response = request.execute()
+                for location, igs in response.get('items', {}).items():
+                    for ig_item in igs.get('instanceGroups', []):
+                        # location is usually 'regions/us-central1' or 'zones/us-central1-a'
+                        loc_parts = location.split('/')
+                        loc_type = loc_parts[0] # zones or regions
+                        loc_name = loc_parts[1] if len(loc_parts) > 1 else ''
+                        
+                        zone = loc_name if loc_type == 'zones' else ''
+                        region = loc_name if loc_type == 'regions' else ''
+
+                        # Check if this IG already exists (likely created by MIG loop above)
+                        # If it exists, we skip overwriting is_managed, but ensure other fields are set
+                        # If it doesn't exist, it's an unmanaged group
+                        
+                        # Note: instanceGroupManagers API returns 'name' same as the instanceGroup it manages.
+                        
+                        try:
+                            # Try to find existing one first
+                            existing_ig = InstanceGroup.objects.get(project=project, name=ig_item['name'])
+                            # It exists, so it was likely a MIG. Just update sync time or small details if needed.
+                            # We don't want to overwrite 'is_managed=True' with default if we were to use update_or_create blindly
+                            if not existing_ig.discovered:
+                                existing_ig.discovered = True
+                                existing_ig.save()
+                        except InstanceGroup.DoesNotExist:
+                            # It's a new one, so it must be Unmanaged (since we processed all MIGs above)
+                            ig, created = InstanceGroup.objects.update_or_create(
+                                project=project,
+                                name=ig_item['name'],
+                                defaults={
+                                    'zone': zone,
+                                    'region': region,
+                                    'template': None, # Unmanaged groups don't have templates usually in the same way
+                                    'target_size': ig_item.get('size', 0), # 'size' is current size
+                                    'is_managed': False,
+                                    'self_link': ig_item.get('selfLink', ''),
+                                    'discovered': True,
+                                    'last_synced': timezone.now()
+                                }
+                            )
+                            self.log(f"{'Created' if created else 'Updated'} Unmanaged Instance Group: {ig.name}")
+
+                request = service.instanceGroups().aggregatedList_next(previous_request=request, previous_response=response)
+        except HttpError as e:
+            if not self._handle_http_error("Discovering Instance Groups", e, project.project_id):
+                self.log(f"Error discovering Instance Groups: {str(e)}", 'error')
+        except Exception as e:
+            self.log(f"Error discovering Instance Groups: {str(e)}", 'error')
+
+    def discover_cloud_nats(self, project):
+        from .models import CloudNAT, CloudRouter
+        from googleapiclient.discovery import build
+        from googleapiclient.errors import HttpError
+        
+        self.log(f"Discovering Cloud NATs in {project.project_id}...")
+        
+        try:
+            service = build('compute', 'v1', credentials=self.credentials)
+            request = service.routers().aggregatedList(project=project.project_id)
+            
+            while request is not None:
+                response = request.execute()
+                for region, routers_data in response.get('items', {}).items():
+                    for router_data in routers_data.get('routers', []):
+                        nats = router_data.get('nats', [])
+                        if not nats:
+                            continue
+                            
+                        router_name = router_data['name']
+                        try:
+                            router_obj = CloudRouter.objects.get(project=project, name=router_name)
+                        except CloudRouter.DoesNotExist:
+                            continue
+                            
+                        region_name = router_data.get('region', '').split('/')[-1]
+                        
+                        for nat in nats:
+                            nat_obj, created = CloudNAT.objects.update_or_create(
+                                project=project,
+                                name=nat['name'],
+                                router=router_obj,
+                                defaults={
+                                    'region': region_name,
+                                    'nat_ip_allocate_option': nat.get('natIpAllocateOption', 'AUTO_ONLY'),
+                                    'source_subnetwork_ip_ranges_to_nat': nat.get('sourceSubnetworkIpRangesToNat', 'ALL_SUBNETWORKS_ALL_IP_RANGES'),
+                                    'nat_ips': nat.get('natIps'),
+                                    'min_ports_per_vm': nat.get('minPortsPerVm', 64),
+                                    'self_link': router_data.get('selfLink', ''), # NATs don't have unique selfLinks, use router's or construct one? simple is empty or router's
+                                    'discovered': True,
+                                    'last_synced': timezone.now()
+                                }
+                            )
+                            self.log(f"{'Created' if created else 'Updated'} Cloud NAT: {nat_obj.name}")
+                            
+                request = service.routers().aggregatedList_next(previous_request=request, previous_response=response)
+        except HttpError as e:
+             if not self._handle_http_error("Discovering Cloud NATs", e, project.project_id):
+                self.log(f"Error discovering Cloud NATs: {str(e)}", 'error')
+        except Exception as e:
+            self.log(f"Error discovering Cloud NATs: {str(e)}", 'error')
+
+    def discover_load_balancers(self, project):
+        from .models import LoadBalancer, VPCNetwork
+        from googleapiclient.discovery import build
+        from googleapiclient.errors import HttpError
+        
+        self.log(f"Discovering Load Balancers (Forwarding Rules) in {project.project_id}...")
+        
+        try:
+            service = build('compute', 'v1', credentials=self.credentials)
+            request = service.forwardingRules().aggregatedList(project=project.project_id)
+            
+            while request is not None:
+                response = request.execute()
+                for region, fr_data in response.get('items', {}).items():
+                    for fr in fr_data.get('forwardingRules', []):
+                        # Skip PSC Endpoints (they are handled in discover_psc_endpoints)
+                        target = fr.get('target', '')
+                        is_psc = False
+                        if target:
+                            if '/serviceAttachments/' in target:
+                                is_psc = True
+                            elif target in ['all-apis', 'vpc-sc']:
+                                is_psc = True
+                        
+                        if is_psc:
+                            continue
+
+                        network = None
+                        net_name = fr.get('network', '').split('/')[-1]
+                        if net_name:
+                            try:
+                                network = VPCNetwork.objects.get(project=project, name=net_name)
+                            except VPCNetwork.DoesNotExist:
+                                pass
+                        
+                        region_name = fr.get('region', '').split('/')[-1]
+                        if not region_name and 'global' in fr.get('selfLink', ''):
+                            region_name = 'global'
+
+                        lb, created = LoadBalancer.objects.update_or_create(
+                            project=project,
+                            name=fr['name'],
+                            defaults={
+                                'scheme': fr.get('loadBalancingScheme', 'EXTERNAL'),
+                                'lb_type': fr.get('IPProtocol', 'TCP'), # Proxy/Protocol
+                                'region': region_name,
+                                'network': network,
+                                'ip_address': fr.get('IPAddress'),
+                                'port': int(fr.get('ports', [80])[0]) if fr.get('ports') else (int(fr.get('portRange', '0-0').split('-')[0]) if fr.get('portRange') else 0),
+                                'self_link': fr.get('selfLink', ''),
+                                'discovered': True,
+                                'last_synced': timezone.now()
+                            }
+                        )
+                        self.log(f"{'Created' if created else 'Updated'} Load Balancer: {lb.name}")
+                request = service.forwardingRules().aggregatedList_next(previous_request=request, previous_response=response)
+        except HttpError as e:
+            if not self._handle_http_error("Discovering Load Balancers", e, project.project_id):
+                self.log(f"Error discovering Load Balancers: {str(e)}", 'error')
+        except Exception as e:
+             self.log(f"Error discovering Load Balancers: {str(e)}", 'error')
+
+    def discover_service_attachments(self, project):
+        from .models import ServiceAttachment
+        from googleapiclient.errors import HttpError
+        
+        self.log(f"Discovering Service Attachments in {project.project_id}...")
+        
+        try:
+            service = build('compute', 'v1', credentials=self.credentials)
+            request = service.serviceAttachments().aggregatedList(project=project.project_id)
+            
+            while request is not None:
+                response = request.execute()
+                for location, sa_data in response.get('items', {}).items():
+                    for sa in sa_data.get('serviceAttachments', []):
+                        # location is usually 'regions/us-central1'
+                        region_name = location.split('/')[-1] if 'regions' in location else ''
+                        if not region_name and sa.get('region'):
+                            region_name = sa['region'].split('/')[-1]
+
+                        attachment, created = ServiceAttachment.objects.update_or_create(
+                            project=project,
+                            name=sa['name'],
+                            defaults={
+                                'region': region_name,
+                                'connection_preference': sa.get('connectionPreference', 'ACCEPT_AUTOMATIC'),
+                                'nat_subnets': sa.get('natSubnets', []),
+                                'target_service': sa.get('targetService', ''),
+                                'self_link': sa.get('selfLink', ''),
+                                'discovered': True,
+                                'last_synced': timezone.now()
+                            }
+                        )
+                        self.log(f"{'Created' if created else 'Updated'} Service Attachment: {attachment.name}")
+                request = service.serviceAttachments().aggregatedList_next(previous_request=request, previous_response=response)
+        except HttpError as e:
+            if not self._handle_http_error("Discovering Service Attachments", e, project.project_id):
+                self.log(f"Error discovering Service Attachments: {str(e)}", 'error')
+        except Exception as e:
+             self.log(f"Error discovering Service Attachments: {str(e)}", 'error')
+
+    def discover_psc_endpoints(self, project):
+        from .models import ServiceConnectEndpoint, VPCNetwork
+        from googleapiclient.errors import HttpError
+        
+        self.log(f"Discovering PSC Endpoints in {project.project_id}...")
+        
+        try:
+            service = build('compute', 'v1', credentials=self.credentials)
+            request = service.forwardingRules().aggregatedList(project=project.project_id)
+            
+            while request is not None:
+                response = request.execute()
+                for location, fr_data in response.get('items', {}).items():
+                    for fr in fr_data.get('forwardingRules', []):
+                        target = fr.get('target', '')
+                        is_psc = False
+                        
+                        if target:
+                            if '/serviceAttachments/' in target:
+                                is_psc = True
+                            elif target in ['all-apis', 'vpc-sc']:
+                                is_psc = True
+                        
+                        if not is_psc:
+                            continue
+
+                        # location is usually 'regions/us-central1'
+                        region_name = location.split('/')[-1] if 'regions' in location else ''
+                        if not region_name and fr.get('region'):
+                            region_name = fr['region'].split('/')[-1]
+
+                        network = None
+                        net_name = fr.get('network', '').split('/')[-1]
+                        if net_name:
+                            try:
+                                network = VPCNetwork.objects.get(project=project, name=net_name)
+                            except VPCNetwork.DoesNotExist:
+                                pass
+
+                        psc, created = ServiceConnectEndpoint.objects.update_or_create(
+                            project=project,
+                            name=fr['name'],
+                            defaults={
+                                'region': region_name,
+                                'network': network,
+                                'ip_address': fr.get('IPAddress'),
+                                'target_service_attachment': target,
+                                'self_link': fr.get('selfLink', ''),
+                                'discovered': True,
+                                'last_synced': timezone.now()
+                            }
+                        )
+                        self.log(f"{'Created' if created else 'Updated'} PSC Endpoint: {psc.name}")
+                request = service.forwardingRules().aggregatedList_next(previous_request=request, previous_response=response)
+        except HttpError as e:
+            if not self._handle_http_error("Discovering PSC Endpoints", e, project.project_id):
+                self.log(f"Error discovering PSC Endpoints: {str(e)}", 'error')
+        except Exception as e:
+             self.log(f"Error discovering PSC Endpoints: {str(e)}", 'error')
+
+    def discover_ncc_hubs(self, project):
+        from .models import NCCHub
+        from googleapiclient.discovery import build
+        from googleapiclient.errors import HttpError
+        
+        self.log(f"Discovering NCC Hubs in {project.project_id}...")
+        
+        try:
+            service = build('networkconnectivity', 'v1', credentials=self.credentials)
+            parent = f"projects/{project.project_id}/locations/global"
+            request = service.projects().locations().global_().hubs().list(parent=parent)
+            
+            while request is not None:
+                response = request.execute()
+                for hub in response.get('hubs', []):
+                    name = hub['name'].split('/')[-1]
+                    h, created = NCCHub.objects.update_or_create(
+                        project=project,
+                        name=name,
+                        defaults={
+                            'description': hub.get('description', ''),
+                            'labels': hub.get('labels'),
+                            'self_link': hub.get('name', ''), # API returns full name resource path
+                            'discovered': True,
+                            'last_synced': timezone.now()
+                        }
+                    )
+                    self.log(f"{'Created' if created else 'Updated'} NCC Hub: {h.name}")
+                request = service.projects().locations().global_().hubs().list_next(previous_request=request, previous_response=response)
+        except HttpError as e:
+            if not self._handle_http_error("Discovering NCC Hubs", e, project.project_id):
+                self.log(f"Error discovering NCC Hubs: {str(e)}", 'error')
+        except Exception as e:
+            self.log(f"Error discovering NCC Hubs: {str(e)}", 'error')
+
+    def discover_ncc_spokes(self, project):
+        from .models import NCCSpoke, NCCHub, VPCNetwork
+        from googleapiclient.discovery import build
+        from googleapiclient.errors import HttpError
+        
+        self.log(f"Discovering NCC Spokes in {project.project_id}...")
+        
+        try:
+            service = build('networkconnectivity', 'v1', credentials=self.credentials)
+            parent = f"projects/{project.project_id}/locations/-"
+            request = service.projects().locations().spokes().list(parent=parent)
+            
+            while request is not None:
+                response = request.execute()
+                for spoke in response.get('spokes', []):
+                    hub_full_name = spoke.get('hub', '')
+                    # hub name format: projects/p/locations/global/hubs/hub1
+                    hub_name = hub_full_name.split('/')[-1]
+                    hub = None
+                    if hub_name:
+                        try:
+                            # NCC Hubs must be global?
+                            # Search by name in same project first. 
+                            # Note: Spokes can attach to hubs in other projects. 
+                            # We only link if we have the Hub in our DB (NetBox model scoping)
+                            # Or we might need to find the Hub by name across all known Hubs?
+                            # Optimistic: Hub is in same DB
+                             hub = NCCHub.objects.filter(name=hub_name).first()
+                        except Exception:
+                            pass
+                    
+                    if not hub:
+                        continue # Can't link without hub
+                        
+                    location = spoke['name'].split('/')[3]
+                    spoke_name = spoke['name'].split('/')[-1]
+                    
+                    linked_vpc = None
+                    vpc_key = spoke.get('linkedVpcNetwork', {}).get('uri')
+                    if vpc_key:
+                        vpc_name = vpc_key.split('/')[-1]
+                        try:
+                            linked_vpc = VPCNetwork.objects.get(project=project, name=vpc_name)
+                        except VPCNetwork.DoesNotExist:
+                            pass
+
+                    s, created = NCCSpoke.objects.update_or_create(
+                        project=project,
+                        name=spoke_name,
+                        defaults={
+                            'hub': hub,
+                            'location': location,
+                            'description': spoke.get('description', ''),
+                            'spoke_type': 'VPC_NETWORK' if vpc_key else 'VPN_TUNNEL' if spoke.get('linkedVpnTunnels') else 'INTERCONNECT' if spoke.get('linkedInterconnectAttachments') else 'UNKNOWN',
+                            'linked_vpc_network': linked_vpc,
+                            'linked_vpn_tunnels': spoke.get('linkedVpnTunnels', {}).get('uris'),
+                            'linked_interconnect_attachments': spoke.get('linkedInterconnectAttachments', {}).get('uris'),
+                            'labels': spoke.get('labels'),
+                            'self_link': spoke.get('name', ''),
+                            'discovered': True,
+                            'last_synced': timezone.now()
+                        }
+                    )
+                    self.log(f"{'Created' if created else 'Updated'} NCC Spoke: {s.name}")
+                request = service.projects().locations().spokes().list_next(previous_request=request, previous_response=response)
+        except HttpError as e:
+            if not self._handle_http_error("Discovering NCC Spokes", e, project.project_id):
+                self.log(f"Error discovering NCC Spokes: {str(e)}", 'error')
+        except Exception as e:
+            self.log(f"Error discovering NCC Spokes: {str(e)}", 'error')
+
+    def discover_interconnect_attachments(self, project):
+        from .models import InterconnectAttachment, CloudRouter
+        from googleapiclient.discovery import build
+        from googleapiclient.errors import HttpError
+        
+        self.log(f"Discovering Interconnect Attachments in {project.project_id}...")
+        
+        try:
+            service = build('compute', 'v1', credentials=self.credentials)
+            request = service.interconnectAttachments().aggregatedList(project=project.project_id)
+            
+            while request is not None:
+                response = request.execute()
+                for region, atts_data in response.get('items', {}).items():
+                    for att in atts_data.get('interconnectAttachments', []):
+                        router_name = att.get('router', '').split('/')[-1]
+                        router = None
+                        if router_name:
+                            try:
+                                router = CloudRouter.objects.get(project=project, name=router_name)
+                            except CloudRouter.DoesNotExist:
+                                # Required field
+                                continue
+                        
+                        if not router:
+                            continue
+
+                        region_name = att.get('region', '').split('/')[-1]
+
+                        ia, created = InterconnectAttachment.objects.update_or_create(
+                            project=project,
+                            name=att['name'],
+                            defaults={
+                                'region': region_name,
+                                'router': router,
+                                'attachment_type': att.get('type', 'DEDICATED'),
+                                'edge_availability_domain': att.get('edgeAvailabilityDomain', ''),
+                                'bandwidth': att.get('bandwidth', 'BPS_1G'),
+                                'vlan_tag': att.get('vlanTag8021q', 0),
+                                'pairing_key': att.get('pairingKey', ''),
+                                'partner_asn': att.get('partnerAsn'),
+                                'cloud_router_ip_address': att.get('cloudRouterIpAddress'),
+                                'customer_router_ip_address': att.get('customerRouterIpAddress'),
+                                'state': att.get('state', 'ACTIVE'),
+                                'labels': att.get('labels'),
+                                'self_link': att.get('selfLink', ''),
+                                'discovered': True,
+                                'last_synced': timezone.now()
+                            }
+                        )
+                        self.log(f"{'Created' if created else 'Updated'} Interconnect Attachment: {ia.name}")
+                request = service.interconnectAttachments().aggregatedList_next(previous_request=request, previous_response=response)
+        except HttpError as e:
+            if not self._handle_http_error("Discovering Interconnect Attachments", e, project.project_id):
+                self.log(f"Error discovering Interconnect Attachments: {str(e)}", 'error')
+        except Exception as e:
+             self.log(f"Error discovering Interconnect Attachments: {str(e)}", 'error')
+
+    def discover_external_vpn_gateways(self, project):
+        from .models import ExternalVPNGateway
+        from googleapiclient.discovery import build
+        from googleapiclient.errors import HttpError
+        
+        self.log(f"Discovering External VPN Gateways in {project.project_id}...")
+        
+        try:
+            service = build('compute', 'v1', credentials=self.credentials)
+            request = service.externalVpnGateways().list(project=project.project_id)
+            
+            while request is not None:
+                response = request.execute()
+                for gw in response.get('items', []):
+                    egw, created = ExternalVPNGateway.objects.update_or_create(
+                        project=project,
+                        name=gw['name'],
+                        defaults={
+                            'description': gw.get('description', ''),
+                            'redundancy_type': gw.get('redundancyType', 'SINGLE_IP_INTERNALLY_REDUNDANT'),
+                            'interfaces': gw.get('interfaces'),
+                            'labels': gw.get('labels'),
+                            'self_link': gw.get('selfLink', ''),
+                            'discovered': True,
+                            'last_synced': timezone.now()
+                        }
+                    )
+                    self.log(f"{'Created' if created else 'Updated'} External VPN Gateway: {egw.name}")
+                request = service.externalVpnGateways().list_next(previous_request=request, previous_response=response)
+        except HttpError as e:
+            if not self._handle_http_error("Discovering External VPN Gateways", e, project.project_id):
+                self.log(f"Error discovering External VPN Gateways: {str(e)}", 'error')
+        except Exception as e:
+            self.log(f"Error discovering External VPN Gateways: {str(e)}", 'error')
+
+    def discover_firestore(self, project):
+        from .models import FirestoreDatabase
+        from googleapiclient.discovery import build
+        from googleapiclient.errors import HttpError
+        
+        self.log(f"Discovering Firestore Databases in {project.project_id}...")
+        
+        try:
+            service = build('firestore', 'v1', credentials=self.credentials)
+            parent = f"projects/{project.project_id}"
+            request = service.projects().databases().list(parent=parent)
+            
+            while request is not None:
+                response = request.execute()
+                for db in response.get('databases', []):
+                    # name is fields/p/databases/dbname
+                    name = db['name'].split('/')[-1]
+                    fdb, created = FirestoreDatabase.objects.update_or_create(
+                        project=project,
+                        name=name,
+                        defaults={
+                            'location': db.get('locationId', ''),
+                            'database_type': db.get('type', 'FIRESTORE_NATIVE'),
+                            'concurrency_mode': db.get('concurrencyMode', 'OPTIMISTIC'),
+                            'status': 'ACTIVE', # API doesn't always return status for active ones
+                            'self_link': db.get('name', ''),
+                            'discovered': True,
+                            'last_synced': timezone.now()
+                        }
+                    )
+                    self.log(f"{'Created' if created else 'Updated'} Firestore DB: {fdb.name}")
+                # NO list_next for firestore v1 typically? check docs. 
+                # It seems firestore().projects().databases().list() returns 'nextPageToken'
+                if 'nextPageToken' in response:
+                    request = service.projects().databases().list(parent=parent, pageToken=response['nextPageToken'])
+                else:
+                    request = None
+        except HttpError as e:
+            if not self._handle_http_error("Discovering Firestore", e, project.project_id):
+                 self.log(f"Error discovering Firestore: {str(e)}", 'error')
+        except Exception as e:
+            # Firestore API might not be enabled
+            self.log(f"Error discovering Firestore: {str(e)}", 'error')
+
+    def discover_bigtable(self, project):
+        from .models import BigtableInstance
+        from googleapiclient.discovery import build
+        from googleapiclient.errors import HttpError
+        
+        self.log(f"Discovering Bigtable Instances in {project.project_id}...")
+        
+        try:
+            service = build('bigtableadmin', 'v2', credentials=self.credentials)
+            parent = f"projects/{project.project_id}"
+            request = service.projects().instances().list(parent=parent)
+            
+            while request is not None:
+                response = request.execute()
+                for instance in response.get('instances', []):
+                    name = instance['name'].split('/')[-1]
+                    bt, created = BigtableInstance.objects.update_or_create(
+                        project=project,
+                        name=name,
+                        defaults={
+                            'display_name': instance.get('displayName', ''),
+                            'instance_type': instance.get('type', 'PRODUCTION'),
+                            'status': instance.get('state', 'READY'),
+                            'self_link': instance.get('name', ''),
+                            'discovered': True,
+                            'last_synced': timezone.now()
+                        }
+                    )
+                    self.log(f"{'Created' if created else 'Updated'} Bigtable Instance: {bt.name}")
+                
+                if 'nextPageToken' in response:
+                    request = service.projects().instances().list(parent=parent, pageToken=response['nextPageToken'])
+                else:
+                    request = None
+        except HttpError as e:
+             if not self._handle_http_error("Discovering Bigtable", e, project.project_id):
+                self.log(f"Error discovering Bigtable: {str(e)}", 'error')
+        except Exception as e:
+            self.log(f"Error discovering Bigtable: {str(e)}", 'error')
+
+    def discover_memorystore(self, project):
+        from .models import MemorystoreInstance, VPCNetwork
+        from googleapiclient.discovery import build
+        from googleapiclient.errors import HttpError
+        
+        self.log(f"Discovering Memorystore (Redis) in {project.project_id}...")
+        
+        try:
+            service = build('redis', 'v1', credentials=self.credentials)
+            parent = f"projects/{project.project_id}/locations/-"
+            request = service.projects().locations().instances().list(parent=parent)
+            
+            while request is not None:
+                response = request.execute()
+                for instance in response.get('instances', []):
+                    name = instance['name'].split('/')[-1]
+                    region = instance['locationId']
+                    
+                    network = None
+                    net_id = instance.get('authorizedNetwork', '').split('/')[-1]
+                    if net_id:
+                         try:
+                            network = VPCNetwork.objects.get(project=project, name=net_id)
+                         except VPCNetwork.DoesNotExist:
+                             pass
+
+                    ms, created = MemorystoreInstance.objects.update_or_create(
+                        project=project,
+                        name=name,
+                        defaults={
+                            'region': region,
+                            'tier': instance.get('tier', 'BASIC'),
+                            'memory_size_gb': instance.get('memorySizeGb', 1),
+                            'redis_version': instance.get('redisVersion', 'REDIS_6_X'),
+                            'host': instance.get('host', ''),
+                            'port': instance.get('port', 6379),
+                            'status': instance.get('state', 'READY'),
+                            'network': network,
+                            'self_link': instance.get('name', ''),
+                            'discovered': True,
+                            'last_synced': timezone.now()
+                        }
+                    )
+                    self.log(f"{'Created' if created else 'Updated'} Memorystore: {ms.name}")
+                
+                if 'nextPageToken' in response:
+                     request = service.projects().locations().instances().list(parent=parent, pageToken=response['nextPageToken'])
+                else:
+                    request = None
+        except HttpError as e:
+             if not self._handle_http_error("Discovering Memorystore", e, project.project_id):
+                 self.log(f"Error discovering Memorystore: {str(e)}", 'error')
+        except Exception as e:
+            self.log(f"Error discovering Memorystore: {str(e)}", 'error')
+
+    def discover_pubsub(self, project):
+        from .models import PubSubTopic, PubSubSubscription
+        from googleapiclient.discovery import build
+        from googleapiclient.errors import HttpError
+        
+        self.log(f"Discovering Pub/Sub in {project.project_id}...")
+        
+        try:
+            service = build('pubsub', 'v1', credentials=self.credentials)
+            # Topics
+            parent = f"projects/{project.project_id}"
+            request = service.projects().topics().list(project=parent)
+            
+            while request is not None:
+                response = request.execute()
+                for topic in response.get('topics', []):
+                    # name: projects/p/topics/t
+                    name = topic['name'].split('/')[-1]
+                    t, created = PubSubTopic.objects.update_or_create(
+                         project=project,
+                         name=name,
+                         defaults={
+                             'labels': topic.get('labels'),
+                             'self_link': topic.get('name', ''),
+                             'discovered': True,
+                             'last_synced': timezone.now()
+                         }
+                    )
+                    self.log(f"{'Created' if created else 'Updated'} Topic: {t.name}")
+                
+                if 'nextPageToken' in response:
+                     request = service.projects().topics().list(project=parent, pageToken=response['nextPageToken'])
+                else:
+                    request = None
+            
+            # Subscriptions
+            request = service.projects().subscriptions().list(project=parent)
+            while request is not None:
+                response = request.execute()
+                for sub in response.get('subscriptions', []):
+                    name = sub['name'].split('/')[-1]
+                    topic_name = sub.get('topic', '').split('/')[-1]
+                    topic = None
+                    if topic_name:
+                         try:
+                             topic = PubSubTopic.objects.get(project=project, name=topic_name)
+                         except PubSubTopic.DoesNotExist:
+                             pass
+                    
+                    if not topic: 
+                         # Subscription must have topic? Usually yes.
+                         continue
+                         
+                    s, created = PubSubSubscription.objects.update_or_create(
+                        project=project,
+                        name=name,
+                        defaults={
+                            'topic': topic,
+                            'ack_deadline_seconds': sub.get('ackDeadlineSeconds', 10),
+                            'push_endpoint': sub.get('pushConfig', {}).get('pushEndpoint', ''),
+                            'message_retention_duration': sub.get('messageRetentionDuration', '604800s'),
+                            'self_link': sub.get('name', ''),
+                            'discovered': True,
+                            'last_synced': timezone.now()
+                        }
+                    )
+                    self.log(f"{'Created' if created else 'Updated'} Subscription: {s.name}")
+
+                if 'nextPageToken' in response:
+                     request = service.projects().subscriptions().list(project=parent, pageToken=response['nextPageToken'])
+                else:
+                    request = None
+
+        except HttpError as e:
+             if not self._handle_http_error("Discovering Pub/Sub", e, project.project_id):
+                self.log(f"Error discovering Pub/Sub: {str(e)}", 'error')
+        except Exception as e:
+             self.log(f"Error discovering Pub/Sub: {str(e)}", 'error')
+
+
+
 
 def run_discovery(organization_id):
     from .models import GCPOrganization
@@ -1345,6 +2120,38 @@ def process_discovery_batch(organization_id, discovery_log_id, project_pks):
             for future in as_completed(futures):
                 try:
                     future.result()
+                    
+                    # Update progress incrementally and sync logs
+                    service._sync_stats_from_redis()
+                    try:
+                        discovery_log.refresh_from_db()
+                        # Ensure status is running (fixes UI showing failed if parent process errored)
+                        if discovery_log.status == 'failed':
+                            discovery_log.status = 'running'
+                            
+                        discovery_log.log_output = service.get_log_output()
+                        discovery_log.projects_discovered = service.stats.get('projects', 0)
+                        discovery_log.instances_discovered = service.stats.get('instances', 0)
+                        discovery_log.networks_discovered = service.stats.get('networks', 0)
+                        discovery_log.databases_discovered = service.stats.get('databases', 0)
+                        discovery_log.buckets_discovered = service.stats.get('buckets', 0)
+                        discovery_log.clusters_discovered = service.stats.get('clusters', 0)
+                        discovery_log.total_resources = service.stats.get('total', 0)
+                        
+                        discovery_log.save(update_fields=[
+                            'status',
+                            'log_output',
+                            'projects_discovered',
+                            'instances_discovered',
+                            'networks_discovered',
+                            'databases_discovered',
+                            'buckets_discovered',
+                            'clusters_discovered',
+                            'total_resources'
+                        ])
+                    except Exception:
+                        pass
+                        
                 except Exception as e:
                     service.log(f"Thread execution failed: {e}", 'error')
             

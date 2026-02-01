@@ -268,6 +268,32 @@ class Subnet(NetBoxModel):
     def get_absolute_url(self):
         return reverse('gcp:subnet', args=[self.pk])
 
+    def get_utilization(self):
+        # Calculate subnet utilization based on IP range and used IPs
+        import ipaddress
+        
+        try:
+            network = ipaddress.ip_network(self.ip_cidr_range)
+            total_ips = network.num_addresses - 2 # Network and Broadcast
+            if total_ips < 1: total_ips = 1
+        except ValueError:
+            return "N/A"
+
+        # Count used IPs (approximation)
+        used_count = 0
+        
+        # 1. Compute Instances
+        # Note: We access ComputeInstance from the global scope (defined above)
+        used_count += ComputeInstance.objects.filter(
+            project=self.project,
+            subnet=self.name
+        ).count()
+        
+        # 2. Other resources (Load Balancers, Cloud SQL) can be added here
+        
+        percentage = (used_count / total_ips) * 100
+        return f"{percentage:.1f}% ({used_count}/{total_ips})"
+
     @property
     def organization(self):
         return self.project.organization if self.project else None
@@ -1103,6 +1129,60 @@ class InterconnectAttachment(NetBoxModel):
 
     def get_absolute_url(self):
         return reverse('gcp:interconnectattachment', args=[self.pk])
+
+    @property
+    def organization(self):
+        return self.project.organization if self.project else None
+
+
+class ServiceAttachment(NetBoxModel):
+    name = models.CharField(max_length=255)
+    project = models.ForeignKey(GCPProject, on_delete=models.CASCADE, related_name='service_attachments')
+    region = models.CharField(max_length=100)
+    connection_preference = models.CharField(max_length=50, default='ACCEPT_AUTOMATIC')
+    nat_subnets = models.JSONField(blank=True, null=True)
+    target_service = models.CharField(max_length=500, blank=True)
+    self_link = models.URLField(max_length=500, blank=True)
+    discovered = models.BooleanField(default=False)
+    last_synced = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ['name']
+        verbose_name = 'Service Attachment'
+        verbose_name_plural = 'Service Attachments'
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse('gcp:serviceattachment', args=[self.pk])
+
+    @property
+    def organization(self):
+        return self.project.organization if self.project else None
+
+
+class ServiceConnectEndpoint(NetBoxModel):
+    name = models.CharField(max_length=255)
+    project = models.ForeignKey(GCPProject, on_delete=models.CASCADE, related_name='psc_endpoints')
+    region = models.CharField(max_length=100)
+    network = models.ForeignKey(VPCNetwork, on_delete=models.SET_NULL, null=True, blank=True)
+    ip_address = models.GenericIPAddressField(blank=True, null=True)
+    target_service_attachment = models.CharField(max_length=500, blank=True)
+    self_link = models.URLField(max_length=500, blank=True)
+    discovered = models.BooleanField(default=False)
+    last_synced = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ['name']
+        verbose_name = 'PSC Endpoint'
+        verbose_name_plural = 'PSC Endpoints'
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self):
+        return reverse('gcp:serviceconnectendpoint', args=[self.pk])
 
     @property
     def organization(self):
