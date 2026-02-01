@@ -13,6 +13,8 @@ services:
 
   web:
     build: .
+    volumes:
+      - .:/opt/netbox
     depends_on:
       - db
       - redis
@@ -31,7 +33,7 @@ services:
       REDIS_TASKS_DB: 0
       REDIS_CACHE_DB: 1
       DEBUG: "false"
-      DEVELOPER: "true"
+      DEVELOPER: "false"
       GCP_CLEANUP_ON_STARTUP: "true"
     ports:
       - "8000:8000"
@@ -39,6 +41,8 @@ services:
 
   worker:
     build: .
+    volumes:
+      - .:/opt/netbox
     depends_on:
       - db
       - redis
@@ -58,7 +62,7 @@ services:
       REDIS_TASKS_DB: 0
       REDIS_CACHE_DB: 1
       DEBUG: "false"
-      DEVELOPER: "true"
+      DEVELOPER: "false"
       GCP_CLEANUP_ON_STARTUP: "true"
     command: ["python", "netbox/manage.py", "rqworker"]
     deploy:

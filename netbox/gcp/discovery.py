@@ -168,6 +168,9 @@ class GCPDiscoveryService:
                         self.discover_ncc_hubs(project)
                         self.discover_ncc_spokes(project)
 
+                    if is_enabled('dns.googleapis.com'):
+                        self.discover_cloud_dns_zones(project)
+
                     if self.organization.cancel_requested:
                         return
 
@@ -210,11 +213,15 @@ class GCPDiscoveryService:
                         self.discover_cloud_run(project)
                     if is_enabled('pubsub.googleapis.com'):
                         self.discover_pubsub(project)
+                    if is_enabled('secretmanager.googleapis.com'):
+                        self.discover_secret_manager_secrets(project)
                     if self.organization.cancel_requested:
                         return
 
                 if self.organization.discover_iam and is_enabled('iam.googleapis.com'):
                     self.discover_service_accounts(project)
+                    self.discover_iam_roles(project)
+                    self.discover_iam_policy(project)
 
             except Exception as e:
                 self.log(f'Error in project {project.project_id} module: {str(e)}', 'error')
@@ -393,8 +400,8 @@ class GCPDiscoveryService:
                 return True
 
             # 2. Chunk projects for parallel batch processing
-            # 20 projects per batch
-            batch_size = 20
+            # 10 projects per batch to distribute better across workers
+            batch_size = 10
             project_pks = [p.pk for p in projects]
             chunks = [project_pks[i : i + batch_size] for i in range(0, len(project_pks), batch_size)]
 
@@ -830,7 +837,15 @@ class GCPDiscoveryService:
                             boot_disk = next((d for d in disks if d.get('boot')), None)
                             if boot_disk:
                                 disk_size = boot_disk.get('diskSizeGb', 0)
-                                image = boot_disk.get('source', '').split('/')[-1]
+                                if 'initializeParams' in boot_disk and 'sourceImage' in boot_disk['initializeParams']:
+                                    image = boot_disk['initializeParams']['sourceImage'].split('/')[-1]
+                                elif 'licenses' in boot_disk and boot_disk['licenses']:
+                                    image = boot_disk['licenses'][0].split('/')[-1]
+                                else:
+                                    # Fallback: try to infer from source disk name if it doesn't match instance name
+                                    src_disk = boot_disk.get('source', '').split('/')[-1]
+                                    if src_disk and src_disk != instance['name']:
+                                        image = src_disk
 
                         inst, created = ComputeInstance.objects.update_or_create(
                             project=project,
@@ -2106,6 +2121,181 @@ class GCPDiscoveryService:
         except Exception as e:
             self.log(f'Error discovering Pub/Sub: {str(e)}', 'error')
 
+    def discover_secret_manager_secrets(self, project):
+        from .models import SecretManagerSecret
+        from googleapiclient.discovery import build
+
+        try:
+            service = build('secretmanager', 'v1', credentials=self.credentials, cache_discovery=False)
+            parent = f'projects/{project.project_id}'
+            
+            request = service.projects().secrets().list(parent=parent)
+            while request:
+                response = request.execute()
+                for secret in response.get('secrets', []):
+                    name = secret['name'].split('/')[-1]
+                    
+                    obj, created = SecretManagerSecret.objects.update_or_create(
+                        project=project,
+                        name=name,
+                        defaults={
+                            'replication_type': secret.get('replication', {}).get('automatic') and 'AUTOMATIC' or 'USER_MANAGED',
+                            'self_link': secret.get('name', ''),
+                            'labels': secret.get('labels'),
+                            'discovered': True,
+                            'last_synced': timezone.now()
+                        }
+                    )
+                    self._increment_stat('secrets')
+                
+                request = service.projects().secrets().list_next(previous_request=request, previous_response=response)
+        
+        except Exception as e:
+            if not self._handle_http_error('Secret Manager discovery', e):
+                 self.log(f'Error discovering secrets: {e}', 'error')
+
+    def discover_cloud_dns_zones(self, project):
+        from .models import CloudDNSZone, CloudDNSRecord
+        from googleapiclient.discovery import build
+        
+        try:
+            service = build('dns', 'v1', credentials=self.credentials, cache_discovery=False)
+            project_id = project.project_id
+            
+            request = service.managedZones().list(project=project_id)
+            while request:
+                response = request.execute()
+                for zone in response.get('managedZones', []):
+                    
+                    obj, created = CloudDNSZone.objects.update_or_create(
+                        project=project,
+                        name=zone['name'],
+                        defaults={
+                            'dns_name': zone['dnsName'],
+                            'description': zone.get('description', ''),
+                            'visibility': zone.get('visibility', 'public'),
+                            'name_servers': zone.get('nameServers'),
+                            'self_link': zone.get('kind', ''),
+                            'discovered': True,
+                            'last_synced': timezone.now()
+                        }
+                    )
+                    self._increment_stat('dns_zones')
+                    
+                    self.discover_cloud_dns_records(service, project, obj)
+
+                request = service.managedZones().list_next(previous_request=request, previous_response=response)
+
+        except Exception as e:
+            if not self._handle_http_error('Cloud DNS discovery', e):
+                self.log(f'Error discovering DNS zones: {e}', 'error')
+
+    def discover_cloud_dns_records(self, service, project, zone):
+        from .models import CloudDNSRecord
+        
+        try:
+            request = service.resourceRecordSets().list(project=project.project_id, managedZone=zone.name)
+            while request:
+                response = request.execute()
+                for rrset in response.get('rrsets', []):
+                    
+                    CloudDNSRecord.objects.update_or_create(
+                        zone=zone,
+                        name=rrset['name'],
+                        record_type=rrset['type'],
+                        defaults={
+                            'ttl': rrset.get('ttl', 300),
+                            'rrdatas': rrset.get('rrdatas'),
+                            'discovered': True,
+                            'last_synced': timezone.now()
+                        }
+                    )
+                    self._increment_stat('dns_records')
+
+                request = service.resourceRecordSets().list_next(previous_request=request, previous_response=response)
+        except Exception as e:
+             self.log(f'Error discovering DNS records for {zone.name}: {e}', 'warning')
+
+    def discover_iam_roles(self, project):
+        from .models import IAMRole
+        from googleapiclient.discovery import build
+        
+        try:
+            service = build('iam', 'v1', credentials=self.credentials, cache_discovery=False)
+            parent = f'projects/{project.project_id}'
+            
+            # List custom roles for the project
+            request = service.projects().roles().list(parent=parent, view='FULL')
+            while request:
+                response = request.execute()
+                for role in response.get('roles', []):
+                    IAMRole.objects.update_or_create(
+                        name=role['name'],
+                        defaults={
+                            'title': role.get('title', ''),
+                            'description': role.get('description', ''),
+                            'stage': role.get('stage', 'GA'),
+                            'permissions': role.get('includedPermissions', []),
+                            'is_custom': True,
+                            'project': project,
+                            'discovered': True,
+                            'last_synced': timezone.now()
+                        }
+                    )
+                    self._increment_stat('iam_roles')
+                
+                request = service.projects().roles().list_next(previous_request=request, previous_response=response)
+
+        except Exception as e:
+            if not self._handle_http_error('IAM Roles discovery', e):
+                 self.log(f'Error discovering IAM roles: {e}', 'error')
+
+    def discover_iam_policy(self, project):
+        from .models import IAMBinding, IAMRole
+        from googleapiclient.discovery import build
+        
+        try:
+            # Use Cloud Resource Manager API to get policy
+            service = build('cloudresourcemanager', 'v1', credentials=self.credentials, cache_discovery=False)
+            resource = project.project_id
+            
+            policy = service.projects().getIamPolicy(resource=resource).execute()
+            bindings = policy.get('bindings', [])
+            
+            for binding in bindings:
+                role_name = binding['role']
+                members = binding['members']
+                
+                # Ensure Role exists
+                role_obj = IAMRole.objects.filter(name=role_name).first()
+                if not role_obj:
+                    # If it's a predefined role or org-level role not yet synced
+                    role_obj = IAMRole.objects.create(
+                        name=role_name,
+                        title=role_name,
+                        is_custom=False,
+                        # project is None for global/predefined roles
+                        discovered=True,
+                        last_synced=timezone.now()
+                    )
+                
+                for member in members:
+                    IAMBinding.objects.update_or_create(
+                        project=project,
+                        role=role_obj,
+                        member=member,
+                        defaults={
+                            'condition': binding.get('condition'),
+                            'discovered': True,
+                            'last_synced': timezone.now()
+                        }
+                    )
+                    self._increment_stat('iam_bindings')
+
+        except Exception as e:
+            if not self._handle_http_error('IAM Policy discovery', e):
+                 self.log(f'Error discovering IAM policy: {e}', 'error')
+
 
 def run_discovery(organization_id):
     from .models import GCPOrganization
@@ -2142,8 +2332,8 @@ def process_discovery_batch(organization_id, discovery_log_id, project_pks):
         # This speeds up the batch significantly
         from concurrent.futures import ThreadPoolExecutor, as_completed
 
-        # Use a small number of threads to avoid OOM
-        max_threads = min(5, len(projects))
+        # Increase threads to speed up processing (IO bound)
+        max_threads = min(20, len(projects))
 
         with ThreadPoolExecutor(max_workers=max_threads) as executor:
             futures = [executor.submit(service.process_project, project) for project in projects]
