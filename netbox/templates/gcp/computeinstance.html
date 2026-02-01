@@ -27,6 +27,10 @@
                     <td>{{ object.machine_type }}</td>
                 </tr>
                 <tr>
+                    <th scope="row">{% trans "OS Image" %}</th>
+                    <td>{{ object.image|placeholder }}</td>
+                </tr>
+                <tr>
                     <th scope="row">{% trans "Status" %}</th>
                     <td>{{ object.status }}</td>
                 </tr>

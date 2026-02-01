@@ -27,46 +27,24 @@
 {% block title %}{% trans "Home" %}{% endblock %}
 
 {% block page %}
-  {# Render the user's customized dashboard #}
-  <div class="grid-stack m-2" id="dashboard" hx-disinherit="*">
-    {% for widget in dashboard %}
-      {% include 'extras/dashboard/widget.html' %}
+  <div class="row m-2">
+    {% for stat in gcp_stats %}
+      <div class="col-sm-6 col-md-4 col-lg-3 mb-3">
+        <a href="{{ stat.url }}" class="card text-decoration-none">
+          <div class="card-body">
+            <div class="d-flex align-items-center">
+              <div class="subheader me-2 text-{{ stat.color }}"><i class="mdi {{ stat.icon }} mdi-36px"></i></div>
+              <div class="h2 mb-0 ms-auto">{{ stat.count }}</div>
+            </div>
+            <div class="h3 mb-0 text-muted">{{ stat.label }}</div>
+          </div>
+        </a>
+      </div>
+    {% empty %}
+      <div class="col">
+        <div class="alert alert-info">No GCP resources found or you do not have permission to view them.</div>
+      </div>
     {% endfor %}
-  </div>
-  <div class="collapse multi-collapse show">
-    <div class="d-flex px-3">
-      <div class="flex-grow-1">
-        <button type="button" id="unlock_dashboard" class="btn btn-light" data-bs-toggle="collapse" data-bs-target=".multi-collapse">
-          <i class="mdi mdi-lock-open-outline"></i> {% trans "Unlock Dashboard" %}
-        </button>
-      </div>
-    </div>
-  </div>
-  <div class="collapse multi-collapse">
-    <div class="d-flex px-3">
-      <div class="flex-grow-1">
-        <button type="button" id="lock_dashboard" class="btn btn-light" data-bs-toggle="collapse" data-bs-target=".multi-collapse">
-          <i class="mdi mdi-lock-outline"></i> {% trans "Lock Dashboard" %}
-        </button>
-      </div>
-      <div>
-        <a href="#"
-          hx-get="{% url 'extras:dashboardwidget_add' %}"
-          hx-target="#htmx-modal-content"
-          data-bs-toggle="modal"
-          data-bs-target="#htmx-modal"
-          class="btn btn-success"
-        >
-          <i class="mdi mdi-plus"></i> {% trans "Add Widget" %}
-        </a>
-        <button id="save_dashboard" class="btn btn-primary" data-url="{% url 'extras-api:dashboard' %}">
-          <i class="mdi mdi-content-save-outline"></i> {% trans "Save Layout" %}
-        </button>
-        <a href="{% url 'extras:dashboard_reset' %}" class="btn btn-danger">
-          <i class="mdi mdi-backspace"></i>  {% trans "Reset Dashboard" %}
-        </a>
-      </div>
-    </div>
   </div>
 {% endblock page %}
 

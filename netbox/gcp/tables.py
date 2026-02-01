@@ -101,6 +101,7 @@ class ComputeInstanceTable(NetBoxTable):
     zone = tables.Column()
     machine_type = tables.Column()
     status = tables.Column()
+    image = tables.Column(verbose_name='OS Image')
     internal_ip = tables.Column()
     external_ip = tables.Column()
 
@@ -113,6 +114,7 @@ class ComputeInstanceTable(NetBoxTable):
             'project',
             'zone',
             'machine_type',
+            'image',
             'status',
             'internal_ip',
             'external_ip',

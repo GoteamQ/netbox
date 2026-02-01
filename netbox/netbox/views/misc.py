@@ -50,6 +50,88 @@ class HomeView(ConditionalLoginRequiredMixin, View):
             )
             dashboard = get_default_dashboard(config=DEFAULT_DASHBOARD).get_layout()
 
+        # Gather GCP Stats
+        from django.apps import apps
+        from django.urls import reverse, NoReverseMatch
+
+        gcp_stats = []
+        gcp_target_models = [
+            # Organizations
+            ('gcp', 'GCPOrganization', 'mdi-domain', 'blue'),
+            # Projects
+            ('gcp', 'GCPProject', 'mdi-briefcase', 'indigo'),
+            # Compute
+            ('gcp', 'ComputeInstance', 'mdi-server', 'purple'),
+            ('gcp', 'InstanceTemplate', 'mdi-file-document-edit', 'purple'),
+            ('gcp', 'InstanceGroup', 'mdi-server-network', 'purple'),
+            # Networking
+            ('gcp', 'VPCNetwork', 'mdi-network', 'cyan'),
+            ('gcp', 'Subnet', 'mdi-network-outline', 'cyan'),
+            ('gcp', 'FirewallRule', 'mdi-shield', 'red'),
+            ('gcp', 'CloudRouter', 'mdi-router', 'orange'),
+            ('gcp', 'CloudNAT', 'mdi-swap-horizontal', 'orange'),
+            ('gcp', 'LoadBalancer', 'mdi-server-network', 'blue'),
+            # Network Connectivity
+            ('gcp', 'NCCHub', 'mdi-hubspot', 'blue-grey'),
+            ('gcp', 'NCCSpoke', 'mdi-access-point', 'blue-grey'),
+            ('gcp', 'InterconnectAttachment', 'mdi-power-plug', 'teal'),
+            # Private Service Connect
+            ('gcp', 'ServiceAttachment', 'mdi-connection', 'teal'),
+            ('gcp', 'ServiceConnectEndpoint', 'mdi-ethernet', 'teal'),
+            # Hybrid Connectivity
+            ('gcp', 'VPNGateway', 'mdi-vpn', 'green'),
+            ('gcp', 'ExternalVPNGateway', 'mdi-earth', 'green'),
+            ('gcp', 'VPNTunnel', 'mdi-tunnel', 'green'),
+            # Databases
+            ('gcp', 'CloudSQLInstance', 'mdi-database', 'teal'),
+            ('gcp', 'CloudSpannerInstance', 'mdi-database-search', 'teal'),
+            ('gcp', 'FirestoreDatabase', 'mdi-firebase', 'orange'),
+            ('gcp', 'BigtableInstance', 'mdi-database-clock', 'blue'),
+            ('gcp', 'MemorystoreInstance', 'mdi-memory', 'red'),
+            # Storage
+            ('gcp', 'CloudStorageBucket', 'mdi-bucket', 'green'),
+            ('gcp', 'PersistentDisk', 'mdi-harddisk', 'grey'),
+            # Kubernetes
+            ('gcp', 'GKECluster', 'mdi-kubernetes', 'blue'),
+            ('gcp', 'GKENodePool', 'mdi-layers', 'blue'),
+            # Serverless
+            ('gcp', 'CloudFunction', 'mdi-function', 'purple'),
+            ('gcp', 'CloudRun', 'mdi-run', 'purple'),
+            # Messaging
+            ('gcp', 'PubSubTopic', 'mdi-message-text', 'yellow'),
+            ('gcp', 'PubSubSubscription', 'mdi-email-newsletter', 'yellow'),
+            # Security
+            ('gcp', 'SecretManagerSecret', 'mdi-lock', 'grey'),
+            # DNS
+            ('gcp', 'CloudDNSZone', 'mdi-dns', 'blue'),
+            ('gcp', 'CloudDNSRecord', 'mdi-format-list-bulleted', 'blue'),
+            # IAM
+            ('gcp', 'ServiceAccount', 'mdi-account', 'orange'),
+            ('gcp', 'IAMRole', 'mdi-account-key', 'red'),
+            ('gcp', 'IAMBinding', 'mdi-link', 'red'),
+        ]
+
+        for app_label, model_name, icon, color in gcp_target_models:
+            try:
+                model = apps.get_model(app_label, model_name)
+                # Check permissions
+                if request.user.has_perm(f'{app_label}.view_{model_name.lower()}'):
+                    count = model.objects.count()
+                    try:
+                        url = reverse(f'{app_label}:{model_name.lower()}_list')
+                    except NoReverseMatch:
+                        url = '#'
+                    
+                    gcp_stats.append({
+                        'label': model._meta.verbose_name_plural,
+                        'count': count,
+                        'url': url,
+                        'icon': icon,
+                        'color': color,
+                    })
+            except LookupError:
+                pass
+
         # Check whether a new release is available. (Only for superusers.)
         new_release = None
         if request.user.is_superuser:
@@ -75,6 +157,7 @@ class HomeView(ConditionalLoginRequiredMixin, View):
             {
                 'dashboard': dashboard,
                 'new_release': new_release,
+                'gcp_stats': gcp_stats,
             },
         )
 
