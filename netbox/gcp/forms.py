@@ -11,7 +11,8 @@ from .models import (
     GKECluster, GKENodePool,
     ServiceAccount, IAMRole, IAMBinding,
     CloudFunction, CloudRun, PubSubTopic, PubSubSubscription,
-    SecretManagerSecret, CloudDNSZone, CloudDNSRecord, MemorystoreInstance
+    SecretManagerSecret, CloudDNSZone, CloudDNSRecord, MemorystoreInstance,
+    ServiceAttachment, ServiceConnectEndpoint
 )
 
 
@@ -425,3 +426,52 @@ class InterconnectAttachmentForm(NetBoxModelForm):
                   'edge_availability_domain', 'bandwidth', 'vlan_tag', 'pairing_key',
                   'partner_asn', 'cloud_router_ip_address', 'customer_router_ip_address',
                   'state', 'labels', 'tags']
+
+
+class ServiceAttachmentForm(NetBoxModelForm):
+    project = DynamicModelChoiceField(
+        queryset=GCPProject.objects.all()
+    )
+
+    class Meta:
+        model = ServiceAttachment
+        fields = ('name', 'project', 'region', 'connection_preference', 
+                  'target_service', 'nat_subnets', 'tags')
+
+
+class ServiceAttachmentFilterForm(NetBoxModelFilterSetForm):
+    model = ServiceAttachment
+    project = DynamicModelChoiceField(
+        queryset=GCPProject.objects.all(),
+        required=False
+    )
+    name = forms.CharField(required=False)
+    region = forms.CharField(required=False)
+
+
+class ServiceConnectEndpointForm(NetBoxModelForm):
+    project = DynamicModelChoiceField(
+        queryset=GCPProject.objects.all()
+    )
+    network = DynamicModelChoiceField(
+        queryset=VPCNetwork.objects.all()
+    )
+
+    class Meta:
+        model = ServiceConnectEndpoint
+        fields = ('name', 'project', 'region', 'network', 'ip_address', 
+                  'target_service_attachment', 'tags')
+
+
+class ServiceConnectEndpointFilterForm(NetBoxModelFilterSetForm):
+    model = ServiceConnectEndpoint
+    project = DynamicModelChoiceField(
+        queryset=GCPProject.objects.all(),
+        required=False
+    )
+    network = DynamicModelChoiceField(
+        queryset=VPCNetwork.objects.all(),
+        required=False
+    )
+    name = forms.CharField(required=False)
+    region = forms.CharField(required=False)

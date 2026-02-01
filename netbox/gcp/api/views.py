@@ -276,3 +276,16 @@ class InterconnectAttachmentViewSet(NetBoxModelViewSet):
     queryset = InterconnectAttachment.objects.all()
     serializer_class = serializers.InterconnectAttachmentSerializer
     filterset_class = filtersets.InterconnectAttachmentFilterSet
+
+from gcp.models import ServiceAttachment, ServiceConnectEndpoint
+
+class ServiceAttachmentViewSet(NetBoxModelViewSet):
+    queryset = ServiceAttachment.objects.all()
+    serializer_class = serializers.ServiceAttachmentSerializer
+    filterset_class = filtersets.ServiceAttachmentFilterSet
+
+
+class ServiceConnectEndpointViewSet(NetBoxModelViewSet):
+    queryset = ServiceConnectEndpoint.objects.all()
+    serializer_class = serializers.ServiceConnectEndpointSerializer
+    filterset_class = filtersets.ServiceConnectEndpointFilterSet

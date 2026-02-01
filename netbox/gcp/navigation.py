@@ -84,6 +84,13 @@ GCP_MENU = Menu(
             ),
         ),
         MenuGroup(
+            label=_('Private Service Connect'),
+            items=(
+                get_gcp_model_item('serviceattachment', _('Service Attachments')),
+                get_gcp_model_item('serviceconnectendpoint', _('PSC Endpoints')),
+            ),
+        ),
+        MenuGroup(
             label=_('Hybrid Connectivity'),
             items=(
                 get_gcp_model_item('vpngateway', _('VPN Gateways')),

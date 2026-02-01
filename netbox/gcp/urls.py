@@ -12,6 +12,7 @@ urlpatterns = [
     path('organizations/<int:pk>/', include(get_model_urls('gcp', 'gcporganization'))),
     path('organizations/<int:pk>/discover/', views.GCPOrganizationDiscoverView.as_view(), name='gcporganization_discover'),
     path('organizations/<int:pk>/cancel/', views.GCPOrganizationCancelView.as_view(), name='gcporganization_cancel'),
+    path('organizations/<int:pk>/clear/', views.GCPOrganizationClearView.as_view(), name='gcporganization_clear'),
 
     path('discovery-logs/', views.DiscoveryLogListView.as_view(), name='discoverylog_list'),
     path('discovery-logs/delete/', views.DiscoveryLogBulkDeleteView.as_view(), name='discoverylog_bulk_delete'),
@@ -226,4 +227,16 @@ urlpatterns = [
     path('interconnect-attachments/import/', views.InterconnectAttachmentBulkImportView.as_view(), name='interconnectattachment_bulk_import'),
     path('interconnect-attachments/delete/', views.InterconnectAttachmentBulkDeleteView.as_view(), name='interconnectattachment_bulk_delete'),
     path('interconnect-attachments/<int:pk>/', include(get_model_urls('gcp', 'interconnectattachment'))),
+
+    path('service-attachments/', views.ServiceAttachmentListView.as_view(), name='serviceattachment_list'),
+    path('service-attachments/add/', views.ServiceAttachmentEditView.as_view(), name='serviceattachment_add'),
+    path('service-attachments/import/', views.ServiceAttachmentBulkImportView.as_view(), name='serviceattachment_bulk_import'),
+    path('service-attachments/delete/', views.ServiceAttachmentBulkDeleteView.as_view(), name='serviceattachment_bulk_delete'),
+    path('service-attachments/<int:pk>/', include(get_model_urls('gcp', 'serviceattachment'))),
+
+    path('service-connect-endpoints/', views.ServiceConnectEndpointListView.as_view(), name='serviceconnectendpoint_list'),
+    path('service-connect-endpoints/add/', views.ServiceConnectEndpointEditView.as_view(), name='serviceconnectendpoint_add'),
+    path('service-connect-endpoints/import/', views.ServiceConnectEndpointBulkImportView.as_view(), name='serviceconnectendpoint_bulk_import'),
+    path('service-connect-endpoints/delete/', views.ServiceConnectEndpointBulkDeleteView.as_view(), name='serviceconnectendpoint_bulk_delete'),
+    path('service-connect-endpoints/<int:pk>/', include(get_model_urls('gcp', 'serviceconnectendpoint'))),
 ]

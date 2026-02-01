@@ -43,5 +43,7 @@ router.register('vpn-gateways', views.VPNGatewayViewSet)
 router.register('external-vpn-gateways', views.ExternalVPNGatewayViewSet)
 router.register('vpn-tunnels', views.VPNTunnelViewSet)
 router.register('interconnect-attachments', views.InterconnectAttachmentViewSet)
+router.register('service-attachments', views.ServiceAttachmentViewSet)
+router.register('service-connect-endpoints', views.ServiceConnectEndpointViewSet)
 
 urlpatterns = router.urls

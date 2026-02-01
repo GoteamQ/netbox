@@ -112,29 +112,29 @@ class CloudNATSerializer(NetBoxModelSerializer):
     class Meta:
         model = CloudNAT
         fields = ['id', 'url', 'display', 'name', 'project', 'router', 'region', 'nat_ip_allocate_option',
-                  'source_subnetwork_ip_ranges', 'nat_ips', 'min_ports_per_vm', 'tags']
+                  'source_subnetwork_ip_ranges_to_nat', 'nat_ips', 'min_ports_per_vm', 'tags']
 
 
 class LoadBalancerSerializer(NetBoxModelSerializer):
     class Meta:
         model = LoadBalancer
         fields = ['id', 'url', 'display', 'name', 'project', 'scheme', 'lb_type', 'region',
-                  'ip_address', 'port', 'backend_services', 'health_check', 'tags']
+                  'ip_address', 'port', 'tags']
 
 
 class CloudSQLInstanceSerializer(NetBoxModelSerializer):
     class Meta:
         model = CloudSQLInstance
         fields = ['id', 'url', 'display', 'name', 'project', 'region', 'database_version', 'database_type',
-                  'tier', 'storage_size_gb', 'storage_type', 'status', 'ip_address', 'private_ip',
-                  'connection_name', 'high_availability', 'backup_enabled', 'labels', 'tags']
+                  'tier', 'storage_size_gb', 'storage_type', 'status', 'ip_addresses',
+                  'connection_name', 'tags']
 
 
 class CloudSpannerInstanceSerializer(NetBoxModelSerializer):
     class Meta:
         model = CloudSpannerInstance
         fields = ['id', 'url', 'display', 'name', 'project', 'config', 'display_name', 'node_count',
-                  'processing_units', 'status', 'labels', 'tags']
+                  'processing_units', 'status', 'tags']
 
 
 class FirestoreDatabaseSerializer(NetBoxModelSerializer):
@@ -148,44 +148,43 @@ class BigtableInstanceSerializer(NetBoxModelSerializer):
     class Meta:
         model = BigtableInstance
         fields = ['id', 'url', 'display', 'name', 'project', 'display_name', 'instance_type',
-                  'storage_type', 'status', 'labels', 'tags']
+                  'storage_type', 'status', 'tags']
 
 
 class CloudStorageBucketSerializer(NetBoxModelSerializer):
     class Meta:
         model = CloudStorageBucket
         fields = ['id', 'url', 'display', 'name', 'project', 'location', 'storage_class',
-                  'versioning_enabled', 'uniform_bucket_level_access', 'public_access_prevention',
-                  'lifecycle_rules', 'labels', 'tags']
+                  'versioning_enabled', 'lifecycle_rules', 'labels', 'tags']
 
 
 class PersistentDiskSerializer(NetBoxModelSerializer):
     class Meta:
         model = PersistentDisk
         fields = ['id', 'url', 'display', 'name', 'project', 'zone', 'disk_type', 'size_gb',
-                  'status', 'source_image', 'source_snapshot', 'attached_instances', 'labels', 'tags']
+                  'status', 'source_image', 'tags']
 
 
 class GKEClusterSerializer(NetBoxModelSerializer):
     class Meta:
         model = GKECluster
-        fields = ['id', 'url', 'display', 'name', 'project', 'location', 'network', 'subnet',
+        fields = ['id', 'url', 'display', 'name', 'project', 'location', 'network', 'subnetwork',
                   'master_version', 'status', 'endpoint', 'cluster_ipv4_cidr', 'services_ipv4_cidr',
-                  'enable_autopilot', 'private_cluster', 'labels', 'tags']
+                  'enable_autopilot', 'tags']
 
 
 class GKENodePoolSerializer(NetBoxModelSerializer):
     class Meta:
         model = GKENodePool
         fields = ['id', 'url', 'display', 'name', 'cluster', 'machine_type', 'disk_size_gb', 'disk_type',
-                  'node_count', 'min_node_count', 'max_node_count', 'autoscaling_enabled', 'preemptible',
-                  'spot', 'status', 'version', 'labels', 'tags']
+                  'node_count', 'min_node_count', 'max_node_count',
+                  'status', 'version', 'tags']
 
 
 class ServiceAccountSerializer(NetBoxModelSerializer):
     class Meta:
         model = ServiceAccount
-        fields = ['id', 'url', 'display', 'email', 'project', 'display_name', 'description',
+        fields = ['id', 'url', 'display', 'email', 'project', 'display_name',
                   'disabled', 'unique_id', 'tags']
 
 
@@ -193,7 +192,7 @@ class IAMRoleSerializer(NetBoxModelSerializer):
     class Meta:
         model = IAMRole
         fields = ['id', 'url', 'display', 'name', 'title', 'description', 'stage',
-                  'included_permissions', 'is_custom', 'project', 'tags']
+                  'permissions', 'is_custom', 'project', 'tags']
 
 
 class IAMBindingSerializer(NetBoxModelSerializer):
@@ -206,31 +205,29 @@ class CloudFunctionSerializer(NetBoxModelSerializer):
     class Meta:
         model = CloudFunction
         fields = ['id', 'url', 'display', 'name', 'project', 'region', 'runtime', 'entry_point',
-                  'trigger_type', 'trigger_url', 'memory_mb', 'timeout_seconds', 'max_instances',
-                  'min_instances', 'status', 'service_account', 'environment_variables', 'labels', 'tags']
+                  'trigger_type', 'trigger_url', 'memory_mb', 'timeout_seconds',
+                  'status', 'tags']
 
 
 class CloudRunSerializer(NetBoxModelSerializer):
     class Meta:
         model = CloudRun
-        fields = ['id', 'url', 'display', 'name', 'project', 'region', 'image', 'url', 'port',
-                  'cpu', 'memory', 'max_instances', 'min_instances', 'concurrency', 'timeout_seconds',
-                  'status', 'service_account', 'ingress', 'labels', 'tags']
+        fields = ['id', 'url', 'display', 'name', 'project', 'region', 'image', 'url',
+                  'cpu', 'memory', 'max_instances', 'min_instances',
+                  'status', 'tags']
 
 
 class PubSubTopicSerializer(NetBoxModelSerializer):
     class Meta:
         model = PubSubTopic
-        fields = ['id', 'url', 'display', 'name', 'project', 'labels', 'message_retention_duration',
-                  'schema_settings', 'tags']
+        fields = ['id', 'url', 'display', 'name', 'project', 'labels', 'tags']
 
 
 class PubSubSubscriptionSerializer(NetBoxModelSerializer):
     class Meta:
         model = PubSubSubscription
         fields = ['id', 'url', 'display', 'name', 'project', 'topic', 'ack_deadline_seconds',
-                  'message_retention_duration', 'push_endpoint', 'filter_expression', 'dead_letter_topic',
-                  'labels', 'tags']
+                  'message_retention_duration', 'push_endpoint', 'tags']
 
 
 class SecretManagerSecretSerializer(NetBoxModelSerializer):
@@ -244,7 +241,7 @@ class CloudDNSZoneSerializer(NetBoxModelSerializer):
     class Meta:
         model = CloudDNSZone
         fields = ['id', 'url', 'display', 'name', 'project', 'dns_name', 'visibility', 'description',
-                  'name_servers', 'labels', 'tags']
+                  'name_servers', 'tags']
 
 
 class CloudDNSRecordSerializer(NetBoxModelSerializer):
@@ -257,7 +254,7 @@ class MemorystoreInstanceSerializer(NetBoxModelSerializer):
     class Meta:
         model = MemorystoreInstance
         fields = ['id', 'url', 'display', 'name', 'project', 'region', 'tier', 'memory_size_gb',
-                  'redis_version', 'host', 'port', 'status', 'authorized_network', 'labels', 'tags']
+                  'redis_version', 'host', 'port', 'status', 'network', 'tags']
 
 
 from gcp.models import NCCHub, NCCSpoke, VPNGateway, ExternalVPNGateway, VPNTunnel, InterconnectAttachment
@@ -266,7 +263,7 @@ from gcp.models import NCCHub, NCCSpoke, VPNGateway, ExternalVPNGateway, VPNTunn
 class NCCHubSerializer(NetBoxModelSerializer):
     class Meta:
         model = NCCHub
-        fields = ['id', 'url', 'display', 'name', 'project', 'description', 'routing_vpcs', 'labels', 'tags']
+        fields = ['id', 'url', 'display', 'name', 'project', 'description', 'labels', 'tags']
 
 
 class NCCSpokeSerializer(NetBoxModelSerializer):
@@ -274,14 +271,14 @@ class NCCSpokeSerializer(NetBoxModelSerializer):
         model = NCCSpoke
         fields = ['id', 'url', 'display', 'name', 'project', 'hub', 'spoke_type', 'location', 
                   'description', 'linked_vpn_tunnels', 'linked_interconnect_attachments',
-                  'linked_router_appliance_instances', 'linked_vpc_network', 'labels', 'tags']
+                  'linked_vpc_network', 'labels', 'tags']
 
 
 class VPNGatewaySerializer(NetBoxModelSerializer):
     class Meta:
         model = VPNGateway
         fields = ['id', 'url', 'display', 'name', 'project', 'network', 'region', 'gateway_type',
-                  'ip_addresses', 'description', 'labels', 'tags']
+                  'ip_addresses', 'labels', 'tags']
 
 
 class ExternalVPNGatewaySerializer(NetBoxModelSerializer):
@@ -296,7 +293,7 @@ class VPNTunnelSerializer(NetBoxModelSerializer):
         model = VPNTunnel
         fields = ['id', 'url', 'display', 'name', 'project', 'region', 'vpn_gateway', 
                   'vpn_gateway_interface', 'peer_external_gateway', 'peer_external_gateway_interface',
-                  'peer_gcp_gateway', 'peer_ip', 'shared_secret_hash', 'ike_version',
+                  'peer_ip', 'shared_secret_hash', 'ike_version',
                   'local_traffic_selector', 'remote_traffic_selector', 'router', 'status',
                   'detailed_status', 'labels', 'tags']
 
@@ -305,5 +302,20 @@ class InterconnectAttachmentSerializer(NetBoxModelSerializer):
     class Meta:
         model = InterconnectAttachment
         fields = ['id', 'url', 'display', 'name', 'project', 'region', 'router', 'attachment_type',
-                  'bandwidth', 'vlan_tag', 'pairing_key', 'partner_metadata', 'cloud_router_ip',
-                  'customer_router_ip', 'state', 'mtu', 'encryption', 'description', 'labels', 'tags']
+                  'bandwidth', 'vlan_tag', 'pairing_key', 'partner_asn', 'cloud_router_ip_address',
+                  'customer_router_ip_address', 'state', 'edge_availability_domain', 'labels', 'tags']
+
+from gcp.models import ServiceAttachment, ServiceConnectEndpoint
+
+class ServiceAttachmentSerializer(NetBoxModelSerializer):
+    class Meta:
+        model = ServiceAttachment
+        fields = ['id', 'url', 'display', 'name', 'project', 'region', 'connection_preference', 
+                  'nat_subnets', 'target_service', 'tags']
+
+
+class ServiceConnectEndpointSerializer(NetBoxModelSerializer):
+    class Meta:
+        model = ServiceConnectEndpoint
+        fields = ['id', 'url', 'display', 'name', 'project', 'region', 'network', 
+                  'ip_address', 'target_service_attachment', 'tags']
