@@ -47,6 +47,7 @@ clear_events = Signal()
 # Object types
 #
 
+
 @receiver(post_migrate)
 def update_object_types(sender, **kwargs):
     """
@@ -133,7 +134,7 @@ def handle_changed_object(sender, instance, **kwargs):
         prev_change := ObjectChange.objects.filter(
             changed_object_type=ContentType.objects.get_for_model(instance),
             changed_object_id=instance.pk,
-            request_id=request.id
+            request_id=request.id,
         ).first()
     ):
         prev_change.postchange_data = objectchange.postchange_data
@@ -172,9 +173,7 @@ def handle_deleted_object(sender, instance, **kwargs):
     try:
         run_validators(instance, validators)
     except ValidationError as e:
-        raise AbortRequest(
-            _("Deletion is prevented by a protection rule: {message}").format(message=e)
-        )
+        raise AbortRequest(_('Deletion is prevented by a protection rule: {message}').format(message=e))
 
     # Get the current request, or bail if not set
     request = current_request.get()
@@ -248,13 +247,14 @@ def clear_events_queue(sender, **kwargs):
     Delete any queued events (e.g. because of an aborted bulk transaction)
     """
     logger = logging.getLogger('events')
-    logger.info(f"Clearing {len(events_queue.get())} queued events ({sender})")
+    logger.info(f'Clearing {len(events_queue.get())} queued events ({sender})')
     events_queue.set({})
 
 
 #
 # DataSource handlers
 #
+
 
 @receiver(post_save, sender=DataSource)
 def enqueue_sync_job(instance, created, **kwargs):
@@ -267,9 +267,10 @@ def enqueue_sync_job(instance, created, **kwargs):
         SyncDataSourceJob.enqueue_once(instance, interval=instance.sync_interval)
     elif not created:
         # Delete any previously scheduled recurring jobs for this DataSource
-        for job in SyncDataSourceJob.get_jobs(instance).defer('data').filter(
-            interval__isnull=False,
-            status=JobStatusChoices.STATUS_SCHEDULED
+        for job in (
+            SyncDataSourceJob.get_jobs(instance)
+            .defer('data')
+            .filter(interval__isnull=False, status=JobStatusChoices.STATUS_SCHEDULED)
         ):
             # Call delete() per instance to ensure the associated background task is deleted as well
             job.delete()

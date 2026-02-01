@@ -9,29 +9,37 @@ from netbox.api.serializers import BaseModelSerializer
 from users.api.serializers_.users import UserSerializer
 from utilities.api import get_serializer_for_model
 
-__all__ = (
-    'JobSerializer',
-)
+__all__ = ('JobSerializer',)
 
 
 class JobSerializer(BaseModelSerializer):
-    user = UserSerializer(
-        nested=True,
-        read_only=True
-    )
+    user = UserSerializer(nested=True, read_only=True)
     status = ChoiceField(choices=JobStatusChoices, read_only=True)
-    object_type = ContentTypeField(
-        read_only=True
-    )
-    object = serializers.SerializerMethodField(
-        read_only=True
-    )
+    object_type = ContentTypeField(read_only=True)
+    object = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Job
         fields = [
-            'id', 'url', 'display_url', 'display', 'object_type', 'object_id', 'object', 'name', 'status', 'created',
-            'scheduled', 'interval', 'started', 'completed', 'user', 'data', 'error', 'job_id', 'log_entries',
+            'id',
+            'url',
+            'display_url',
+            'display',
+            'object_type',
+            'object_id',
+            'object',
+            'name',
+            'status',
+            'created',
+            'scheduled',
+            'interval',
+            'started',
+            'completed',
+            'user',
+            'data',
+            'error',
+            'job_id',
+            'log_entries',
         ]
         brief_fields = ('url', 'created', 'completed', 'user', 'status')
 

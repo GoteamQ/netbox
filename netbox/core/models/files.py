@@ -13,9 +13,7 @@ from extras.storage import ScriptFileSystemStorage
 from netbox.models.features import SyncedDataMixin
 from utilities.querysets import RestrictedQuerySet
 
-__all__ = (
-    'ManagedFile',
-)
+__all__ = ('ManagedFile',)
 
 logger = logging.getLogger('netbox.core.files')
 
@@ -25,25 +23,12 @@ class ManagedFile(SyncedDataMixin, models.Model):
     Database representation for a file on disk. This class is typically wrapped by a proxy class (e.g. ScriptModule)
     to provide additional functionality.
     """
-    created = models.DateTimeField(
-        verbose_name=_('created'),
-        auto_now_add=True
-    )
-    last_updated = models.DateTimeField(
-        verbose_name=_('last updated'),
-        editable=False,
-        blank=True,
-        null=True
-    )
-    file_root = models.CharField(
-        verbose_name=_('file root'),
-        max_length=1000,
-        choices=ManagedFileRootPathChoices
-    )
+
+    created = models.DateTimeField(verbose_name=_('created'), auto_now_add=True)
+    last_updated = models.DateTimeField(verbose_name=_('last updated'), editable=False, blank=True, null=True)
+    file_root = models.CharField(verbose_name=_('file root'), max_length=1000, choices=ManagedFileRootPathChoices)
     file_path = models.FilePathField(
-        verbose_name=_('file path'),
-        editable=False,
-        help_text=_('File path relative to the designated root path')
+        verbose_name=_('file path'), editable=False, help_text=_('File path relative to the designated root path')
     )
 
     objects = RestrictedQuerySet.as_manager()
@@ -52,10 +37,7 @@ class ManagedFile(SyncedDataMixin, models.Model):
     class Meta:
         ordering = ('file_root', 'file_path')
         constraints = (
-            models.UniqueConstraint(
-                fields=('file_root', 'file_path'),
-                name='%(app_label)s_%(class)s_unique_root_path'
-            ),
+            models.UniqueConstraint(fields=('file_root', 'file_path'), name='%(app_label)s_%(class)s_unique_root_path'),
         )
         verbose_name = _('managed file')
         verbose_name_plural = _('managed files')
@@ -79,7 +61,7 @@ class ManagedFile(SyncedDataMixin, models.Model):
                 'reports': settings.REPORTS_ROOT,
             }[self.file_root]
         else:
-            return ""
+            return ''
 
     def sync_data(self):
         if self.data_file:
@@ -92,7 +74,7 @@ class ManagedFile(SyncedDataMixin, models.Model):
 
     @cached_property
     def storage(self):
-        return storages.create_storage(storages.backends["scripts"])
+        return storages.create_storage(storages.backends['scripts'])
 
     def clean(self):
         super().clean()
@@ -101,14 +83,16 @@ class ManagedFile(SyncedDataMixin, models.Model):
             self.file_path = os.path.basename(self.data_path)
 
         # Ensure that the file root and path make a unique pair
-        if self._meta.model.objects.filter(
-                file_root=self.file_root, file_path=self.file_path
-        ).exclude(pk=self.pk).exists():
+        if (
+            self._meta.model.objects.filter(file_root=self.file_root, file_path=self.file_path)
+            .exclude(pk=self.pk)
+            .exists()
+        ):
             raise ValidationError(
-                _("A {model} with this file path already exists ({path}).").format(
-                    model=self._meta.verbose_name.lower(),
-                    path=f"{self.file_root}/{self.file_path}"
-                ))
+                _('A {model} with this file path already exists ({path}).').format(
+                    model=self._meta.verbose_name.lower(), path=f'{self.file_root}/{self.file_path}'
+                )
+            )
 
     def delete(self, *args, **kwargs):
         # Delete file from disk

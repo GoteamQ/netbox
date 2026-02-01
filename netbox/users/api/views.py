@@ -22,6 +22,7 @@ class UsersRootView(APIRootView):
     """
     Users API root view
     """
+
     def get_view_name(self):
         return 'Users'
 
@@ -29,6 +30,7 @@ class UsersRootView(APIRootView):
 #
 # Users and groups
 #
+
 
 class UserViewSet(NetBoxModelViewSet):
     queryset = RestrictedQuerySet(model=User).order_by('username')
@@ -46,6 +48,7 @@ class GroupViewSet(NetBoxModelViewSet):
 # REST API tokens
 #
 
+
 class TokenViewSet(NetBoxModelViewSet):
     queryset = Token.objects.all()
     serializer_class = serializers.TokenSerializer
@@ -56,6 +59,7 @@ class TokenProvisionView(APIView):
     """
     Non-authenticated REST API endpoint via which a user may create a Token.
     """
+
     permission_classes = []
 
     @extend_schema(
@@ -63,7 +67,7 @@ class TokenProvisionView(APIView):
         responses={
             201: serializers.TokenProvisionSerializer,
             401: OpenApiTypes.OBJECT,
-        }
+        },
     )
     def post(self, request):
         serializer = serializers.TokenProvisionSerializer(data=request.data, context={'request': request})
@@ -74,13 +78,14 @@ class TokenProvisionView(APIView):
     def perform_create(self, serializer):
         model = serializer.Meta.model
         logger = logging.getLogger('netbox.api.views.TokenProvisionView')
-        logger.info(f"Creating new {model._meta.verbose_name}")
+        logger.info(f'Creating new {model._meta.verbose_name}')
         serializer.save()
 
 
 #
 # ObjectPermissions
 #
+
 
 class ObjectPermissionViewSet(NetBoxModelViewSet):
     queryset = ObjectPermission.objects.all()
@@ -91,6 +96,7 @@ class ObjectPermissionViewSet(NetBoxModelViewSet):
 #
 # Owners
 #
+
 
 class OwnerGroupViewSet(NetBoxModelViewSet):
     queryset = OwnerGroup.objects.all()
@@ -108,10 +114,12 @@ class OwnerViewSet(NetBoxModelViewSet):
 # User preferences
 #
 
+
 class UserConfigViewSet(ViewSet):
     """
     An API endpoint via which a user can update his or her own UserConfig data (but no one else's).
     """
+
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
@@ -126,7 +134,7 @@ class UserConfigViewSet(ViewSet):
 
         return Response(userconfig.data)
 
-    @extend_schema(methods=["patch"], responses={201: OpenApiTypes.OBJECT})
+    @extend_schema(methods=['patch'], responses={201: OpenApiTypes.OBJECT})
     def patch(self, request):
         """
         Update the UserConfig for the currently authenticated User.

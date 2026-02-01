@@ -10,36 +10,32 @@ from ipam.models import *
 
 
 class TestAggregate(TestCase):
-
     def test_get_utilization(self):
         rir = RIR.objects.create(name='RIR 1', slug='rir-1')
         aggregate = Aggregate(prefix=IPNetwork('10.0.0.0/8'), rir=rir)
         aggregate.save()
 
         # 25% utilization
-        Prefix.objects.bulk_create((
-            Prefix(prefix=IPNetwork('10.0.0.0/12')),
-            Prefix(prefix=IPNetwork('10.16.0.0/12')),
-            Prefix(prefix=IPNetwork('10.32.0.0/12')),
-            Prefix(prefix=IPNetwork('10.48.0.0/12')),
-        ))
+        Prefix.objects.bulk_create(
+            (
+                Prefix(prefix=IPNetwork('10.0.0.0/12')),
+                Prefix(prefix=IPNetwork('10.16.0.0/12')),
+                Prefix(prefix=IPNetwork('10.32.0.0/12')),
+                Prefix(prefix=IPNetwork('10.48.0.0/12')),
+            )
+        )
         self.assertEqual(aggregate.get_utilization(), 25)
 
         # 50% utilization
-        Prefix.objects.bulk_create((
-            Prefix(prefix=IPNetwork('10.64.0.0/10')),
-        ))
+        Prefix.objects.bulk_create((Prefix(prefix=IPNetwork('10.64.0.0/10')),))
         self.assertEqual(aggregate.get_utilization(), 50)
 
         # 100% utilization
-        Prefix.objects.bulk_create((
-            Prefix(prefix=IPNetwork('10.128.0.0/9')),
-        ))
+        Prefix.objects.bulk_create((Prefix(prefix=IPNetwork('10.128.0.0/9')),))
         self.assertEqual(aggregate.get_utilization(), 100)
 
 
 class TestIPRange(TestCase):
-
     def test_overlapping_range(self):
         iprange_192_168 = IPRange.objects.create(
             start_address=IPNetwork('192.168.0.1/22'), end_address=IPNetwork('192.168.0.49/22')
@@ -89,30 +85,35 @@ class TestIPRange(TestCase):
 
 
 class TestPrefix(TestCase):
-
     def test_get_duplicates(self):
-        prefixes = Prefix.objects.bulk_create((
-            Prefix(prefix=IPNetwork('192.0.2.0/24')),
-            Prefix(prefix=IPNetwork('192.0.2.0/24')),
-            Prefix(prefix=IPNetwork('192.0.2.0/24')),
-        ))
+        prefixes = Prefix.objects.bulk_create(
+            (
+                Prefix(prefix=IPNetwork('192.0.2.0/24')),
+                Prefix(prefix=IPNetwork('192.0.2.0/24')),
+                Prefix(prefix=IPNetwork('192.0.2.0/24')),
+            )
+        )
         duplicate_prefix_pks = [p.pk for p in prefixes[0].get_duplicates()]
 
         self.assertSetEqual(set(duplicate_prefix_pks), {prefixes[1].pk, prefixes[2].pk})
 
     def test_get_child_prefixes(self):
-        vrfs = VRF.objects.bulk_create((
-            VRF(name='VRF 1'),
-            VRF(name='VRF 2'),
-            VRF(name='VRF 3'),
-        ))
-        prefixes = Prefix.objects.bulk_create((
-            Prefix(prefix=IPNetwork('10.0.0.0/16'), status=PrefixStatusChoices.STATUS_CONTAINER),
-            Prefix(prefix=IPNetwork('10.0.0.0/24'), vrf=None),
-            Prefix(prefix=IPNetwork('10.0.1.0/24'), vrf=vrfs[0]),
-            Prefix(prefix=IPNetwork('10.0.2.0/24'), vrf=vrfs[1]),
-            Prefix(prefix=IPNetwork('10.0.3.0/24'), vrf=vrfs[2]),
-        ))
+        vrfs = VRF.objects.bulk_create(
+            (
+                VRF(name='VRF 1'),
+                VRF(name='VRF 2'),
+                VRF(name='VRF 3'),
+            )
+        )
+        prefixes = Prefix.objects.bulk_create(
+            (
+                Prefix(prefix=IPNetwork('10.0.0.0/16'), status=PrefixStatusChoices.STATUS_CONTAINER),
+                Prefix(prefix=IPNetwork('10.0.0.0/24'), vrf=None),
+                Prefix(prefix=IPNetwork('10.0.1.0/24'), vrf=vrfs[0]),
+                Prefix(prefix=IPNetwork('10.0.2.0/24'), vrf=vrfs[1]),
+                Prefix(prefix=IPNetwork('10.0.3.0/24'), vrf=vrfs[2]),
+            )
+        )
         child_prefix_pks = {p.pk for p in prefixes[0].get_child_prefixes()}
 
         # Global container should return all children
@@ -131,25 +132,15 @@ class TestPrefix(TestCase):
         ranges = IPRange.objects.bulk_create(
             (
                 # No overlap
-                IPRange(
-                    start_address=IPNetwork('192.168.0.1/24'), end_address=IPNetwork('192.168.0.10/24'), size=10
-                ),
+                IPRange(start_address=IPNetwork('192.168.0.1/24'), end_address=IPNetwork('192.168.0.10/24'), size=10),
                 # Partial overlap
-                IPRange(
-                    start_address=IPNetwork('192.168.0.11/24'), end_address=IPNetwork('192.168.0.17/24'), size=7
-                ),
+                IPRange(start_address=IPNetwork('192.168.0.11/24'), end_address=IPNetwork('192.168.0.17/24'), size=7),
                 # Full overlap
-                IPRange(
-                    start_address=IPNetwork('192.168.0.18/24'), end_address=IPNetwork('192.168.0.23/24'), size=6
-                ),
+                IPRange(start_address=IPNetwork('192.168.0.18/24'), end_address=IPNetwork('192.168.0.23/24'), size=6),
                 # Full overlap
-                IPRange(
-                    start_address=IPNetwork('192.168.0.24/24'), end_address=IPNetwork('192.168.0.30/24'), size=7
-                ),
+                IPRange(start_address=IPNetwork('192.168.0.24/24'), end_address=IPNetwork('192.168.0.30/24'), size=7),
                 # Partial overlap
-                IPRange(
-                    start_address=IPNetwork('192.168.0.31/24'), end_address=IPNetwork('192.168.0.40/24'), size=10
-                ),
+                IPRange(start_address=IPNetwork('192.168.0.31/24'), end_address=IPNetwork('192.168.0.40/24'), size=10),
             )
         )
 
@@ -160,20 +151,24 @@ class TestPrefix(TestCase):
         self.assertEqual(child_ranges[1], ranges[3])
 
     def test_get_child_ips(self):
-        vrfs = VRF.objects.bulk_create((
-            VRF(name='VRF 1'),
-            VRF(name='VRF 2'),
-            VRF(name='VRF 3'),
-        ))
+        vrfs = VRF.objects.bulk_create(
+            (
+                VRF(name='VRF 1'),
+                VRF(name='VRF 2'),
+                VRF(name='VRF 3'),
+            )
+        )
         parent_prefix = Prefix.objects.create(
             prefix=IPNetwork('10.0.0.0/16'), status=PrefixStatusChoices.STATUS_CONTAINER
         )
-        ips = IPAddress.objects.bulk_create((
-            IPAddress(address=IPNetwork('10.0.0.1/24'), vrf=None),
-            IPAddress(address=IPNetwork('10.0.1.1/24'), vrf=vrfs[0]),
-            IPAddress(address=IPNetwork('10.0.2.1/24'), vrf=vrfs[1]),
-            IPAddress(address=IPNetwork('10.0.3.1/24'), vrf=vrfs[2]),
-        ))
+        ips = IPAddress.objects.bulk_create(
+            (
+                IPAddress(address=IPNetwork('10.0.0.1/24'), vrf=None),
+                IPAddress(address=IPNetwork('10.0.1.1/24'), vrf=vrfs[0]),
+                IPAddress(address=IPNetwork('10.0.2.1/24'), vrf=vrfs[1]),
+                IPAddress(address=IPNetwork('10.0.3.1/24'), vrf=vrfs[2]),
+            )
+        )
         child_ip_pks = {p.pk for p in parent_prefix.get_child_ips()}
 
         # Global container should return all children
@@ -187,78 +182,81 @@ class TestPrefix(TestCase):
         self.assertSetEqual(child_ip_pks, {ips[1].pk})
 
     def test_get_available_prefixes(self):
-
-        prefixes = Prefix.objects.bulk_create((
-            Prefix(prefix=IPNetwork('10.0.0.0/16')),  # Parent prefix
-            Prefix(prefix=IPNetwork('10.0.0.0/20')),
-            Prefix(prefix=IPNetwork('10.0.32.0/20')),
-            Prefix(prefix=IPNetwork('10.0.128.0/18')),
-        ))
-        missing_prefixes = IPSet([
-            IPNetwork('10.0.16.0/20'),
-            IPNetwork('10.0.48.0/20'),
-            IPNetwork('10.0.64.0/18'),
-            IPNetwork('10.0.192.0/18'),
-        ])
+        prefixes = Prefix.objects.bulk_create(
+            (
+                Prefix(prefix=IPNetwork('10.0.0.0/16')),  # Parent prefix
+                Prefix(prefix=IPNetwork('10.0.0.0/20')),
+                Prefix(prefix=IPNetwork('10.0.32.0/20')),
+                Prefix(prefix=IPNetwork('10.0.128.0/18')),
+            )
+        )
+        missing_prefixes = IPSet(
+            [
+                IPNetwork('10.0.16.0/20'),
+                IPNetwork('10.0.48.0/20'),
+                IPNetwork('10.0.64.0/18'),
+                IPNetwork('10.0.192.0/18'),
+            ]
+        )
         available_prefixes = prefixes[0].get_available_prefixes()
 
         self.assertEqual(available_prefixes, missing_prefixes)
 
     def test_get_available_ips(self):
-
         parent_prefix = Prefix.objects.create(prefix=IPNetwork('10.0.0.0/28'))
-        IPAddress.objects.bulk_create((
-            IPAddress(address=IPNetwork('10.0.0.1/26')),
-            IPAddress(address=IPNetwork('10.0.0.3/26')),
-            IPAddress(address=IPNetwork('10.0.0.5/26')),
-            IPAddress(address=IPNetwork('10.0.0.7/26')),
-        ))
-        # Range is not marked as populated, so it doesn't count against available IP space
-        IPRange.objects.create(
-            start_address=IPNetwork('10.0.0.9/26'),
-            end_address=IPNetwork('10.0.0.10/26')
+        IPAddress.objects.bulk_create(
+            (
+                IPAddress(address=IPNetwork('10.0.0.1/26')),
+                IPAddress(address=IPNetwork('10.0.0.3/26')),
+                IPAddress(address=IPNetwork('10.0.0.5/26')),
+                IPAddress(address=IPNetwork('10.0.0.7/26')),
+            )
         )
+        # Range is not marked as populated, so it doesn't count against available IP space
+        IPRange.objects.create(start_address=IPNetwork('10.0.0.9/26'), end_address=IPNetwork('10.0.0.10/26'))
         # Populated range reduces available IP space
         IPRange.objects.create(
-            start_address=IPNetwork('10.0.0.12/26'),
-            end_address=IPNetwork('10.0.0.13/26'),
-            mark_populated=True
+            start_address=IPNetwork('10.0.0.12/26'), end_address=IPNetwork('10.0.0.13/26'), mark_populated=True
         )
-        missing_ips = IPSet([
-            '10.0.0.2/32',
-            '10.0.0.4/32',
-            '10.0.0.6/32',
-            '10.0.0.8/32',
-            '10.0.0.9/32',
-            '10.0.0.10/32',
-            '10.0.0.11/32',
-            '10.0.0.14/32',
-        ])
+        missing_ips = IPSet(
+            [
+                '10.0.0.2/32',
+                '10.0.0.4/32',
+                '10.0.0.6/32',
+                '10.0.0.8/32',
+                '10.0.0.9/32',
+                '10.0.0.10/32',
+                '10.0.0.11/32',
+                '10.0.0.14/32',
+            ]
+        )
         available_ips = parent_prefix.get_available_ips()
 
         self.assertEqual(available_ips, missing_ips)
 
     def test_get_first_available_prefix(self):
-
-        prefixes = Prefix.objects.bulk_create((
-            Prefix(prefix=IPNetwork('10.0.0.0/16')),  # Parent prefix
-            Prefix(prefix=IPNetwork('10.0.0.0/24')),
-            Prefix(prefix=IPNetwork('10.0.1.0/24')),
-            Prefix(prefix=IPNetwork('10.0.2.0/24')),
-        ))
+        prefixes = Prefix.objects.bulk_create(
+            (
+                Prefix(prefix=IPNetwork('10.0.0.0/16')),  # Parent prefix
+                Prefix(prefix=IPNetwork('10.0.0.0/24')),
+                Prefix(prefix=IPNetwork('10.0.1.0/24')),
+                Prefix(prefix=IPNetwork('10.0.2.0/24')),
+            )
+        )
         self.assertEqual(prefixes[0].get_first_available_prefix(), IPNetwork('10.0.3.0/24'))
 
         Prefix.objects.create(prefix=IPNetwork('10.0.3.0/24'))
         self.assertEqual(prefixes[0].get_first_available_prefix(), IPNetwork('10.0.4.0/22'))
 
     def test_get_first_available_ip(self):
-
         parent_prefix = Prefix.objects.create(prefix=IPNetwork('10.0.0.0/24'))
-        IPAddress.objects.bulk_create((
-            IPAddress(address=IPNetwork('10.0.0.1/24')),
-            IPAddress(address=IPNetwork('10.0.0.2/24')),
-            IPAddress(address=IPNetwork('10.0.0.3/24')),
-        ))
+        IPAddress.objects.bulk_create(
+            (
+                IPAddress(address=IPNetwork('10.0.0.1/24')),
+                IPAddress(address=IPNetwork('10.0.0.2/24')),
+                IPAddress(address=IPNetwork('10.0.0.3/24')),
+            )
+        )
         self.assertEqual(parent_prefix.get_first_available_ip(), '10.0.0.4/24')
 
         IPAddress.objects.create(address=IPNetwork('10.0.0.4/24'))
@@ -286,22 +284,15 @@ class TestPrefix(TestCase):
         self.assertEqual(prefixes[0].get_utilization(), 50)  # 50% utilization
 
     def test_get_utilization_noncontainer(self):
-        prefix = Prefix.objects.create(
-            prefix=IPNetwork('10.0.0.0/24'),
-            status=PrefixStatusChoices.STATUS_ACTIVE
-        )
+        prefix = Prefix.objects.create(prefix=IPNetwork('10.0.0.0/24'), status=PrefixStatusChoices.STATUS_ACTIVE)
 
         # Create 32 child IPs
-        IPAddress.objects.bulk_create([
-            IPAddress(address=IPNetwork(f'10.0.0.{i}/24')) for i in range(1, 33)
-        ])
+        IPAddress.objects.bulk_create([IPAddress(address=IPNetwork(f'10.0.0.{i}/24')) for i in range(1, 33)])
         self.assertEqual(prefix.get_utilization(), 32 / 254 * 100)  # ~12.5% utilization
 
         # Create a utilized child range with 32 additional IPs
         IPRange.objects.create(
-            start_address=IPNetwork('10.0.0.33/24'),
-            end_address=IPNetwork('10.0.0.64/24'),
-            mark_utilized=True
+            start_address=IPNetwork('10.0.0.33/24'), end_address=IPNetwork('10.0.0.64/24'), mark_utilized=True
         )
         self.assertEqual(prefix.get_utilization(), 64 / 254 * 100)  # ~25% utilization
 
@@ -338,21 +329,18 @@ class TestPrefixHierarchy(TestCase):
     Test the automatic updating of depth and child count in response to changes made within
     the prefix hierarchy.
     """
+
     @classmethod
     def setUpTestData(cls):
-
         prefixes = (
-
             # IPv4
             Prefix(prefix='10.0.0.0/8', _depth=0, _children=2),
             Prefix(prefix='10.0.0.0/16', _depth=1, _children=1),
             Prefix(prefix='10.0.0.0/24', _depth=2, _children=0),
-
             # IPv6
             Prefix(prefix='2001:db8::/32', _depth=0, _children=2),
             Prefix(prefix='2001:db8::/40', _depth=1, _children=1),
             Prefix(prefix='2001:db8::/48', _depth=2, _children=0),
-
         )
         Prefix.objects.bulk_create(prefixes)
 
@@ -532,13 +520,14 @@ class TestPrefixHierarchy(TestCase):
 
 
 class TestIPAddress(TestCase):
-
     def test_get_duplicates(self):
-        ips = IPAddress.objects.bulk_create((
-            IPAddress(address=IPNetwork('192.0.2.1/24')),
-            IPAddress(address=IPNetwork('192.0.2.1/24')),
-            IPAddress(address=IPNetwork('192.0.2.1/24')),
-        ))
+        ips = IPAddress.objects.bulk_create(
+            (
+                IPAddress(address=IPNetwork('192.0.2.1/24')),
+                IPAddress(address=IPNetwork('192.0.2.1/24')),
+                IPAddress(address=IPNetwork('192.0.2.1/24')),
+            )
+        )
         duplicate_ip_pks = [p.pk for p in ips[0].get_duplicates()]
 
         self.assertSetEqual(set(duplicate_ip_pks), {ips[1].pk, ips[2].pk})
@@ -589,25 +578,19 @@ class TestIPAddress(TestCase):
     #
 
     def test_create_ip_in_unpopulated_range(self):
-        IPRange.objects.create(
-            start_address=IPNetwork('192.0.2.1/24'),
-            end_address=IPNetwork('192.0.2.100/24')
-        )
+        IPRange.objects.create(start_address=IPNetwork('192.0.2.1/24'), end_address=IPNetwork('192.0.2.100/24'))
         ip = IPAddress(address=IPNetwork('192.0.2.10/24'))
         ip.full_clean()
 
     def test_create_ip_in_populated_range(self):
         IPRange.objects.create(
-            start_address=IPNetwork('192.0.2.1/24'),
-            end_address=IPNetwork('192.0.2.100/24'),
-            mark_populated=True
+            start_address=IPNetwork('192.0.2.1/24'), end_address=IPNetwork('192.0.2.100/24'), mark_populated=True
         )
         ip = IPAddress(address=IPNetwork('192.0.2.10/24'))
         self.assertRaises(ValidationError, ip.full_clean)
 
 
 class TestVLANGroup(TestCase):
-
     @classmethod
     def setUpTestData(cls):
         vlangroup = VLANGroup.objects.create(
@@ -615,12 +598,14 @@ class TestVLANGroup(TestCase):
             slug='vlan-group-1',
             vid_ranges=string_to_ranges('100-199'),
         )
-        VLAN.objects.bulk_create((
-            VLAN(name='VLAN 100', vid=100, group=vlangroup),
-            VLAN(name='VLAN 101', vid=101, group=vlangroup),
-            VLAN(name='VLAN 102', vid=102, group=vlangroup),
-            VLAN(name='VLAN 103', vid=103, group=vlangroup),
-        ))
+        VLAN.objects.bulk_create(
+            (
+                VLAN(name='VLAN 100', vid=100, group=vlangroup),
+                VLAN(name='VLAN 101', vid=101, group=vlangroup),
+                VLAN(name='VLAN 102', vid=102, group=vlangroup),
+                VLAN(name='VLAN 103', vid=103, group=vlangroup),
+            )
+        )
 
     def test_get_available_vids(self):
         vlangroup = VLANGroup.objects.first()
@@ -667,22 +652,14 @@ class TestVLANGroup(TestCase):
 
 
 class TestVLAN(TestCase):
-
     @classmethod
     def setUpTestData(cls):
-        VLAN.objects.bulk_create((
-            VLAN(name='VLAN 1', vid=1, qinq_role=VLANQinQRoleChoices.ROLE_SERVICE),
-        ))
+        VLAN.objects.bulk_create((VLAN(name='VLAN 1', vid=1, qinq_role=VLANQinQRoleChoices.ROLE_SERVICE),))
 
     def test_qinq_role(self):
         svlan = VLAN.objects.filter(qinq_role=VLANQinQRoleChoices.ROLE_SERVICE).first()
 
-        vlan = VLAN(
-            name='VLAN X',
-            vid=999,
-            qinq_role=VLANQinQRoleChoices.ROLE_SERVICE,
-            qinq_svlan=svlan
-        )
+        vlan = VLAN(name='VLAN X', vid=999, qinq_role=VLANQinQRoleChoices.ROLE_SERVICE, qinq_svlan=svlan)
         with self.assertRaises(ValidationError):
             vlan.full_clean()
 
@@ -691,37 +668,41 @@ class TestVLAN(TestCase):
             name='Site Group 1',
             slug='site-group-1',
         )
-        sites = Site.objects.bulk_create((
-            Site(
-                name='Site 1',
-                slug='site-1',
-            ),
-            Site(
-                name='Site 2',
-                slug='site-2',
-            ),
-        ))
+        sites = Site.objects.bulk_create(
+            (
+                Site(
+                    name='Site 1',
+                    slug='site-1',
+                ),
+                Site(
+                    name='Site 2',
+                    slug='site-2',
+                ),
+            )
+        )
         sitegroup.sites.add(sites[0])
-        vlangroups = VLANGroup.objects.bulk_create((
-            VLANGroup(
-                name='VLAN Group 1',
-                slug='vlan-group-1',
-                scope=sitegroup,
-                scope_type=ContentType.objects.get_for_model(SiteGroup),
-            ),
-            VLANGroup(
-                name='VLAN Group 2',
-                slug='vlan-group-2',
-                scope=sites[0],
-                scope_type=ContentType.objects.get_for_model(Site),
-            ),
-            VLANGroup(
-                name='VLAN Group 2',
-                slug='vlan-group-2',
-                scope=sites[1],
-                scope_type=ContentType.objects.get_for_model(Site),
-            ),
-        ))
+        vlangroups = VLANGroup.objects.bulk_create(
+            (
+                VLANGroup(
+                    name='VLAN Group 1',
+                    slug='vlan-group-1',
+                    scope=sitegroup,
+                    scope_type=ContentType.objects.get_for_model(SiteGroup),
+                ),
+                VLANGroup(
+                    name='VLAN Group 2',
+                    slug='vlan-group-2',
+                    scope=sites[0],
+                    scope_type=ContentType.objects.get_for_model(Site),
+                ),
+                VLANGroup(
+                    name='VLAN Group 2',
+                    slug='vlan-group-2',
+                    scope=sites[1],
+                    scope_type=ContentType.objects.get_for_model(Site),
+                ),
+            )
+        )
         vlan = VLAN(
             name='VLAN 1',
             vid=1,

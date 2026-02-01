@@ -16,8 +16,9 @@ class BaseNetBoxHyperlinkedIdentityField(serializers.HyperlinkedIdentityField):
     and it will get replaced in the get_url call.  Derived classes must
     define a get_view_name.
     """
+
     def __init__(self, *args, **kwargs):
-        super().__init__(view_name="", *args, **kwargs)
+        super().__init__(view_name='', *args, **kwargs)
 
     def get_url(self, obj, view_name, request, format):
         """
@@ -37,18 +38,16 @@ class BaseNetBoxHyperlinkedIdentityField(serializers.HyperlinkedIdentityField):
         return self.reverse(view_name, kwargs=kwargs, request=request, format=format)
 
     def get_view_name(self, model):
-        raise NotImplementedError(_('{class_name} must implement get_view_name()').format(
-            class_name=self.__class__.__name__
-        ))
+        raise NotImplementedError(
+            _('{class_name} must implement get_view_name()').format(class_name=self.__class__.__name__)
+        )
 
 
 class NetBoxAPIHyperlinkedIdentityField(BaseNetBoxHyperlinkedIdentityField):
-
     def get_view_name(self, model):
         return get_viewname(model=model, action='detail', rest_api=True)
 
 
 class NetBoxURLHyperlinkedIdentityField(BaseNetBoxHyperlinkedIdentityField):
-
     def get_view_name(self, model):
         return get_viewname(model=model)

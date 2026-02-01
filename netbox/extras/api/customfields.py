@@ -15,10 +15,12 @@ from utilities.api import get_serializer_for_model
 # Custom fields
 #
 
+
 class CustomFieldDefaultValues:
     """
     Return a dictionary of all CustomFields assigned to the parent model and their default values.
     """
+
     requires_context = True
 
     def __call__(self, serializer_field):
@@ -41,7 +43,6 @@ class CustomFieldDefaultValues:
 
 @extend_schema_field(OpenApiTypes.OBJECT)
 class CustomFieldsDataField(Field):
-
     def _get_custom_fields(self):
         """
         Cache CustomFields assigned to this model to avoid redundant database queries
@@ -54,6 +55,7 @@ class CustomFieldsDataField(Field):
     def to_representation(self, obj):
         # TODO: Fix circular import
         from utilities.api import get_serializer_for_model
+
         data = {}
         for cf in self._get_custom_fields():
             value = cf.deserialize(obj.get(cf.name))
@@ -70,15 +72,16 @@ class CustomFieldsDataField(Field):
     def to_internal_value(self, data):
         if type(data) is not dict:
             raise ValidationError(
-                "Invalid data format. Custom field data must be passed as a dictionary mapping field names to their "
-                "values."
+                'Invalid data format. Custom field data must be passed as a dictionary mapping field names to their '
+                'values.'
             )
 
         # Serialize object and multi-object values
         for cf in self._get_custom_fields():
-            if cf.name in data and data[cf.name] not in CUSTOMFIELD_EMPTY_VALUES and cf.type in (
-                    CustomFieldTypeChoices.TYPE_OBJECT,
-                    CustomFieldTypeChoices.TYPE_MULTIOBJECT
+            if (
+                cf.name in data
+                and data[cf.name] not in CUSTOMFIELD_EMPTY_VALUES
+                and cf.type in (CustomFieldTypeChoices.TYPE_OBJECT, CustomFieldTypeChoices.TYPE_MULTIOBJECT)
             ):
                 serializer_class = get_serializer_for_model(cf.related_object_type.model_class())
                 many = cf.type == CustomFieldTypeChoices.TYPE_MULTIOBJECT
@@ -86,7 +89,7 @@ class CustomFieldsDataField(Field):
                 if serializer.is_valid():
                     data[cf.name] = [obj['id'] for obj in serializer.data] if many else serializer.data['id']
                 else:
-                    raise ValidationError(_("Unknown related object(s): {name}").format(name=data[cf.name]))
+                    raise ValidationError(_('Unknown related object(s): {name}').format(name=data[cf.name]))
 
         # If updating an existing instance, start with existing custom_field_data
         if self.parent.instance:

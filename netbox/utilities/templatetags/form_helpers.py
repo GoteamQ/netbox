@@ -19,6 +19,7 @@ register = template.Library()
 # Filters
 #
 
+
 @register.filter()
 def getfield(form, fieldname):
     """
@@ -47,6 +48,7 @@ def widget_type(field):
 # Inclusion tags
 #
 
+
 @register.inclusion_tag('form_helpers/render_fieldset.html')
 def render_fieldset(form, fieldset):
     """
@@ -54,15 +56,10 @@ def render_fieldset(form, fieldset):
     """
     rows = []
     for item in fieldset.items:
-
         # Multiple fields side-by-side
         if type(item) is InlineFields:
-            fields = [
-                form[name] for name in item.fields if name in form.fields
-            ]
-            rows.append(
-                ('inline', item.label, fields)
-            )
+            fields = [form[name] for name in item.fields if name in form.fields]
+            rows.append(('inline', item.label, fields))
 
         # Tabbed groups of fields
         elif type(item) is TabbedGroups:
@@ -71,22 +68,19 @@ def render_fieldset(form, fieldset):
                     'id': tab['id'],
                     'title': tab['title'],
                     'active': bool(form.initial.get(tab['fields'][0], False)),
-                    'fields': [form[name] for name in tab['fields'] if name in form.fields]
-                } for tab in item.tabs
+                    'fields': [form[name] for name in tab['fields'] if name in form.fields],
+                }
+                for tab in item.tabs
             ]
             # If none of the tabs has been marked as active, activate the first one
             if not any(tab['active'] for tab in tabs):
                 tabs[0]['active'] = True
-            rows.append(
-                ('tabs', None, tabs)
-            )
+            rows.append(('tabs', None, tabs))
 
         elif type(item) is ObjectAttribute:
             value = getattr(form.instance, item.name)
             label = value._meta.verbose_name if hasattr(value, '_meta') else item.name
-            rows.append(
-                ('attribute', label.title(), [value])
-            )
+            rows.append(('attribute', label.title(), [value]))
 
         # A single form field
         elif item in form.fields:
@@ -94,9 +88,7 @@ def render_fieldset(form, fieldset):
             # Annotate nullability for bulk editing
             if field.name in getattr(form, 'nullable_fields', []):
                 field._nullable = True
-            rows.append(
-                ('field', None, [field])
-            )
+            rows.append(('field', None, [field]))
 
     return {
         'heading': fieldset.name,
@@ -141,6 +133,4 @@ def render_errors(form):
     """
     Render form errors, if they exist.
     """
-    return {
-        "form": form
-    }
+    return {'form': form}

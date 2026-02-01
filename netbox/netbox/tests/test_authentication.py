@@ -15,7 +15,6 @@ from utilities.testing.api import APITestCase
 
 
 class TokenAuthenticationTestCase(APITestCase):
-
     @override_settings(LOGIN_REQUIRED=True, EXEMPT_VIEW_PERMISSIONS=['*'])
     def test_no_token(self):
         # Request without a token should return a 403
@@ -42,7 +41,7 @@ class TokenAuthenticationTestCase(APITestCase):
         header = 'Token XXXXXXXXXX'
         response = self.client.get(reverse('dcim-api:site-list'), HTTP_AUTHORIZATION=header)
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(response.data['detail'], "Invalid v1 token")
+        self.assertEqual(response.data['detail'], 'Invalid v1 token')
 
     @override_settings(LOGIN_REQUIRED=True, EXEMPT_VIEW_PERMISSIONS=['*'])
     def test_v2_token_valid(self):
@@ -64,7 +63,7 @@ class TokenAuthenticationTestCase(APITestCase):
         header = f'Bearer {TOKEN_PREFIX}XXXXXX.XXXXXXXXXX'
         response = self.client.get(reverse('dcim-api:site-list'), HTTP_AUTHORIZATION=header)
         self.assertEqual(response.status_code, 403)
-        self.assertEqual(response.data['detail'], "Invalid v2 token")
+        self.assertEqual(response.data['detail'], 'Invalid v2 token')
 
     @override_settings(LOGIN_REQUIRED=True, EXEMPT_VIEW_PERMISSIONS=['*'])
     def test_token_enabled(self):
@@ -171,36 +170,23 @@ class TokenAuthenticationTestCase(APITestCase):
         token2 = Token.objects.create(version=2, user=self.user, allowed_ips=['192.0.2.0/24'])
 
         # Request from a non-allowed client IP should fail
-        response = self.client.get(
-            url,
-            HTTP_AUTHORIZATION=f'Token {token1.token}',
-            REMOTE_ADDR='127.0.0.1'
-        )
+        response = self.client.get(url, HTTP_AUTHORIZATION=f'Token {token1.token}', REMOTE_ADDR='127.0.0.1')
         self.assertEqual(response.status_code, 403)
         response = self.client.get(
-            url,
-            HTTP_AUTHORIZATION=f'Bearer {TOKEN_PREFIX}{token2.key}.{token2.token}',
-            REMOTE_ADDR='127.0.0.1'
+            url, HTTP_AUTHORIZATION=f'Bearer {TOKEN_PREFIX}{token2.key}.{token2.token}', REMOTE_ADDR='127.0.0.1'
         )
         self.assertEqual(response.status_code, 403)
 
         # Request from an allowed client IP should succeed
-        response = self.client.get(
-            url,
-            HTTP_AUTHORIZATION=f'Token {token1.token}',
-            REMOTE_ADDR='192.0.2.1'
-        )
+        response = self.client.get(url, HTTP_AUTHORIZATION=f'Token {token1.token}', REMOTE_ADDR='192.0.2.1')
         self.assertEqual(response.status_code, 200)
         response = self.client.get(
-            url,
-            HTTP_AUTHORIZATION=f'Bearer {TOKEN_PREFIX}{token2.key}.{token2.token}',
-            REMOTE_ADDR='192.0.2.1'
+            url, HTTP_AUTHORIZATION=f'Bearer {TOKEN_PREFIX}{token2.key}.{token2.token}', REMOTE_ADDR='192.0.2.1'
         )
         self.assertEqual(response.status_code, 200)
 
 
 class ExternalAuthenticationTestCase(TestCase):
-
     @classmethod
     def setUpTestData(cls):
         cls.user = User.objects.create(username='remoteuser1')
@@ -208,9 +194,7 @@ class ExternalAuthenticationTestCase(TestCase):
     def setUp(self):
         self.client = Client()
 
-    @override_settings(
-        LOGIN_REQUIRED=True
-    )
+    @override_settings(LOGIN_REQUIRED=True)
     def test_remote_auth_disabled(self):
         """
         Test enabling remote authentication with the default configuration.
@@ -226,10 +210,7 @@ class ExternalAuthenticationTestCase(TestCase):
         self.client.get(reverse('home'), follow=True, **headers)
         self.assertNotIn('_auth_user_id', self.client.session)
 
-    @override_settings(
-        REMOTE_AUTH_ENABLED=True,
-        LOGIN_REQUIRED=True
-    )
+    @override_settings(REMOTE_AUTH_ENABLED=True, LOGIN_REQUIRED=True)
     def test_remote_auth_enabled(self):
         """
         Test enabling remote authentication with the default configuration.
@@ -243,14 +224,9 @@ class ExternalAuthenticationTestCase(TestCase):
 
         response = self.client.get(reverse('home'), follow=True, **headers)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(int(self.client.session.get(
-            '_auth_user_id')), self.user.pk, msg='Authentication failed')
+        self.assertEqual(int(self.client.session.get('_auth_user_id')), self.user.pk, msg='Authentication failed')
 
-    @override_settings(
-        REMOTE_AUTH_ENABLED=True,
-        REMOTE_AUTH_HEADER='HTTP_FOO',
-        LOGIN_REQUIRED=True
-    )
+    @override_settings(REMOTE_AUTH_ENABLED=True, REMOTE_AUTH_HEADER='HTTP_FOO', LOGIN_REQUIRED=True)
     def test_remote_auth_custom_header(self):
         """
         Test enabling remote authentication with a custom HTTP header.
@@ -264,13 +240,9 @@ class ExternalAuthenticationTestCase(TestCase):
 
         response = self.client.get(reverse('home'), follow=True, **headers)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(int(self.client.session.get(
-            '_auth_user_id')), self.user.pk, msg='Authentication failed')
+        self.assertEqual(int(self.client.session.get('_auth_user_id')), self.user.pk, msg='Authentication failed')
 
-    @override_settings(
-        REMOTE_AUTH_ENABLED=True,
-        LOGIN_REQUIRED=True
-    )
+    @override_settings(REMOTE_AUTH_ENABLED=True, LOGIN_REQUIRED=True)
     def test_remote_auth_user_profile(self):
         """
         Test remote authentication with user profile details.
@@ -286,15 +258,11 @@ class ExternalAuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
 
         self.user = User.objects.get(username='remoteuser1')
-        self.assertEqual(self.user.first_name, "John", msg='User first name was not updated')
-        self.assertEqual(self.user.last_name, "Smith", msg='User last name was not updated')
-        self.assertEqual(self.user.email, "johnsmith@example.com", msg='User email was not updated')
+        self.assertEqual(self.user.first_name, 'John', msg='User first name was not updated')
+        self.assertEqual(self.user.last_name, 'Smith', msg='User last name was not updated')
+        self.assertEqual(self.user.email, 'johnsmith@example.com', msg='User email was not updated')
 
-    @override_settings(
-        REMOTE_AUTH_ENABLED=True,
-        REMOTE_AUTH_AUTO_CREATE_USER=True,
-        LOGIN_REQUIRED=True
-    )
+    @override_settings(REMOTE_AUTH_ENABLED=True, REMOTE_AUTH_AUTO_CREATE_USER=True, LOGIN_REQUIRED=True)
     def test_remote_auth_auto_create(self):
         """
         Test enabling remote authentication with automatic user creation disabled.
@@ -312,14 +280,13 @@ class ExternalAuthenticationTestCase(TestCase):
 
         # Local user should have been automatically created
         new_user = User.objects.get(username='remoteuser2')
-        self.assertEqual(int(self.client.session.get(
-            '_auth_user_id')), new_user.pk, msg='Authentication failed')
+        self.assertEqual(int(self.client.session.get('_auth_user_id')), new_user.pk, msg='Authentication failed')
 
     @override_settings(
         REMOTE_AUTH_ENABLED=True,
         REMOTE_AUTH_AUTO_CREATE_USER=True,
         REMOTE_AUTH_DEFAULT_GROUPS=['Group 1', 'Group 2'],
-        LOGIN_REQUIRED=True
+        LOGIN_REQUIRED=True,
     )
     def test_remote_auth_default_groups(self):
         """
@@ -332,8 +299,7 @@ class ExternalAuthenticationTestCase(TestCase):
         self.assertTrue(settings.REMOTE_AUTH_ENABLED)
         self.assertTrue(settings.REMOTE_AUTH_AUTO_CREATE_USER)
         self.assertEqual(settings.REMOTE_AUTH_HEADER, 'HTTP_REMOTE_USER')
-        self.assertEqual(settings.REMOTE_AUTH_DEFAULT_GROUPS,
-                         ['Group 1', 'Group 2'])
+        self.assertEqual(settings.REMOTE_AUTH_DEFAULT_GROUPS, ['Group 1', 'Group 2'])
 
         # Create required groups
         groups = (
@@ -347,19 +313,14 @@ class ExternalAuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
 
         new_user = User.objects.get(username='remoteuser2')
-        self.assertEqual(int(self.client.session.get(
-            '_auth_user_id')), new_user.pk, msg='Authentication failed')
-        self.assertListEqual(
-            [groups[0], groups[1]],
-            list(new_user.groups.all())
-        )
+        self.assertEqual(int(self.client.session.get('_auth_user_id')), new_user.pk, msg='Authentication failed')
+        self.assertListEqual([groups[0], groups[1]], list(new_user.groups.all()))
 
     @override_settings(
         REMOTE_AUTH_ENABLED=True,
         REMOTE_AUTH_AUTO_CREATE_USER=True,
-        REMOTE_AUTH_DEFAULT_PERMISSIONS={
-            'dcim.add_site': None, 'dcim.change_site': None},
-        LOGIN_REQUIRED=True
+        REMOTE_AUTH_DEFAULT_PERMISSIONS={'dcim.add_site': None, 'dcim.change_site': None},
+        LOGIN_REQUIRED=True,
     )
     def test_remote_auth_default_permissions(self):
         """
@@ -372,23 +333,20 @@ class ExternalAuthenticationTestCase(TestCase):
         self.assertTrue(settings.REMOTE_AUTH_ENABLED)
         self.assertTrue(settings.REMOTE_AUTH_AUTO_CREATE_USER)
         self.assertEqual(settings.REMOTE_AUTH_HEADER, 'HTTP_REMOTE_USER')
-        self.assertEqual(settings.REMOTE_AUTH_DEFAULT_PERMISSIONS, {
-                         'dcim.add_site': None, 'dcim.change_site': None})
+        self.assertEqual(settings.REMOTE_AUTH_DEFAULT_PERMISSIONS, {'dcim.add_site': None, 'dcim.change_site': None})
 
         response = self.client.get(reverse('home'), follow=True, **headers)
         self.assertEqual(response.status_code, 200)
 
         new_user = User.objects.get(username='remoteuser2')
-        self.assertEqual(int(self.client.session.get(
-            '_auth_user_id')), new_user.pk, msg='Authentication failed')
-        self.assertTrue(new_user.has_perms(
-            ['dcim.add_site', 'dcim.change_site']))
+        self.assertEqual(int(self.client.session.get('_auth_user_id')), new_user.pk, msg='Authentication failed')
+        self.assertTrue(new_user.has_perms(['dcim.add_site', 'dcim.change_site']))
 
     @override_settings(
         REMOTE_AUTH_ENABLED=True,
         REMOTE_AUTH_AUTO_CREATE_USER=True,
         REMOTE_AUTH_GROUP_SYNC_ENABLED=True,
-        LOGIN_REQUIRED=True
+        LOGIN_REQUIRED=True,
     )
     def test_remote_auth_remote_groups_default(self):
         """
@@ -403,8 +361,7 @@ class ExternalAuthenticationTestCase(TestCase):
         self.assertTrue(settings.REMOTE_AUTH_AUTO_CREATE_USER)
         self.assertTrue(settings.REMOTE_AUTH_GROUP_SYNC_ENABLED)
         self.assertEqual(settings.REMOTE_AUTH_HEADER, 'HTTP_REMOTE_USER')
-        self.assertEqual(settings.REMOTE_AUTH_GROUP_HEADER,
-                         'HTTP_REMOTE_USER_GROUP')
+        self.assertEqual(settings.REMOTE_AUTH_GROUP_HEADER, 'HTTP_REMOTE_USER_GROUP')
         self.assertEqual(settings.REMOTE_AUTH_GROUP_SEPARATOR, '|')
 
         # Create required groups
@@ -419,12 +376,8 @@ class ExternalAuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
 
         new_user = User.objects.get(username='remoteuser2')
-        self.assertEqual(int(self.client.session.get(
-            '_auth_user_id')), new_user.pk, msg='Authentication failed')
-        self.assertListEqual(
-            [groups[0], groups[1]],
-            list(new_user.groups.all())
-        )
+        self.assertEqual(int(self.client.session.get('_auth_user_id')), new_user.pk, msg='Authentication failed')
+        self.assertListEqual([groups[0], groups[1]], list(new_user.groups.all()))
 
     @override_settings(
         REMOTE_AUTH_ENABLED=True,
@@ -439,31 +392,31 @@ class ExternalAuthenticationTestCase(TestCase):
         enabled with the default configuration.
         """
         headers = {
-            "HTTP_REMOTE_USER": "remoteuser2",
-            "HTTP_REMOTE_USER_GROUP": "Group 1|Group 2",
+            'HTTP_REMOTE_USER': 'remoteuser2',
+            'HTTP_REMOTE_USER_GROUP': 'Group 1|Group 2',
         }
 
         self.assertTrue(settings.REMOTE_AUTH_ENABLED)
         self.assertTrue(settings.REMOTE_AUTH_AUTO_CREATE_USER)
         self.assertTrue(settings.REMOTE_AUTH_AUTO_CREATE_GROUPS)
         self.assertTrue(settings.REMOTE_AUTH_GROUP_SYNC_ENABLED)
-        self.assertEqual(settings.REMOTE_AUTH_HEADER, "HTTP_REMOTE_USER")
-        self.assertEqual(settings.REMOTE_AUTH_GROUP_HEADER, "HTTP_REMOTE_USER_GROUP")
-        self.assertEqual(settings.REMOTE_AUTH_GROUP_SEPARATOR, "|")
+        self.assertEqual(settings.REMOTE_AUTH_HEADER, 'HTTP_REMOTE_USER')
+        self.assertEqual(settings.REMOTE_AUTH_GROUP_HEADER, 'HTTP_REMOTE_USER_GROUP')
+        self.assertEqual(settings.REMOTE_AUTH_GROUP_SEPARATOR, '|')
 
         groups = (
-            Group(name="Group 1"),
-            Group(name="Group 2"),
+            Group(name='Group 1'),
+            Group(name='Group 2'),
         )
 
-        response = self.client.get(reverse("home"), follow=True, **headers)
+        response = self.client.get(reverse('home'), follow=True, **headers)
         self.assertEqual(response.status_code, 200)
 
-        new_user = User.objects.get(username="remoteuser2")
+        new_user = User.objects.get(username='remoteuser2')
         self.assertEqual(
-            int(self.client.session.get("_auth_user_id")),
+            int(self.client.session.get('_auth_user_id')),
             new_user.pk,
-            msg="Authentication failed",
+            msg='Authentication failed',
         )
         self.assertListEqual(
             [group.name for group in groups],
@@ -476,7 +429,7 @@ class ExternalAuthenticationTestCase(TestCase):
         REMOTE_AUTH_GROUP_SYNC_ENABLED=True,
         REMOTE_AUTH_HEADER='HTTP_FOO',
         REMOTE_AUTH_GROUP_HEADER='HTTP_BAR',
-        LOGIN_REQUIRED=True
+        LOGIN_REQUIRED=True,
     )
     def test_remote_auth_remote_groups_custom_header(self):
         """
@@ -506,12 +459,8 @@ class ExternalAuthenticationTestCase(TestCase):
         self.assertEqual(response.status_code, 200)
 
         new_user = User.objects.get(username='remoteuser2')
-        self.assertEqual(int(self.client.session.get(
-            '_auth_user_id')), new_user.pk, msg='Authentication failed')
-        self.assertListEqual(
-            [groups[0], groups[1]],
-            list(new_user.groups.all())
-        )
+        self.assertEqual(int(self.client.session.get('_auth_user_id')), new_user.pk, msg='Authentication failed')
+        self.assertListEqual([groups[0], groups[1]], list(new_user.groups.all()))
 
 
 class ObjectPermissionAPIViewTestCase(TestCase):
@@ -519,7 +468,6 @@ class ObjectPermissionAPIViewTestCase(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-
         cls.sites = (
             Site(name='Site 1', slug='site-1'),
             Site(name='Site 2', slug='site-2'),
@@ -550,18 +498,13 @@ class ObjectPermissionAPIViewTestCase(TestCase):
 
     @override_settings(EXEMPT_VIEW_PERMISSIONS=[])
     def test_get_object(self):
-
         # Attempt to retrieve object without permission
         url = reverse('dcim-api:rack-detail', kwargs={'pk': self.racks[0].pk})
         response = self.client.get(url, **self.header)
         self.assertEqual(response.status_code, 403)
 
         # Assign object permission
-        obj_perm = ObjectPermission(
-            name='Test permission',
-            constraints={'site__name': 'Site 1'},
-            actions=['view']
-        )
+        obj_perm = ObjectPermission(name='Test permission', constraints={'site__name': 'Site 1'}, actions=['view'])
         obj_perm.save()
         obj_perm.users.add(self.user)
         obj_perm.object_types.add(ObjectType.objects.get_for_model(Rack))
@@ -585,11 +528,7 @@ class ObjectPermissionAPIViewTestCase(TestCase):
         self.assertEqual(response.status_code, 403)
 
         # Assign object permission
-        obj_perm = ObjectPermission(
-            name='Test permission',
-            constraints={'site__name': 'Site 1'},
-            actions=['view']
-        )
+        obj_perm = ObjectPermission(name='Test permission', constraints={'site__name': 'Site 1'}, actions=['view'])
         obj_perm.save()
         obj_perm.users.add(self.user)
         obj_perm.object_types.add(ObjectType.objects.get_for_model(Rack))
@@ -613,11 +552,7 @@ class ObjectPermissionAPIViewTestCase(TestCase):
         self.assertEqual(response.status_code, 403)
 
         # Assign object permission
-        obj_perm = ObjectPermission(
-            name='Test permission',
-            constraints={'site__name': 'Site 1'},
-            actions=['add']
-        )
+        obj_perm = ObjectPermission(name='Test permission', constraints={'site__name': 'Site 1'}, actions=['add'])
         obj_perm.save()
         obj_perm.users.add(self.user)
         obj_perm.object_types.add(ObjectType.objects.get_for_model(Rack))
@@ -635,7 +570,6 @@ class ObjectPermissionAPIViewTestCase(TestCase):
 
     @override_settings(EXEMPT_VIEW_PERMISSIONS=[])
     def test_edit_object(self):
-
         # Attempt to edit an object without permission
         data = {'site': self.sites[0].pk}
         url = reverse('dcim-api:rack-detail', kwargs={'pk': self.racks[0].pk})
@@ -643,11 +577,7 @@ class ObjectPermissionAPIViewTestCase(TestCase):
         self.assertEqual(response.status_code, 403)
 
         # Assign object permission
-        obj_perm = ObjectPermission(
-            name='Test permission',
-            constraints={'site__name': 'Site 1'},
-            actions=['change']
-        )
+        obj_perm = ObjectPermission(name='Test permission', constraints={'site__name': 'Site 1'}, actions=['change'])
         obj_perm.save()
         obj_perm.users.add(self.user)
         obj_perm.object_types.add(ObjectType.objects.get_for_model(Rack))
@@ -672,18 +602,13 @@ class ObjectPermissionAPIViewTestCase(TestCase):
 
     @override_settings(EXEMPT_VIEW_PERMISSIONS=[])
     def test_delete_object(self):
-
         # Attempt to delete an object without permission
         url = reverse('dcim-api:rack-detail', kwargs={'pk': self.racks[0].pk})
         response = self.client.delete(url, format='json', **self.header)
         self.assertEqual(response.status_code, 403)
 
         # Assign object permission
-        obj_perm = ObjectPermission(
-            name='Test permission',
-            constraints={'site__name': 'Site 1'},
-            actions=['delete']
-        )
+        obj_perm = ObjectPermission(name='Test permission', constraints={'site__name': 'Site 1'}, actions=['delete'])
         obj_perm.save()
         obj_perm.users.add(self.user)
         obj_perm.object_types.add(ObjectType.objects.get_for_model(Rack))

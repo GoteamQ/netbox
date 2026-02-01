@@ -3,18 +3,48 @@ from django.shortcuts import get_object_or_404, redirect
 from django.views import View
 
 from netbox.views import generic
-from utilities.views import ViewTab, register_model_view
+from utilities.views import register_model_view
 from . import filtersets, forms, tables
 from .models import (
-    GCPOrganization, DiscoveryLog,
-    GCPProject, ComputeInstance, InstanceTemplate, InstanceGroup,
-    VPCNetwork, Subnet, FirewallRule, CloudRouter, CloudNAT, LoadBalancer,
-    CloudSQLInstance, CloudSpannerInstance, FirestoreDatabase, BigtableInstance,
-    CloudStorageBucket, PersistentDisk,
-    GKECluster, GKENodePool,
-    ServiceAccount, IAMRole, IAMBinding,
-    CloudFunction, CloudRun, PubSubTopic, PubSubSubscription,
-    SecretManagerSecret, CloudDNSZone, CloudDNSRecord, MemorystoreInstance
+    GCPOrganization,
+    DiscoveryLog,
+    GCPProject,
+    ComputeInstance,
+    InstanceTemplate,
+    InstanceGroup,
+    VPCNetwork,
+    Subnet,
+    FirewallRule,
+    CloudRouter,
+    CloudNAT,
+    LoadBalancer,
+    CloudSQLInstance,
+    CloudSpannerInstance,
+    FirestoreDatabase,
+    BigtableInstance,
+    CloudStorageBucket,
+    PersistentDisk,
+    GKECluster,
+    GKENodePool,
+    ServiceAccount,
+    IAMRole,
+    IAMBinding,
+    CloudFunction,
+    CloudRun,
+    PubSubTopic,
+    PubSubSubscription,
+    SecretManagerSecret,
+    CloudDNSZone,
+    CloudDNSRecord,
+    MemorystoreInstance,
+    NCCHub,
+    NCCSpoke,
+    VPNGateway,
+    ExternalVPNGateway,
+    VPNTunnel,
+    InterconnectAttachment,
+    ServiceAttachment,
+    ServiceConnectEndpoint,
 )
 
 
@@ -59,18 +89,21 @@ class GCPOrganizationBulkDeleteView(generic.BulkDeleteView):
 class GCPOrganizationDiscoverView(View):
     def post(self, request, pk):
         organization = get_object_or_404(GCPOrganization, pk=pk)
-        
+
         if organization.discovery_status in ('running', 'canceling'):
-            messages.warning(request, f"Discovery cannot be started while status is {organization.discovery_status} for {organization.name}")
+            messages.warning(
+                request,
+                f'Discovery cannot be started while status is {organization.discovery_status} for {organization.name}',
+            )
             return redirect('gcp:gcporganization', pk=pk)
-        
+
         from .discovery import run_discovery
         import django_rq
 
         queue = django_rq.get_queue('default')
         queue.enqueue(run_discovery, organization.pk)
-        
-        messages.success(request, f"Discovery queued for {organization.name}. Refresh the page to see progress.")
+
+        messages.success(request, f'Discovery queued for {organization.name}. Refresh the page to see progress.')
         return redirect('gcp:gcporganization', pk=pk)
 
 
@@ -79,18 +112,18 @@ class GCPOrganizationCancelView(View):
         organization = get_object_or_404(GCPOrganization, pk=pk)
 
         if organization.discovery_status == 'canceling':
-            messages.info(request, "Cancellation is already in progress.")
+            messages.info(request, 'Cancellation is already in progress.')
             return redirect('gcp:gcporganization', pk=pk)
 
         if organization.discovery_status != 'running':
-            messages.info(request, "No running discovery to cancel.")
+            messages.info(request, 'No running discovery to cancel.')
             return redirect('gcp:gcporganization', pk=pk)
 
         organization.cancel_requested = True
         organization.discovery_status = 'canceling'
         organization.save()
 
-        messages.warning(request, f"Cancellation requested for {organization.name}.")
+        messages.warning(request, f'Cancellation requested for {organization.name}.')
         return redirect('gcp:gcporganization', pk=pk)
 
 
@@ -100,7 +133,7 @@ class GCPOrganizationClearView(generic.ObjectDeleteView):
 
     def post(self, request, pk):
         organization = get_object_or_404(GCPOrganization, pk=pk)
-        
+
         # Delete logs
         logs = DiscoveryLog.objects.filter(organization=organization)
         logs_count = logs.count()
@@ -109,7 +142,7 @@ class GCPOrganizationClearView(generic.ObjectDeleteView):
         # Delete projects (cascades)
         projects = GCPProject.objects.filter(organization=organization)
         proj_count = projects.count()
-        
+
         # Iterate and delete to avoid OOM on large datasets
         for project in projects:
             project.delete()
@@ -119,8 +152,8 @@ class GCPOrganizationClearView(generic.ObjectDeleteView):
         organization.last_discovery = None
         organization.discovery_error = ''
         organization.save()
-        
-        messages.success(request, f"Cleared {proj_count} projects and {logs_count} logs for {organization.name}.")
+
+        messages.success(request, f'Cleared {proj_count} projects and {logs_count} logs for {organization.name}.')
         return redirect('gcp:gcporganization', pk=pk)
 
 
@@ -1081,9 +1114,6 @@ class MemorystoreInstanceBulkDeleteView(generic.BulkDeleteView):
     table = tables.MemorystoreInstanceTable
 
 
-from .models import NCCHub, NCCSpoke, VPNGateway, ExternalVPNGateway, VPNTunnel, InterconnectAttachment
-
-
 class NCCHubListView(generic.ObjectListView):
     queryset = NCCHub.objects.all()
     table = tables.NCCHubTable
@@ -1274,9 +1304,6 @@ class InterconnectAttachmentBulkImportView(generic.BulkImportView):
 class InterconnectAttachmentBulkDeleteView(generic.BulkDeleteView):
     queryset = InterconnectAttachment.objects.all()
     table = tables.InterconnectAttachmentTable
-
-
-from .models import ServiceAttachment, ServiceConnectEndpoint
 
 
 class ServiceAttachmentListView(generic.ObjectListView):

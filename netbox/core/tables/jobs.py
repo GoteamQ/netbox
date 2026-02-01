@@ -8,22 +8,10 @@ from core.tables.columns import BadgeColumn
 
 
 class JobTable(NetBoxTable):
-    id = tables.Column(
-        verbose_name=_('ID'),
-        linkify=True
-    )
-    name = tables.Column(
-        verbose_name=_('Name'),
-        linkify=True
-    )
-    object_type = columns.ContentTypeColumn(
-        verbose_name=_('Type')
-    )
-    object = tables.Column(
-        verbose_name=_('Object'),
-        linkify=True,
-        orderable=False
-    )
+    id = tables.Column(verbose_name=_('ID'), linkify=True)
+    name = tables.Column(verbose_name=_('Name'), linkify=True)
+    object_type = columns.ContentTypeColumn(verbose_name=_('Type'))
+    object = tables.Column(verbose_name=_('Object'), linkify=True, orderable=False)
     status = columns.ChoiceFieldColumn(
         verbose_name=_('Status'),
     )
@@ -45,18 +33,37 @@ class JobTable(NetBoxTable):
     log_entries = tables.Column(
         verbose_name=_('Log Entries'),
     )
-    actions = columns.ActionsColumn(
-        actions=('delete',)
-    )
+    actions = columns.ActionsColumn(actions=('delete',))
 
     class Meta(NetBoxTable.Meta):
         model = Job
         fields = (
-            'pk', 'id', 'object_type', 'object', 'name', 'status', 'created', 'scheduled', 'interval', 'started',
-            'completed', 'user', 'error', 'job_id',
+            'pk',
+            'id',
+            'object_type',
+            'object',
+            'name',
+            'status',
+            'created',
+            'scheduled',
+            'interval',
+            'started',
+            'completed',
+            'user',
+            'error',
+            'job_id',
         )
         default_columns = (
-            'pk', 'id', 'object_type', 'object', 'name', 'status', 'created', 'started', 'completed', 'user',
+            'pk',
+            'id',
+            'object_type',
+            'object',
+            'name',
+            'status',
+            'created',
+            'started',
+            'completed',
+            'user',
         )
 
     def render_log_entries(self, value):

@@ -108,7 +108,6 @@ def process_event_rules(event_rules, object_type, event):
     """
 
     for event_rule in event_rules:
-
         # Evaluate event rule conditions (if any)
         if not event_rule.eval_conditions(event['data']):
             continue
@@ -119,21 +118,20 @@ def process_event_rules(event_rules, object_type, event):
 
         # Webhooks
         if event_rule.action_type == EventRuleActionChoices.WEBHOOK:
-
             # Select the appropriate RQ queue
             queue_name = get_config().QUEUE_MAPPINGS.get('webhook', RQ_QUEUE_DEFAULT)
             rq_queue = get_queue(queue_name)
 
             # Compile the task parameters
             params = {
-                "event_rule": event_rule,
-                "object_type": object_type,
-                "event_type": event['event_type'],
-                "data": event_data,
-                "snapshots": event.get('snapshots'),
-                "timestamp": timezone.now().isoformat(),
-                "username": event['username'],
-                "retry": get_rq_retry()
+                'event_rule': event_rule,
+                'object_type': object_type,
+                'event_type': event['event_type'],
+                'data': event_data,
+                'snapshots': event.get('snapshots'),
+                'timestamp': timezone.now().isoformat(),
+                'username': event['username'],
+                'retry': get_rq_retry(),
             }
             if 'request' in event:
                 # Exclude FILES - webhooks don't need uploaded files,
@@ -150,11 +148,12 @@ def process_event_rules(event_rules, object_type, event):
 
             # Enqueue a Job to record the script's execution
             from extras.jobs import ScriptJob
+
             params = {
-                "instance": event_rule.action_object,
-                "name": script.name,
-                "user": event['user'],
-                "data": event_data
+                'instance': event_rule.action_object,
+                'name': script.name,
+                'user': event['user'],
+                'data': event_data,
             }
             if 'snapshots' in event:
                 params['snapshots'] = event['snapshots']
@@ -171,13 +170,13 @@ def process_event_rules(event_rules, object_type, event):
                 object_type=object_type,
                 object_id=event_data['id'],
                 object_repr=event_data.get('display'),
-                event_type=event['event_type']
+                event_type=event['event_type'],
             )
 
         else:
-            raise ValueError(_("Unknown action type for an event rule: {action_type}").format(
-                action_type=event_rule.action_type
-            ))
+            raise ValueError(
+                _('Unknown action type for an event rule: {action_type}').format(action_type=event_rule.action_type)
+            )
 
 
 def process_event_queue(events):
@@ -195,9 +194,7 @@ def process_event_queue(events):
         # Cache applicable Event Rules
         if object_type not in events_cache[event_type]:
             events_cache[event_type][object_type] = EventRule.objects.filter(
-                event_types__contains=[event['event_type']],
-                object_types=object_type,
-                enabled=True
+                event_types__contains=[event['event_type']], object_types=object_type, enabled=True
             )
         event_rules = events_cache[event_type][object_type]
 
@@ -218,4 +215,4 @@ def flush_events(events):
                 func = import_string(name)
                 func(events)
             except ImportError as e:
-                logger.error(_("Cannot import events pipeline {name} error: {error}").format(name=name, error=e))
+                logger.error(_('Cannot import events pipeline {name} error: {error}').format(name=name, error=e))

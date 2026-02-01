@@ -29,31 +29,19 @@ router.register('services', views.ServiceViewSet)
 app_name = 'ipam-api'
 
 urlpatterns = [
-    path(
-        'asn-ranges/<int:pk>/available-asns/',
-        views.AvailableASNsView.as_view(),
-        name='asnrange-available-asns'
-    ),
+    path('asn-ranges/<int:pk>/available-asns/', views.AvailableASNsView.as_view(), name='asnrange-available-asns'),
     path(
         'ip-ranges/<int:pk>/available-ips/',
         views.IPRangeAvailableIPAddressesView.as_view(),
-        name='iprange-available-ips'
+        name='iprange-available-ips',
     ),
     path(
-        'prefixes/<int:pk>/available-prefixes/',
-        views.AvailablePrefixesView.as_view(),
-        name='prefix-available-prefixes'
+        'prefixes/<int:pk>/available-prefixes/', views.AvailablePrefixesView.as_view(), name='prefix-available-prefixes'
     ),
     path(
-        'prefixes/<int:pk>/available-ips/',
-        views.PrefixAvailableIPAddressesView.as_view(),
-        name='prefix-available-ips'
+        'prefixes/<int:pk>/available-ips/', views.PrefixAvailableIPAddressesView.as_view(), name='prefix-available-ips'
     ),
-    path(
-        'vlan-groups/<int:pk>/available-vlans/',
-        views.AvailableVLANsView.as_view(),
-        name='vlangroup-available-vlans'
-    ),
+    path('vlan-groups/<int:pk>/available-vlans/', views.AvailableVLANsView.as_view(), name='vlangroup-available-vlans'),
 ]
 
 urlpatterns += router.urls

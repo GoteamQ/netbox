@@ -8,11 +8,7 @@ from netaddr import IPAddress, IPNetwork
 from dcim.models import DeviceRole
 from extras.scripts import *
 
-CHOICES = (
-    ('ff0000', 'Red'),
-    ('00ff00', 'Green'),
-    ('0000ff', 'Blue')
-)
+CHOICES = (('ff0000', 'Red'), ('00ff00', 'Green'), ('0000ff', 'Blue'))
 
 YAML_DATA = """
 Foo: 123
@@ -33,16 +29,9 @@ JSON_DATA = """
 
 
 class ScriptVariablesTest(TestCase):
-
     def test_stringvar(self):
-
         class TestScript(Script):
-
-            var1 = StringVar(
-                min_length=3,
-                max_length=3,
-                regex=r'[a-z]+'
-            )
+            var1 = StringVar(min_length=3, max_length=3, regex=r'[a-z]+')
 
         # Validate min_length enforcement
         data = {'var1': 'xx'}
@@ -69,9 +58,7 @@ class ScriptVariablesTest(TestCase):
         self.assertEqual(form.cleaned_data['var1'], data['var1'])
 
     def test_textvar(self):
-
         class TestScript(Script):
-
             var1 = TextVar()
 
         # Validate valid data
@@ -81,13 +68,8 @@ class ScriptVariablesTest(TestCase):
         self.assertEqual(form.cleaned_data['var1'], data['var1'])
 
     def test_integervar(self):
-
         class TestScript(Script):
-
-            var1 = IntegerVar(
-                min_value=5,
-                max_value=10
-            )
+            var1 = IntegerVar(min_value=5, max_value=10)
 
         # Validate min_value enforcement
         data = {'var1': 4}
@@ -108,22 +90,10 @@ class ScriptVariablesTest(TestCase):
         self.assertEqual(form.cleaned_data['var1'], data['var1'])
 
     def test_decimalvar(self):
-
         class TestScript(Script):
+            var1 = DecimalVar(min_value=-100.500, max_value=100.500, max_digits=6, decimal_places=3, required=False)
 
-            var1 = DecimalVar(
-                min_value=-100.500,
-                max_value=100.500,
-                max_digits=6,
-                decimal_places=3,
-                required=False
-            )
-
-            var2 = DecimalVar(
-                max_digits=3,
-                decimal_places=1,
-                required=False
-            )
+            var2 = DecimalVar(max_digits=3, decimal_places=1, required=False)
 
         # Validate min_value enforcement
         data = {'var1': -100.501}
@@ -156,9 +126,7 @@ class ScriptVariablesTest(TestCase):
         self.assertEqual(form.cleaned_data['var1'], Decimal(data['var1']))
 
     def test_booleanvar(self):
-
         class TestScript(Script):
-
             var1 = BooleanVar()
 
         # Validate True
@@ -174,12 +142,8 @@ class ScriptVariablesTest(TestCase):
         self.assertEqual(form.cleaned_data['var1'], False)
 
     def test_choicevar(self):
-
         class TestScript(Script):
-
-            var1 = ChoiceVar(
-                choices=CHOICES
-            )
+            var1 = ChoiceVar(choices=CHOICES)
 
         # Validate valid choice
         data = {'var1': 'ff0000'}
@@ -193,12 +157,8 @@ class ScriptVariablesTest(TestCase):
         self.assertFalse(form.is_valid())
 
     def test_multichoicevar(self):
-
         class TestScript(Script):
-
-            var1 = MultiChoiceVar(
-                choices=CHOICES
-            )
+            var1 = MultiChoiceVar(choices=CHOICES)
 
         # Validate single choice
         data = {'var1': ['ff0000']}
@@ -218,16 +178,12 @@ class ScriptVariablesTest(TestCase):
         self.assertFalse(form.is_valid())
 
     def test_objectvar(self):
-
         class TestScript(Script):
             var1 = ObjectVar(model=DeviceRole)
 
         # Populate some objects
         for i in range(1, 6):
-            DeviceRole(
-                name='Device Role {}'.format(i),
-                slug='device-role-{}'.format(i)
-            ).save()
+            DeviceRole(name='Device Role {}'.format(i), slug='device-role-{}'.format(i)).save()
 
         # Validate valid data
         data = {'var1': DeviceRole.objects.first().pk}
@@ -236,16 +192,12 @@ class ScriptVariablesTest(TestCase):
         self.assertEqual(form.cleaned_data['var1'].pk, data['var1'])
 
     def test_multiobjectvar(self):
-
         class TestScript(Script):
             var1 = MultiObjectVar(model=DeviceRole)
 
         # Populate some objects
         for i in range(1, 6):
-            DeviceRole(
-                name='Device Role {}'.format(i),
-                slug='device-role-{}'.format(i)
-            ).save()
+            DeviceRole(name='Device Role {}'.format(i), slug='device-role-{}'.format(i)).save()
 
         # Validate valid data
         data = {'var1': [role.pk for role in DeviceRole.objects.all()[:3]]}
@@ -256,16 +208,11 @@ class ScriptVariablesTest(TestCase):
         self.assertEqual(form.cleaned_data['var1'][2].pk, data['var1'][2])
 
     def test_filevar(self):
-
         class TestScript(Script):
-
             var1 = FileVar()
 
         # Dummy file
-        testfile = SimpleUploadedFile(
-            name='test_file.txt',
-            content=b'This is a dummy file for testing'
-        )
+        testfile = SimpleUploadedFile(name='test_file.txt', content=b'This is a dummy file for testing')
 
         # Validate valid data
         file_data = {'var1': testfile}
@@ -274,9 +221,7 @@ class ScriptVariablesTest(TestCase):
         self.assertEqual(form.cleaned_data['var1'], testfile)
 
     def test_ipaddressvar(self):
-
         class TestScript(Script):
-
             var1 = IPAddressVar()
 
         # Validate IP network enforcement
@@ -298,9 +243,7 @@ class ScriptVariablesTest(TestCase):
         self.assertEqual(form.cleaned_data['var1'], IPAddress(data['var1']))
 
     def test_ipaddresswithmaskvar(self):
-
         class TestScript(Script):
-
             var1 = IPAddressWithMaskVar()
 
         # Validate IP network enforcement
@@ -322,9 +265,7 @@ class ScriptVariablesTest(TestCase):
         self.assertEqual(form.cleaned_data['var1'], IPNetwork(data['var1']))
 
     def test_ipnetworkvar(self):
-
         class TestScript(Script):
-
             var1 = IPNetworkVar()
 
         # Validate IP network enforcement
@@ -346,9 +287,7 @@ class ScriptVariablesTest(TestCase):
         self.assertEqual(form.cleaned_data['var1'], IPNetwork(data['var1']))
 
     def test_datevar(self):
-
         class TestScript(Script):
-
             var1 = DateVar()
             var2 = DateVar(required=False)
 
@@ -368,9 +307,7 @@ class ScriptVariablesTest(TestCase):
         self.assertEqual(form.cleaned_data['var2'], None)
 
     def test_datetimevar(self):
-
         class TestScript(Script):
-
             var1 = DateTimeVar()
             var2 = DateTimeVar(required=False)
 

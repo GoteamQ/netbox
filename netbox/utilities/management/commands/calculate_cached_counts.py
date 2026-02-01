@@ -7,7 +7,7 @@ from utilities.counters import update_counts
 
 
 class Command(BaseCommand):
-    help = "Force a recalculation of all cached counter fields"
+    help = 'Force a recalculation of all cached counter fields'
 
     @staticmethod
     def collect_models():
@@ -19,8 +19,8 @@ class Command(BaseCommand):
 
         for model, field_mappings in registry['counter_fields'].items():
             for field_name, counter_name in field_mappings.items():
-                fk_field = model._meta.get_field(field_name)        # Interface.device
-                parent_model = fk_field.related_model               # Device
+                fk_field = model._meta.get_field(field_name)  # Interface.device
+                parent_model = fk_field.related_model  # Device
                 related_query_name = fk_field.related_query_name()  # 'interfaces'
                 models[parent_model][counter_name] = related_query_name
 

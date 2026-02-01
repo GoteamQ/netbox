@@ -1,9 +1,7 @@
 from netbox.registry import registry
 from utilities.object_types import object_type_identifier
 
-__all__ = (
-    'get_indexer',
-)
+__all__ = ('get_indexer',)
 
 
 def get_indexer(object_type):

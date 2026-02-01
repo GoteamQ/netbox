@@ -5,15 +5,45 @@ from rest_framework import status
 
 from netbox.api.viewsets import NetBoxModelViewSet
 from gcp.models import (
-    GCPOrganization, DiscoveryLog,
-    GCPProject, ComputeInstance, InstanceTemplate, InstanceGroup,
-    VPCNetwork, Subnet, FirewallRule, CloudRouter, CloudNAT, LoadBalancer,
-    CloudSQLInstance, CloudSpannerInstance, FirestoreDatabase, BigtableInstance,
-    CloudStorageBucket, PersistentDisk,
-    GKECluster, GKENodePool,
-    ServiceAccount, IAMRole, IAMBinding,
-    CloudFunction, CloudRun, PubSubTopic, PubSubSubscription,
-    SecretManagerSecret, CloudDNSZone, CloudDNSRecord, MemorystoreInstance
+    GCPOrganization,
+    DiscoveryLog,
+    GCPProject,
+    ComputeInstance,
+    InstanceTemplate,
+    InstanceGroup,
+    VPCNetwork,
+    Subnet,
+    FirewallRule,
+    CloudRouter,
+    CloudNAT,
+    LoadBalancer,
+    CloudSQLInstance,
+    CloudSpannerInstance,
+    FirestoreDatabase,
+    BigtableInstance,
+    CloudStorageBucket,
+    PersistentDisk,
+    GKECluster,
+    GKENodePool,
+    ServiceAccount,
+    IAMRole,
+    IAMBinding,
+    CloudFunction,
+    CloudRun,
+    PubSubTopic,
+    PubSubSubscription,
+    SecretManagerSecret,
+    CloudDNSZone,
+    CloudDNSRecord,
+    MemorystoreInstance,
+    NCCHub,
+    NCCSpoke,
+    VPNGateway,
+    ExternalVPNGateway,
+    VPNTunnel,
+    InterconnectAttachment,
+    ServiceAttachment,
+    ServiceConnectEndpoint,
 )
 from gcp import filtersets
 from . import serializers
@@ -23,6 +53,7 @@ class GCPRootView(APIRootView):
     """
     GCP API root view
     """
+
     def get_view_name(self):
         return 'GCP'
 
@@ -40,22 +71,21 @@ class GCPOrganizationViewSet(NetBoxModelViewSet):
     @action(detail=True, methods=['post'])
     def discover(self, request, pk=None):
         organization = self.get_object()
-        
+
         if organization.discovery_status in ('running', 'canceling'):
             return Response(
-                {'error': f"Discovery cannot be started while status is {organization.discovery_status}"},
-                status=status.HTTP_400_BAD_REQUEST
+                {'error': f'Discovery cannot be started while status is {organization.discovery_status}'},
+                status=status.HTTP_400_BAD_REQUEST,
             )
-        
+
         from gcp.discovery import run_discovery
         import django_rq
 
         queue = django_rq.get_queue('default')
         queue.enqueue(run_discovery, organization.pk)
-        
+
         return Response(
-            {'status': 'Discovery queued', 'organization': organization.name},
-            status=status.HTTP_202_ACCEPTED
+            {'status': 'Discovery queued', 'organization': organization.name}, status=status.HTTP_202_ACCEPTED
         )
 
 
@@ -239,9 +269,6 @@ class MemorystoreInstanceViewSet(NetBoxModelViewSet):
     filterset_class = filtersets.MemorystoreInstanceFilterSet
 
 
-from gcp.models import NCCHub, NCCSpoke, VPNGateway, ExternalVPNGateway, VPNTunnel, InterconnectAttachment
-
-
 class NCCHubViewSet(NetBoxModelViewSet):
     queryset = NCCHub.objects.all()
     serializer_class = serializers.NCCHubSerializer
@@ -277,7 +304,6 @@ class InterconnectAttachmentViewSet(NetBoxModelViewSet):
     serializer_class = serializers.InterconnectAttachmentSerializer
     filterset_class = filtersets.InterconnectAttachmentFilterSet
 
-from gcp.models import ServiceAttachment, ServiceConnectEndpoint
 
 class ServiceAttachmentViewSet(NetBoxModelViewSet):
     queryset = ServiceAttachment.objects.all()

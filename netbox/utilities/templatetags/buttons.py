@@ -30,10 +30,7 @@ register = template.Library()
 
 @register.simple_tag(takes_context=True)
 def action_buttons(context, actions, obj, multi=False, **kwargs):
-    buttons = [
-        action.render(context, obj, **kwargs)
-        for action in actions if action.multi == multi
-    ]
+    buttons = [action.render(context, obj, **kwargs) for action in actions if action.multi == multi]
     return mark_safe(''.join(buttons))
 
 
@@ -42,9 +39,7 @@ def bookmark_button(context, instance):
     # Check if this user has already bookmarked the object
     content_type = ContentType.objects.get_for_model(instance)
     bookmark = Bookmark.objects.filter(
-        object_type=content_type,
-        object_id=instance.pk,
-        user=context['request'].user
+        object_type=content_type, object_id=instance.pk, user=context['request'].user
     ).first()
 
     # Compile form URL & data
@@ -77,9 +72,7 @@ def subscribe_button(context, instance):
     # Check if this user has already subscribed to the object
     content_type = ContentType.objects.get_for_model(instance)
     subscription = Subscription.objects.filter(
-        object_type=content_type,
-        object_id=instance.pk,
-        user=context['request'].user
+        object_type=content_type, object_id=instance.pk, user=context['request'].user
     ).first()
 
     # Compile form URL & data
@@ -106,6 +99,7 @@ def subscribe_button(context, instance):
 #
 # Legacy object buttons
 #
+
 
 # TODO: Remove in NetBox v4.7
 @register.inclusion_tag('buttons/clone.html')
@@ -161,6 +155,7 @@ def sync_button(instance):
 #
 # Legacy list buttons
 #
+
 
 # TODO: Remove in NetBox v4.7
 @register.inclusion_tag('buttons/add.html')

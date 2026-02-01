@@ -8,7 +8,6 @@ from taggit.models import Tag
 
 
 class ModelFeaturesTestCase(TestCase):
-
     def test_model_is_public(self):
         """
         Test that the is_public() utility function returns True for public models only.
@@ -34,8 +33,8 @@ class ModelFeaturesTestCase(TestCase):
         Test the functionality of the has_feature() utility function.
         """
         # Sanity checking
-        self.assertTrue(hasattr(DataSource, 'bookmarks'), "Invalid test?")
-        self.assertFalse(hasattr(AutoSyncRecord, 'bookmarks'), "Invalid test?")
+        self.assertTrue(hasattr(DataSource, 'bookmarks'), 'Invalid test?')
+        self.assertFalse(hasattr(AutoSyncRecord, 'bookmarks'), 'Invalid test?')
 
         self.assertTrue(has_feature(DataSource, 'bookmarks'))
         self.assertFalse(has_feature(AutoSyncRecord, 'bookmarks'))
@@ -45,8 +44,8 @@ class ModelFeaturesTestCase(TestCase):
         Check that get_model_features() returns the expected features for a model.
         """
         # Sanity checking
-        self.assertTrue(hasattr(CustomLink, 'clone'), "Invalid test?")
-        self.assertFalse(hasattr(CustomLink, 'bookmarks'), "Invalid test?")
+        self.assertTrue(hasattr(CustomLink, 'clone'), 'Invalid test?')
+        self.assertFalse(hasattr(CustomLink, 'bookmarks'), 'Invalid test?')
 
         features = get_model_features(CustomLink)
         self.assertIn('cloning', features)

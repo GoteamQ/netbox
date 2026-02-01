@@ -15,10 +15,7 @@ class Migration(migrations.Migration):
             field=models.PositiveSmallIntegerField(
                 blank=True,
                 null=True,
-                validators=[
-                    django.core.validators.MinValueValidator(1),
-                    django.core.validators.MaxValueValidator(256)
-                ],
+                validators=[django.core.validators.MinValueValidator(1), django.core.validators.MaxValueValidator(256)],
             ),
         ),
         migrations.AddField(
@@ -42,10 +39,7 @@ class Migration(migrations.Migration):
             field=models.PositiveSmallIntegerField(
                 blank=True,
                 null=True,
-                validators=[
-                    django.core.validators.MinValueValidator(1),
-                    django.core.validators.MaxValueValidator(256)
-                ],
+                validators=[django.core.validators.MinValueValidator(1), django.core.validators.MaxValueValidator(256)],
             ),
         ),
         migrations.AddField(
@@ -69,10 +63,7 @@ class Migration(migrations.Migration):
             field=models.PositiveSmallIntegerField(
                 blank=True,
                 null=True,
-                validators=[
-                    django.core.validators.MinValueValidator(1),
-                    django.core.validators.MaxValueValidator(256)
-                ],
+                validators=[django.core.validators.MinValueValidator(1), django.core.validators.MaxValueValidator(256)],
             ),
         ),
         migrations.AddField(
@@ -96,10 +87,7 @@ class Migration(migrations.Migration):
             field=models.PositiveSmallIntegerField(
                 blank=True,
                 null=True,
-                validators=[
-                    django.core.validators.MinValueValidator(1),
-                    django.core.validators.MaxValueValidator(256)
-                ],
+                validators=[django.core.validators.MinValueValidator(1), django.core.validators.MaxValueValidator(256)],
             ),
         ),
         migrations.AddField(
@@ -123,10 +111,7 @@ class Migration(migrations.Migration):
             field=models.PositiveSmallIntegerField(
                 blank=True,
                 null=True,
-                validators=[
-                    django.core.validators.MinValueValidator(1),
-                    django.core.validators.MaxValueValidator(256)
-                ],
+                validators=[django.core.validators.MinValueValidator(1), django.core.validators.MaxValueValidator(256)],
             ),
         ),
         migrations.AddField(
@@ -150,10 +135,7 @@ class Migration(migrations.Migration):
             field=models.PositiveSmallIntegerField(
                 blank=True,
                 null=True,
-                validators=[
-                    django.core.validators.MinValueValidator(1),
-                    django.core.validators.MaxValueValidator(256)
-                ],
+                validators=[django.core.validators.MinValueValidator(1), django.core.validators.MaxValueValidator(256)],
             ),
         ),
         migrations.AddField(
@@ -177,10 +159,7 @@ class Migration(migrations.Migration):
             field=models.PositiveSmallIntegerField(
                 blank=True,
                 null=True,
-                validators=[
-                    django.core.validators.MinValueValidator(1),
-                    django.core.validators.MaxValueValidator(256)
-                ],
+                validators=[django.core.validators.MinValueValidator(1), django.core.validators.MaxValueValidator(256)],
             ),
         ),
         migrations.AddField(
@@ -204,10 +183,7 @@ class Migration(migrations.Migration):
             field=models.PositiveSmallIntegerField(
                 blank=True,
                 null=True,
-                validators=[
-                    django.core.validators.MinValueValidator(1),
-                    django.core.validators.MaxValueValidator(256)
-                ],
+                validators=[django.core.validators.MinValueValidator(1), django.core.validators.MaxValueValidator(256)],
             ),
         ),
         migrations.AddField(

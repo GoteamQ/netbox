@@ -9,17 +9,9 @@ class DummyPluginConfig(PluginConfig):
     base_url = 'dummy-plugin'
     min_version = '1.0'
     max_version = '9.0'
-    middleware = [
-        'netbox.tests.dummy_plugin.middleware.DummyMiddleware'
-    ]
-    queues = [
-        'testing-low',
-        'testing-medium',
-        'testing-high'
-    ]
-    events_pipeline = [
-        'netbox.tests.dummy_plugin.events.process_events_queue'
-    ]
+    middleware = ['netbox.tests.dummy_plugin.middleware.DummyMiddleware']
+    queues = ['testing-low', 'testing-medium', 'testing-high']
+    events_pipeline = ['netbox.tests.dummy_plugin.events.process_events_queue']
 
     def ready(self):
         super().ready()

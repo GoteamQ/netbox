@@ -64,9 +64,7 @@ class GCPConfig(AppConfig):
                 FinishedJobRegistry(name, q.connection).cleanup()
                 ScheduledJobRegistry(name, q.connection).cleanup()
 
-            GCPOrganization.objects.filter(
-                discovery_status__in=['running', 'canceling']
-            ).update(
+            GCPOrganization.objects.filter(discovery_status__in=['running', 'canceling']).update(
                 discovery_status='failed',
                 discovery_error='Stale task reset',
                 cancel_requested=False,

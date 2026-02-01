@@ -42,15 +42,11 @@ class ObjectChangeLogView(ConditionalLoginRequiredMixin, View):
     Attributes:
         base_template: The name of the template to extend. If not provided, "{app}/{model}.html" will be used.
     """
+
     base_template = None
-    tab = ViewTab(
-        label=_('Changelog'),
-        permission='core.view_objectchange',
-        weight=10000
-    )
+    tab = ViewTab(label=_('Changelog'), permission='core.view_objectchange', weight=10000)
 
     def get(self, request, model, **kwargs):
-
         # Handle QuerySet restriction of parent object if needed
         if hasattr(model.objects, 'restrict'):
             obj = get_object_or_404(model.objects.restrict(request.user, 'view'), **kwargs)
@@ -59,30 +55,32 @@ class ObjectChangeLogView(ConditionalLoginRequiredMixin, View):
 
         # Gather all changes for this object (and its related objects)
         content_type = ContentType.objects.get_for_model(model)
-        objectchanges = ObjectChange.objects.restrict(request.user, 'view').prefetch_related(
-            'user', 'changed_object_type'
-        ).filter(
-            Q(changed_object_type=content_type, changed_object_id=obj.pk) |
-            Q(related_object_type=content_type, related_object_id=obj.pk)
+        objectchanges = (
+            ObjectChange.objects.restrict(request.user, 'view')
+            .prefetch_related('user', 'changed_object_type')
+            .filter(
+                Q(changed_object_type=content_type, changed_object_id=obj.pk)
+                | Q(related_object_type=content_type, related_object_id=obj.pk)
+            )
         )
-        objectchanges_table = ObjectChangeTable(
-            data=objectchanges,
-            orderable=False,
-            user=request.user
-        )
+        objectchanges_table = ObjectChangeTable(data=objectchanges, orderable=False, user=request.user)
         objectchanges_table.configure(request)
 
         # Default to using "<app>/<model>.html" as the template, if it exists. Otherwise,
         # fall back to using base.html.
         if self.base_template is None:
-            self.base_template = f"{model._meta.app_label}/{model._meta.model_name}.html"
+            self.base_template = f'{model._meta.app_label}/{model._meta.model_name}.html'
 
-        return render(request, 'extras/object_changelog.html', {
-            'object': obj,
-            'table': objectchanges_table,
-            'base_template': self.base_template,
-            'tab': self.tab,
-        })
+        return render(
+            request,
+            'extras/object_changelog.html',
+            {
+                'object': obj,
+                'table': objectchanges_table,
+                'base_template': self.base_template,
+                'tab': self.tab,
+            },
+        )
 
 
 class ObjectImageAttachmentsView(ConditionalLoginRequiredMixin, View):
@@ -92,12 +90,10 @@ class ObjectImageAttachmentsView(ConditionalLoginRequiredMixin, View):
     Attributes:
         base_template: The name of the template to extend. If not provided, "{app}/{model}.html" will be used.
     """
+
     base_template = None
     tab = ViewTab(
-        label=_('Images'),
-        badge=lambda obj: obj.images.count(),
-        permission='extras.view_imageattachment',
-        weight=6000
+        label=_('Images'), badge=lambda obj: obj.images.count(), permission='extras.view_imageattachment', weight=6000
     )
 
     def get(self, request, model, **kwargs):
@@ -110,14 +106,18 @@ class ObjectImageAttachmentsView(ConditionalLoginRequiredMixin, View):
         # Default to using "<app>/<model>.html" as the template, if it exists. Otherwise,
         # fall back to using base.html.
         if self.base_template is None:
-            self.base_template = f"{model._meta.app_label}/{model._meta.model_name}.html"
+            self.base_template = f'{model._meta.app_label}/{model._meta.model_name}.html'
 
-        return render(request, 'extras/object_imageattachments.html', {
-            'object': obj,
-            'image_attachments': image_attachments,
-            'base_template': self.base_template,
-            'tab': self.tab,
-        })
+        return render(
+            request,
+            'extras/object_imageattachments.html',
+            {
+                'object': obj,
+                'image_attachments': image_attachments,
+                'base_template': self.base_template,
+                'tab': self.tab,
+            },
+        )
 
 
 class ObjectJournalView(ConditionalLoginRequiredMixin, View):
@@ -130,16 +130,16 @@ class ObjectJournalView(ConditionalLoginRequiredMixin, View):
     Attributes:
         base_template: The name of the template to extend. If not provided, "{app}/{model}.html" will be used.
     """
+
     base_template = None
     tab = ViewTab(
         label=_('Journal'),
         badge=lambda obj: obj.journal_entries.count(),
         permission='extras.view_journalentry',
-        weight=9000
+        weight=9000,
     )
 
     def get(self, request, model, **kwargs):
-
         # Handle QuerySet restriction of parent object if needed
         if hasattr(model.objects, 'restrict'):
             obj = get_object_or_404(model.objects.restrict(request.user, 'view'), **kwargs)
@@ -148,9 +148,10 @@ class ObjectJournalView(ConditionalLoginRequiredMixin, View):
 
         # Gather all changes for this object (and its related objects)
         content_type = ContentType.objects.get_for_model(model)
-        journalentries = JournalEntry.objects.restrict(request.user, 'view').prefetch_related('created_by').filter(
-            assigned_object_type=content_type,
-            assigned_object_id=obj.pk
+        journalentries = (
+            JournalEntry.objects.restrict(request.user, 'view')
+            .prefetch_related('created_by')
+            .filter(assigned_object_type=content_type, assigned_object_id=obj.pk)
         )
         journalentry_table = JournalEntryTable(journalentries, user=request.user)
         journalentry_table.configure(request)
@@ -159,10 +160,7 @@ class ObjectJournalView(ConditionalLoginRequiredMixin, View):
 
         if request.user.has_perm('extras.add_journalentry'):
             form = JournalEntryForm(
-                initial={
-                    'assigned_object_type': ContentType.objects.get_for_model(obj),
-                    'assigned_object_id': obj.pk
-                }
+                initial={'assigned_object_type': ContentType.objects.get_for_model(obj), 'assigned_object_id': obj.pk}
             )
         else:
             form = None
@@ -170,15 +168,19 @@ class ObjectJournalView(ConditionalLoginRequiredMixin, View):
         # Default to using "<app>/<model>.html" as the template, if it exists. Otherwise,
         # fall back to using base.html.
         if self.base_template is None:
-            self.base_template = f"{model._meta.app_label}/{model._meta.model_name}.html"
+            self.base_template = f'{model._meta.app_label}/{model._meta.model_name}.html'
 
-        return render(request, 'extras/object_journal.html', {
-            'object': obj,
-            'form': form,
-            'table': journalentry_table,
-            'base_template': self.base_template,
-            'tab': self.tab,
-        })
+        return render(
+            request,
+            'extras/object_journal.html',
+            {
+                'object': obj,
+                'form': form,
+                'table': journalentry_table,
+                'base_template': self.base_template,
+                'tab': self.tab,
+            },
+        )
 
 
 class ObjectJobsView(ConditionalLoginRequiredMixin, View):
@@ -195,23 +197,16 @@ class ObjectJobsView(ConditionalLoginRequiredMixin, View):
     Attributes:
         base_template: The name of the template to extend. If not provided, "{app}/{model}.html" will be used.
     """
+
     base_template = None
-    tab = ViewTab(
-        label=_('Jobs'),
-        badge=lambda obj: obj.jobs.count(),
-        permission='core.view_job',
-        weight=11000
-    )
+    tab = ViewTab(label=_('Jobs'), badge=lambda obj: obj.jobs.count(), permission='core.view_job', weight=11000)
 
     def get_object(self, request, **kwargs):
         return get_object_or_404(self.model.objects.restrict(request.user, 'view'), **kwargs)
 
     def get_jobs(self, instance):
         object_type = ContentType.objects.get_for_model(instance)
-        return Job.objects.defer('data').filter(
-            object_type=object_type,
-            object_id=instance.id
-        )
+        return Job.objects.defer('data').filter(object_type=object_type, object_id=instance.id)
 
     def get(self, request, model, **kwargs):
         self.model = model
@@ -219,28 +214,27 @@ class ObjectJobsView(ConditionalLoginRequiredMixin, View):
 
         # Gather all Jobs for this object
         jobs = self.get_jobs(obj)
-        jobs_table = JobTable(
-            data=jobs,
-            orderable=False,
-            user=request.user
-        )
+        jobs_table = JobTable(data=jobs, orderable=False, user=request.user)
         jobs_table.configure(request)
 
         # Default to using "<app>/<model>.html" as the template, if it exists. Otherwise,
         # fall back to using base.html.
         if self.base_template is None:
-            self.base_template = f"{model._meta.app_label}/{model._meta.model_name}.html"
+            self.base_template = f'{model._meta.app_label}/{model._meta.model_name}.html'
 
-        return render(request, 'core/object_jobs.html', {
-            'object': obj,
-            'table': jobs_table,
-            'base_template': self.base_template,
-            'tab': self.tab,
-        })
+        return render(
+            request,
+            'core/object_jobs.html',
+            {
+                'object': obj,
+                'table': jobs_table,
+                'base_template': self.base_template,
+                'tab': self.tab,
+            },
+        )
 
 
 class ObjectSyncDataView(LoginRequiredMixin, View):
-
     def post(self, request, model, **kwargs):
         """
         Synchronize data from the DataFile associated with this object.
@@ -251,14 +245,14 @@ class ObjectSyncDataView(LoginRequiredMixin, View):
         obj = get_object_or_404(qs, **kwargs)
 
         if not obj.data_file:
-            messages.error(request, _("Unable to synchronize data: No data file set."))
+            messages.error(request, _('Unable to synchronize data: No data file set.'))
             return redirect(obj.get_absolute_url())
 
         obj.sync(save=True)
-        messages.success(request, _("Synchronized data for {object_type} {object}.").format(
-            object_type=model._meta.verbose_name,
-            object=obj
-        ))
+        messages.success(
+            request,
+            _('Synchronized data for {object_type} {object}.').format(object_type=model._meta.verbose_name, object=obj),
+        )
 
         return redirect(obj.get_absolute_url())
 
@@ -267,23 +261,23 @@ class BulkSyncDataView(GetReturnURLMixin, BaseMultiObjectView):
     """
     Synchronize multiple instances of a model inheriting from SyncedDataMixin.
     """
+
     def get_required_permission(self):
         return get_permission_for_model(self.queryset.model, 'sync')
 
     def post(self, request):
-        selected_objects = self.queryset.filter(
-            pk__in=request.POST.getlist('pk'),
-            data_file__isnull=False
-        )
+        selected_objects = self.queryset.filter(pk__in=request.POST.getlist('pk'), data_file__isnull=False)
 
         with transaction.atomic(using=router.db_for_write(self.queryset.model)):
             for obj in selected_objects:
                 obj.sync(save=True)
 
-            messages.success(request, _("Synced {count} {object_type}").format(
-                count=len(selected_objects),
-                object_type=self.queryset.model._meta.verbose_name_plural
-            ))
+            messages.success(
+                request,
+                _('Synced {count} {object_type}').format(
+                    count=len(selected_objects), object_type=self.queryset.model._meta.verbose_name_plural
+                ),
+            )
 
         return redirect(self.get_return_url(request))
 
@@ -298,7 +292,7 @@ class ObjectContactsView(ObjectChildrenView):
         label=_('Contacts'),
         badge=lambda obj: obj.get_contacts().count(),
         permission='tenancy.view_contactassignment',
-        weight=5000
+        weight=5000,
     )
 
     def dispatch(self, request, *args, **kwargs):

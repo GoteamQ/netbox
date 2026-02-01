@@ -106,10 +106,8 @@ class TokenTest(TestCase):
 
 
 class UserConfigTest(TestCase):
-
     @classmethod
     def setUpTestData(cls):
-
         user = User.objects.create_user(username='testuser')
         user.config.data = {
             'a': True,
@@ -126,8 +124,8 @@ class UserConfigTest(TestCase):
                 },
                 'baz': {
                     'z': 203,
-                }
-            }
+                },
+            },
         }
         user.config.save()
 

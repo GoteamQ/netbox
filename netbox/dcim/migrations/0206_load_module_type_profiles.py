@@ -13,15 +13,7 @@ def load_initial_data(apps, schema_editor):
     ModuleTypeProfile = apps.get_model('dcim', 'ModuleTypeProfile')
     db_alias = schema_editor.connection.alias
 
-    initial_profiles = (
-        'cpu',
-        'fan',
-        'gpu',
-        'hard_disk',
-        'memory',
-        'power_supply',
-        'expansion_card'
-    )
+    initial_profiles = ('cpu', 'fan', 'gpu', 'hard_disk', 'memory', 'power_supply', 'expansion_card')
 
     for name in initial_profiles:
         file_path = DATA_FILES_PATH / f'{name}.json'
@@ -30,12 +22,11 @@ def load_initial_data(apps, schema_editor):
             try:
                 ModuleTypeProfile.objects.using(db_alias).create(**data)
             except Exception as e:
-                print(f"Error loading data from {file_path}")
+                print(f'Error loading data from {file_path}')
                 raise e
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('dcim', '0205_moduletypeprofile'),
     ]

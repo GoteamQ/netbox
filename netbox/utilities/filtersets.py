@@ -1,8 +1,6 @@
 from netbox.registry import registry
 
-__all__ = (
-    'register_filterset',
-)
+__all__ = ('register_filterset',)
 
 
 def register_filterset(filterset_class):

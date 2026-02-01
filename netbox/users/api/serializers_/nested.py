@@ -11,14 +11,12 @@ __all__ = (
 
 
 class NestedGroupSerializer(WritableNestedSerializer):
-
     class Meta:
         model = models.Group
         fields = ['id', 'url', 'display_url', 'display', 'name']
 
 
 class NestedUserSerializer(WritableNestedSerializer):
-
     class Meta:
         model = models.User
         fields = ['id', 'url', 'display_url', 'display', 'username']
@@ -26,5 +24,5 @@ class NestedUserSerializer(WritableNestedSerializer):
     @extend_schema_field(OpenApiTypes.STR)
     def get_display(self, obj):
         if full_name := obj.get_full_name():
-            return f"{obj.username} ({full_name})"
+            return f'{obj.username} ({full_name})'
         return obj.username

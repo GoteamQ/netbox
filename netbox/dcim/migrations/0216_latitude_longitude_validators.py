@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
                 null=True,
                 validators=[
                     django.core.validators.MinValueValidator(decimal.Decimal('-90.0')),
-                    django.core.validators.MaxValueValidator(decimal.Decimal('90.0'))
+                    django.core.validators.MaxValueValidator(decimal.Decimal('90.0')),
                 ],
             ),
         ),
@@ -34,7 +34,7 @@ class Migration(migrations.Migration):
                 null=True,
                 validators=[
                     django.core.validators.MinValueValidator(decimal.Decimal('-180.0')),
-                    django.core.validators.MaxValueValidator(decimal.Decimal('180.0'))
+                    django.core.validators.MaxValueValidator(decimal.Decimal('180.0')),
                 ],
             ),
         ),
@@ -48,7 +48,7 @@ class Migration(migrations.Migration):
                 null=True,
                 validators=[
                     django.core.validators.MinValueValidator(decimal.Decimal('-90.0')),
-                    django.core.validators.MaxValueValidator(decimal.Decimal('90.0'))
+                    django.core.validators.MaxValueValidator(decimal.Decimal('90.0')),
                 ],
             ),
         ),
@@ -62,7 +62,7 @@ class Migration(migrations.Migration):
                 null=True,
                 validators=[
                     django.core.validators.MinValueValidator(decimal.Decimal('-180.0')),
-                    django.core.validators.MaxValueValidator(decimal.Decimal('180.0'))
+                    django.core.validators.MaxValueValidator(decimal.Decimal('180.0')),
                 ],
             ),
         ),

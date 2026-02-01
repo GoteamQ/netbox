@@ -8,18 +8,13 @@ from netbox.models import NetBoxModel
 class GCPOrganization(NetBoxModel):
     name = models.CharField(max_length=255, help_text='Display name for this GCP organization')
     organization_id = models.CharField(
-        max_length=50, 
-        unique=True,
-        validators=[MinLengthValidator(1)],
-        help_text='GCP Organization ID (numeric)'
+        max_length=50, unique=True, validators=[MinLengthValidator(1)], help_text='GCP Organization ID (numeric)'
     )
-    service_account_json = models.TextField(
-        help_text='Service account JSON key content for API authentication'
-    )
+    service_account_json = models.TextField(help_text='Service account JSON key content for API authentication')
     is_active = models.BooleanField(default=True, help_text='Enable/disable discovery for this organization')
     last_discovery = models.DateTimeField(null=True, blank=True, help_text='Last successful discovery timestamp')
     discovery_status = models.CharField(
-        max_length=50, 
+        max_length=50,
         default='pending',
         choices=[
             ('pending', 'Pending'),
@@ -28,7 +23,7 @@ class GCPOrganization(NetBoxModel):
             ('canceled', 'Canceled'),
             ('completed', 'Completed'),
             ('failed', 'Failed'),
-        ]
+        ],
     )
     cancel_requested = models.BooleanField(default=False, help_text='Cancel the current discovery run')
     discovery_error = models.TextField(blank=True, help_text='Last discovery error message if any')
@@ -47,13 +42,14 @@ class GCPOrganization(NetBoxModel):
         verbose_name_plural = 'GCP Organizations'
 
     def __str__(self):
-        return f"{self.name} ({self.organization_id})"
+        return f'{self.name} ({self.organization_id})'
 
     def get_absolute_url(self):
         return reverse('gcp:gcporganization', args=[self.pk])
 
     def get_service_account_info(self):
         import json
+
         try:
             return json.loads(self.service_account_json)
         except json.JSONDecodeError:
@@ -61,11 +57,7 @@ class GCPOrganization(NetBoxModel):
 
 
 class DiscoveryLog(NetBoxModel):
-    organization = models.ForeignKey(
-        GCPOrganization, 
-        on_delete=models.CASCADE, 
-        related_name='discovery_logs'
-    )
+    organization = models.ForeignKey(GCPOrganization, on_delete=models.CASCADE, related_name='discovery_logs')
     started_at = models.DateTimeField(auto_now_add=True)
     completed_at = models.DateTimeField(null=True, blank=True)
     status = models.CharField(
@@ -76,7 +68,7 @@ class DiscoveryLog(NetBoxModel):
             ('canceled', 'Canceled'),
             ('completed', 'Completed'),
             ('failed', 'Failed'),
-        ]
+        ],
     )
     projects_discovered = models.IntegerField(default=0)
     instances_discovered = models.IntegerField(default=0)
@@ -94,7 +86,7 @@ class DiscoveryLog(NetBoxModel):
         verbose_name_plural = 'Discovery Logs'
 
     def __str__(self):
-        return f"Discovery {self.organization.name} - {self.started_at}"
+        return f'Discovery {self.organization.name} - {self.started_at}'
 
     def get_absolute_url(self):
         return reverse('gcp:discoverylog', args=[self.pk])
@@ -102,11 +94,7 @@ class DiscoveryLog(NetBoxModel):
 
 class GCPProject(NetBoxModel):
     organization = models.ForeignKey(
-        GCPOrganization, 
-        on_delete=models.CASCADE, 
-        related_name='projects',
-        null=True,
-        blank=True
+        GCPOrganization, on_delete=models.CASCADE, related_name='projects', null=True, blank=True
     )
     name = models.CharField(max_length=255)
     project_id = models.CharField(max_length=255, unique=True)
@@ -271,28 +259,26 @@ class Subnet(NetBoxModel):
     def get_utilization(self):
         # Calculate subnet utilization based on IP range and used IPs
         import ipaddress
-        
+
         try:
             network = ipaddress.ip_network(self.ip_cidr_range)
-            total_ips = network.num_addresses - 2 # Network and Broadcast
-            if total_ips < 1: total_ips = 1
+            total_ips = network.num_addresses - 2  # Network and Broadcast
+            if total_ips < 1:
+                total_ips = 1
         except ValueError:
-            return "N/A"
+            return 'N/A'
 
         # Count used IPs (approximation)
         used_count = 0
-        
+
         # 1. Compute Instances
         # Note: We access ComputeInstance from the global scope (defined above)
-        used_count += ComputeInstance.objects.filter(
-            project=self.project,
-            subnet=self.name
-        ).count()
-        
+        used_count += ComputeInstance.objects.filter(project=self.project, subnet=self.name).count()
+
         # 2. Other resources (Load Balancers, Cloud SQL) can be added here
-        
+
         percentage = (used_count / total_ips) * 100
-        return f"{percentage:.1f}% ({used_count}/{total_ips})"
+        return f'{percentage:.1f}% ({used_count}/{total_ips})'
 
     @property
     def organization(self):
@@ -687,7 +673,9 @@ class IAMRole(NetBoxModel):
     permissions = models.JSONField(blank=True, null=True)
     stage = models.CharField(max_length=50, default='GA')
     is_custom = models.BooleanField(default=False)
-    project = models.ForeignKey(GCPProject, on_delete=models.CASCADE, null=True, blank=True, related_name='custom_roles')
+    project = models.ForeignKey(
+        GCPProject, on_delete=models.CASCADE, null=True, blank=True, related_name='custom_roles'
+    )
     discovered = models.BooleanField(default=False)
     last_synced = models.DateTimeField(null=True, blank=True)
 
@@ -718,7 +706,7 @@ class IAMBinding(NetBoxModel):
         unique_together = ['project', 'role', 'member']
 
     def __str__(self):
-        return f"{self.project} - {self.role} - {self.member}"
+        return f'{self.project} - {self.role} - {self.member}'
 
     def get_absolute_url(self):
         return reverse('gcp:iambinding', args=[self.pk])
@@ -911,7 +899,7 @@ class CloudDNSRecord(NetBoxModel):
         verbose_name_plural = 'Cloud DNS Records'
 
     def __str__(self):
-        return f"{self.name} ({self.record_type})"
+        return f'{self.name} ({self.record_type})'
 
     def get_absolute_url(self):
         return reverse('gcp:clouddnsrecord', args=[self.pk])
@@ -984,7 +972,9 @@ class NCCSpoke(NetBoxModel):
     location = models.CharField(max_length=100)
     description = models.TextField(blank=True)
     spoke_type = models.CharField(max_length=50, default='VPC_NETWORK')
-    linked_vpc_network = models.ForeignKey(VPCNetwork, on_delete=models.SET_NULL, null=True, blank=True, related_name='ncc_spokes')
+    linked_vpc_network = models.ForeignKey(
+        VPCNetwork, on_delete=models.SET_NULL, null=True, blank=True, related_name='ncc_spokes'
+    )
     linked_vpn_tunnels = models.JSONField(blank=True, null=True)
     linked_interconnect_attachments = models.JSONField(blank=True, null=True)
     labels = models.JSONField(blank=True, null=True)
@@ -1069,14 +1059,18 @@ class VPNTunnel(NetBoxModel):
     region = models.CharField(max_length=100)
     vpn_gateway = models.ForeignKey(VPNGateway, on_delete=models.CASCADE, related_name='tunnels', null=True, blank=True)
     vpn_gateway_interface = models.IntegerField(default=0)
-    peer_external_gateway = models.ForeignKey(ExternalVPNGateway, on_delete=models.SET_NULL, null=True, blank=True, related_name='tunnels')
+    peer_external_gateway = models.ForeignKey(
+        ExternalVPNGateway, on_delete=models.SET_NULL, null=True, blank=True, related_name='tunnels'
+    )
     peer_external_gateway_interface = models.IntegerField(default=0)
     peer_ip = models.GenericIPAddressField(blank=True, null=True)
     shared_secret_hash = models.CharField(max_length=255, blank=True)
     ike_version = models.IntegerField(default=2)
     local_traffic_selector = models.JSONField(blank=True, null=True)
     remote_traffic_selector = models.JSONField(blank=True, null=True)
-    router = models.ForeignKey(CloudRouter, on_delete=models.SET_NULL, null=True, blank=True, related_name='vpn_tunnels')
+    router = models.ForeignKey(
+        CloudRouter, on_delete=models.SET_NULL, null=True, blank=True, related_name='vpn_tunnels'
+    )
     status = models.CharField(max_length=50, default='ESTABLISHED')
     detailed_status = models.CharField(max_length=255, blank=True)
     labels = models.JSONField(blank=True, null=True)

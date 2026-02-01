@@ -23,7 +23,7 @@ __all__ = (
 
 class ColorField(models.CharField):
     default_validators = [ColorValidator]
-    description = "A hexadecimal RGB color code"
+    description = 'A hexadecimal RGB color code'
 
     def __init__(self, *args, **kwargs):
         kwargs['max_length'] = 6
@@ -42,7 +42,8 @@ class NaturalOrderingField(models.CharField):
     :param target_field: Name of the field of the parent model to be naturalized
     :param naturalize_function: The function used to generate a naturalized value (optional)
     """
-    description = "Stores a representation of its target field suitable for natural ordering"
+
+    description = 'Stores a representation of its target field suitable for natural ordering'
 
     def __init__(self, target_field, naturalize_function, *args, **kwargs):
         self.target_field = target_field
@@ -71,7 +72,6 @@ class NaturalOrderingField(models.CharField):
 
 
 class RestrictedGenericForeignKey(GenericForeignKey):
-
     # Replicated largely from GenericForeignKey. Changes include:
     #  1. Capture restrict_params from RestrictedPrefetch (hack)
     #  2. If restrict_params is set, call restrict() on the queryset for
@@ -86,13 +86,9 @@ class RestrictedGenericForeignKey(GenericForeignKey):
 
         elif querysets is not None:
             for queryset in querysets:
-                ct_id = self.get_content_type(
-                    model=queryset.query.model, using=queryset.db
-                ).pk
+                ct_id = self.get_content_type(model=queryset.query.model, using=queryset.db).pk
                 if ct_id in custom_queryset_dict:
-                    raise ValueError(
-                        "Only one queryset is allowed for each content type."
-                    )
+                    raise ValueError('Only one queryset is allowed for each content type.')
                 custom_queryset_dict[ct_id] = queryset
 
         # For efficiency, group the instances by content type and then do one
@@ -134,9 +130,7 @@ class RestrictedGenericForeignKey(GenericForeignKey):
             if ct_id is None:
                 return None
             else:
-                if model := self.get_content_type(
-                    id=ct_id, using=obj._state.db
-                ).model_class():
+                if model := self.get_content_type(id=ct_id, using=obj._state.db).model_class():
                     return (
                         model._meta.pk.get_prep_value(getattr(obj, self.fk_field)),
                         model,
@@ -157,11 +151,14 @@ class CounterCacheField(models.BigIntegerField):
     """
     Counter field to keep track of related model counts.
     """
+
     def __init__(self, to_model, to_field, *args, **kwargs):
         if not isinstance(to_model, str):
             raise TypeError(
-                _("%s(%r) is invalid. to_model parameter to CounterCacheField must be "
-                  "a string in the format 'app.model'")
+                _(
+                    '%s(%r) is invalid. to_model parameter to CounterCacheField must be '
+                    "a string in the format 'app.model'"
+                )
                 % (
                     self.__class__.__name__,
                     to_model,
@@ -170,8 +167,7 @@ class CounterCacheField(models.BigIntegerField):
 
         if not isinstance(to_field, str):
             raise TypeError(
-                _("%s(%r) is invalid. to_field parameter to CounterCacheField must be "
-                  "a string in the format 'field'")
+                _("%s(%r) is invalid. to_field parameter to CounterCacheField must be a string in the format 'field'")
                 % (
                     self.__class__.__name__,
                     to_field,
@@ -188,8 +184,8 @@ class CounterCacheField(models.BigIntegerField):
 
     def deconstruct(self):
         name, path, args, kwargs = super().deconstruct()
-        kwargs["to_model"] = self.to_model_name
-        kwargs["to_field"] = self.to_field_name
+        kwargs['to_model'] = self.to_model_name
+        kwargs['to_field'] = self.to_field_name
         return name, path, args, kwargs
 
 
@@ -233,21 +229,15 @@ class GenericArrayForeignKey(FieldCacheMixin, models.Field):
         )
 
     def get_content_type_for_model(self, using=None, model=None):
-        return ContentType.objects.db_manager(using).get_for_model(
-            model, for_concrete_model=self.for_concrete_model
-        )
+        return ContentType.objects.db_manager(using).get_for_model(model, for_concrete_model=self.for_concrete_model)
 
     def get_prefetch_querysets(self, instances, querysets=None):
         custom_queryset_dict = {}
         if querysets is not None:
             for queryset in querysets:
-                ct_id = self.get_content_type_for_model(
-                    model=queryset.query.model, using=queryset.db
-                ).pk
+                ct_id = self.get_content_type_for_model(model=queryset.query.model, using=queryset.db).pk
                 if ct_id in custom_queryset_dict:
-                    raise ValueError(
-                        "Only one queryset is allowed for each content type."
-                    )
+                    raise ValueError('Only one queryset is allowed for each content type.')
                 custom_queryset_dict[ct_id] = queryset
 
         # For efficiency, group the instances by content type and then do one

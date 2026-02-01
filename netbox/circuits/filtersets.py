@@ -9,7 +9,10 @@ from ipam.models import ASN
 from netbox.filtersets import NetBoxModelFilterSet, OrganizationalModelFilterSet, PrimaryModelFilterSet
 from tenancy.filtersets import ContactModelFilterSet, TenancyFilterSet
 from utilities.filters import (
-    ContentTypeFilter, MultiValueCharFilter, MultiValueNumberFilter, TreeNodeMultipleChoiceFilter,
+    ContentTypeFilter,
+    MultiValueCharFilter,
+    MultiValueNumberFilter,
+    TreeNodeMultipleChoiceFilter,
 )
 from utilities.filtersets import register_filterset
 from .choices import *
@@ -89,9 +92,7 @@ class ProviderFilterSet(PrimaryModelFilterSet, ContactModelFilterSet):
         if not value.strip():
             return queryset
         return queryset.filter(
-            Q(name__icontains=value) |
-            Q(description__icontains=value) |
-            Q(comments__icontains=value)
+            Q(name__icontains=value) | Q(description__icontains=value) | Q(comments__icontains=value)
         )
 
 
@@ -116,10 +117,10 @@ class ProviderAccountFilterSet(PrimaryModelFilterSet, ContactModelFilterSet):
         if not value.strip():
             return queryset
         return queryset.filter(
-            Q(name__icontains=value) |
-            Q(description__icontains=value) |
-            Q(account__icontains=value) |
-            Q(comments__icontains=value)
+            Q(name__icontains=value)
+            | Q(description__icontains=value)
+            | Q(account__icontains=value)
+            | Q(comments__icontains=value)
         ).distinct()
 
 
@@ -144,16 +145,15 @@ class ProviderNetworkFilterSet(PrimaryModelFilterSet):
         if not value.strip():
             return queryset
         return queryset.filter(
-            Q(name__icontains=value) |
-            Q(service_id__icontains=value) |
-            Q(description__icontains=value) |
-            Q(comments__icontains=value)
+            Q(name__icontains=value)
+            | Q(service_id__icontains=value)
+            | Q(description__icontains=value)
+            | Q(comments__icontains=value)
         ).distinct()
 
 
 @register_filterset
 class CircuitTypeFilterSet(OrganizationalModelFilterSet):
-
     class Meta:
         model = CircuitType
         fields = ('id', 'name', 'slug', 'color', 'description')
@@ -197,10 +197,7 @@ class CircuitFilterSet(PrimaryModelFilterSet, TenancyFilterSet, ContactModelFilt
         to_field_name='slug',
         label=_('Circuit type (slug)'),
     )
-    status = django_filters.MultipleChoiceFilter(
-        choices=CircuitStatusChoices,
-        null_value=None
-    )
+    status = django_filters.MultipleChoiceFilter(choices=CircuitStatusChoices, null_value=None)
     region_id = TreeNodeMultipleChoiceFilter(
         queryset=Region.objects.all(),
         field_name='terminations___region',
@@ -255,19 +252,26 @@ class CircuitFilterSet(PrimaryModelFilterSet, TenancyFilterSet, ContactModelFilt
     class Meta:
         model = Circuit
         fields = (
-            'id', 'cid', 'description', 'install_date', 'termination_date', 'commit_rate', 'distance', 'distance_unit',
+            'id',
+            'cid',
+            'description',
+            'install_date',
+            'termination_date',
+            'commit_rate',
+            'distance',
+            'distance_unit',
         )
 
     def search(self, queryset, name, value):
         if not value.strip():
             return queryset
         return queryset.filter(
-            Q(cid__icontains=value) |
-            Q(terminations__xconnect_id__icontains=value) |
-            Q(terminations__pp_info__icontains=value) |
-            Q(terminations__description__icontains=value) |
-            Q(description__icontains=value) |
-            Q(comments__icontains=value)
+            Q(cid__icontains=value)
+            | Q(terminations__xconnect_id__icontains=value)
+            | Q(terminations__pp_info__icontains=value)
+            | Q(terminations__description__icontains=value)
+            | Q(description__icontains=value)
+            | Q(comments__icontains=value)
         ).distinct()
 
 
@@ -352,24 +356,32 @@ class CircuitTerminationFilterSet(NetBoxModelFilterSet, CabledObjectFilterSet):
     class Meta:
         model = CircuitTermination
         fields = (
-            'id', 'termination_id', 'term_side', 'port_speed', 'upstream_speed', 'xconnect_id', 'description',
-            'mark_connected', 'pp_info', 'cable_end', 'cable_connector',
+            'id',
+            'termination_id',
+            'term_side',
+            'port_speed',
+            'upstream_speed',
+            'xconnect_id',
+            'description',
+            'mark_connected',
+            'pp_info',
+            'cable_end',
+            'cable_connector',
         )
 
     def search(self, queryset, name, value):
         if not value.strip():
             return queryset
         return queryset.filter(
-            Q(circuit__cid__icontains=value) |
-            Q(xconnect_id__icontains=value) |
-            Q(pp_info__icontains=value) |
-            Q(description__icontains=value)
+            Q(circuit__cid__icontains=value)
+            | Q(xconnect_id__icontains=value)
+            | Q(pp_info__icontains=value)
+            | Q(description__icontains=value)
         ).distinct()
 
 
 @register_filterset
 class CircuitGroupFilterSet(OrganizationalModelFilterSet, TenancyFilterSet):
-
     class Meta:
         model = CircuitGroup
         fields = ('id', 'name', 'slug', 'description')
@@ -430,31 +442,20 @@ class CircuitGroupAssignmentFilterSet(NetBoxModelFilterSet):
     def search(self, queryset, name, value):
         if not value.strip():
             return queryset
-        return queryset.filter(
-            Q(member__cid__icontains=value) |
-            Q(group__name__icontains=value)
-        )
+        return queryset.filter(Q(member__cid__icontains=value) | Q(group__name__icontains=value))
 
     def filter_circuit(self, queryset, name, value):
         circuits = Circuit.objects.filter(**{f'{name}__in': value})
         if not circuits.exists():
             return queryset.none()
-        return queryset.filter(
-            Q(
-                member_type=ContentType.objects.get_for_model(Circuit),
-                member_id__in=circuits
-            )
-        )
+        return queryset.filter(Q(member_type=ContentType.objects.get_for_model(Circuit), member_id__in=circuits))
 
     def filter_virtual_circuit(self, queryset, name, value):
         virtual_circuits = VirtualCircuit.objects.filter(**{f'{name}__in': value})
         if not virtual_circuits.exists():
             return queryset.none()
         return queryset.filter(
-            Q(
-                member_type=ContentType.objects.get_for_model(VirtualCircuit),
-                member_id__in=virtual_circuits
-            )
+            Q(member_type=ContentType.objects.get_for_model(VirtualCircuit), member_id__in=virtual_circuits)
         )
 
     def filter_provider(self, queryset, name, value):
@@ -464,20 +465,13 @@ class CircuitGroupAssignmentFilterSet(NetBoxModelFilterSet):
         circuits = Circuit.objects.filter(provider__in=providers)
         virtual_circuits = VirtualCircuit.objects.filter(provider_network__provider__in=providers)
         return queryset.filter(
-            Q(
-                member_type=ContentType.objects.get_for_model(Circuit),
-                member_id__in=circuits
-            ) |
-            Q(
-                member_type=ContentType.objects.get_for_model(VirtualCircuit),
-                member_id__in=virtual_circuits
-            )
+            Q(member_type=ContentType.objects.get_for_model(Circuit), member_id__in=circuits)
+            | Q(member_type=ContentType.objects.get_for_model(VirtualCircuit), member_id__in=virtual_circuits)
         )
 
 
 @register_filterset
 class VirtualCircuitTypeFilterSet(OrganizationalModelFilterSet):
-
     class Meta:
         model = VirtualCircuitType
         fields = ('id', 'name', 'slug', 'color', 'description')
@@ -521,10 +515,7 @@ class VirtualCircuitFilterSet(PrimaryModelFilterSet, TenancyFilterSet):
         to_field_name='slug',
         label=_('Virtual circuit type (slug)'),
     )
-    status = django_filters.MultipleChoiceFilter(
-        choices=CircuitStatusChoices,
-        null_value=None
-    )
+    status = django_filters.MultipleChoiceFilter(choices=CircuitStatusChoices, null_value=None)
 
     class Meta:
         model = VirtualCircuit
@@ -534,9 +525,7 @@ class VirtualCircuitFilterSet(PrimaryModelFilterSet, TenancyFilterSet):
         if not value.strip():
             return queryset
         return queryset.filter(
-            Q(cid__icontains=value) |
-            Q(description__icontains=value) |
-            Q(comments__icontains=value)
+            Q(cid__icontains=value) | Q(description__icontains=value) | Q(comments__icontains=value)
         ).distinct()
 
 
@@ -550,10 +539,7 @@ class VirtualCircuitTerminationFilterSet(NetBoxModelFilterSet):
         queryset=VirtualCircuit.objects.all(),
         label=_('Virtual circuit'),
     )
-    role = django_filters.MultipleChoiceFilter(
-        choices=VirtualCircuitTerminationRoleChoices,
-        null_value=None
-    )
+    role = django_filters.MultipleChoiceFilter(choices=VirtualCircuitTerminationRoleChoices, null_value=None)
     provider_id = django_filters.ModelMultipleChoiceFilter(
         field_name='virtual_circuit__provider_network__provider',
         queryset=Provider.objects.all(),
@@ -594,7 +580,4 @@ class VirtualCircuitTerminationFilterSet(NetBoxModelFilterSet):
     def search(self, queryset, name, value):
         if not value.strip():
             return queryset
-        return queryset.filter(
-            Q(virtual_circuit__cid__icontains=value) |
-            Q(description__icontains=value)
-        ).distinct()
+        return queryset.filter(Q(virtual_circuit__cid__icontains=value) | Q(description__icontains=value)).distinct()

@@ -51,10 +51,37 @@ class VirtualMachineSerializer(PrimaryModelSerializer):
     class Meta:
         model = VirtualMachine
         fields = [
-            'id', 'url', 'display_url', 'display', 'name', 'status', 'start_on_boot', 'site', 'cluster', 'device',
-            'serial', 'role', 'tenant', 'platform', 'primary_ip', 'primary_ip4', 'primary_ip6', 'vcpus', 'memory',
-            'disk', 'description', 'owner', 'comments', 'config_template', 'local_context_data', 'tags',
-            'custom_fields', 'created', 'last_updated', 'interface_count', 'virtual_disk_count',
+            'id',
+            'url',
+            'display_url',
+            'display',
+            'name',
+            'status',
+            'start_on_boot',
+            'site',
+            'cluster',
+            'device',
+            'serial',
+            'role',
+            'tenant',
+            'platform',
+            'primary_ip',
+            'primary_ip4',
+            'primary_ip6',
+            'vcpus',
+            'memory',
+            'disk',
+            'description',
+            'owner',
+            'comments',
+            'config_template',
+            'local_context_data',
+            'tags',
+            'custom_fields',
+            'created',
+            'last_updated',
+            'interface_count',
+            'virtual_disk_count',
         ]
         brief_fields = ('id', 'url', 'display', 'name', 'description')
 
@@ -64,10 +91,38 @@ class VirtualMachineWithConfigContextSerializer(VirtualMachineSerializer):
 
     class Meta(VirtualMachineSerializer.Meta):
         fields = [
-            'id', 'url', 'display_url', 'display', 'name', 'status', 'start_on_boot', 'site', 'cluster', 'device',
-            'serial', 'role', 'tenant', 'platform', 'primary_ip', 'primary_ip4', 'primary_ip6', 'vcpus', 'memory',
-            'disk', 'description', 'owner', 'comments', 'config_template', 'local_context_data', 'tags',
-            'custom_fields', 'config_context', 'created', 'last_updated', 'interface_count', 'virtual_disk_count',
+            'id',
+            'url',
+            'display_url',
+            'display',
+            'name',
+            'status',
+            'start_on_boot',
+            'site',
+            'cluster',
+            'device',
+            'serial',
+            'role',
+            'tenant',
+            'platform',
+            'primary_ip',
+            'primary_ip4',
+            'primary_ip6',
+            'vcpus',
+            'memory',
+            'disk',
+            'description',
+            'owner',
+            'comments',
+            'config_template',
+            'local_context_data',
+            'tags',
+            'custom_fields',
+            'config_context',
+            'created',
+            'last_updated',
+            'interface_count',
+            'virtual_disk_count',
         ]
 
     @extend_schema_field(serializers.JSONField(allow_null=True))
@@ -79,6 +134,7 @@ class VirtualMachineWithConfigContextSerializer(VirtualMachineSerializer):
 # VM interfaces
 #
 
+
 class VMInterfaceSerializer(OwnerMixin, NetBoxModelSerializer):
     virtual_machine = VirtualMachineSerializer(nested=True)
     parent = NestedVMInterfaceSerializer(required=False, allow_null=True)
@@ -86,11 +142,7 @@ class VMInterfaceSerializer(OwnerMixin, NetBoxModelSerializer):
     mode = ChoiceField(choices=InterfaceModeChoices, allow_blank=True, required=False)
     untagged_vlan = VLANSerializer(nested=True, required=False, allow_null=True)
     tagged_vlans = SerializedPKRelatedField(
-        queryset=VLAN.objects.all(),
-        serializer=VLANSerializer,
-        nested=True,
-        required=False,
-        many=True
+        queryset=VLAN.objects.all(), serializer=VLANSerializer, nested=True, required=False, many=True
     )
     qinq_svlan = VLANSerializer(nested=True, required=False, allow_null=True)
     vlan_translation_policy = VLANTranslationPolicySerializer(nested=True, required=False, allow_null=True)
@@ -106,10 +158,34 @@ class VMInterfaceSerializer(OwnerMixin, NetBoxModelSerializer):
     class Meta:
         model = VMInterface
         fields = [
-            'id', 'url', 'display_url', 'display', 'virtual_machine', 'name', 'enabled', 'parent', 'bridge', 'mtu',
-            'mac_address', 'primary_mac_address', 'mac_addresses', 'description', 'mode', 'untagged_vlan',
-            'tagged_vlans', 'qinq_svlan', 'vlan_translation_policy', 'vrf', 'l2vpn_termination', 'owner', 'tags',
-            'custom_fields', 'created', 'last_updated', 'count_ipaddresses', 'count_fhrp_groups',
+            'id',
+            'url',
+            'display_url',
+            'display',
+            'virtual_machine',
+            'name',
+            'enabled',
+            'parent',
+            'bridge',
+            'mtu',
+            'mac_address',
+            'primary_mac_address',
+            'mac_addresses',
+            'description',
+            'mode',
+            'untagged_vlan',
+            'tagged_vlans',
+            'qinq_svlan',
+            'vlan_translation_policy',
+            'vrf',
+            'l2vpn_termination',
+            'owner',
+            'tags',
+            'custom_fields',
+            'created',
+            'last_updated',
+            'count_ipaddresses',
+            'count_fhrp_groups',
         ]
         brief_fields = ('id', 'url', 'display', 'virtual_machine', 'name', 'description')
 
@@ -136,10 +212,12 @@ class VMInterfaceSerializer(OwnerMixin, NetBoxModelSerializer):
         if virtual_machine:
             for vlan in tagged_vlans:
                 if vlan.site not in [virtual_machine.site, None]:
-                    raise serializers.ValidationError({
-                        'tagged_vlans': f"VLAN {vlan} must belong to the same site as the interface's parent virtual "
-                                        f"machine, or it must be global."
-                    })
+                    raise serializers.ValidationError(
+                        {
+                            'tagged_vlans': f"VLAN {vlan} must belong to the same site as the interface's parent virtual "
+                            f'machine, or it must be global.'
+                        }
+                    )
 
         return super().validate(data)
 
@@ -148,13 +226,25 @@ class VMInterfaceSerializer(OwnerMixin, NetBoxModelSerializer):
 # Virtual Disk
 #
 
+
 class VirtualDiskSerializer(OwnerMixin, NetBoxModelSerializer):
     virtual_machine = VirtualMachineSerializer(nested=True)
 
     class Meta:
         model = VirtualDisk
         fields = [
-            'id', 'url', 'display_url', 'display', 'virtual_machine', 'name', 'description', 'size', 'owner', 'tags',
-            'custom_fields', 'created', 'last_updated',
+            'id',
+            'url',
+            'display_url',
+            'display',
+            'virtual_machine',
+            'name',
+            'description',
+            'size',
+            'owner',
+            'tags',
+            'custom_fields',
+            'created',
+            'last_updated',
         ]
         brief_fields = ('id', 'url', 'display', 'virtual_machine', 'name', 'description', 'size')

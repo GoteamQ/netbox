@@ -3,9 +3,7 @@ from django.utils.translation import gettext_lazy as _
 from netbox.models import OrganizationalModel
 from utilities.fields import ColorField
 
-__all__ = (
-    'BaseCircuitType',
-)
+__all__ = ('BaseCircuitType',)
 
 
 class BaseCircuitType(OrganizationalModel):
@@ -14,10 +12,8 @@ class BaseCircuitType(OrganizationalModel):
     Circuits can be organized by their functional role. For example, a user might wish to define CircuitTypes named
     "Long Haul," "Metro," or "Out-of-Band".
     """
-    color = ColorField(
-        verbose_name=_('color'),
-        blank=True
-    )
+
+    color = ColorField(verbose_name=_('color'), blank=True)
 
     class Meta:
         abstract = True

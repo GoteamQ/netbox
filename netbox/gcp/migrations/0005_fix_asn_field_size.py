@@ -1,7 +1,7 @@
 from django.db import migrations, models
 
-class Migration(migrations.Migration):
 
+class Migration(migrations.Migration):
     dependencies = [
         ('gcp', '0004_alter_clouddnsrecord_options_and_more'),
     ]

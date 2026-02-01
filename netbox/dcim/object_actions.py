@@ -12,6 +12,7 @@ class BulkAddComponents(ObjectAction):
     """
     Add components to the selected devices.
     """
+
     label = _('Add Components')
     multi = True
     permissions_required = {'change'}
@@ -28,6 +29,7 @@ class BulkDisconnect(ObjectAction):
     """
     Disconnect each of a set of objects to which a cable is connected.
     """
+
     name = 'bulk_disconnect'
     label = _('Disconnect Selected')
     multi = True

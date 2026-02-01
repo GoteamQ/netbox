@@ -19,36 +19,28 @@ __all__ = (
 
 
 class WirelessLANGroupForm(NestedGroupModelForm):
-    parent = DynamicModelChoiceField(
-        label=_('Parent'),
-        queryset=WirelessLANGroup.objects.all(),
-        required=False
-    )
+    parent = DynamicModelChoiceField(label=_('Parent'), queryset=WirelessLANGroup.objects.all(), required=False)
 
-    fieldsets = (
-        FieldSet('parent', 'name', 'slug', 'description', 'tags', name=_('Wireless LAN Group')),
-    )
+    fieldsets = (FieldSet('parent', 'name', 'slug', 'description', 'tags', name=_('Wireless LAN Group')),)
 
     class Meta:
         model = WirelessLANGroup
         fields = [
-            'parent', 'name', 'slug', 'description', 'owner', 'comments', 'tags',
+            'parent',
+            'name',
+            'slug',
+            'description',
+            'owner',
+            'comments',
+            'tags',
         ]
 
 
 class WirelessLANForm(ScopedForm, TenancyForm, PrimaryModelForm):
     group = DynamicModelChoiceField(
-        label=_('Group'),
-        queryset=WirelessLANGroup.objects.all(),
-        required=False,
-        quick_add=True
+        label=_('Group'), queryset=WirelessLANGroup.objects.all(), required=False, quick_add=True
     )
-    vlan = DynamicModelChoiceField(
-        queryset=VLAN.objects.all(),
-        required=False,
-        selector=True,
-        label=_('VLAN')
-    )
+    vlan = DynamicModelChoiceField(queryset=VLAN.objects.all(), required=False, selector=True, label=_('VLAN'))
 
     fieldsets = (
         FieldSet('ssid', 'group', 'vlan', 'status', 'description', 'tags', name=_('Wireless LAN')),
@@ -60,14 +52,23 @@ class WirelessLANForm(ScopedForm, TenancyForm, PrimaryModelForm):
     class Meta:
         model = WirelessLAN
         fields = [
-            'ssid', 'group', 'status', 'vlan', 'tenant_group', 'tenant', 'auth_type', 'auth_cipher', 'auth_psk',
-            'scope_type', 'description', 'owner', 'comments', 'tags',
+            'ssid',
+            'group',
+            'status',
+            'vlan',
+            'tenant_group',
+            'tenant',
+            'auth_type',
+            'auth_cipher',
+            'auth_psk',
+            'scope_type',
+            'description',
+            'owner',
+            'comments',
+            'tags',
         ]
         widgets = {
-            'auth_psk': PasswordInput(
-                render_value=True,
-                attrs={'data-toggle': 'password'}
-            ),
+            'auth_psk': PasswordInput(render_value=True, attrs={'data-toggle': 'password'}),
         }
 
 
@@ -78,7 +79,7 @@ class WirelessLinkForm(DistanceValidationMixin, TenancyForm, PrimaryModelForm):
         label=_('Site'),
         initial_params={
             'devices': '$device_a',
-        }
+        },
     )
     location_a = DynamicModelChoiceField(
         queryset=Location.objects.all(),
@@ -89,7 +90,7 @@ class WirelessLinkForm(DistanceValidationMixin, TenancyForm, PrimaryModelForm):
         label=_('Location'),
         initial_params={
             'devices': '$device_a',
-        }
+        },
     )
     device_a = DynamicModelChoiceField(
         queryset=Device.objects.all(),
@@ -99,9 +100,7 @@ class WirelessLinkForm(DistanceValidationMixin, TenancyForm, PrimaryModelForm):
         },
         required=False,
         label=_('Device'),
-        initial_params={
-            'interfaces': '$interface_a'
-        }
+        initial_params={'interfaces': '$interface_a'},
     )
     interface_a = DynamicModelChoiceField(
         queryset=Interface.objects.all(),
@@ -112,7 +111,7 @@ class WirelessLinkForm(DistanceValidationMixin, TenancyForm, PrimaryModelForm):
         context={
             'disabled': '_occupied',
         },
-        label=_('Interface')
+        label=_('Interface'),
     )
     site_b = DynamicModelChoiceField(
         queryset=Site.objects.all(),
@@ -120,7 +119,7 @@ class WirelessLinkForm(DistanceValidationMixin, TenancyForm, PrimaryModelForm):
         label=_('Site'),
         initial_params={
             'devices': '$device_b',
-        }
+        },
     )
     location_b = DynamicModelChoiceField(
         queryset=Location.objects.all(),
@@ -131,7 +130,7 @@ class WirelessLinkForm(DistanceValidationMixin, TenancyForm, PrimaryModelForm):
         label=_('Location'),
         initial_params={
             'devices': '$device_b',
-        }
+        },
     )
     device_b = DynamicModelChoiceField(
         queryset=Device.objects.all(),
@@ -141,9 +140,7 @@ class WirelessLinkForm(DistanceValidationMixin, TenancyForm, PrimaryModelForm):
         },
         required=False,
         label=_('Device'),
-        initial_params={
-            'interfaces': '$interface_b'
-        }
+        initial_params={'interfaces': '$interface_b'},
     )
     interface_b = DynamicModelChoiceField(
         queryset=Interface.objects.all(),
@@ -154,7 +151,7 @@ class WirelessLinkForm(DistanceValidationMixin, TenancyForm, PrimaryModelForm):
         context={
             'disabled': '_occupied',
         },
-        label=_('Interface')
+        label=_('Interface'),
     )
 
     fieldsets = (
@@ -166,7 +163,7 @@ class WirelessLinkForm(DistanceValidationMixin, TenancyForm, PrimaryModelForm):
             InlineFields('distance', 'distance_unit', label=_('Distance')),
             'description',
             'tags',
-            name=_('Link')
+            name=_('Link'),
         ),
         FieldSet('tenant_group', 'tenant', name=_('Tenancy')),
         FieldSet('auth_type', 'auth_cipher', 'auth_psk', name=_('Authentication')),
@@ -175,15 +172,30 @@ class WirelessLinkForm(DistanceValidationMixin, TenancyForm, PrimaryModelForm):
     class Meta:
         model = WirelessLink
         fields = [
-            'site_a', 'location_a', 'device_a', 'interface_a', 'site_b', 'location_b', 'device_b', 'interface_b',
-            'status', 'ssid', 'tenant_group', 'tenant', 'auth_type', 'auth_cipher', 'auth_psk',
-            'distance', 'distance_unit', 'description', 'owner', 'comments', 'tags',
+            'site_a',
+            'location_a',
+            'device_a',
+            'interface_a',
+            'site_b',
+            'location_b',
+            'device_b',
+            'interface_b',
+            'status',
+            'ssid',
+            'tenant_group',
+            'tenant',
+            'auth_type',
+            'auth_cipher',
+            'auth_psk',
+            'distance',
+            'distance_unit',
+            'description',
+            'owner',
+            'comments',
+            'tags',
         ]
         widgets = {
-            'auth_psk': PasswordInput(
-                render_value=True,
-                attrs={'data-toggle': 'password'}
-            ),
+            'auth_psk': PasswordInput(render_value=True, attrs={'data-toggle': 'password'}),
         }
         labels = {
             'auth_type': 'Type',

@@ -8,7 +8,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('extras', '0134_owner'),
         ('gcp', '0006_force_asn_bigint'),
@@ -21,7 +20,10 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False)),
                 ('created', models.DateTimeField(auto_now_add=True, null=True)),
                 ('last_updated', models.DateTimeField(auto_now=True, null=True)),
-                ('custom_field_data', models.JSONField(blank=True, default=dict, encoder=utilities.json.CustomFieldJSONEncoder)),
+                (
+                    'custom_field_data',
+                    models.JSONField(blank=True, default=dict, encoder=utilities.json.CustomFieldJSONEncoder),
+                ),
                 ('name', models.CharField(max_length=255)),
                 ('region', models.CharField(max_length=100)),
                 ('connection_preference', models.CharField(default='ACCEPT_AUTOMATIC', max_length=50)),
@@ -30,7 +32,14 @@ class Migration(migrations.Migration):
                 ('self_link', models.URLField(blank=True, max_length=500)),
                 ('discovered', models.BooleanField(default=False)),
                 ('last_synced', models.DateTimeField(blank=True, null=True)),
-                ('project', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='service_attachments', to='gcp.gcpproject')),
+                (
+                    'project',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='service_attachments',
+                        to='gcp.gcpproject',
+                    ),
+                ),
                 ('tags', taggit.managers.TaggableManager(through='extras.TaggedItem', to='extras.Tag')),
             ],
             options={
@@ -46,7 +55,10 @@ class Migration(migrations.Migration):
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False)),
                 ('created', models.DateTimeField(auto_now_add=True, null=True)),
                 ('last_updated', models.DateTimeField(auto_now=True, null=True)),
-                ('custom_field_data', models.JSONField(blank=True, default=dict, encoder=utilities.json.CustomFieldJSONEncoder)),
+                (
+                    'custom_field_data',
+                    models.JSONField(blank=True, default=dict, encoder=utilities.json.CustomFieldJSONEncoder),
+                ),
                 ('name', models.CharField(max_length=255)),
                 ('region', models.CharField(max_length=100)),
                 ('ip_address', models.GenericIPAddressField(blank=True, null=True)),
@@ -54,8 +66,18 @@ class Migration(migrations.Migration):
                 ('self_link', models.URLField(blank=True, max_length=500)),
                 ('discovered', models.BooleanField(default=False)),
                 ('last_synced', models.DateTimeField(blank=True, null=True)),
-                ('network', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='gcp.vpcnetwork')),
-                ('project', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='psc_endpoints', to='gcp.gcpproject')),
+                (
+                    'network',
+                    models.ForeignKey(
+                        blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='gcp.vpcnetwork'
+                    ),
+                ),
+                (
+                    'project',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name='psc_endpoints', to='gcp.gcpproject'
+                    ),
+                ),
                 ('tags', taggit.managers.TaggableManager(through='extras.TaggedItem', to='extras.Tag')),
             ],
             options={

@@ -9,7 +9,6 @@ from netbox.constants import CENSOR_TOKEN, CENSOR_TOKEN_CHANGED
 
 
 class DataSourceChangeLoggingTestCase(TestCase):
-
     def test_password_added_on_create(self):
         datasource = DataSource.objects.create(
             name='Data Source 1',
@@ -18,7 +17,7 @@ class DataSourceChangeLoggingTestCase(TestCase):
             parameters={
                 'username': 'jeff',
                 'password': 'foobar123',
-            }
+            },
         )
 
         objectchange = datasource.to_objectchange(ObjectChangeActionChoices.ACTION_CREATE)
@@ -27,11 +26,7 @@ class DataSourceChangeLoggingTestCase(TestCase):
         self.assertEqual(objectchange.postchange_data['parameters']['password'], CENSOR_TOKEN_CHANGED)
 
     def test_password_added_on_update(self):
-        datasource = DataSource.objects.create(
-            name='Data Source 1',
-            type='git',
-            source_url='http://localhost/'
-        )
+        datasource = DataSource.objects.create(name='Data Source 1', type='git', source_url='http://localhost/')
         datasource.snapshot()
 
         # Add a blank password
@@ -63,7 +58,7 @@ class DataSourceChangeLoggingTestCase(TestCase):
             parameters={
                 'username': 'jeff',
                 'password': 'password1',
-            }
+            },
         )
         datasource.snapshot()
 
@@ -84,7 +79,7 @@ class DataSourceChangeLoggingTestCase(TestCase):
             parameters={
                 'username': 'jeff',
                 'password': 'foobar123',
-            }
+            },
         )
         datasource.snapshot()
 
@@ -111,7 +106,7 @@ class DataSourceChangeLoggingTestCase(TestCase):
             parameters={
                 'username': 'username1',
                 'password': 'foobar123',
-            }
+            },
         )
         datasource.snapshot()
 
@@ -126,7 +121,6 @@ class DataSourceChangeLoggingTestCase(TestCase):
 
 
 class ObjectTypeTest(TestCase):
-
     def test_create(self):
         """
         Test that an ObjectType created for a given app_label & model name will be automatically assigned to
@@ -146,7 +140,7 @@ class ObjectTypeTest(TestCase):
         """
         self.assertEqual(
             ObjectType.objects.get_by_natural_key('dcim', 'site'),
-            ObjectType.objects.get(app_label='dcim', model='site')
+            ObjectType.objects.get(app_label='dcim', model='site'),
         )
         with self.assertRaises(ObjectDoesNotExist):
             ObjectType.objects.get_by_natural_key('foo', 'bar')
@@ -156,10 +150,7 @@ class ObjectTypeTest(TestCase):
         Test that get_by_id() returns the appropriate ObjectType.
         """
         ot = ObjectType.objects.get_by_natural_key('dcim', 'site')
-        self.assertEqual(
-            ObjectType.objects.get_for_id(ot.pk),
-            ObjectType.objects.get(pk=ot.pk)
-        )
+        self.assertEqual(ObjectType.objects.get_for_id(ot.pk), ObjectType.objects.get(pk=ot.pk))
         with self.assertRaises(ObjectDoesNotExist):
             ObjectType.objects.get_for_id(0)
 
@@ -167,10 +158,7 @@ class ObjectTypeTest(TestCase):
         """
         Test that get_by_model() returns the appropriate ObjectType.
         """
-        self.assertEqual(
-            ObjectType.objects.get_for_model(Site),
-            ObjectType.objects.get_by_natural_key('dcim', 'site')
-        )
+        self.assertEqual(ObjectType.objects.get_for_model(Site), ObjectType.objects.get_by_natural_key('dcim', 'site'))
 
     def test_get_for_models(self):
         """
@@ -182,7 +170,7 @@ class ObjectTypeTest(TestCase):
                 Site: ObjectType.objects.get_by_natural_key('dcim', 'site'),
                 Location: ObjectType.objects.get_by_natural_key('dcim', 'location'),
                 Device: ObjectType.objects.get_by_natural_key('dcim', 'device'),
-            }
+            },
         )
 
     def test_public(self):

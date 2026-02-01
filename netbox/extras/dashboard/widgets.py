@@ -51,6 +51,7 @@ def object_list_widget_supports_model(model: Model) -> bool:
     ObjectListWidget, although we've only identified one so far--there's no resolve-able 'list' URL
     for the model. Add more tests if more conditions arise.
     """
+
     def can_resolve_model_list_view(model: Model) -> bool:
         try:
             get_action_url(model, action='list')
@@ -84,9 +85,9 @@ def get_models_from_content_types(content_types):
             if content_type.model_class():
                 models.append(content_type.model_class())
             else:
-                logger.debug(f"Dashboard Widget model_class not found: {app_label}:{model_name}")
+                logger.debug(f'Dashboard Widget model_class not found: {app_label}:{model_name}')
         except ObjectType.DoesNotExist:
-            logger.debug(f"Dashboard Widget ObjectType not found: {app_label}:{model_name}")
+            logger.debug(f'Dashboard Widget ObjectType not found: {app_label}:{model_name}')
 
     return models
 
@@ -106,6 +107,7 @@ class DashboardWidget:
         width: The widget's default width (1 to 12)
         height: The widget's default height; the number of rows it consumes
     """
+
     description = None
     default_title = None
     default_config = {}
@@ -116,6 +118,7 @@ class DashboardWidget:
         """
         The widget's configuration form.
         """
+
         pass
 
     def __init__(self, id=None, title=None, color=None, config=None, width=None, height=None, x=None, y=None):
@@ -145,9 +148,7 @@ class DashboardWidget:
         Params:
             request: The current request
         """
-        raise NotImplementedError(_("{class_name} must define a render() method.").format(
-            class_name=self.__class__
-        ))
+        raise NotImplementedError(_('{class_name} must define a render() method.').format(class_name=self.__class__))
 
     @property
     def name(self):
@@ -168,9 +169,7 @@ class NoteWidget(DashboardWidget):
     description = _('Display some arbitrary custom content. Markdown is supported.')
 
     class ConfigForm(WidgetConfigForm):
-        content = forms.CharField(
-            widget=forms.Textarea()
-        )
+        content = forms.CharField(widget=forms.Textarea())
 
     def render(self, request):
         return render_markdown(self.config.get('content'))
@@ -183,13 +182,9 @@ class ObjectCountsWidget(DashboardWidget):
     template_name = 'extras/dashboard/widgets/objectcounts.html'
 
     class ConfigForm(WidgetConfigForm):
-        models = forms.MultipleChoiceField(
-            choices=get_object_type_choices
-        )
+        models = forms.MultipleChoiceField(choices=get_object_type_choices)
         filters = forms.JSONField(
-            required=False,
-            label='Object filters',
-            help_text=_("Filters to apply when counting the number of objects")
+            required=False, label='Object filters', help_text=_('Filters to apply when counting the number of objects')
         )
 
         def clean_filters(self):
@@ -197,7 +192,7 @@ class ObjectCountsWidget(DashboardWidget):
                 try:
                     dict(data)
                 except TypeError:
-                    raise forms.ValidationError(_("Invalid format. Object filters must be passed as a dictionary."))
+                    raise forms.ValidationError(_('Invalid format. Object filters must be passed as a dictionary.'))
             return data
 
     def render(self, request):
@@ -224,9 +219,12 @@ class ObjectCountsWidget(DashboardWidget):
             else:
                 counts.append((model, None, None))
 
-        return render_to_string(self.template_name, {
-            'counts': counts,
-        })
+        return render_to_string(
+            self.template_name,
+            {
+                'counts': counts,
+            },
+        )
 
 
 @register_widget
@@ -238,26 +236,18 @@ class ObjectListWidget(DashboardWidget):
     height = 4
 
     class ConfigForm(WidgetConfigForm):
-        model = forms.ChoiceField(
-            choices=get_object_type_choices
-        )
+        model = forms.ChoiceField(choices=get_object_type_choices)
         page_size = forms.IntegerField(
-            required=False,
-            min_value=1,
-            max_value=100,
-            help_text=_('The default number of objects to display')
+            required=False, min_value=1, max_value=100, help_text=_('The default number of objects to display')
         )
-        url_params = forms.JSONField(
-            required=False,
-            label='URL parameters'
-        )
+        url_params = forms.JSONField(required=False, label='URL parameters')
 
         def clean_url_params(self):
             if data := self.cleaned_data['url_params']:
                 try:
                     urlencode(data)
                 except (TypeError, ValueError):
-                    raise forms.ValidationError(_("Invalid format. URL parameters must be passed as a dictionary."))
+                    raise forms.ValidationError(_('Invalid format. URL parameters must be passed as a dictionary.'))
             return data
 
         def clean_model(self):
@@ -265,9 +255,7 @@ class ObjectListWidget(DashboardWidget):
                 app_label, model_name = model_info.split('.')
                 model = ObjectType.objects.get_by_natural_key(app_label, model_name).model_class()
                 if not object_list_widget_supports_model(model):
-                    raise forms.ValidationError(
-                        _(f"Invalid model selection: {self['model'].data} is not supported.")
-                    )
+                    raise forms.ValidationError(_(f'Invalid model selection: {self["model"].data} is not supported.'))
 
             return model_info
 
@@ -275,7 +263,7 @@ class ObjectListWidget(DashboardWidget):
         app_label, model_name = self.config['model'].split('.')
         model = ObjectType.objects.get_by_natural_key(app_label, model_name).model_class()
         if not model:
-            logger.debug(f"Dashboard Widget model_class not found: {app_label}:{model_name}")
+            logger.debug(f'Dashboard Widget model_class not found: {app_label}:{model_name}')
             return
 
         # Evaluate user's permission. Note that this controls only whether the HTMX element is
@@ -297,11 +285,14 @@ class ObjectListWidget(DashboardWidget):
                 htmx_url = f'{htmx_url}?{urlencode(parameters, doseq=True)}'
             except ValueError:
                 pass
-        return render_to_string(self.template_name, {
-            'model_name': model_name,
-            'has_permission': has_permission,
-            'htmx_url': htmx_url,
-        })
+        return render_to_string(
+            self.template_name,
+            {
+                'model_name': model_name,
+                'has_permission': has_permission,
+                'htmx_url': htmx_url,
+            },
+        )
 
 
 @register_widget
@@ -319,36 +310,25 @@ class RSSFeedWidget(DashboardWidget):
     height = 4
 
     class ConfigForm(WidgetConfigForm):
-        feed_url = forms.URLField(
-            label=_('Feed URL'),
-            assume_scheme='https'
-        )
+        feed_url = forms.URLField(label=_('Feed URL'), assume_scheme='https')
         requires_internet = forms.BooleanField(
             label=_('Requires external connection'),
             required=False,
         )
         max_entries = forms.IntegerField(
-            min_value=1,
-            max_value=1000,
-            help_text=_('The maximum number of objects to display')
+            min_value=1, max_value=1000, help_text=_('The maximum number of objects to display')
         )
         cache_timeout = forms.IntegerField(
             min_value=600,  # 10 minutes
             max_value=86400,  # 24 hours
-            help_text=_('How long to stored the cached content (in seconds)')
+            help_text=_('How long to stored the cached content (in seconds)'),
         )
         request_timeout = forms.IntegerField(
-            min_value=1,
-            max_value=60,
-            required=False,
-            help_text=_('Timeout value for fetching the feed (in seconds)')
+            min_value=1, max_value=60, required=False, help_text=_('Timeout value for fetching the feed (in seconds)')
         )
 
     def render(self, request):
-        return render_to_string(self.template_name, {
-            'url': self.config['feed_url'],
-            **self.get_feed()
-        })
+        return render_to_string(self.template_name, {'url': self.config['feed_url'], **self.get_feed()})
 
     @cached_property
     def cache_key(self):
@@ -406,17 +386,9 @@ class BookmarksWidget(DashboardWidget):
     template_name = 'extras/dashboard/widgets/bookmarks.html'
 
     class ConfigForm(WidgetConfigForm):
-        object_types = forms.MultipleChoiceField(
-            choices=get_bookmarks_object_type_choices,
-            required=False
-        )
-        order_by = forms.ChoiceField(
-            choices=BookmarkOrderingChoices
-        )
-        max_items = forms.IntegerField(
-            min_value=1,
-            required=False
-        )
+        object_types = forms.MultipleChoiceField(choices=get_bookmarks_object_type_choices, required=False)
+        order_by = forms.ChoiceField(choices=BookmarkOrderingChoices)
+        max_items = forms.IntegerField(min_value=1, required=False)
 
     def render(self, request):
         from extras.models import Bookmark
@@ -438,6 +410,9 @@ class BookmarksWidget(DashboardWidget):
             if max_items := self.config.get('max_items'):
                 bookmarks = bookmarks[:max_items]
 
-        return render_to_string(self.template_name, {
-            'bookmarks': bookmarks,
-        })
+        return render_to_string(
+            self.template_name,
+            {
+                'bookmarks': bookmarks,
+            },
+        )

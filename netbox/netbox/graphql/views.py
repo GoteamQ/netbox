@@ -21,7 +21,7 @@ class NetBoxGraphQLView(GraphQLView):
 
         # Enforce GRAPHQL_ENABLED
         if not config.GRAPHQL_ENABLED:
-            return HttpResponseNotFound("The GraphQL API is not enabled.")
+            return HttpResponseNotFound('The GraphQL API is not enabled.')
 
         # Attempt to authenticate the user using a DRF token, if provided
         if not request.user.is_authenticated:
@@ -35,9 +35,9 @@ class NetBoxGraphQLView(GraphQLView):
 
         # Enforce LOGIN_REQUIRED
         if settings.LOGIN_REQUIRED and not request.user.is_authenticated:
-            if request.accepts("text/html"):
+            if request.accepts('text/html'):
                 return redirect_to_login(reverse('graphql'))
             else:
-                return HttpResponseForbidden("No credentials provided.")
+                return HttpResponseForbidden('No credentials provided.')
 
         return super().dispatch(request, *args, **kwargs)

@@ -7,7 +7,10 @@ from ipam.models import RouteTarget, VLAN
 from netbox.forms import NetBoxModelFilterSetForm, OrganizationalModelFilterSetForm, PrimaryModelFilterSetForm
 from tenancy.forms import ContactModelFilterForm, TenancyFilterForm
 from utilities.forms.fields import (
-    ContentTypeMultipleChoiceField, DynamicModelChoiceField, DynamicModelMultipleChoiceField, TagFilterField,
+    ContentTypeMultipleChoiceField,
+    DynamicModelChoiceField,
+    DynamicModelMultipleChoiceField,
+    TagFilterField,
 )
 from utilities.forms.rendering import FieldSet
 from utilities.forms.utils import add_blank_choice
@@ -50,30 +53,17 @@ class TunnelFilterForm(ContactModelFilterForm, TenancyFilterForm, PrimaryModelFi
         FieldSet('owner_group_id', 'owner_id', name=_('Ownership')),
         FieldSet('contact', 'contact_role', 'contact_group', name=_('Contacts')),
     )
-    status = forms.MultipleChoiceField(
-        label=_('Status'),
-        choices=TunnelStatusChoices,
-        required=False
-    )
+    status = forms.MultipleChoiceField(label=_('Status'), choices=TunnelStatusChoices, required=False)
     group_id = DynamicModelMultipleChoiceField(
-        queryset=TunnelGroup.objects.all(),
-        required=False,
-        label=_('Tunnel group')
+        queryset=TunnelGroup.objects.all(), required=False, label=_('Tunnel group')
     )
     encapsulation = forms.MultipleChoiceField(
-        label=_('Encapsulation'),
-        choices=TunnelEncapsulationChoices,
-        required=False
+        label=_('Encapsulation'), choices=TunnelEncapsulationChoices, required=False
     )
     ipsec_profile_id = DynamicModelMultipleChoiceField(
-        queryset=IPSecProfile.objects.all(),
-        required=False,
-        label=_('IPSec profile')
+        queryset=IPSecProfile.objects.all(), required=False, label=_('IPSec profile')
     )
-    tunnel_id = forms.IntegerField(
-        required=False,
-        label=_('Tunnel ID')
-    )
+    tunnel_id = forms.IntegerField(required=False, label=_('Tunnel ID'))
     tag = TagFilterField(model)
 
 
@@ -83,16 +73,8 @@ class TunnelTerminationFilterForm(NetBoxModelFilterSetForm):
         FieldSet('q', 'filter_id', 'tag'),
         FieldSet('tunnel_id', 'role', name=_('Termination')),
     )
-    tunnel_id = DynamicModelMultipleChoiceField(
-        queryset=Tunnel.objects.all(),
-        required=False,
-        label=_('Tunnel')
-    )
-    role = forms.MultipleChoiceField(
-        label=_('Role'),
-        choices=TunnelTerminationRoleChoices,
-        required=False
-    )
+    tunnel_id = DynamicModelMultipleChoiceField(queryset=Tunnel.objects.all(), required=False, label=_('Tunnel'))
+    role = forms.MultipleChoiceField(label=_('Role'), choices=TunnelTerminationRoleChoices, required=False)
     tag = TagFilterField(model)
 
 
@@ -106,25 +88,15 @@ class IKEProposalFilterForm(PrimaryModelFilterSetForm):
         FieldSet('owner_group_id', 'owner_id', name=_('Ownership')),
     )
     authentication_method = forms.MultipleChoiceField(
-        label=_('Authentication method'),
-        choices=AuthenticationMethodChoices,
-        required=False
+        label=_('Authentication method'), choices=AuthenticationMethodChoices, required=False
     )
     encryption_algorithm = forms.MultipleChoiceField(
-        label=_('Encryption algorithm'),
-        choices=EncryptionAlgorithmChoices,
-        required=False
+        label=_('Encryption algorithm'), choices=EncryptionAlgorithmChoices, required=False
     )
     authentication_algorithm = forms.MultipleChoiceField(
-        label=_('Authentication algorithm'),
-        choices=AuthenticationAlgorithmChoices,
-        required=False
+        label=_('Authentication algorithm'), choices=AuthenticationAlgorithmChoices, required=False
     )
-    group = forms.MultipleChoiceField(
-        label=_('Group'),
-        choices=DHGroupChoices,
-        required=False
-    )
+    group = forms.MultipleChoiceField(label=_('Group'), choices=DHGroupChoices, required=False)
     tag = TagFilterField(model)
 
 
@@ -135,20 +107,10 @@ class IKEPolicyFilterForm(PrimaryModelFilterSetForm):
         FieldSet('version', 'mode', 'proposal_id', name=_('Parameters')),
         FieldSet('owner_group_id', 'owner_id', name=_('Ownership')),
     )
-    version = forms.MultipleChoiceField(
-        label=_('IKE version'),
-        choices=IKEVersionChoices,
-        required=False
-    )
-    mode = forms.MultipleChoiceField(
-        label=_('Mode'),
-        choices=IKEModeChoices,
-        required=False
-    )
+    version = forms.MultipleChoiceField(label=_('IKE version'), choices=IKEVersionChoices, required=False)
+    mode = forms.MultipleChoiceField(label=_('Mode'), choices=IKEModeChoices, required=False)
     proposal_id = DynamicModelMultipleChoiceField(
-        queryset=IKEProposal.objects.all(),
-        required=False,
-        label=_('Proposal')
+        queryset=IKEProposal.objects.all(), required=False, label=_('Proposal')
     )
     tag = TagFilterField(model)
 
@@ -161,14 +123,10 @@ class IPSecProposalFilterForm(PrimaryModelFilterSetForm):
         FieldSet('owner_group_id', 'owner_id', name=_('Ownership')),
     )
     encryption_algorithm = forms.MultipleChoiceField(
-        label=_('Encryption algorithm'),
-        choices=EncryptionAlgorithmChoices,
-        required=False
+        label=_('Encryption algorithm'), choices=EncryptionAlgorithmChoices, required=False
     )
     authentication_algorithm = forms.MultipleChoiceField(
-        label=_('Authentication algorithm'),
-        choices=AuthenticationAlgorithmChoices,
-        required=False
+        label=_('Authentication algorithm'), choices=AuthenticationAlgorithmChoices, required=False
     )
     tag = TagFilterField(model)
 
@@ -181,15 +139,9 @@ class IPSecPolicyFilterForm(PrimaryModelFilterSetForm):
         FieldSet('owner_group_id', 'owner_id', name=_('Ownership')),
     )
     proposal_id = DynamicModelMultipleChoiceField(
-        queryset=IKEProposal.objects.all(),
-        required=False,
-        label=_('Proposal')
+        queryset=IKEProposal.objects.all(), required=False, label=_('Proposal')
     )
-    pfs_group = forms.MultipleChoiceField(
-        label=_('Mode'),
-        choices=DHGroupChoices,
-        required=False
-    )
+    pfs_group = forms.MultipleChoiceField(label=_('Mode'), choices=DHGroupChoices, required=False)
     tag = TagFilterField(model)
 
 
@@ -200,20 +152,12 @@ class IPSecProfileFilterForm(PrimaryModelFilterSetForm):
         FieldSet('mode', 'ike_policy_id', 'ipsec_policy_id', name=_('Profile')),
         FieldSet('owner_group_id', 'owner_id', name=_('Ownership')),
     )
-    mode = forms.MultipleChoiceField(
-        label=_('Mode'),
-        choices=IPSecModeChoices,
-        required=False
-    )
+    mode = forms.MultipleChoiceField(label=_('Mode'), choices=IPSecModeChoices, required=False)
     ike_policy_id = DynamicModelMultipleChoiceField(
-        queryset=IKEPolicy.objects.all(),
-        required=False,
-        label=_('IKE policy')
+        queryset=IKEPolicy.objects.all(), required=False, label=_('IKE policy')
     )
     ipsec_policy_id = DynamicModelMultipleChoiceField(
-        queryset=IPSecPolicy.objects.all(),
-        required=False,
-        label=_('IPSec policy')
+        queryset=IPSecPolicy.objects.all(), required=False, label=_('IPSec policy')
     )
     tag = TagFilterField(model)
 
@@ -227,25 +171,13 @@ class L2VPNFilterForm(ContactModelFilterForm, TenancyFilterForm, PrimaryModelFil
         FieldSet('owner_group_id', 'owner_id', name=_('Ownership')),
         FieldSet('contact', 'contact_role', 'contact_group', name=_('Contacts')),
     )
-    status = forms.MultipleChoiceField(
-        label=_('Status'),
-        choices=L2VPNStatusChoices,
-        required=False
-    )
-    type = forms.ChoiceField(
-        label=_('Type'),
-        choices=add_blank_choice(L2VPNTypeChoices),
-        required=False
-    )
+    status = forms.MultipleChoiceField(label=_('Status'), choices=L2VPNStatusChoices, required=False)
+    type = forms.ChoiceField(label=_('Type'), choices=add_blank_choice(L2VPNTypeChoices), required=False)
     import_target_id = DynamicModelMultipleChoiceField(
-        queryset=RouteTarget.objects.all(),
-        required=False,
-        label=_('Import targets')
+        queryset=RouteTarget.objects.all(), required=False, label=_('Import targets')
     )
     export_target_id = DynamicModelMultipleChoiceField(
-        queryset=RouteTarget.objects.all(),
-        required=False,
-        label=_('Export targets')
+        queryset=RouteTarget.objects.all(), required=False, label=_('Export targets')
     )
     tag = TagFilterField(model)
 
@@ -255,60 +187,49 @@ class L2VPNTerminationFilterForm(NetBoxModelFilterSetForm):
     fieldsets = (
         FieldSet('filter_id', 'tag', 'l2vpn_id'),
         FieldSet(
-            'assigned_object_type_id', 'region_id', 'site_id', 'device_id', 'virtual_machine_id', 'vlan_id',
-            name=_('Assigned Object')
+            'assigned_object_type_id',
+            'region_id',
+            'site_id',
+            'device_id',
+            'virtual_machine_id',
+            'vlan_id',
+            name=_('Assigned Object'),
         ),
     )
-    l2vpn_id = DynamicModelChoiceField(
-        queryset=L2VPN.objects.all(),
-        required=False,
-        label=_('L2VPN')
-    )
+    l2vpn_id = DynamicModelChoiceField(queryset=L2VPN.objects.all(), required=False, label=_('L2VPN'))
     assigned_object_type_id = ContentTypeMultipleChoiceField(
         queryset=ContentType.objects.filter(L2VPN_ASSIGNMENT_MODELS),
         required=False,
         label=_('Assigned Object Type'),
-        limit_choices_to=L2VPN_ASSIGNMENT_MODELS
+        limit_choices_to=L2VPN_ASSIGNMENT_MODELS,
     )
-    region_id = DynamicModelMultipleChoiceField(
-        queryset=Region.objects.all(),
-        required=False,
-        label=_('Region')
-    )
+    region_id = DynamicModelMultipleChoiceField(queryset=Region.objects.all(), required=False, label=_('Region'))
     site_id = DynamicModelMultipleChoiceField(
         queryset=Site.objects.all(),
         required=False,
         null_option='None',
-        query_params={
-            'region_id': '$region_id'
-        },
-        label=_('Site')
+        query_params={'region_id': '$region_id'},
+        label=_('Site'),
     )
     device_id = DynamicModelMultipleChoiceField(
         queryset=Device.objects.all(),
         required=False,
         null_option='None',
-        query_params={
-            'site_id': '$site_id'
-        },
-        label=_('Device')
+        query_params={'site_id': '$site_id'},
+        label=_('Device'),
     )
     vlan_id = DynamicModelMultipleChoiceField(
         queryset=VLAN.objects.all(),
         required=False,
         null_option='None',
-        query_params={
-            'site_id': '$site_id'
-        },
-        label=_('VLAN')
+        query_params={'site_id': '$site_id'},
+        label=_('VLAN'),
     )
     virtual_machine_id = DynamicModelMultipleChoiceField(
         queryset=VirtualMachine.objects.all(),
         required=False,
         null_option='None',
-        query_params={
-            'site_id': '$site_id'
-        },
-        label=_('Virtual Machine')
+        query_params={'site_id': '$site_id'},
+        label=_('Virtual Machine'),
     )
     tag = TagFilterField(model)

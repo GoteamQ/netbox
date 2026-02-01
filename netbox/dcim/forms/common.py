@@ -5,19 +5,11 @@ from dcim.choices import *
 from dcim.constants import *
 from utilities.forms import get_field_value
 
-__all__ = (
-    'InterfaceCommonForm',
-    'ModuleCommonForm'
-)
+__all__ = ('InterfaceCommonForm', 'ModuleCommonForm')
 
 
 class InterfaceCommonForm(forms.Form):
-    mtu = forms.IntegerField(
-        required=False,
-        min_value=INTERFACE_MTU_MIN,
-        max_value=INTERFACE_MTU_MAX,
-        label=_('MTU')
-    )
+    mtu = forms.IntegerField(required=False, min_value=INTERFACE_MTU_MIN, max_value=INTERFACE_MTU_MAX, label=_('MTU'))
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -43,8 +35,11 @@ class InterfaceCommonForm(forms.Form):
         super().clean()
         parent_field = 'device' if 'device' in self.cleaned_data else 'virtual_machine'
         if 'tagged_vlans' in self.fields.keys():
-            tagged_vlans = self.cleaned_data.get('tagged_vlans') if self.is_bound else \
-                self.get_initial_for_field(self.fields['tagged_vlans'], 'tagged_vlans')
+            tagged_vlans = (
+                self.cleaned_data.get('tagged_vlans')
+                if self.is_bound
+                else self.get_initial_for_field(self.fields['tagged_vlans'], 'tagged_vlans')
+            )
         else:
             tagged_vlans = []
 
@@ -54,12 +49,14 @@ class InterfaceCommonForm(forms.Form):
             invalid_vlans = [str(v) for v in tagged_vlans if v.site not in valid_sites]
 
             if invalid_vlans:
-                raise forms.ValidationError({
-                    'tagged_vlans': _(
-                        "The tagged VLANs ({vlans}) must belong to the same site as the interface's parent device/VM, "
-                        "or they must be global"
-                    ).format(vlans=', '.join(invalid_vlans))
-                })
+                raise forms.ValidationError(
+                    {
+                        'tagged_vlans': _(
+                            "The tagged VLANs ({vlans}) must belong to the same site as the interface's parent device/VM, "
+                            'or they must be global'
+                        ).format(vlans=', '.join(invalid_vlans))
+                    }
+                )
         # Validate mode change
         if self.instance.pk and (self.instance.mode != self.cleaned_data['mode']):
             if 'untagged_vlan' not in self.cleaned_data and self.instance.untagged_vlan is not None:
@@ -69,7 +66,6 @@ class InterfaceCommonForm(forms.Form):
 
 
 class ModuleCommonForm(forms.Form):
-
     def _get_module_bay_tree(self, module_bay):
         module_bays = []
         while module_bay:
@@ -103,13 +99,13 @@ class ModuleCommonForm(forms.Form):
         module_bays = self._get_module_bay_tree(module_bay)
 
         for templates, component_attribute in [
-                ("consoleporttemplates", "consoleports"),
-                ("consoleserverporttemplates", "consoleserverports"),
-                ("interfacetemplates", "interfaces"),
-                ("powerporttemplates", "powerports"),
-                ("poweroutlettemplates", "poweroutlets"),
-                ("rearporttemplates", "rearports"),
-                ("frontporttemplates", "frontports")
+            ('consoleporttemplates', 'consoleports'),
+            ('consoleserverporttemplates', 'consoleserverports'),
+            ('interfacetemplates', 'interfaces'),
+            ('powerporttemplates', 'powerports'),
+            ('poweroutlettemplates', 'poweroutlets'),
+            ('rearporttemplates', 'rearports'),
+            ('frontporttemplates', 'frontports'),
         ]:
             # Prefetch installed components
             installed_components = {
@@ -123,17 +119,15 @@ class ModuleCommonForm(forms.Form):
                 if MODULE_TOKEN in template.name:
                     if not module_bay.position:
                         raise forms.ValidationError(
-                            _("Cannot install module with placeholder values in a module bay with no position defined.")
+                            _('Cannot install module with placeholder values in a module bay with no position defined.')
                         )
 
                     if len(module_bays) != template.name.count(MODULE_TOKEN):
                         raise forms.ValidationError(
                             _(
-                                "Cannot install module with placeholder values in a module bay tree {level} in tree "
-                                "but {tokens} placeholders given."
-                            ).format(
-                                level=len(module_bays), tokens=template.name.count(MODULE_TOKEN)
-                            )
+                                'Cannot install module with placeholder values in a module bay tree {level} in tree '
+                                'but {tokens} placeholders given.'
+                            ).format(level=len(module_bays), tokens=template.name.count(MODULE_TOKEN))
                         )
 
                     for module_bay in module_bays:
@@ -144,17 +138,15 @@ class ModuleCommonForm(forms.Form):
                 # It is not possible to adopt components already belonging to a module
                 if adopt_components and existing_item and existing_item.module:
                     raise forms.ValidationError(
-                        _("Cannot adopt {model} {name} as it already belongs to a module").format(
-                            model=template.component_model.__name__,
-                            name=resolved_name
+                        _('Cannot adopt {model} {name} as it already belongs to a module').format(
+                            model=template.component_model.__name__, name=resolved_name
                         )
                     )
 
                 # If we are not adopting components we error if the component exists
                 if not adopt_components and resolved_name in installed_components:
                     raise forms.ValidationError(
-                        _("A {model} named {name} already exists").format(
-                            model=template.component_model.__name__,
-                            name=resolved_name
+                        _('A {model} named {name} already exists').format(
+                            model=template.component_model.__name__, name=resolved_name
                         )
                     )

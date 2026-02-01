@@ -1,6 +1,6 @@
 from django.utils.translation import gettext_lazy as _
 
-from netbox.navigation import Menu, MenuGroup, MenuItem, MenuItemButton, get_model_buttons
+from netbox.navigation import Menu, MenuGroup, MenuItem, MenuItemButton
 
 
 def get_gcp_model_item(model_name, label, actions=('add', 'bulk_import')):
@@ -8,7 +8,7 @@ def get_gcp_model_item(model_name, label, actions=('add', 'bulk_import')):
         link=f'gcp:{model_name}_list',
         link_text=label,
         permissions=[f'gcp.view_{model_name}'],
-        buttons=get_gcp_model_buttons(model_name, actions)
+        buttons=get_gcp_model_buttons(model_name, actions),
     )
 
 
@@ -20,7 +20,7 @@ def get_gcp_model_buttons(model_name, actions=('add', 'bulk_import')):
                 link=f'gcp:{model_name}_add',
                 title='Add',
                 icon_class='mdi mdi-plus-thick',
-                permissions=[f'gcp.add_{model_name}']
+                permissions=[f'gcp.add_{model_name}'],
             )
         )
     if 'bulk_import' in actions:
@@ -29,7 +29,7 @@ def get_gcp_model_buttons(model_name, actions=('add', 'bulk_import')):
                 link=f'gcp:{model_name}_bulk_import',
                 title='Import',
                 icon_class='mdi mdi-upload',
-                permissions=[f'gcp.add_{model_name}']
+                permissions=[f'gcp.add_{model_name}'],
             )
         )
     return buttons
@@ -52,9 +52,7 @@ GCP_MENU = Menu(
         ),
         MenuGroup(
             label=_('Projects'),
-            items=(
-                get_gcp_model_item('gcpproject', _('GCP Projects')),
-            ),
+            items=(get_gcp_model_item('gcpproject', _('GCP Projects')),),
         ),
         MenuGroup(
             label=_('Compute'),
@@ -138,9 +136,7 @@ GCP_MENU = Menu(
         ),
         MenuGroup(
             label=_('Security'),
-            items=(
-                get_gcp_model_item('secretmanagersecret', _('Secret Manager')),
-            ),
+            items=(get_gcp_model_item('secretmanagersecret', _('Secret Manager')),),
         ),
         MenuGroup(
             label=_('DNS'),

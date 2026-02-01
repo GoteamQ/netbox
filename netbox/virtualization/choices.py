@@ -7,6 +7,7 @@ from utilities.choices import ChoiceSet
 # Clusters
 #
 
+
 class ClusterStatusChoices(ChoiceSet):
     key = 'Cluster.status'
 
@@ -28,6 +29,7 @@ class ClusterStatusChoices(ChoiceSet):
 #
 # VirtualMachines
 #
+
 
 class VirtualMachineStatusChoices(ChoiceSet):
     key = 'VirtualMachine.status'
@@ -61,5 +63,5 @@ class VirtualMachineStartOnBootChoices(ChoiceSet):
     CHOICES = [
         (STATUS_ON, _('On'), 'green'),
         (STATUS_OFF, _('Off'), 'gray'),
-        (STATUS_LAST_STATE, _('Last State'), 'cyan')
+        (STATUS_LAST_STATE, _('Last State'), 'cyan'),
     ]

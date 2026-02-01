@@ -15,8 +15,19 @@ class RouteTargetSerializer(PrimaryModelSerializer):
     class Meta:
         model = RouteTarget
         fields = [
-            'id', 'url', 'display_url', 'display', 'name', 'tenant', 'description', 'owner', 'comments', 'tags',
-            'custom_fields', 'created', 'last_updated',
+            'id',
+            'url',
+            'display_url',
+            'display',
+            'name',
+            'tenant',
+            'description',
+            'owner',
+            'comments',
+            'tags',
+            'custom_fields',
+            'created',
+            'last_updated',
         ]
         brief_fields = ('id', 'url', 'display', 'name', 'description')
 
@@ -24,16 +35,10 @@ class RouteTargetSerializer(PrimaryModelSerializer):
 class VRFSerializer(PrimaryModelSerializer):
     tenant = TenantSerializer(nested=True, required=False, allow_null=True)
     import_targets = SerializedPKRelatedField(
-        queryset=RouteTarget.objects.all(),
-        serializer=RouteTargetSerializer,
-        required=False,
-        many=True
+        queryset=RouteTarget.objects.all(), serializer=RouteTargetSerializer, required=False, many=True
     )
     export_targets = SerializedPKRelatedField(
-        queryset=RouteTarget.objects.all(),
-        serializer=RouteTargetSerializer,
-        required=False,
-        many=True
+        queryset=RouteTarget.objects.all(), serializer=RouteTargetSerializer, required=False, many=True
     )
 
     # Related object counts
@@ -43,8 +48,24 @@ class VRFSerializer(PrimaryModelSerializer):
     class Meta:
         model = VRF
         fields = [
-            'id', 'url', 'display_url', 'display', 'name', 'rd', 'tenant', 'enforce_unique', 'description', 'owner',
-            'comments', 'import_targets', 'export_targets', 'tags', 'custom_fields', 'created', 'last_updated',
-            'ipaddress_count', 'prefix_count',
+            'id',
+            'url',
+            'display_url',
+            'display',
+            'name',
+            'rd',
+            'tenant',
+            'enforce_unique',
+            'description',
+            'owner',
+            'comments',
+            'import_targets',
+            'export_targets',
+            'tags',
+            'custom_fields',
+            'created',
+            'last_updated',
+            'ipaddress_count',
+            'prefix_count',
         ]
         brief_fields = ('id', 'url', 'display', 'name', 'rd', 'description', 'prefix_count')

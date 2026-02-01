@@ -3,25 +3,13 @@ from django.utils.translation import gettext_lazy as _
 
 from extras.dashboard.utils import get_widget_class
 
-__all__ = (
-    'Dashboard',
-)
+__all__ = ('Dashboard',)
 
 
 class Dashboard(models.Model):
-    user = models.OneToOneField(
-        to='users.User',
-        on_delete=models.CASCADE,
-        related_name='dashboard'
-    )
-    layout = models.JSONField(
-        verbose_name=_('layout'),
-        default=list
-    )
-    config = models.JSONField(
-        verbose_name=_('config'),
-        default=dict
-    )
+    user = models.OneToOneField(to='users.User', on_delete=models.CASCADE, related_name='dashboard')
+    layout = models.JSONField(verbose_name=_('layout'), default=list)
+    config = models.JSONField(verbose_name=_('config'), default=dict)
 
     class Meta:
         verbose_name = _('dashboard')
@@ -58,13 +46,15 @@ class Dashboard(models.Model):
             'color': widget.color,
             'config': widget.config,
         }
-        self.layout.append({
-            'id': id,
-            'h': widget.height,
-            'w': widget.width,
-            'x': x,
-            'y': y,
-        })
+        self.layout.append(
+            {
+                'id': id,
+                'h': widget.height,
+                'w': widget.width,
+                'x': x,
+                'y': y,
+            }
+        )
 
     def delete_widget(self, id):
         """
@@ -72,6 +62,4 @@ class Dashboard(models.Model):
         """
         id = str(id)
         del self.config[id]
-        self.layout = [
-            item for item in self.layout if item['id'] != id
-        ]
+        self.layout = [item for item in self.layout if item['id'] != id]

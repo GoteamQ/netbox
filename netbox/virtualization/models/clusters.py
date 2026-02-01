@@ -21,6 +21,7 @@ class ClusterType(OrganizationalModel):
     """
     A type of Cluster.
     """
+
     class Meta:
         ordering = ('name',)
         verbose_name = _('cluster type')
@@ -31,11 +32,12 @@ class ClusterGroup(ContactsMixin, OrganizationalModel):
     """
     An organizational group of Clusters.
     """
+
     vlan_groups = GenericRelation(
         to='ipam.VLANGroup',
         content_type_field='scope_type',
         object_id_field='scope_id',
-        related_query_name='cluster_group'
+        related_query_name='cluster_group',
     )
 
     class Meta:
@@ -48,68 +50,42 @@ class Cluster(ContactsMixin, CachedScopeMixin, PrimaryModel):
     """
     A cluster of VirtualMachines. Each Cluster may optionally be associated with one or more Devices.
     """
-    name = models.CharField(
-        verbose_name=_('name'),
-        max_length=100,
-        db_collation="natural_sort"
-    )
-    type = models.ForeignKey(
-        verbose_name=_('type'),
-        to=ClusterType,
-        on_delete=models.PROTECT,
-        related_name='clusters'
-    )
-    group = models.ForeignKey(
-        to=ClusterGroup,
-        on_delete=models.PROTECT,
-        related_name='clusters',
-        blank=True,
-        null=True
-    )
+
+    name = models.CharField(verbose_name=_('name'), max_length=100, db_collation='natural_sort')
+    type = models.ForeignKey(verbose_name=_('type'), to=ClusterType, on_delete=models.PROTECT, related_name='clusters')
+    group = models.ForeignKey(to=ClusterGroup, on_delete=models.PROTECT, related_name='clusters', blank=True, null=True)
     status = models.CharField(
         verbose_name=_('status'),
         max_length=50,
         choices=ClusterStatusChoices,
-        default=ClusterStatusChoices.STATUS_ACTIVE
+        default=ClusterStatusChoices.STATUS_ACTIVE,
     )
     tenant = models.ForeignKey(
-        to='tenancy.Tenant',
-        on_delete=models.PROTECT,
-        related_name='clusters',
-        blank=True,
-        null=True
+        to='tenancy.Tenant', on_delete=models.PROTECT, related_name='clusters', blank=True, null=True
     )
 
     # Generic relations
     vlan_groups = GenericRelation(
-        to='ipam.VLANGroup',
-        content_type_field='scope_type',
-        object_id_field='scope_id',
-        related_query_name='cluster'
+        to='ipam.VLANGroup', content_type_field='scope_type', object_id_field='scope_id', related_query_name='cluster'
     )
 
     clone_fields = (
-        'scope_type', 'scope_id', 'type', 'group', 'status', 'tenant',
+        'scope_type',
+        'scope_id',
+        'type',
+        'group',
+        'status',
+        'tenant',
     )
-    prerequisite_models = (
-        'virtualization.ClusterType',
-    )
+    prerequisite_models = ('virtualization.ClusterType',)
 
     class Meta:
         ordering = ['name']
         constraints = (
-            models.UniqueConstraint(
-                fields=('group', 'name'),
-                name='%(app_label)s_%(class)s_unique_group_name'
-            ),
-            models.UniqueConstraint(
-                fields=('_site', 'name'),
-                name='%(app_label)s_%(class)s_unique__site_name'
-            ),
+            models.UniqueConstraint(fields=('group', 'name'), name='%(app_label)s_%(class)s_unique_group_name'),
+            models.UniqueConstraint(fields=('_site', 'name'), name='%(app_label)s_%(class)s_unique__site_name'),
         )
-        indexes = (
-            models.Index(fields=('scope_type', 'scope_id')),
-        )
+        indexes = (models.Index(fields=('scope_type', 'scope_id')),)
         verbose_name = _('cluster')
         verbose_name_plural = _('clusters')
 
@@ -135,15 +111,19 @@ class Cluster(ContactsMixin, CachedScopeMixin, PrimaryModel):
         if not self._state.adding:
             if site:
                 if nonsite_devices := Device.objects.filter(cluster=self).exclude(site=site).count():
-                    raise ValidationError({
-                        'scope': _(
-                            "{count} devices are assigned as hosts for this cluster but are not in site {site}"
-                        ).format(count=nonsite_devices, site=site)
-                    })
+                    raise ValidationError(
+                        {
+                            'scope': _(
+                                '{count} devices are assigned as hosts for this cluster but are not in site {site}'
+                            ).format(count=nonsite_devices, site=site)
+                        }
+                    )
             if location:
                 if nonlocation_devices := Device.objects.filter(cluster=self).exclude(location=location).count():
-                    raise ValidationError({
-                        'scope': _(
-                            "{count} devices are assigned as hosts for this cluster but are not in location {location}"
-                        ).format(count=nonlocation_devices, location=location)
-                    })
+                    raise ValidationError(
+                        {
+                            'scope': _(
+                                '{count} devices are assigned as hosts for this cluster but are not in location {location}'
+                            ).format(count=nonlocation_devices, location=location)
+                        }
+                    )

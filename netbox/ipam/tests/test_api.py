@@ -15,9 +15,7 @@ from utilities.testing import APITestCase, APIViewTestCases, create_test_device,
 
 
 class AppTest(APITestCase):
-
     def test_root(self):
-
         url = reverse('ipam-api:api-root')
         response = self.client.get('{}?format=api'.format(url), **self.header)
 
@@ -101,9 +99,7 @@ class ASNRangeTest(APIViewTestCases.APIViewTestCase):
         url = reverse('ipam-api:asnrange-available-asns', kwargs={'pk': asnrange.pk})
         self.add_permissions('ipam.view_asnrange', 'ipam.add_asn')
 
-        data = {
-            'description': 'New ASN'
-        }
+        data = {'description': 'New ASN'}
         response = self.client.post(url, data, format='json', **self.header)
         self.assertHttpStatus(response, status.HTTP_201_CREATED)
         self.assertEqual(response.data['rir']['id'], asnrange.rir.pk)
@@ -119,10 +115,7 @@ class ASNRangeTest(APIViewTestCases.APIViewTestCase):
         self.add_permissions('ipam.view_asnrange', 'ipam.add_asn')
 
         # Try to create eleven ASNs (only ten are available)
-        data = [
-            {'description': f'New ASN {i}'}
-            for i in range(1, 12)
-        ]
+        data = [{'description': f'New ASN {i}'} for i in range(1, 12)]
         assert len(data) == 11
         response = self.client.post(url, data, format='json', **self.header)
         self.assertHttpStatus(response, status.HTTP_409_CONFLICT)
@@ -151,10 +144,7 @@ class ASNTest(APIViewTestCases.APIViewTestCase):
         )
         RIR.objects.bulk_create(rirs)
 
-        sites = (
-            Site(name='Site 1', slug='site-1'),
-            Site(name='Site 2', slug='site-2')
-        )
+        sites = (Site(name='Site 1', slug='site-1'), Site(name='Site 2', slug='site-2'))
         Site.objects.bulk_create(sites)
 
         tenants = (
@@ -215,7 +205,6 @@ class VRFTest(APIViewTestCases.APIViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
-
         vrfs = (
             VRF(name='VRF 1', rd='65000:1'),
             VRF(name='VRF 2', rd='65000:2'),
@@ -244,7 +233,6 @@ class RouteTargetTest(APIViewTestCases.APIViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
-
         route_targets = (
             RouteTarget(name='65000:1001'),
             RouteTarget(name='65000:1002'),
@@ -276,7 +264,6 @@ class RIRTest(APIViewTestCases.APIViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
-
         rirs = (
             RIR(name='RIR 1', slug='rir-1'),
             RIR(name='RIR 2', slug='rir-2'),
@@ -294,7 +281,6 @@ class AggregateTest(APIViewTestCases.APIViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
-
         rirs = (
             RIR(name='RIR 1', slug='rir-1'),
             RIR(name='RIR 2', slug='rir-2'),
@@ -396,7 +382,6 @@ class RoleTest(APIViewTestCases.APIViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
-
         roles = (
             Role(name='Role 1', slug='role-1'),
             Role(name='Role 2', slug='role-2'),
@@ -425,7 +410,6 @@ class PrefixTest(APIViewTestCases.APIViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
-
         prefixes = (
             Prefix(prefix=IPNetwork('192.168.1.0/24')),
             Prefix(prefix=IPNetwork('192.168.2.0/24')),
@@ -479,10 +463,7 @@ class PrefixTest(APIViewTestCases.APIViewTestCase):
             '192.0.2.12/30',
         ]
         for i in range(4):
-            data = {
-                'prefix_length': 30,
-                'description': 'Test Prefix {}'.format(i + 1)
-            }
+            data = {'prefix_length': 30, 'description': 'Test Prefix {}'.format(i + 1)}
             response = self.client.post(url, data, format='json', **self.header)
             self.assertHttpStatus(response, status.HTTP_201_CREATED)
             self.assertEqual(response.data['prefix'], prefixes_to_be_created[i])
@@ -561,9 +542,7 @@ class PrefixTest(APIViewTestCases.APIViewTestCase):
 
         # Create all four available IPs with individual requests
         for i in range(1, 5):
-            data = {
-                'description': 'Test IP {}'.format(i)
-            }
+            data = {'description': 'Test IP {}'.format(i)}
             response = self.client.post(url, data, format='json', **self.header)
             self.assertHttpStatus(response, status.HTTP_201_CREATED)
             self.assertEqual(response.data['vrf']['id'], vrf.pk)
@@ -668,7 +647,6 @@ class IPRangeTest(APIViewTestCases.APIViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
-
         ip_ranges = (
             IPRange(start_address=IPNetwork('192.168.1.10/24'), end_address=IPNetwork('192.168.1.50/24'), size=51),
             IPRange(start_address=IPNetwork('192.168.2.10/24'), end_address=IPNetwork('192.168.2.50/24'), size=51),
@@ -681,8 +659,7 @@ class IPRangeTest(APIViewTestCases.APIViewTestCase):
         Test retrieval of all available IP addresses within a parent IP range.
         """
         iprange = IPRange.objects.create(
-            start_address=IPNetwork('192.0.2.10/24'),
-            end_address=IPNetwork('192.0.2.19/24')
+            start_address=IPNetwork('192.0.2.10/24'), end_address=IPNetwork('192.0.2.19/24')
         )
         url = reverse('ipam-api:iprange-available-ips', kwargs={'pk': iprange.pk})
         self.add_permissions('ipam.view_iprange', 'ipam.view_ipaddress')
@@ -698,18 +675,14 @@ class IPRangeTest(APIViewTestCases.APIViewTestCase):
         """
         vrf = VRF.objects.create(name='Test VRF 1', rd='1234')
         iprange = IPRange.objects.create(
-            start_address=IPNetwork('192.0.2.1/24'),
-            end_address=IPNetwork('192.0.2.3/24'),
-            vrf=vrf
+            start_address=IPNetwork('192.0.2.1/24'), end_address=IPNetwork('192.0.2.3/24'), vrf=vrf
         )
         url = reverse('ipam-api:iprange-available-ips', kwargs={'pk': iprange.pk})
         self.add_permissions('ipam.view_iprange', 'ipam.add_ipaddress')
 
         # Create all three available IPs with individual requests
         for i in range(1, 4):
-            data = {
-                'description': f'Test IP #{i}'
-            }
+            data = {'description': f'Test IP #{i}'}
             response = self.client.post(url, data, format='json', **self.header)
             self.assertHttpStatus(response, status.HTTP_201_CREATED)
             self.assertEqual(response.data['vrf']['id'], vrf.pk)
@@ -724,10 +697,7 @@ class IPRangeTest(APIViewTestCases.APIViewTestCase):
         """
         Test the creation of available IP addresses within a parent IP range.
         """
-        iprange = IPRange.objects.create(
-            start_address=IPNetwork('192.0.2.1/24'),
-            end_address=IPNetwork('192.0.2.8/24')
-        )
+        iprange = IPRange.objects.create(start_address=IPNetwork('192.0.2.1/24'), end_address=IPNetwork('192.0.2.8/24'))
         url = reverse('ipam-api:iprange-available-ips', kwargs={'pk': iprange.pk})
         self.add_permissions('ipam.view_iprange', 'ipam.add_ipaddress')
 
@@ -826,7 +796,6 @@ class IPAddressTest(APIViewTestCases.APIViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
-
         ip_addresses = (
             IPAddress(address=IPNetwork('192.168.0.1/24')),
             IPAddress(address=IPNetwork('192.168.0.2/24')),
@@ -842,22 +811,10 @@ class IPAddressTest(APIViewTestCases.APIViewTestCase):
         manufacturer = Manufacturer.objects.create(name='Manufacturer 1')
         device_type = DeviceType.objects.create(model='Device Type 1', manufacturer=manufacturer)
         role = DeviceRole.objects.create(name='Switch')
-        device1 = Device.objects.create(
-            name='Device 1',
-            site=site,
-            device_type=device_type,
-            role=role,
-            status='active'
-        )
+        device1 = Device.objects.create(name='Device 1', site=site, device_type=device_type, role=role, status='active')
         interface1 = Interface.objects.create(name='Interface 1', device=device1, type='1000baset')
         interface2 = Interface.objects.create(name='Interface 2', device=device1, type='1000baset')
-        device2 = Device.objects.create(
-            name='Device 2',
-            site=site,
-            device_type=device_type,
-            role=role,
-            status='active'
-        )
+        device2 = Device.objects.create(name='Device 2', site=site, device_type=device_type, role=role, status='active')
         interface3 = Interface.objects.create(name='Interface 3', device=device2, type='1000baset')
 
         ip_addresses = (
@@ -875,16 +832,12 @@ class IPAddressTest(APIViewTestCases.APIViewTestCase):
         self.add_permissions('ipam.change_ipaddress')
 
         # assign to same parent
-        data = {
-            'assigned_object_id': interface2.pk
-        }
+        data = {'assigned_object_id': interface2.pk}
         response = self.client.patch(url, data, format='json', **self.header)
         self.assertHttpStatus(response, status.HTTP_200_OK)
 
         # assign to same different parent - should error
-        data = {
-            'assigned_object_id': interface3.pk
-        }
+        data = {'assigned_object_id': interface3.pk}
         response = self.client.patch(url, data, format='json', **self.header)
         self.assertHttpStatus(response, status.HTTP_400_BAD_REQUEST)
 
@@ -1015,11 +968,10 @@ class FHRPGroupAssignmentTest(APIViewTestCases.APIViewTestCase):
     bulk_update_data = {
         'priority': 100,
     }
-    user_permissions = ('ipam.view_fhrpgroup', )
+    user_permissions = ('ipam.view_fhrpgroup',)
 
     @classmethod
     def setUpTestData(cls):
-
         device1 = create_test_device('device1')
         device2 = create_test_device('device2')
         device3 = create_test_device('device3')
@@ -1093,21 +1045,9 @@ class VLANGroupTest(APIViewTestCases.APIViewTestCase):
     model = VLANGroup
     brief_fields = ['description', 'display', 'id', 'name', 'slug', 'url', 'vlan_count']
     create_data = [
-        {
-            'name': 'VLAN Group 4',
-            'slug': 'vlan-group-4',
-            'vid_ranges': [[1, 4094]]
-        },
-        {
-            'name': 'VLAN Group 5',
-            'slug': 'vlan-group-5',
-            'vid_ranges': [[1, 4094]]
-        },
-        {
-            'name': 'VLAN Group 6',
-            'slug': 'vlan-group-6',
-            'vid_ranges': [[1, 4094]]
-        },
+        {'name': 'VLAN Group 4', 'slug': 'vlan-group-4', 'vid_ranges': [[1, 4094]]},
+        {'name': 'VLAN Group 5', 'slug': 'vlan-group-5', 'vid_ranges': [[1, 4094]]},
+        {'name': 'VLAN Group 6', 'slug': 'vlan-group-6', 'vid_ranges': [[1, 4094]]},
     ]
     bulk_update_data = {
         'description': 'New description',
@@ -1115,7 +1055,6 @@ class VLANGroupTest(APIViewTestCases.APIViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
-
         vlan_groups = (
             VLANGroup(name='VLAN Group 1', slug='vlan-group-1'),
             VLANGroup(name='VLAN Group 2', slug='vlan-group-2'),
@@ -1132,9 +1071,7 @@ class VLANGroupTest(APIViewTestCases.APIViewTestCase):
 
         self.add_permissions('ipam.view_vlangroup', 'ipam.view_vlan')
         vlangroup = VLANGroup.objects.create(
-            name='VLAN Group X',
-            slug='vlan-group-x',
-            vid_ranges=string_to_ranges(f"{MIN_VID}-{MAX_VID}")
+            name='VLAN Group X', slug='vlan-group-x', vid_ranges=string_to_ranges(f'{MIN_VID}-{MAX_VID}')
         )
 
         # Create a set of VLANs within the group
@@ -1167,7 +1104,7 @@ class VLANGroupTest(APIViewTestCases.APIViewTestCase):
         VLAN.objects.create(vid=1, name='VLAN 1', group=vlangroup)
 
         data = {
-            "name": "First VLAN",
+            'name': 'First VLAN',
         }
         url = reverse('ipam-api:vlangroup-available-vlans', kwargs={'pk': vlangroup.pk})
         response = self.client.post(url, data, format='json', **self.header)
@@ -1192,9 +1129,9 @@ class VLANGroupTest(APIViewTestCases.APIViewTestCase):
         VLAN.objects.bulk_create(vlans)
 
         data = (
-            {"name": "First VLAN"},
-            {"name": "Second VLAN"},
-            {"name": "Third VLAN"},
+            {'name': 'First VLAN'},
+            {'name': 'Second VLAN'},
+            {'name': 'Third VLAN'},
         )
         url = reverse('ipam-api:vlangroup-available-vlans', kwargs={'pk': vlangroup.pk})
         response = self.client.post(url, data, format='json', **self.header)
@@ -1221,7 +1158,6 @@ class VLANTest(APIViewTestCases.APIViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
-
         vlan_groups = (
             VLANGroup(name='VLAN Group 1', slug='vlan-group-1'),
             VLANGroup(name='VLAN Group 2', slug='vlan-group-2'),
@@ -1281,14 +1217,19 @@ class VLANTest(APIViewTestCases.APIViewTestCase):
 
 class VLANTranslationPolicyTest(APIViewTestCases.APIViewTestCase):
     model = VLANTranslationPolicy
-    brief_fields = ['description', 'display', 'id', 'name', 'url',]
+    brief_fields = [
+        'description',
+        'display',
+        'id',
+        'name',
+        'url',
+    ]
     bulk_update_data = {
         'description': 'New description',
     }
 
     @classmethod
     def setUpTestData(cls):
-
         vlan_translation_policies = (
             VLANTranslationPolicy(
                 name='Policy 1',
@@ -1327,7 +1268,6 @@ class VLANTranslationRuleTest(APIViewTestCases.APIViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
-
         vlan_translation_policies = (
             VLANTranslationPolicy(
                 name='Policy 1',

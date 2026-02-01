@@ -1,14 +1,11 @@
 from .choices import LogLevelChoices
 from .scripts import BaseScript
 
-__all__ = (
-    'Report',
-)
+__all__ = ('Report',)
 
 
 # Required by extras/migrations/0109_script_models.py
 class Report(BaseScript):
-
     #
     # Legacy logging methods for Reports
     #

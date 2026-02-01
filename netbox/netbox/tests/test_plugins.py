@@ -17,17 +17,13 @@ from netbox.graphql.schema import Query
 from netbox.registry import registry
 
 
-@skipIf('netbox.tests.dummy_plugin' not in settings.PLUGINS, "dummy_plugin not in settings.PLUGINS")
+@skipIf('netbox.tests.dummy_plugin' not in settings.PLUGINS, 'dummy_plugin not in settings.PLUGINS')
 class PluginTest(TestCase):
-
     def test_config(self):
-
         self.assertIn('netbox.tests.dummy_plugin.DummyPluginConfig', settings.INSTALLED_APPS)
 
     def test_model_registration(self):
-        self.assertTrue(
-            ObjectType.objects.filter(app_label='dummy_plugin', model='dummymodel').exists()
-        )
+        self.assertTrue(ObjectType.objects.filter(app_label='dummy_plugin', model='dummymodel').exists())
 
     def test_models(self):
         from netbox.tests.dummy_plugin.models import DummyModel
@@ -43,7 +39,6 @@ class PluginTest(TestCase):
 
     @override_settings(LOGIN_REQUIRED=False)
     def test_views(self):
-
         # Test URL resolution
         url = reverse('plugins:dummy_plugin:dummy_model_list')
         self.assertEqual(url, '/plugins/dummy-plugin/models/')
@@ -55,7 +50,6 @@ class PluginTest(TestCase):
 
     @override_settings(EXEMPT_VIEW_PERMISSIONS=['*'], LOGIN_REQUIRED=False)
     def test_api_views(self):
-
         # Test URL resolution
         url = reverse('plugins-api:dummy_plugin-api:dummymodel-list')
         self.assertEqual(url, '/api/plugins/dummy-plugin/dummy-models/')
@@ -67,7 +61,6 @@ class PluginTest(TestCase):
 
     @override_settings(LOGIN_REQUIRED=False)
     def test_registered_views(self):
-
         # Test URL resolution
         url = reverse('dcim:site_extra', kwargs={'pk': 1})
         self.assertEqual(url, '/dcim/sites/1/other-stuff/')
@@ -168,6 +161,7 @@ class PluginTest(TestCase):
         """
         Validate enforcement of required settings.
         """
+
         class DummyConfigWithRequiredSettings(dummy_config):
             required_settings = ['foo']
 
@@ -182,6 +176,7 @@ class PluginTest(TestCase):
         """
         Validate population of default config settings.
         """
+
         class DummyConfigWithDefaultSettings(dummy_config):
             default_settings = {
                 'bar': 123,
@@ -230,7 +225,6 @@ class PluginTest(TestCase):
 
 
 class PluginNavigationTest(TestCase):
-
     def test_plugin_menu_item_independent_permissions(self):
         item1 = PluginMenuItem(link='test1', link_text='Test 1')
         item1.permissions.append('leaked_permission')

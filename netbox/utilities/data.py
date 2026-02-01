@@ -22,6 +22,7 @@ __all__ = (
 # Dictionary utilities
 #
 
+
 def deepmerge(original, new):
     """
     Deep merge two dictionaries (new into original) and return a new dict
@@ -73,6 +74,7 @@ def shallow_compare_dict(source_dict, destination_dict, exclude=tuple()):
 # Array utilities
 #
 
+
 def array_to_ranges(array):
     """
     Convert an arbitrary array of integers to a list of consecutive values. Nonconsecutive values are returned as
@@ -81,12 +83,8 @@ def array_to_ranges(array):
     Example:
         [0, 1, 2, 10, 14, 15, 16] => [(0, 2), (10,), (14, 16)]
     """
-    group = (
-        list(x) for _, x in groupby(sorted(array), lambda x, c=count(): next(c) - x)
-    )
-    return [
-        (g[0], g[-1])[:len(g)] for g in group
-    ]
+    group = (list(x) for _, x in groupby(sorted(array), lambda x, c=count(): next(c) - x))
+    return [(g[0], g[-1])[: len(g)] for g in group]
 
 
 def array_to_string(array):
@@ -109,6 +107,7 @@ def array_to_string(array):
 #
 # Range utilities
 #
+
 
 def drange(start, end, step=decimal.Decimal(1)):
     """
@@ -160,7 +159,7 @@ def ranges_to_string_list(ranges):
         # Compute inclusive bounds regardless of how the DB range is stored.
         lower = r.lower if r.lower_inc else r.lower + 1
         upper = r.upper if r.upper_inc else r.upper - 1
-        output.append(f"{lower}-{upper}" if lower != upper else str(lower))
+        output.append(f'{lower}-{upper}' if lower != upper else str(lower))
     return output
 
 
@@ -219,6 +218,7 @@ def string_to_ranges(value):
 #
 # Attribute resolution
 #
+
 
 def resolve_attr_path(obj, path):
     """

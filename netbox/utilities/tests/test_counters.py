@@ -11,6 +11,7 @@ class CountersTest(TestCase):
     """
     Validate the operation of the CounterCacheField (tracking counters).
     """
+
     @classmethod
     def setUpTestData(cls):
         # Create devices
@@ -100,7 +101,7 @@ class CountersTest(TestCase):
         }
 
         # Try POST with model-level permission
-        self.client.post(reverse("dcim:inventoryitem_bulk_delete"), data)
+        self.client.post(reverse('dcim:inventoryitem_bulk_delete'), data)
         device1.refresh_from_db()
         self.assertEqual(device1.inventory_item_count, 0)
 

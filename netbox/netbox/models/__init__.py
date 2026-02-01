@@ -33,7 +33,7 @@ class NetBoxFeatureSet(
     JournalingMixin,
     NotificationsMixin,
     TagsMixin,
-    EventRulesMixin
+    EventRulesMixin,
 ):
     class Meta:
         abstract = True
@@ -44,12 +44,14 @@ class NetBoxFeatureSet(
 
     def get_absolute_url(self):
         from utilities.views import get_viewname
+
         return reverse(get_viewname(self), args=[self.pk])
 
 
 #
 # Base model classes
 #
+
 
 class BaseModel(models.Model):
     """
@@ -77,22 +79,26 @@ class BaseModel(models.Model):
                 fk_value = getattr(self, field.fk_field, None)
 
                 if ct_value is None and fk_value is not None:
-                    raise ValidationError({
-                        field.ct_field: "This field cannot be null.",
-                    })
+                    raise ValidationError(
+                        {
+                            field.ct_field: 'This field cannot be null.',
+                        }
+                    )
                 if fk_value is None and ct_value is not None:
-                    raise ValidationError({
-                        field.fk_field: "This field cannot be null.",
-                    })
+                    raise ValidationError(
+                        {
+                            field.fk_field: 'This field cannot be null.',
+                        }
+                    )
 
                 if ct_value and fk_value:
                     klass = getattr(self, field.ct_field).model_class()
                     try:
                         obj = klass.objects.get(pk=fk_value)
                     except ObjectDoesNotExist:
-                        raise ValidationError({
-                            field.fk_field: f"Related object not found using the provided value: {fk_value}."
-                        })
+                        raise ValidationError(
+                            {field.fk_field: f'Related object not found using the provided value: {fk_value}.'}
+                        )
 
                     # update the GFK field value
                     setattr(self, field.name, obj)
@@ -121,19 +127,14 @@ class NetBoxModel(NetBoxFeatureSet, BaseModel):
 # NetBox internal base models
 #
 
+
 class PrimaryModel(OwnerMixin, NetBoxModel):
     """
     Primary models represent real objects within the infrastructure being modeled.
     """
-    description = models.CharField(
-        verbose_name=_('description'),
-        max_length=200,
-        blank=True
-    )
-    comments = models.TextField(
-        verbose_name=_('comments'),
-        blank=True
-    )
+
+    description = models.CharField(verbose_name=_('description'), max_length=200, blank=True)
+    comments = models.TextField(verbose_name=_('comments'), blank=True)
 
     class Meta:
         abstract = True
@@ -144,31 +145,14 @@ class NestedGroupModel(OwnerMixin, NetBoxModel, MPTTModel):
     Base model for objects which are used to form a hierarchy (regions, locations, etc.). These models nest
     recursively using MPTT. Within each parent, each child instance must have a unique name.
     """
+
     parent = TreeForeignKey(
-        to='self',
-        on_delete=models.CASCADE,
-        related_name='children',
-        blank=True,
-        null=True,
-        db_index=True
+        to='self', on_delete=models.CASCADE, related_name='children', blank=True, null=True, db_index=True
     )
-    name = models.CharField(
-        verbose_name=_('name'),
-        max_length=100
-    )
-    slug = models.SlugField(
-        verbose_name=_('slug'),
-        max_length=100
-    )
-    description = models.CharField(
-        verbose_name=_('description'),
-        max_length=200,
-        blank=True
-    )
-    comments = models.TextField(
-        verbose_name=_('comments'),
-        blank=True
-    )
+    name = models.CharField(verbose_name=_('name'), max_length=100)
+    slug = models.SlugField(verbose_name=_('slug'), max_length=100)
+    description = models.CharField(verbose_name=_('description'), max_length=200, blank=True)
+    comments = models.TextField(verbose_name=_('comments'), blank=True)
 
     objects = TreeManager()
 
@@ -186,9 +170,9 @@ class NestedGroupModel(OwnerMixin, NetBoxModel, MPTTModel):
 
         # An MPTT model cannot be its own parent
         if not self._state.adding and self.parent and self.parent in self.get_descendants(include_self=True):
-            raise ValidationError({
-                "parent": "Cannot assign self or child {type} as parent.".format(type=self._meta.verbose_name)
-            })
+            raise ValidationError(
+                {'parent': 'Cannot assign self or child {type} as parent.'.format(type=self._meta.verbose_name)}
+            )
 
 
 class OrganizationalModel(OwnerMixin, NetBoxModel):
@@ -200,25 +184,11 @@ class OrganizationalModel(OwnerMixin, NetBoxModel):
     - Unique slug (automatically derived from name)
     - Optional description
     """
-    name = models.CharField(
-        verbose_name=_('name'),
-        max_length=100,
-        unique=True
-    )
-    slug = models.SlugField(
-        verbose_name=_('slug'),
-        max_length=100,
-        unique=True
-    )
-    description = models.CharField(
-        verbose_name=_('description'),
-        max_length=200,
-        blank=True
-    )
-    comments = models.TextField(
-        verbose_name=_('comments'),
-        blank=True
-    )
+
+    name = models.CharField(verbose_name=_('name'), max_length=100, unique=True)
+    slug = models.SlugField(verbose_name=_('slug'), max_length=100, unique=True)
+    description = models.CharField(verbose_name=_('description'), max_length=200, blank=True)
+    comments = models.TextField(verbose_name=_('comments'), blank=True)
 
     class Meta:
         abstract = True
@@ -241,11 +211,8 @@ class AdminModel(
     """
     A model which represents an administrative resource.
     """
-    description = models.CharField(
-        verbose_name=_('description'),
-        max_length=200,
-        blank=True
-    )
+
+    description = models.CharField(verbose_name=_('description'), max_length=200, blank=True)
 
     class Meta:
         abstract = True

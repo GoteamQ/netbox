@@ -26,25 +26,29 @@ class BaseCableProfile:
         max_a_terminations = len(self.a_connectors)
         max_b_terminations = len(self.b_connectors)
         if a_terminations_count > max_a_terminations:
-            raise ValidationError({
-                'a_terminations': _(
-                    'A side of cable has {count} terminations but only {max} are permitted for profile {profile}'
-                ).format(
-                    count=a_terminations_count,
-                    profile=cable.get_profile_display(),
-                    max=max_a_terminations,
-                )
-            })
+            raise ValidationError(
+                {
+                    'a_terminations': _(
+                        'A side of cable has {count} terminations but only {max} are permitted for profile {profile}'
+                    ).format(
+                        count=a_terminations_count,
+                        profile=cable.get_profile_display(),
+                        max=max_a_terminations,
+                    )
+                }
+            )
         if b_terminations_count > max_b_terminations:
-            raise ValidationError({
-                'b_terminations': _(
-                    'B side of cable has {count} terminations but only {max} are permitted for profile {profile}'
-                ).format(
-                    count=b_terminations_count,
-                    profile=cable.get_profile_display(),
-                    max=max_b_terminations,
-                )
-            })
+            raise ValidationError(
+                {
+                    'b_terminations': _(
+                        'B side of cable has {count} terminations but only {max} are permitted for profile {profile}'
+                    ).format(
+                        count=b_terminations_count,
+                        profile=cable.get_profile_display(),
+                        max=max_b_terminations,
+                    )
+                }
+            )
 
     def get_mapped_position(self, side, connector, position):
         """
@@ -60,15 +64,11 @@ class BaseCableProfile:
         Given a terminating object, return the peer terminating object (if any) on the opposite end of the cable.
         """
         try:
-            connector, position = self.get_mapped_position(
-                termination.cable_end,
-                termination.cable_connector,
-                position
-            )
+            connector, position = self.get_mapped_position(termination.cable_end, termination.cable_connector, position)
         except TypeError:
             raise ValueError(
-                f"Could not map connector {termination.cable_connector} position {position} on side "
-                f"{termination.cable_end}"
+                f'Could not map connector {termination.cable_connector} position {position} on side '
+                f'{termination.cable_end}'
             )
         try:
             ct = CableTermination.objects.get(
@@ -92,6 +92,7 @@ class BaseCableProfile:
 #  - Trunk: Two or more connectors per side, with one or more positions per connector
 #  - Breakout: One or more connectors on the A side which map to a greater number of B side connectors
 #  - Shuffle: A cable with nonlinear position mappings between sides
+
 
 class Single1C1PCableProfile(BaseCableProfile):
     a_connectors = {

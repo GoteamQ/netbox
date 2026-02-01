@@ -12,16 +12,13 @@ from netbox.plugins.urls import plugin_patterns, plugin_api_patterns
 from netbox.views import HomeView, MediaView, StaticMediaFailureView, SearchView, htmx
 
 _patterns = [
-
     # Base views
     path('', HomeView.as_view(), name='home'),
     path('search/', SearchView.as_view(), name='search'),
-
     # Login/logout
     path('login/', LoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('oauth/', include('social_django.urls', namespace='social')),
-
     # Apps
     path('circuits/', include('circuits.urls')),
     path('core/', include('core.urls')),
@@ -34,13 +31,10 @@ _patterns = [
     path('vpn/', include('vpn.urls')),
     path('wireless/', include('wireless.urls')),
     path('gcp/', include('gcp.urls')),
-
     # Current user views
     path('user/', include('account.urls')),
-
     # HTMX views
     path('htmx/object-selector/', htmx.ObjectSelectorView.as_view(), name='htmx_object_selector'),
-
     # REST API
     path('api/', APIRootView.as_view(), name='api-root'),
     path('api/circuits/', include('circuits.api.urls')),
@@ -56,25 +50,19 @@ _patterns = [
     path('api/gcp/', include(('gcp.api.urls', 'gcp-api'))),
     path('api/status/', StatusView.as_view(), name='api-status'),
     path('api/authentication-check/', AuthenticationCheckView.as_view(), name='api-authentication-check'),
-
     # REST API schema
     path(
-        "api/schema/",
-        cache_page(timeout=86400, key_prefix=f"api_schema_{settings.RELEASE.version}")(
-            SpectacularAPIView.as_view()
-        ),
-        name="schema",
+        'api/schema/',
+        cache_page(timeout=86400, key_prefix=f'api_schema_{settings.RELEASE.version}')(SpectacularAPIView.as_view()),
+        name='schema',
     ),
     path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'), name='api_docs'),
     path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='api_redocs'),
-
     # GraphQL
     path('graphql/', NetBoxGraphQLView.as_view(schema=schema), name='graphql'),
-
     # Serving static media in Django to pipe it through LoginRequiredMiddleware
     path('media/<path:path>', MediaView.as_view(), name='media'),
     path('media-failure/', StaticMediaFailureView.as_view(), name='media_failure'),
-
     # Plugins
     path('plugins/', include((plugin_patterns, 'plugins'))),
     path('api/plugins/', include((plugin_api_patterns, 'plugins-api'))),
@@ -83,6 +71,7 @@ _patterns = [
 # django-debug-toolbar
 if settings.DEBUG:
     import debug_toolbar
+
     _patterns.append(path('__debug__/', include(debug_toolbar.urls)))
 
 # Prometheus metrics
@@ -90,9 +79,7 @@ if settings.METRICS_ENABLED:
     _patterns.append(path('', include('django_prometheus.urls')))
 
 # Prepend BASE_PATH
-urlpatterns = [
-    path(settings.BASE_PATH, include(_patterns))
-]
+urlpatterns = [path(settings.BASE_PATH, include(_patterns))]
 
 handler404 = 'netbox.views.errors.handler_404'
 handler500 = 'netbox.views.errors.handler_500'

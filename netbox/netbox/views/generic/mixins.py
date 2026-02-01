@@ -31,6 +31,7 @@ class ActionsMixin:
     Standard actions include: add, import, export, bulk_edit, and bulk_delete. Some views extend this default map
     with custom actions, such as bulk_sync.
     """
+
     actions = tuple()
 
     # TODO: Remove in NetBox v4.5
@@ -46,7 +47,7 @@ class ActionsMixin:
             try:
                 actions.append(LEGACY_ACTIONS[name])
             except KeyError:
-                raise ValueError(f"Unsupported legacy action: {name}")
+                raise ValueError(f'Unsupported legacy action: {name}')
 
         self.actions = actions
 
@@ -63,9 +64,7 @@ class ActionsMixin:
         # Resolve required permissions for each action
         permitted_actions = []
         for action in self.actions:
-            required_permissions = [
-                get_permission_for_model(model, perm) for perm in action.permissions_required
-            ]
+            required_permissions = [get_permission_for_model(model, perm) for perm in action.permissions_required]
             if not required_permissions or user.has_perms(required_permissions):
                 permitted_actions.append(action)
 
@@ -73,7 +72,6 @@ class ActionsMixin:
 
 
 class TableMixin:
-
     def get_table(self, data, request, bulk_actions=True):
         """
         Return the django-tables2 Table instance to be used for rendering the objects list.

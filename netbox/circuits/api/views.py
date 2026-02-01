@@ -11,6 +11,7 @@ class CircuitsRootView(APIRootView):
     """
     Circuits API root view
     """
+
     def get_view_name(self):
         return 'Circuits'
 
@@ -18,6 +19,7 @@ class CircuitsRootView(APIRootView):
 #
 # Providers
 #
+
 
 class ProviderViewSet(NetBoxModelViewSet):
     queryset = Provider.objects.all()
@@ -29,6 +31,7 @@ class ProviderViewSet(NetBoxModelViewSet):
 #  Circuit Types
 #
 
+
 class CircuitTypeViewSet(NetBoxModelViewSet):
     queryset = CircuitType.objects.all()
     serializer_class = serializers.CircuitTypeSerializer
@@ -38,6 +41,7 @@ class CircuitTypeViewSet(NetBoxModelViewSet):
 #
 # Circuits
 #
+
 
 class CircuitViewSet(NetBoxModelViewSet):
     queryset = Circuit.objects.all()
@@ -49,6 +53,7 @@ class CircuitViewSet(NetBoxModelViewSet):
 # Circuit Terminations
 #
 
+
 class CircuitTerminationViewSet(PassThroughPortMixin, NetBoxModelViewSet):
     queryset = CircuitTermination.objects.all()
     serializer_class = serializers.CircuitTerminationSerializer
@@ -58,6 +63,7 @@ class CircuitTerminationViewSet(PassThroughPortMixin, NetBoxModelViewSet):
 #
 # Circuit Groups
 #
+
 
 class CircuitGroupViewSet(NetBoxModelViewSet):
     queryset = CircuitGroup.objects.all()
@@ -69,6 +75,7 @@ class CircuitGroupViewSet(NetBoxModelViewSet):
 # Circuit Group Assignments
 #
 
+
 class CircuitGroupAssignmentViewSet(NetBoxModelViewSet):
     queryset = CircuitGroupAssignment.objects.all()
     serializer_class = serializers.CircuitGroupAssignmentSerializer
@@ -78,6 +85,7 @@ class CircuitGroupAssignmentViewSet(NetBoxModelViewSet):
 #
 # Provider accounts
 #
+
 
 class ProviderAccountViewSet(NetBoxModelViewSet):
     queryset = ProviderAccount.objects.all()
@@ -89,6 +97,7 @@ class ProviderAccountViewSet(NetBoxModelViewSet):
 # Provider networks
 #
 
+
 class ProviderNetworkViewSet(NetBoxModelViewSet):
     queryset = ProviderNetwork.objects.all()
     serializer_class = serializers.ProviderNetworkSerializer
@@ -98,6 +107,7 @@ class ProviderNetworkViewSet(NetBoxModelViewSet):
 #
 #  Virtual circuit types
 #
+
 
 class VirtualCircuitTypeViewSet(NetBoxModelViewSet):
     queryset = VirtualCircuitType.objects.all()
@@ -109,6 +119,7 @@ class VirtualCircuitTypeViewSet(NetBoxModelViewSet):
 # Virtual circuits
 #
 
+
 class VirtualCircuitViewSet(NetBoxModelViewSet):
     queryset = VirtualCircuit.objects.all()
     serializer_class = serializers.VirtualCircuitSerializer
@@ -118,6 +129,7 @@ class VirtualCircuitViewSet(NetBoxModelViewSet):
 #
 # Virtual circuit terminations
 #
+
 
 class VirtualCircuitTerminationViewSet(PassThroughPortMixin, NetBoxModelViewSet):
     queryset = VirtualCircuitTermination.objects.all()

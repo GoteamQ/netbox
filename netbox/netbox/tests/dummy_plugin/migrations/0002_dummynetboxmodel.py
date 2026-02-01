@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('dummy_plugin', '0001_initial'),
         ('extras', '0122_charfield_null_choices'),

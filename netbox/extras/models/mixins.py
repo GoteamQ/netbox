@@ -23,6 +23,7 @@ class CustomStoragesLoader(importlib.abc.Loader):
     """
     Custom loader for exec_module to use django-storages instead of the file system.
     """
+
     def __init__(self, filename):
         self.filename = filename
 
@@ -30,22 +31,19 @@ class CustomStoragesLoader(importlib.abc.Loader):
         return None  # Use default module creation
 
     def exec_module(self, module):
-        with storages["scripts"].open(self.filename, 'rb') as f:
+        with storages['scripts'].open(self.filename, 'rb') as f:
             code = f.read()
         exec(code, module.__dict__)
 
 
 class PythonModuleMixin:
-
     def get_jobs(self, name):
         """
         Returns a list of Jobs associated with this specific script or report module
         :param name: The class name of the script or report
         :return: List of Jobs associated with this
         """
-        return self.jobs.filter(
-            name=name
-        )
+        return self.jobs.filter(name=name)
 
     @property
     def path(self):
@@ -68,7 +66,7 @@ class PythonModuleMixin:
         """
         spec = importlib.util.spec_from_file_location(self.python_name, self.name)
         if spec is None:
-            raise ModuleNotFoundError(f"Could not find module: {self.python_name}")
+            raise ModuleNotFoundError(f'Could not find module: {self.python_name}')
         loader = CustomStoragesLoader(self.name)
         module = importlib.util.module_from_spec(spec)
         sys.modules[self.python_name] = module
@@ -81,10 +79,8 @@ class RenderTemplateMixin(models.Model):
     """
     Enables support for rendering templates.
     """
-    template_code = models.TextField(
-        verbose_name=_('template code'),
-        help_text=_('Jinja template code.')
-    )
+
+    template_code = models.TextField(verbose_name=_('template code'), help_text=_('Jinja template code.'))
     environment_params = models.JSONField(
         verbose_name=_('environment parameters'),
         blank=True,
@@ -92,7 +88,7 @@ class RenderTemplateMixin(models.Model):
         default=dict,
         help_text=_(
             'Any <a href="{url}">additional parameters</a> to pass when constructing the Jinja environment'
-        ).format(url='https://jinja.palletsprojects.com/en/stable/api/#jinja2.Environment')
+        ).format(url='https://jinja.palletsprojects.com/en/stable/api/#jinja2.Environment'),
     )
     mime_type = models.CharField(
         max_length=50,
@@ -101,29 +97,25 @@ class RenderTemplateMixin(models.Model):
         help_text=_('Defaults to <code>{default}</code>').format(default=DEFAULT_MIME_TYPE),
     )
     file_name = models.CharField(
-        max_length=200,
-        blank=True,
-        help_text=_('Filename to give to the rendered export file')
+        max_length=200, blank=True, help_text=_('Filename to give to the rendered export file')
     )
     file_extension = models.CharField(
         verbose_name=_('file extension'),
         max_length=15,
         blank=True,
-        help_text=_('Extension to append to the rendered filename')
+        help_text=_('Extension to append to the rendered filename'),
     )
     as_attachment = models.BooleanField(
-        verbose_name=_('as attachment'),
-        default=True,
-        help_text=_("Download file as attachment")
+        verbose_name=_('as attachment'), default=True, help_text=_('Download file as attachment')
     )
 
     class Meta:
         abstract = True
 
     def get_context(self, context=None, queryset=None):
-        raise NotImplementedError(_("{class_name} must implement a get_context() method.").format(
-            class_name=self.__class__
-        ))
+        raise NotImplementedError(
+            _('{class_name} must implement a get_context() method.').format(class_name=self.__class__)
+        )
 
     def get_environment_params(self):
         """
@@ -164,7 +156,7 @@ class RenderTemplateMixin(models.Model):
             elif context:
                 filename = filename_from_object(context)
             else:
-                filename = "output"
+                filename = 'output'
             response['Content-Disposition'] = f'attachment; filename="{filename}{extension}"'
 
         return response

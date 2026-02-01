@@ -25,60 +25,31 @@ def get_event_type_choices():
     """
     Compile a list of choices from all registered event types
     """
-    return [
-        (name, event.text)
-        for name, event in registry['event_types'].items()
-    ]
+    return [(name, event.text) for name, event in registry['event_types'].items()]
 
 
 class Notification(models.Model):
     """
     A notification message for a User relating to a specific object in NetBox.
     """
-    created = models.DateTimeField(
-        verbose_name=_('created'),
-        auto_now_add=True
-    )
-    read = models.DateTimeField(
-        verbose_name=_('read'),
-        null=True,
-        blank=True
-    )
-    user = models.ForeignKey(
-        to=settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name='notifications'
-    )
-    object_type = models.ForeignKey(
-        to='contenttypes.ContentType',
-        on_delete=models.PROTECT
-    )
+
+    created = models.DateTimeField(verbose_name=_('created'), auto_now_add=True)
+    read = models.DateTimeField(verbose_name=_('read'), null=True, blank=True)
+    user = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='notifications')
+    object_type = models.ForeignKey(to='contenttypes.ContentType', on_delete=models.PROTECT)
     object_id = models.PositiveBigIntegerField()
-    object = GenericForeignKey(
-        ct_field='object_type',
-        fk_field='object_id'
-    )
-    object_repr = models.CharField(
-        max_length=200,
-        editable=False
-    )
-    event_type = models.CharField(
-        verbose_name=_('event'),
-        max_length=50,
-        choices=get_event_type_choices
-    )
+    object = GenericForeignKey(ct_field='object_type', fk_field='object_id')
+    object_repr = models.CharField(max_length=200, editable=False)
+    event_type = models.CharField(verbose_name=_('event'), max_length=50, choices=get_event_type_choices)
 
     objects = NotificationQuerySet.as_manager()
 
     class Meta:
         ordering = ('-created', 'pk')
-        indexes = (
-            models.Index(fields=('object_type', 'object_id')),
-        )
+        indexes = (models.Index(fields=('object_type', 'object_id')),)
         constraints = (
             models.UniqueConstraint(
-                fields=('object_type', 'object_id', 'user'),
-                name='%(app_label)s_%(class)s_unique_per_object_and_user'
+                fields=('object_type', 'object_id', 'user'), name='%(app_label)s_%(class)s_unique_per_object_and_user'
             ),
         )
         verbose_name = _('notification')
@@ -96,7 +67,7 @@ class Notification(models.Model):
         # Validate the assigned object type
         if not has_feature(self.object_type, 'notifications'):
             raise ValidationError(
-                _("Objects of this type ({type}) do not support notifications.").format(type=self.object_type)
+                _('Objects of this type ({type}) do not support notifications.').format(type=self.object_type)
             )
 
     def save(self, *args, **kwargs):
@@ -122,33 +93,20 @@ class NotificationGroup(ChangeLoggedModel):
     """
     A collection of users and/or groups to be informed for certain notifications.
     """
-    name = models.CharField(
-        verbose_name=_('name'),
-        max_length=100,
-        unique=True
-    )
-    description = models.CharField(
-        verbose_name=_('description'),
-        max_length=200,
-        blank=True
-    )
+
+    name = models.CharField(verbose_name=_('name'), max_length=100, unique=True)
+    description = models.CharField(verbose_name=_('description'), max_length=200, blank=True)
     groups = models.ManyToManyField(
-        to='users.Group',
-        verbose_name=_('groups'),
-        blank=True,
-        related_name='notification_groups'
+        to='users.Group', verbose_name=_('groups'), blank=True, related_name='notification_groups'
     )
     users = models.ManyToManyField(
-        to='users.User',
-        verbose_name=_('users'),
-        blank=True,
-        related_name='notification_groups'
+        to='users.User', verbose_name=_('users'), blank=True, related_name='notification_groups'
     )
     event_rules = GenericRelation(
         to='extras.EventRule',
         content_type_field='action_object_type',
         object_id_field='action_object_id',
-        related_query_name='+'
+        related_query_name='+',
     )
 
     objects = RestrictedQuerySet.as_manager()
@@ -169,9 +127,7 @@ class NotificationGroup(ChangeLoggedModel):
         """
         Return all Users who belong to this notification group.
         """
-        return self.users.union(
-            User.objects.filter(groups__in=self.groups.all())
-        ).order_by('username')
+        return self.users.union(User.objects.filter(groups__in=self.groups.all())).order_by('username')
 
     def notify(self, object_type, object_id, **kwargs):
         """
@@ -179,11 +135,9 @@ class NotificationGroup(ChangeLoggedModel):
         """
         for user in self.members:
             Notification.objects.update_or_create(
-                object_type=object_type,
-                object_id=object_id,
-                user=user,
-                defaults=kwargs
+                object_type=object_type, object_id=object_id, user=user, defaults=kwargs
             )
+
     notify.alters_data = True
 
 
@@ -191,36 +145,21 @@ class Subscription(models.Model):
     """
     A User's subscription to a particular object, to be notified of changes.
     """
-    created = models.DateTimeField(
-        verbose_name=_('created'),
-        auto_now_add=True
-    )
-    user = models.ForeignKey(
-        to=settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name='subscriptions'
-    )
-    object_type = models.ForeignKey(
-        to='contenttypes.ContentType',
-        on_delete=models.PROTECT
-    )
+
+    created = models.DateTimeField(verbose_name=_('created'), auto_now_add=True)
+    user = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='subscriptions')
+    object_type = models.ForeignKey(to='contenttypes.ContentType', on_delete=models.PROTECT)
     object_id = models.PositiveBigIntegerField()
-    object = GenericForeignKey(
-        ct_field='object_type',
-        fk_field='object_id'
-    )
+    object = GenericForeignKey(ct_field='object_type', fk_field='object_id')
 
     objects = RestrictedQuerySet.as_manager()
 
     class Meta:
         ordering = ('-created', 'user')
-        indexes = (
-            models.Index(fields=('object_type', 'object_id')),
-        )
+        indexes = (models.Index(fields=('object_type', 'object_id')),)
         constraints = (
             models.UniqueConstraint(
-                fields=('object_type', 'object_id', 'user'),
-                name='%(app_label)s_%(class)s_unique_per_object_and_user'
+                fields=('object_type', 'object_id', 'user'), name='%(app_label)s_%(class)s_unique_per_object_and_user'
             ),
         )
         verbose_name = _('subscription')
@@ -240,5 +179,5 @@ class Subscription(models.Model):
         # Validate the assigned object type
         if not has_feature(self.object_type, 'notifications'):
             raise ValidationError(
-                _("Objects of this type ({type}) do not support notifications.").format(type=self.object_type)
+                _('Objects of this type ({type}) do not support notifications.').format(type=self.object_type)
             )

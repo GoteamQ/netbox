@@ -26,69 +26,75 @@ __all__ = (
 # Device components
 #
 
+
 class DeviceBulkAddComponentForm(CustomFieldsMixin, ComponentCreateForm):
-    pk = forms.ModelMultipleChoiceField(
-        queryset=Device.objects.all(),
-        widget=forms.MultipleHiddenInput()
-    )
-    description = forms.CharField(
-        label=_('Description'),
-        max_length=100,
-        required=False
-    )
-    tags = DynamicModelMultipleChoiceField(
-        label=_('Tags'),
-        queryset=Tag.objects.all(),
-        required=False
-    )
+    pk = forms.ModelMultipleChoiceField(queryset=Device.objects.all(), widget=forms.MultipleHiddenInput())
+    description = forms.CharField(label=_('Description'), max_length=100, required=False)
+    tags = DynamicModelMultipleChoiceField(label=_('Tags'), queryset=Tag.objects.all(), required=False)
     replication_fields = ('name', 'label')
 
 
 class ConsolePortBulkCreateForm(
-    form_from_model(ConsolePort, ['type', 'speed', 'mark_connected']),
-    DeviceBulkAddComponentForm
+    form_from_model(ConsolePort, ['type', 'speed', 'mark_connected']), DeviceBulkAddComponentForm
 ):
     model = ConsolePort
     field_order = ('name', 'label', 'type', 'mark_connected', 'description', 'tags')
 
 
 class ConsoleServerPortBulkCreateForm(
-    form_from_model(ConsoleServerPort, ['type', 'speed', 'mark_connected']),
-    DeviceBulkAddComponentForm
+    form_from_model(ConsoleServerPort, ['type', 'speed', 'mark_connected']), DeviceBulkAddComponentForm
 ):
     model = ConsoleServerPort
     field_order = ('name', 'label', 'type', 'speed', 'description', 'tags')
 
 
 class PowerPortBulkCreateForm(
-    form_from_model(PowerPort, ['type', 'maximum_draw', 'allocated_draw', 'mark_connected']),
-    DeviceBulkAddComponentForm
+    form_from_model(PowerPort, ['type', 'maximum_draw', 'allocated_draw', 'mark_connected']), DeviceBulkAddComponentForm
 ):
     model = PowerPort
     field_order = ('name', 'label', 'type', 'maximum_draw', 'allocated_draw', 'description', 'tags')
 
 
 class PowerOutletBulkCreateForm(
-    form_from_model(PowerOutlet, ['type', 'status', 'color', 'feed_leg', 'mark_connected']),
-    DeviceBulkAddComponentForm
+    form_from_model(PowerOutlet, ['type', 'status', 'color', 'feed_leg', 'mark_connected']), DeviceBulkAddComponentForm
 ):
     model = PowerOutlet
     field_order = (
-        'name', 'label', 'type', 'status', 'color', 'feed_leg', 'mark_connected',
-        'description', 'tags',
+        'name',
+        'label',
+        'type',
+        'status',
+        'color',
+        'feed_leg',
+        'mark_connected',
+        'description',
+        'tags',
     )
 
 
 class InterfaceBulkCreateForm(
-    form_from_model(Interface, [
-        'type', 'enabled', 'speed', 'duplex', 'mtu', 'mgmt_only', 'mark_connected', 'poe_mode', 'poe_type', 'rf_role'
-    ]),
-    DeviceBulkAddComponentForm
+    form_from_model(
+        Interface,
+        ['type', 'enabled', 'speed', 'duplex', 'mtu', 'mgmt_only', 'mark_connected', 'poe_mode', 'poe_type', 'rf_role'],
+    ),
+    DeviceBulkAddComponentForm,
 ):
     model = Interface
     field_order = (
-        'name', 'label', 'type', 'enabled', 'speed', 'duplex', 'mtu', 'mgmt_only', 'poe_mode',
-        'poe_type', 'mark_connected', 'rf_role', 'description', 'tags',
+        'name',
+        'label',
+        'type',
+        'enabled',
+        'speed',
+        'duplex',
+        'mtu',
+        'mgmt_only',
+        'poe_mode',
+        'poe_type',
+        'mark_connected',
+        'rf_role',
+        'description',
+        'tags',
     )
 
 
@@ -100,8 +106,7 @@ class InterfaceBulkCreateForm(
 
 
 class RearPortBulkCreateForm(
-    form_from_model(RearPort, ['type', 'color', 'positions', 'mark_connected']),
-    DeviceBulkAddComponentForm
+    form_from_model(RearPort, ['type', 'color', 'positions', 'mark_connected']), DeviceBulkAddComponentForm
 ):
     model = RearPort
     field_order = ('name', 'label', 'type', 'positions', 'mark_connected', 'description', 'tags')
@@ -114,7 +119,7 @@ class ModuleBayBulkCreateForm(DeviceBulkAddComponentForm):
     position = ExpandableNameField(
         label=_('Position'),
         required=False,
-        help_text=_('Alphanumeric ranges are supported. (Must match the number of names being created.)')
+        help_text=_('Alphanumeric ranges are supported. (Must match the number of names being created.)'),
     )
 
 
@@ -125,10 +130,19 @@ class DeviceBayBulkCreateForm(DeviceBulkAddComponentForm):
 
 class InventoryItemBulkCreateForm(
     form_from_model(InventoryItem, ['status', 'role', 'manufacturer', 'part_id', 'serial', 'asset_tag', 'discovered']),
-    DeviceBulkAddComponentForm
+    DeviceBulkAddComponentForm,
 ):
     model = InventoryItem
     field_order = (
-        'name', 'label', 'status', 'role', 'manufacturer', 'part_id', 'serial', 'asset_tag', 'discovered',
-        'description', 'tags',
+        'name',
+        'label',
+        'status',
+        'role',
+        'manufacturer',
+        'part_id',
+        'serial',
+        'asset_tag',
+        'discovered',
+        'description',
+        'tags',
     )

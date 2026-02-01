@@ -6,27 +6,18 @@ from django.db.models import Q
 from dcim.models import CablePath, ConsolePort, ConsoleServerPort, Interface, PowerFeed, PowerOutlet, PowerPort
 from dcim.signals import create_cablepaths
 
-ENDPOINT_MODELS = (
-    ConsolePort,
-    ConsoleServerPort,
-    Interface,
-    PowerFeed,
-    PowerOutlet,
-    PowerPort
-)
+ENDPOINT_MODELS = (ConsolePort, ConsoleServerPort, Interface, PowerFeed, PowerOutlet, PowerPort)
 
 
 class Command(BaseCommand):
-    help = "Generate any missing cable paths among all cable termination objects in NetBox"
+    help = 'Generate any missing cable paths among all cable termination objects in NetBox'
 
     def add_arguments(self, parser):
         parser.add_argument(
-            "--force", action='store_true', dest='force',
-            help="Force recalculation of all existing cable paths"
+            '--force', action='store_true', dest='force', help='Force recalculation of all existing cable paths'
         )
         parser.add_argument(
-            "--no-input", action='store_true', dest='no_input',
-            help="Do not prompt user for any input/confirmation"
+            '--no-input', action='store_true', dest='no_input', help='Do not prompt user for any input/confirmation'
         )
 
     def draw_progress_bar(self, percentage):
@@ -34,10 +25,9 @@ class Command(BaseCommand):
         Draw a simple progress bar 20 increments wide illustrating the specified percentage.
         """
         bar_size = int(percentage / 5)
-        self.stdout.write(f"\r  [{'#' * bar_size}{' ' * (20 - bar_size)}] {int(percentage)}%", ending='')
+        self.stdout.write(f'\r  [{"#" * bar_size}{" " * (20 - bar_size)}] {int(percentage)}%', ending='')
 
     def handle(self, *model_names, **options):
-
         # If --force was passed, first delete all existing CablePaths
         if options['force']:
             cable_paths = CablePath.objects.all()
@@ -45,17 +35,17 @@ class Command(BaseCommand):
 
             # Prompt the user to confirm recalculation of all paths
             if paths_count and not options['no_input']:
-                self.stdout.write(self.style.ERROR("WARNING: Forcing recalculation of all cable paths."))
+                self.stdout.write(self.style.ERROR('WARNING: Forcing recalculation of all cable paths.'))
                 self.stdout.write(
-                    f"This will delete and recalculate all {paths_count} existing cable paths. Are you sure?"
+                    f'This will delete and recalculate all {paths_count} existing cable paths. Are you sure?'
                 )
-                confirmation = input("Type yes to confirm: ")
+                confirmation = input('Type yes to confirm: ')
                 if confirmation != 'yes':
-                    self.stdout.write(self.style.SUCCESS("Aborting"))
+                    self.stdout.write(self.style.SUCCESS('Aborting'))
                     return
 
             # Delete all existing CablePath instances
-            self.stdout.write(f"Deleting {paths_count} existing cable paths...")
+            self.stdout.write(f'Deleting {paths_count} existing cable paths...')
             deleted_count, _ = CablePath.objects.all().delete()
             self.stdout.write((self.style.SUCCESS(f'  Deleted {deleted_count} paths')))
 

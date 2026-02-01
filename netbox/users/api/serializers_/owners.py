@@ -25,18 +25,10 @@ class OwnerSerializer(ValidatedModelSerializer):
         allow_null=True,
     )
     user_groups = SerializedPKRelatedField(
-        queryset=Group.objects.all(),
-        serializer=GroupSerializer,
-        nested=True,
-        required=False,
-        many=True
+        queryset=Group.objects.all(), serializer=GroupSerializer, nested=True, required=False, many=True
     )
     users = SerializedPKRelatedField(
-        queryset=User.objects.all(),
-        serializer=UserSerializer,
-        nested=True,
-        required=False,
-        many=True
+        queryset=User.objects.all(), serializer=UserSerializer, nested=True, required=False, many=True
     )
 
     class Meta:

@@ -55,14 +55,12 @@ class NestedLocationSerializer(WritableNestedSerializer):
 
 
 class NestedDeviceRoleSerializer(WritableNestedSerializer):
-
     class Meta:
         model = models.DeviceRole
         fields = ['id', 'url', 'display_url', 'display', 'name']
 
 
 class NestedDeviceSerializer(WritableNestedSerializer):
-
     class Meta:
         model = models.Device
         fields = ['id', 'url', 'display_url', 'display', 'name']
@@ -78,7 +76,6 @@ class NestedInterfaceSerializer(WritableNestedSerializer):
 
 
 class NestedInterfaceTemplateSerializer(WritableNestedSerializer):
-
     class Meta:
         model = models.InterfaceTemplate
         fields = ['id', 'url', 'display', 'name']
@@ -93,21 +90,18 @@ class NestedDeviceBaySerializer(WritableNestedSerializer):
 
 
 class ModuleBayNestedModuleSerializer(WritableNestedSerializer):
-
     class Meta:
         model = models.Module
         fields = ['id', 'url', 'display_url', 'display', 'serial']
 
 
 class NestedModuleBaySerializer(WritableNestedSerializer):
-
     class Meta:
         model = models.ModuleBay
         fields = ['id', 'url', 'display_url', 'display', 'name']
 
 
 class NestedPlatformSerializer(WritableNestedSerializer):
-
     class Meta:
         model = models.Platform
         fields = ['id', 'url', 'display_url', 'display', 'name']

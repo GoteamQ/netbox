@@ -12,7 +12,6 @@ CACHES['default'].update({'KEY_PREFIX': 'TEST-'})
 
 
 class ConfigTestCase(TestCase):
-
     @override_settings(CACHES=CACHES)
     def test_config_init_empty(self):
         cache.clear()

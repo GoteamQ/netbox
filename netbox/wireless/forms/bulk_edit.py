@@ -22,59 +22,26 @@ __all__ = (
 
 
 class WirelessLANGroupBulkEditForm(NestedGroupModelBulkEditForm):
-    parent = DynamicModelChoiceField(
-        label=_('Parent'),
-        queryset=WirelessLANGroup.objects.all(),
-        required=False
-    )
+    parent = DynamicModelChoiceField(label=_('Parent'), queryset=WirelessLANGroup.objects.all(), required=False)
 
     model = WirelessLANGroup
-    fieldsets = (
-        FieldSet('parent', 'description'),
-    )
+    fieldsets = (FieldSet('parent', 'description'),)
     nullable_fields = ('parent', 'description', 'comments')
 
 
 class WirelessLANBulkEditForm(ScopedBulkEditForm, PrimaryModelBulkEditForm):
-    status = forms.ChoiceField(
-        label=_('Status'),
-        choices=add_blank_choice(WirelessLANStatusChoices),
-        required=False
-    )
-    group = DynamicModelChoiceField(
-        label=_('Group'),
-        queryset=WirelessLANGroup.objects.all(),
-        required=False
-    )
-    vlan = DynamicModelChoiceField(
-        queryset=VLAN.objects.all(),
-        required=False,
-        label=_('VLAN')
-    )
-    ssid = forms.CharField(
-        max_length=SSID_MAX_LENGTH,
-        required=False,
-        label=_('SSID')
-    )
-    tenant = DynamicModelChoiceField(
-        label=_('Tenant'),
-        queryset=Tenant.objects.all(),
-        required=False
-    )
+    status = forms.ChoiceField(label=_('Status'), choices=add_blank_choice(WirelessLANStatusChoices), required=False)
+    group = DynamicModelChoiceField(label=_('Group'), queryset=WirelessLANGroup.objects.all(), required=False)
+    vlan = DynamicModelChoiceField(queryset=VLAN.objects.all(), required=False, label=_('VLAN'))
+    ssid = forms.CharField(max_length=SSID_MAX_LENGTH, required=False, label=_('SSID'))
+    tenant = DynamicModelChoiceField(label=_('Tenant'), queryset=Tenant.objects.all(), required=False)
     auth_type = forms.ChoiceField(
-        label=_('Authentication type'),
-        choices=add_blank_choice(WirelessAuthTypeChoices),
-        required=False
+        label=_('Authentication type'), choices=add_blank_choice(WirelessAuthTypeChoices), required=False
     )
     auth_cipher = forms.ChoiceField(
-        label=_('Authentication cipher'),
-        choices=add_blank_choice(WirelessAuthCipherChoices),
-        required=False
+        label=_('Authentication cipher'), choices=add_blank_choice(WirelessAuthCipherChoices), required=False
     )
-    auth_psk = forms.CharField(
-        required=False,
-        label=_('Pre-shared key')
-    )
+    auth_psk = forms.CharField(required=False, label=_('Pre-shared key'))
 
     model = WirelessLAN
     fieldsets = (
@@ -83,50 +50,33 @@ class WirelessLANBulkEditForm(ScopedBulkEditForm, PrimaryModelBulkEditForm):
         FieldSet('auth_type', 'auth_cipher', 'auth_psk', name=_('Authentication')),
     )
     nullable_fields = (
-        'ssid', 'group', 'vlan', 'tenant', 'description', 'auth_type', 'auth_cipher', 'auth_psk', 'scope', 'comments',
+        'ssid',
+        'group',
+        'vlan',
+        'tenant',
+        'description',
+        'auth_type',
+        'auth_cipher',
+        'auth_psk',
+        'scope',
+        'comments',
     )
 
 
 class WirelessLinkBulkEditForm(PrimaryModelBulkEditForm):
-    ssid = forms.CharField(
-        max_length=SSID_MAX_LENGTH,
-        required=False,
-        label=_('SSID')
-    )
-    status = forms.ChoiceField(
-        label=_('Status'),
-        choices=add_blank_choice(LinkStatusChoices),
-        required=False
-    )
-    tenant = DynamicModelChoiceField(
-        label=_('Tenant'),
-        queryset=Tenant.objects.all(),
-        required=False
-    )
+    ssid = forms.CharField(max_length=SSID_MAX_LENGTH, required=False, label=_('SSID'))
+    status = forms.ChoiceField(label=_('Status'), choices=add_blank_choice(LinkStatusChoices), required=False)
+    tenant = DynamicModelChoiceField(label=_('Tenant'), queryset=Tenant.objects.all(), required=False)
     auth_type = forms.ChoiceField(
-        label=_('Authentication type'),
-        choices=add_blank_choice(WirelessAuthTypeChoices),
-        required=False
+        label=_('Authentication type'), choices=add_blank_choice(WirelessAuthTypeChoices), required=False
     )
     auth_cipher = forms.ChoiceField(
-        label=_('Authentication cipher'),
-        choices=add_blank_choice(WirelessAuthCipherChoices),
-        required=False
+        label=_('Authentication cipher'), choices=add_blank_choice(WirelessAuthCipherChoices), required=False
     )
-    auth_psk = forms.CharField(
-        required=False,
-        label=_('Pre-shared key')
-    )
-    distance = forms.DecimalField(
-        label=_('Distance'),
-        min_value=0,
-        required=False
-    )
+    auth_psk = forms.CharField(required=False, label=_('Pre-shared key'))
+    distance = forms.DecimalField(label=_('Distance'), min_value=0, required=False)
     distance_unit = forms.ChoiceField(
-        label=_('Distance unit'),
-        choices=add_blank_choice(DistanceUnitChoices),
-        required=False,
-        initial=''
+        label=_('Distance unit'), choices=add_blank_choice(DistanceUnitChoices), required=False, initial=''
     )
 
     model = WirelessLink
@@ -136,5 +86,12 @@ class WirelessLinkBulkEditForm(PrimaryModelBulkEditForm):
         FieldSet('distance', 'distance_unit', name=_('Attributes')),
     )
     nullable_fields = (
-        'ssid', 'tenant', 'description', 'auth_type', 'auth_cipher', 'auth_psk', 'distance', 'comments',
+        'ssid',
+        'tenant',
+        'description',
+        'auth_type',
+        'auth_cipher',
+        'auth_psk',
+        'distance',
+        'comments',
     )

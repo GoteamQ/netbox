@@ -40,10 +40,12 @@ from utilities.views import register_model_view
 # Login/logout
 #
 
+
 class LoginView(View):
     """
     Perform user authentication via the web UI.
     """
+
     template_name = 'login.html'
 
     @method_decorator(sensitive_post_parameters('password'))
@@ -96,29 +98,33 @@ class LoginView(View):
             return self.redirect_to_next(request, logger)
         login_form_hidden = settings.LOGIN_FORM_HIDDEN
 
-        return render(request, self.template_name, {
-            'form': form,
-            'auth_backends': self.get_auth_backends(request),
-            'login_form_hidden': login_form_hidden,
-        })
+        return render(
+            request,
+            self.template_name,
+            {
+                'form': form,
+                'auth_backends': self.get_auth_backends(request),
+                'login_form_hidden': login_form_hidden,
+            },
+        )
 
     def post(self, request):
         logger = logging.getLogger('netbox.auth.login')
         form = AuthenticationForm(request, data=request.POST)
 
         if form.is_valid():
-            logger.debug("Login form validation was successful")
+            logger.debug('Login form validation was successful')
 
             # If maintenance mode is enabled, assume the database is read-only, and disable updating the user's
             # last_login time upon authentication.
             if get_config().MAINTENANCE_MODE:
-                logger.warning("Maintenance mode enabled: disabling update of most recent login time")
+                logger.warning('Maintenance mode enabled: disabling update of most recent login time')
                 user_logged_in.disconnect(update_last_login, dispatch_uid='update_last_login')
 
             # Authenticate user
             auth_login(request, form.get_user())
-            logger.info(f"User {request.user} successfully authenticated")
-            messages.success(request, _("Logged in as {user}.").format(user=request.user))
+            logger.info(f'User {request.user} successfully authenticated')
+            messages.success(request, _('Logged in as {user}.').format(user=request.user))
 
             # Ensure the user has a UserConfig defined. (This should normally be handled by
             # create_userconfig() on user creation.)
@@ -141,19 +147,23 @@ class LoginView(View):
 
         else:
             username = form['username'].value()
-            logger.debug(f"Login form validation failed for username: {remove_linebreaks(username)}")
+            logger.debug(f'Login form validation failed for username: {remove_linebreaks(username)}')
 
-        return render(request, self.template_name, {
-            'form': form,
-            'auth_backends': self.get_auth_backends(request),
-        })
+        return render(
+            request,
+            self.template_name,
+            {
+                'form': form,
+                'auth_backends': self.get_auth_backends(request),
+            },
+        )
 
     def redirect_to_next(self, request, logger):
-        data = request.POST if request.method == "POST" else request.GET
+        data = request.POST if request.method == 'POST' else request.GET
         redirect_url = data.get('next', settings.LOGIN_REDIRECT_URL)
 
         if redirect_url and safe_for_redirect(redirect_url):
-            logger.debug(f"Redirecting user to {remove_linebreaks(redirect_url)}")
+            logger.debug(f'Redirecting user to {remove_linebreaks(redirect_url)}')
         else:
             if redirect_url:
                 logger.warning(f"Ignoring unsafe 'next' URL passed to login form: {remove_linebreaks(redirect_url)}")
@@ -173,8 +183,8 @@ class LogoutView(View):
         # Log out the user
         username = request.user
         auth_logout(request)
-        logger.info(f"User {username} has logged out")
-        messages.info(request, _("You have logged out."))
+        logger.info(f'User {username} has logged out')
+        messages.info(request, _('You have logged out.'))
 
         # Delete session key & language cookies (if set) upon logout
         response = HttpResponseRedirect(resolve_url(settings.LOGOUT_REDIRECT_URL))
@@ -188,21 +198,25 @@ class LogoutView(View):
 # User profiles
 #
 
+
 class ProfileView(LoginRequiredMixin, View):
     template_name = 'account/profile.html'
 
     def get(self, request):
-
         # Compile changelog table
         changelog = ObjectChange.objects.valid_models().restrict(request.user, 'view').filter(user=request.user)[:20]
         changelog_table = ObjectChangeTable(changelog)
         changelog_table.orderable = False
         changelog_table.configure(request)
 
-        return render(request, self.template_name, {
-            'changelog_table': changelog_table,
-            'active_tab': 'profile',
-        })
+        return render(
+            request,
+            self.template_name,
+            {
+                'changelog_table': changelog_table,
+                'active_tab': 'profile',
+            },
+        )
 
 
 class UserConfigView(LoginRequiredMixin, View):
@@ -212,10 +226,14 @@ class UserConfigView(LoginRequiredMixin, View):
         userconfig = request.user.config
         form = forms.UserConfigForm(instance=userconfig)
 
-        return render(request, self.template_name, {
-            'form': form,
-            'active_tab': 'preferences',
-        })
+        return render(
+            request,
+            self.template_name,
+            {
+                'form': form,
+                'active_tab': 'preferences',
+            },
+        )
 
     def post(self, request):
         userconfig = request.user.config
@@ -224,7 +242,7 @@ class UserConfigView(LoginRequiredMixin, View):
         if form.is_valid():
             form.save()
 
-            messages.success(request, _("Your preferences have been updated."))
+            messages.success(request, _('Your preferences have been updated.'))
             response = redirect('account:preferences')
 
             # Set/clear language cookie
@@ -240,10 +258,14 @@ class UserConfigView(LoginRequiredMixin, View):
 
             return response
 
-        return render(request, self.template_name, {
-            'form': form,
-            'active_tab': 'preferences',
-        })
+        return render(
+            request,
+            self.template_name,
+            {
+                'form': form,
+                'active_tab': 'preferences',
+            },
+        )
 
 
 class ChangePasswordView(LoginRequiredMixin, View):
@@ -252,33 +274,42 @@ class ChangePasswordView(LoginRequiredMixin, View):
     def get(self, request):
         # LDAP users cannot change their password here
         if getattr(request.user, 'ldap_username', None):
-            messages.warning(request, _("LDAP-authenticated user credentials cannot be changed within NetBox."))
+            messages.warning(request, _('LDAP-authenticated user credentials cannot be changed within NetBox.'))
             return redirect('account:profile')
 
         form = PasswordChangeForm(user=request.user)
 
-        return render(request, self.template_name, {
-            'form': form,
-            'active_tab': 'password',
-        })
+        return render(
+            request,
+            self.template_name,
+            {
+                'form': form,
+                'active_tab': 'password',
+            },
+        )
 
     def post(self, request):
         form = PasswordChangeForm(user=request.user, data=request.POST)
         if form.is_valid():
             form.save()
             update_session_auth_hash(request, form.user)
-            messages.success(request, _("Your password has been changed successfully."))
+            messages.success(request, _('Your password has been changed successfully.'))
             return redirect('account:profile')
 
-        return render(request, self.template_name, {
-            'form': form,
-            'active_tab': 'change_password',
-        })
+        return render(
+            request,
+            self.template_name,
+            {
+                'form': form,
+                'active_tab': 'change_password',
+            },
+        )
 
 
 #
 # Bookmarks
 #
+
 
 class BookmarkListView(LoginRequiredMixin, generic.ObjectListView):
     table = BookmarkTable
@@ -296,6 +327,7 @@ class BookmarkListView(LoginRequiredMixin, generic.ObjectListView):
 #
 # Notifications & subscriptions
 #
+
 
 class NotificationListView(LoginRequiredMixin, generic.ObjectListView):
     table = NotificationTable
@@ -327,19 +359,23 @@ class SubscriptionListView(LoginRequiredMixin, generic.ObjectListView):
 # User views for token management
 #
 
-class UserTokenListView(LoginRequiredMixin, View):
 
+class UserTokenListView(LoginRequiredMixin, View):
     def get(self, request):
         tokens = UserToken.objects.filter(user=request.user)
         table = TokenTable(tokens)
         table.columns.hide('user')
         table.configure(request)
 
-        return render(request, 'account/token_list.html', {
-            'tokens': tokens,
-            'active_tab': 'api-tokens',
-            'table': table,
-        })
+        return render(
+            request,
+            'account/token_list.html',
+            {
+                'tokens': tokens,
+                'active_tab': 'api-tokens',
+                'table': table,
+            },
+        )
 
 
 @register_model_view(UserToken)
@@ -356,10 +392,14 @@ class UserTokenView(LoginRequiredMixin, View):
     def get(self, request, pk):
         token = get_object_or_404(UserToken.objects.filter(user=request.user), pk=pk)
 
-        return render(request, 'account/token.html', {
-            'object': token,
-            'layout': self.layout,
-        })
+        return render(
+            request,
+            'account/token.html',
+            {
+                'object': token,
+                'layout': self.layout,
+            },
+        )
 
 
 @register_model_view(UserToken, 'edit')
