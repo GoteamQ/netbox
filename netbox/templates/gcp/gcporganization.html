@@ -41,11 +41,11 @@
                     </tr>
                     <tr>
                         <th scope="row">Active</th>
-                        <td>{% if object.is_active %}<span class="badge bg-success">Active</span>{% else %}<span class="badge bg-secondary">Inactive</span>{% endif %}</td>
+                        <td>{% if object.is_active %}Active{% else %}Inactive{% endif %}</td>
                     </tr>
                     <tr>
                         <th scope="row">Auto Discovery</th>
-                        <td>{% if object.auto_discover %}<span class="badge bg-success">Enabled</span>{% else %}<span class="badge bg-secondary">Disabled</span>{% endif %}</td>
+                        <td>{% if object.auto_discover %}Enabled{% else %}Disabled{% endif %}</td>
                     </tr>
                 </table>
             </div>
@@ -59,19 +59,7 @@
                     <tr>
                         <th scope="row">Status</th>
                         <td>
-                            {% if object.discovery_status == 'completed' %}
-                                <span class="badge bg-success">Completed</span>
-                            {% elif object.discovery_status == 'running' %}
-                                <span class="badge bg-primary">Running</span>
-                               {% elif object.discovery_status == 'canceling' %}
-                                   <span class="badge bg-warning">Canceling</span>
-                               {% elif object.discovery_status == 'canceled' %}
-                                   <span class="badge bg-secondary">Canceled</span>
-                            {% elif object.discovery_status == 'failed' %}
-                                <span class="badge bg-danger">Failed</span>
-                            {% else %}
-                                <span class="badge bg-secondary">Pending</span>
-                            {% endif %}
+                            {{ object.get_discovery_status_display }}
                         </td>
                     </tr>
                     <tr>
@@ -89,18 +77,20 @@
                     </tr>
                     {% endif %}
                 </table>
-                <form method="post" action="{% url 'gcp:gcporganization_discover' pk=object.pk %}">
-                    {% csrf_token %}
-                    <button type="submit" class="btn btn-primary" {% if object.discovery_status == 'running' %}disabled{% endif %}>
-                        <i class="mdi mdi-magnify"></i> Run Discovery
-                    </button>
-                </form>
-                    <form method="post" action="{% url 'gcp:gcporganization_cancel' pk=object.pk %}" class="d-inline ms-2">
+                <div class="mt-2">
+                    <form method="post" action="{% url 'gcp:gcporganization_discover' pk=object.pk %}" style="display: inline-block;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary" {% if object.discovery_status == 'running' %}disabled{% endif %}>
+                            <i class="mdi mdi-magnify"></i> Run Discovery
+                        </button>
+                    </form>
+                    <form method="post" action="{% url 'gcp:gcporganization_cancel' pk=object.pk %}" style="display: inline-block;" class="ms-2">
                         {% csrf_token %}
                         <button type="submit" class="btn btn-outline-danger" {% if object.discovery_status != 'running' %}disabled{% endif %}>
                             <i class="mdi mdi-cancel"></i> Cancel
                         </button>
                     </form>
+                </div>
             </div>
         </div>
     </div>
@@ -113,27 +103,27 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-3">
-                        <strong>Compute:</strong> {% if object.discover_compute %}<span class="badge bg-success">Yes</span>{% else %}<span class="badge bg-secondary">No</span>{% endif %}
+                        <strong>Compute:</strong> {% if object.discover_compute %}Yes{% else %}No{% endif %}
                     </div>
                     <div class="col-md-3">
-                        <strong>Networking:</strong> {% if object.discover_networking %}<span class="badge bg-success">Yes</span>{% else %}<span class="badge bg-secondary">No</span>{% endif %}
+                        <strong>Networking:</strong> {% if object.discover_networking %}Yes{% else %}No{% endif %}
                     </div>
                     <div class="col-md-3">
-                        <strong>Databases:</strong> {% if object.discover_databases %}<span class="badge bg-success">Yes</span>{% else %}<span class="badge bg-secondary">No</span>{% endif %}
+                        <strong>Databases:</strong> {% if object.discover_databases %}Yes{% else %}No{% endif %}
                     </div>
                     <div class="col-md-3">
-                        <strong>Storage:</strong> {% if object.discover_storage %}<span class="badge bg-success">Yes</span>{% else %}<span class="badge bg-secondary">No</span>{% endif %}
+                        <strong>Storage:</strong> {% if object.discover_storage %}Yes{% else %}No{% endif %}
                     </div>
                 </div>
                 <div class="row mt-2">
                     <div class="col-md-3">
-                        <strong>Kubernetes:</strong> {% if object.discover_kubernetes %}<span class="badge bg-success">Yes</span>{% else %}<span class="badge bg-secondary">No</span>{% endif %}
+                        <strong>Kubernetes:</strong> {% if object.discover_kubernetes %}Yes{% else %}No{% endif %}
                     </div>
                     <div class="col-md-3">
-                        <strong>Serverless:</strong> {% if object.discover_serverless %}<span class="badge bg-success">Yes</span>{% else %}<span class="badge bg-secondary">No</span>{% endif %}
+                        <strong>Serverless:</strong> {% if object.discover_serverless %}Yes{% else %}No{% endif %}
                     </div>
                     <div class="col-md-3">
-                        <strong>IAM:</strong> {% if object.discover_iam %}<span class="badge bg-success">Yes</span>{% else %}<span class="badge bg-secondary">No</span>{% endif %}
+                        <strong>IAM:</strong> {% if object.discover_iam %}Yes{% else %}No{% endif %}
                     </div>
                 </div>
             </div>
@@ -165,13 +155,7 @@
                             <td><a href="{% url 'gcp:discoverylog' pk=log.pk %}">{{ log.started_at }}</a></td>
                             <td>{{ log.completed_at|placeholder }}</td>
                             <td>
-                                {% if log.status == 'completed' %}
-                                    <span class="badge bg-success">Completed</span>
-                                {% elif log.status == 'running' %}
-                                    <span class="badge bg-primary">Running</span>
-                                {% else %}
-                                    <span class="badge bg-danger">Failed</span>
-                                {% endif %}
+                                {{ log.get_status_display }}
                             </td>
                             <td>{{ log.projects_discovered }}</td>
                             <td>{{ log.instances_discovered }}</td>

@@ -141,6 +141,7 @@ class GCPDiscoveryService:
                 return
 
             self.log(f'Discovering resources in project: {project.project_id}')
+            print(f"DEBUG: [{project.project_id}] Starting discovery", flush=True)
 
             enabled_services = self._get_enabled_services(project.project_id)
 
@@ -151,6 +152,7 @@ class GCPDiscoveryService:
 
             try:
                 if self.organization.discover_networking and is_enabled('compute.googleapis.com'):
+                    print(f"DEBUG: [{project.project_id}] Discovering Networking", flush=True)
                     self.discover_vpc_networks(project)
                     self.discover_subnets(project)
                     self.discover_firewall_rules(project)
@@ -169,12 +171,14 @@ class GCPDiscoveryService:
                         self.discover_ncc_spokes(project)
 
                     if is_enabled('dns.googleapis.com'):
+                        print(f"DEBUG: [{project.project_id}] Discovering DNS", flush=True)
                         self.discover_cloud_dns_zones(project)
 
                     if self.organization.cancel_requested:
                         return
 
                 if self.organization.discover_compute and is_enabled('compute.googleapis.com'):
+                    print(f"DEBUG: [{project.project_id}] Discovering Compute", flush=True)
                     self.discover_compute_instances(project)
                     self.discover_instance_templates(project)
                     self.discover_instance_groups(project)
@@ -183,6 +187,7 @@ class GCPDiscoveryService:
                         return
 
                 if self.organization.discover_databases:
+                    print(f"DEBUG: [{project.project_id}] Discovering Databases", flush=True)
                     if is_enabled('sqladmin.googleapis.com'):
                         self.discover_cloud_sql(project)
                     if is_enabled('spanner.googleapis.com'):
@@ -197,28 +202,36 @@ class GCPDiscoveryService:
                         return
 
                 if self.organization.discover_storage and is_enabled('storage.googleapis.com'):
+                    print(f"DEBUG: [{project.project_id}] Discovering Storage", flush=True)
                     self.discover_storage_buckets(project)
                     if self.organization.cancel_requested:
                         return
 
                 if self.organization.discover_kubernetes and is_enabled('container.googleapis.com'):
+                    print(f"DEBUG: [{project.project_id}] Discovering Kubernetes", flush=True)
                     self.discover_gke_clusters(project)
                     if self.organization.cancel_requested:
                         return
 
                 if self.organization.discover_serverless:
+                    print(f"DEBUG: [{project.project_id}] Discovering Serverless", flush=True)
                     if is_enabled('cloudfunctions.googleapis.com'):
+                        print(f"DEBUG: [{project.project_id}] Discovering Cloud Functions", flush=True)
                         self.discover_cloud_functions(project)
                     if is_enabled('run.googleapis.com'):
+                        print(f"DEBUG: [{project.project_id}] Discovering Cloud Run", flush=True)
                         self.discover_cloud_run(project)
                     if is_enabled('pubsub.googleapis.com'):
+                        print(f"DEBUG: [{project.project_id}] Discovering PubSub", flush=True)
                         self.discover_pubsub(project)
                     if is_enabled('secretmanager.googleapis.com'):
+                        print(f"DEBUG: [{project.project_id}] Discovering Secret Manager", flush=True)
                         self.discover_secret_manager_secrets(project)
                     if self.organization.cancel_requested:
                         return
 
                 if self.organization.discover_iam and is_enabled('iam.googleapis.com'):
+                    print(f"DEBUG: [{project.project_id}] Discovering IAM", flush=True)
                     self.discover_service_accounts(project)
                     self.discover_iam_roles(project)
                     self.discover_iam_policy(project)
@@ -239,13 +252,24 @@ class GCPDiscoveryService:
 
         try:
             content = json.loads(e.content.decode('utf-8'))
-            reason = content.get('error', {}).get('errors', [{}])[0].get('reason')
-            message = content.get('error', {}).get('message')
+            error_obj = content.get('error', {})
+            errors_list = error_obj.get('errors', [])
+            reason = errors_list[0].get('reason') if errors_list else None
+            message = error_obj.get('message')
+            
+            if not reason:
+                # Check details for reason (e.g. SERVICE_DISABLED often appears here)
+                details = error_obj.get('details', [])
+                for detail in details:
+                    if detail.get('reason'):
+                        reason = detail.get('reason')
+                        break
+                        
         except Exception:
             reason = 'unknown'
             message = str(e)
 
-        if reason in {'notFound', 'permissionDenied', 'forbidden'}:
+        if reason in {'notFound', 'permissionDenied', 'forbidden', 'SERVICE_DISABLED', 'accessNotConfigured'}:
             suffix = f' for {resource_id}' if resource_id else ''
             self.log(f'{context}{suffix}: {message}', 'warning')
             return True
@@ -275,6 +299,20 @@ class GCPDiscoveryService:
             self.log(f'Failed to setup credentials: {str(e)}', 'error')
             return False
 
+    def _create_service(self, service_name, version):
+        from googleapiclient.discovery import build
+        import httplib2
+        from google_auth_httplib2 import AuthorizedHttp
+        
+        # Set timeout to prevent hanging threads
+        http = httplib2.Http(timeout=60)
+        
+        # Authorize the http object (http and credentials args are mutually exclusive in build())
+        if self.credentials:
+             http = AuthorizedHttp(self.credentials, http=http)
+            
+        return build(service_name, version, http=http, cache_discovery=False)
+
     def _normalize_org_id(self):
         org_id = str(self.organization.organization_id).strip()
         if '/' in org_id:
@@ -301,7 +339,7 @@ class GCPDiscoveryService:
 
         folders = []
         page_token = None
-        service = build('cloudresourcemanager', 'v2', credentials=self.credentials)
+        service = self._create_service('cloudresourcemanager', 'v2')
 
         while True:
             request = service.folders().list(parent=parent, pageToken=page_token)
@@ -317,7 +355,7 @@ class GCPDiscoveryService:
         from googleapiclient.discovery import build
 
         try:
-            service = build('serviceusage', 'v1', credentials=self.credentials)
+            service = self._create_service('serviceusage', 'v1')
             request = service.services().list(parent=f'projects/{project_id}', filter='state:ENABLED', pageSize=200)
             enabled_services = set()
             while request is not None:
@@ -449,15 +487,64 @@ class GCPDiscoveryService:
 
         self.log('Discovering projects...')
         projects = []
+        
+        # Cache for folder ownership to avoid repeated API calls
+        # Key: folder_id (str), Value: bool (is_owned_by_org)
+        folder_ownership_cache = {}
 
         try:
-            service = build('cloudresourcemanager', 'v1', credentials=self.credentials)
+            service = self._create_service('cloudresourcemanager', 'v1')
 
             # List all projects accessible to the service account
             request = service.projects().list()
             while request is not None:
                 response = request.execute()
                 for proj in response.get('projects', []):
+                    # Filter by organization ID
+                    is_owned_by_org = False
+                    parent = proj.get('parent', {})
+                    parent_type = parent.get('type')
+                    parent_id = str(parent.get('id', ''))
+                    
+                    # 1. Direct child of the organization
+                    if parent_type == 'organization' and parent_id == str(self.organization.organization_id):
+                        is_owned_by_org = True
+                    # 2. Child of a Folder (nested hierarchy)
+                    elif parent_type == 'folder':
+                        # Check cache first
+                        if parent_id in folder_ownership_cache:
+                            is_owned_by_org = folder_ownership_cache[parent_id]
+                        else:
+                            try:
+                                # Use getAncestry to verify organization ownership
+                                ancestry = service.projects().getAncestry(projectId=proj['projectId']).execute()
+                                is_folder_in_org = False
+                                found_folders = []
+                                
+                                # Walk up the ancestry
+                                for ancestor in ancestry.get('ancestor', []):
+                                    resource = ancestor.get('resourceId', {})
+                                    r_type = resource.get('type')
+                                    r_id = str(resource.get('id', ''))
+                                    
+                                    if r_type == 'organization' and r_id == str(self.organization.organization_id):
+                                        is_folder_in_org = True
+                                    elif r_type == 'folder':
+                                        found_folders.append(r_id)
+                                
+                                # Update cache for all intermediate folders found in this path
+                                for f_id in found_folders:
+                                    folder_ownership_cache[f_id] = is_folder_in_org
+                                
+                                is_owned_by_org = is_folder_in_org
+                                
+                            except Exception:
+                                # If we cannot verify ancestry, skip the project to be safe
+                                pass
+                    
+                    if not is_owned_by_org:
+                        continue
+
                     project, created = GCPProject.objects.update_or_create(
                         project_id=proj['projectId'],
                         defaults={
@@ -496,7 +583,7 @@ class GCPDiscoveryService:
         self.log(f'Discovering VPC networks in {project.project_id}...')
 
         try:
-            service = build('compute', 'v1', credentials=self.credentials)
+            service = self._create_service('compute', 'v1')
             request = service.networks().list(project=project.project_id)
 
             while request is not None:
@@ -534,7 +621,7 @@ class GCPDiscoveryService:
         self.log(f'Discovering subnets in {project.project_id}...')
 
         try:
-            service = build('compute', 'v1', credentials=self.credentials)
+            service = self._create_service('compute', 'v1')
             request = service.subnetworks().aggregatedList(project=project.project_id)
 
             while request is not None:
@@ -585,7 +672,7 @@ class GCPDiscoveryService:
         self.log(f'Discovering firewall rules in {project.project_id}...')
 
         try:
-            service = build('compute', 'v1', credentials=self.credentials)
+            service = self._create_service('compute', 'v1')
             request = service.firewalls().list(project=project.project_id)
 
             while request is not None:
@@ -638,7 +725,7 @@ class GCPDiscoveryService:
         self.log(f'Discovering Cloud Routers in {project.project_id}...')
 
         try:
-            service = build('compute', 'v1', credentials=self.credentials)
+            service = self._create_service('compute', 'v1')
             request = service.routers().aggregatedList(project=project.project_id)
 
             while request is not None:
@@ -688,7 +775,7 @@ class GCPDiscoveryService:
         self.log(f'Discovering VPN Gateways in {project.project_id}...')
 
         try:
-            service = build('compute', 'v1', credentials=self.credentials)
+            service = self._create_service('compute', 'v1')
             request = service.vpnGateways().aggregatedList(project=project.project_id)
 
             while request is not None:
@@ -738,7 +825,7 @@ class GCPDiscoveryService:
         self.log(f'Discovering VPN Tunnels in {project.project_id}...')
 
         try:
-            service = build('compute', 'v1', credentials=self.credentials)
+            service = self._create_service('compute', 'v1')
             request = service.vpnTunnels().aggregatedList(project=project.project_id)
 
             while request is not None:
@@ -803,13 +890,21 @@ class GCPDiscoveryService:
         self.log(f'Discovering Compute instances in {project.project_id}...')
 
         try:
-            service = build('compute', 'v1', credentials=self.credentials)
+            service = self._create_service('compute', 'v1')
             request = service.instances().aggregatedList(project=project.project_id)
 
             while request is not None:
                 response = request.execute()
+                
+                # Check for warnings (e.g. unreachable zones)
+                if 'warning' in response:
+                    warn_msg = response['warning'].get('message')
+                    self.log(f'Warning during Compute discovery in {project.project_id}: {warn_msg}', 'warning')
 
                 for zone, instances_data in response.get('items', {}).items():
+                    if 'warning' in instances_data:
+                         self.log(f'Warning for zone {zone} in {project.project_id}: {instances_data["warning"].get("message")}', 'warning')
+                         
                     for instance in instances_data.get('instances', []):
                         zone_name = instance.get('zone', '').split('/')[-1]
                         machine_type = instance.get('machineType', '').split('/')[-1]
@@ -885,7 +980,7 @@ class GCPDiscoveryService:
         self.log(f'Discovering Instance Templates in {project.project_id}...')
 
         try:
-            service = build('compute', 'v1', credentials=self.credentials)
+            service = self._create_service('compute', 'v1')
             request = service.instanceTemplates().list(project=project.project_id)
 
             while request is not None:
@@ -946,7 +1041,7 @@ class GCPDiscoveryService:
         self.log(f'Discovering Persistent Disks in {project.project_id}...')
 
         try:
-            service = build('compute', 'v1', credentials=self.credentials)
+            service = self._create_service('compute', 'v1')
             request = service.disks().aggregatedList(project=project.project_id)
 
             while request is not None:
@@ -990,7 +1085,7 @@ class GCPDiscoveryService:
         self.log(f'Discovering Cloud SQL instances in {project.project_id}...')
 
         try:
-            service = build('sqladmin', 'v1', credentials=self.credentials)
+            service = self._create_service('sqladmin', 'v1')
             request = service.instances().list(project=project.project_id)
             response = request.execute()
 
@@ -1039,7 +1134,7 @@ class GCPDiscoveryService:
         self.log(f'Discovering Cloud Spanner instances in {project.project_id}...')
 
         try:
-            service = build('spanner', 'v1', credentials=self.credentials)
+            service = self._create_service('spanner', 'v1')
             parent = f'projects/{project.project_id}'
             request = service.projects().instances().list(parent=parent)
             response = request.execute()
@@ -1077,7 +1172,7 @@ class GCPDiscoveryService:
         self.log(f'Discovering Cloud Storage buckets in {project.project_id}...')
 
         try:
-            service = build('storage', 'v1', credentials=self.credentials)
+            service = self._create_service('storage', 'v1')
             request = service.buckets().list(project=project.project_id)
 
             while request is not None:
@@ -1119,7 +1214,7 @@ class GCPDiscoveryService:
         self.log(f'Discovering GKE clusters in {project.project_id}...')
 
         try:
-            service = build('container', 'v1', credentials=self.credentials)
+            service = self._create_service('container', 'v1')
             parent = f'projects/{project.project_id}/locations/-'
             request = service.projects().locations().clusters().list(parent=parent)
             response = request.execute()
@@ -1199,7 +1294,7 @@ class GCPDiscoveryService:
         self.log(f'Discovering Cloud Functions in {project.project_id}...')
 
         try:
-            service = build('cloudfunctions', 'v1', credentials=self.credentials)
+            service = self._create_service('cloudfunctions', 'v1')
             parent = f'projects/{project.project_id}/locations/-'
             request = service.projects().locations().functions().list(parent=parent)
 
@@ -1257,7 +1352,7 @@ class GCPDiscoveryService:
         self.log(f'Discovering Cloud Run services in {project.project_id}...')
 
         try:
-            service = build('run', 'v1', credentials=self.credentials)
+            service = self._create_service('run', 'v1')
             parent = f'projects/{project.project_id}/locations/-'
             request = service.projects().locations().services().list(parent=parent)
             response = request.execute()
@@ -1311,13 +1406,16 @@ class GCPDiscoveryService:
         from googleapiclient.errors import HttpError
 
         self.log(f'Discovering Service Accounts in {project.project_id}...')
+        print(f"DEBUG: [{project.project_id}] Discovering Service Accounts", flush=True)
 
         try:
-            service = build('iam', 'v1', credentials=self.credentials)
+            service = self._create_service('iam', 'v1')
             name = f'projects/{project.project_id}'
+            print(f"DEBUG: [{project.project_id}] IAM: Listing service accounts...", flush=True)
             request = service.projects().serviceAccounts().list(name=name)
 
             while request is not None:
+                print(f"DEBUG: [{project.project_id}] IAM: Executing service accounts request...", flush=True)
                 response = request.execute()
 
                 for sa in response.get('accounts', []):
@@ -1351,7 +1449,7 @@ class GCPDiscoveryService:
         self.log(f'Discovering Instance Groups in {project.project_id}...')
 
         try:
-            service = build('compute', 'v1', credentials=self.credentials)
+            service = self._create_service('compute', 'v1')
             # Managed Instance Groups
             request = service.instanceGroupManagers().aggregatedList(project=project.project_id)
             while request is not None:
@@ -1457,7 +1555,7 @@ class GCPDiscoveryService:
         self.log(f'Discovering Cloud NATs in {project.project_id}...')
 
         try:
-            service = build('compute', 'v1', credentials=self.credentials)
+            service = self._create_service('compute', 'v1')
             request = service.routers().aggregatedList(project=project.project_id)
 
             while request is not None:
@@ -1514,7 +1612,7 @@ class GCPDiscoveryService:
         self.log(f'Discovering Load Balancers (Forwarding Rules) in {project.project_id}...')
 
         try:
-            service = build('compute', 'v1', credentials=self.credentials)
+            service = self._create_service('compute', 'v1')
             request = service.forwardingRules().aggregatedList(project=project.project_id)
 
             while request is not None:
@@ -1579,7 +1677,7 @@ class GCPDiscoveryService:
         self.log(f'Discovering Service Attachments in {project.project_id}...')
 
         try:
-            service = build('compute', 'v1', credentials=self.credentials)
+            service = self._create_service('compute', 'v1')
             request = service.serviceAttachments().aggregatedList(project=project.project_id)
 
             while request is not None:
@@ -1621,7 +1719,7 @@ class GCPDiscoveryService:
         self.log(f'Discovering PSC Endpoints in {project.project_id}...')
 
         try:
-            service = build('compute', 'v1', credentials=self.credentials)
+            service = self._create_service('compute', 'v1')
             request = service.forwardingRules().aggregatedList(project=project.project_id)
 
             while request is not None:
@@ -1684,7 +1782,7 @@ class GCPDiscoveryService:
         self.log(f'Discovering NCC Hubs in {project.project_id}...')
 
         try:
-            service = build('networkconnectivity', 'v1', credentials=self.credentials)
+            service = self._create_service('networkconnectivity', 'v1')
             parent = f'projects/{project.project_id}/locations/global'
             request = service.projects().locations().global_().hubs().list(parent=parent)
 
@@ -1725,7 +1823,7 @@ class GCPDiscoveryService:
         self.log(f'Discovering NCC Spokes in {project.project_id}...')
 
         try:
-            service = build('networkconnectivity', 'v1', credentials=self.credentials)
+            service = self._create_service('networkconnectivity', 'v1')
             parent = f'projects/{project.project_id}/locations/-'
             request = service.projects().locations().spokes().list(parent=parent)
 
@@ -1809,7 +1907,7 @@ class GCPDiscoveryService:
         self.log(f'Discovering Interconnect Attachments in {project.project_id}...')
 
         try:
-            service = build('compute', 'v1', credentials=self.credentials)
+            service = self._create_service('compute', 'v1')
             request = service.interconnectAttachments().aggregatedList(project=project.project_id)
 
             while request is not None:
@@ -1869,7 +1967,7 @@ class GCPDiscoveryService:
         self.log(f'Discovering External VPN Gateways in {project.project_id}...')
 
         try:
-            service = build('compute', 'v1', credentials=self.credentials)
+            service = self._create_service('compute', 'v1')
             request = service.externalVpnGateways().list(project=project.project_id)
 
             while request is not None:
@@ -1904,7 +2002,7 @@ class GCPDiscoveryService:
         self.log(f'Discovering Firestore Databases in {project.project_id}...')
 
         try:
-            service = build('firestore', 'v1', credentials=self.credentials)
+            service = self._create_service('firestore', 'v1')
             parent = f'projects/{project.project_id}'
             request = service.projects().databases().list(parent=parent)
 
@@ -1948,7 +2046,7 @@ class GCPDiscoveryService:
         self.log(f'Discovering Bigtable Instances in {project.project_id}...')
 
         try:
-            service = build('bigtableadmin', 'v2', credentials=self.credentials)
+            service = self._create_service('bigtableadmin', 'v2')
             parent = f'projects/{project.project_id}'
             request = service.projects().instances().list(parent=parent)
 
@@ -1988,7 +2086,7 @@ class GCPDiscoveryService:
         self.log(f'Discovering Memorystore (Redis) in {project.project_id}...')
 
         try:
-            service = build('redis', 'v1', credentials=self.credentials)
+            service = self._create_service('redis', 'v1')
             parent = f'projects/{project.project_id}/locations/-'
             request = service.projects().locations().instances().list(parent=parent)
 
@@ -2048,13 +2146,17 @@ class GCPDiscoveryService:
         self.log(f'Discovering Pub/Sub in {project.project_id}...')
 
         try:
-            service = build('pubsub', 'v1', credentials=self.credentials)
+            service = self._create_service('pubsub', 'v1')
             # Topics
             parent = f'projects/{project.project_id}'
+            print(f"DEBUG: [{project.project_id}] PubSub: Listing topics...", flush=True)
             request = service.projects().topics().list(project=parent)
 
             while request is not None:
+                print(f"DEBUG: [{project.project_id}] PubSub: Executing topics request...", flush=True)
                 response = request.execute()
+                print(f"DEBUG: [{project.project_id}] PubSub: Found {len(response.get('topics', []))} topics", flush=True)
+
                 for topic in response.get('topics', []):
                     # name: projects/p/topics/t
                     name = topic['name'].split('/')[-1]
@@ -2068,17 +2170,22 @@ class GCPDiscoveryService:
                             'last_synced': timezone.now(),
                         },
                     )
-                    self.log(f'{"Created" if created else "Updated"} Topic: {t.name}')
+                    # self.log(f'{"Created" if created else "Updated"} Topic: {t.name}')
 
                 if 'nextPageToken' in response:
+                    print(f"DEBUG: [{project.project_id}] PubSub: Pagination for topics", flush=True)
                     request = service.projects().topics().list(project=parent, pageToken=response['nextPageToken'])
                 else:
                     request = None
 
+            print(f"DEBUG: [{project.project_id}] PubSub: Listing subscriptions...", flush=True)
             # Subscriptions
             request = service.projects().subscriptions().list(project=parent)
             while request is not None:
+                print(f"DEBUG: [{project.project_id}] PubSub: Executing subscriptions request...", flush=True)
                 response = request.execute()
+                print(f"DEBUG: [{project.project_id}] PubSub: Found {len(response.get('subscriptions', []))} subscriptions", flush=True)
+
                 for sub in response.get('subscriptions', []):
                     name = sub['name'].split('/')[-1]
                     topic_name = sub.get('topic', '').split('/')[-1]
@@ -2126,7 +2233,7 @@ class GCPDiscoveryService:
         from googleapiclient.discovery import build
 
         try:
-            service = build('secretmanager', 'v1', credentials=self.credentials, cache_discovery=False)
+            service = self._create_service('secretmanager', 'v1')
             parent = f'projects/{project.project_id}'
             
             request = service.projects().secrets().list(parent=parent)
@@ -2159,7 +2266,7 @@ class GCPDiscoveryService:
         from googleapiclient.discovery import build
         
         try:
-            service = build('dns', 'v1', credentials=self.credentials, cache_discovery=False)
+            service = self._create_service('dns', 'v1')
             project_id = project.project_id
             
             request = service.managedZones().list(project=project_id)
@@ -2221,12 +2328,15 @@ class GCPDiscoveryService:
         from googleapiclient.discovery import build
         
         try:
-            service = build('iam', 'v1', credentials=self.credentials, cache_discovery=False)
+            print(f"DEBUG: [{project.project_id}] Discovering IAM Roles", flush=True)
+            service = self._create_service('iam', 'v1')
             parent = f'projects/{project.project_id}'
             
             # List custom roles for the project
+            print(f"DEBUG: [{project.project_id}] IAM: Listing roles...", flush=True)
             request = service.projects().roles().list(parent=parent, view='FULL')
             while request:
+                print(f"DEBUG: [{project.project_id}] IAM: Executing roles request...", flush=True)
                 response = request.execute()
                 for role in response.get('roles', []):
                     IAMRole.objects.update_or_create(
@@ -2255,12 +2365,15 @@ class GCPDiscoveryService:
         from googleapiclient.discovery import build
         
         try:
+            print(f"DEBUG: [{project.project_id}] Discovering IAM Policy", flush=True)
             # Use Cloud Resource Manager API to get policy
-            service = build('cloudresourcemanager', 'v1', credentials=self.credentials, cache_discovery=False)
+            service = self._create_service('cloudresourcemanager', 'v1')
             resource = project.project_id
             
+            print(f"DEBUG: [{project.project_id}] IAM: Getting IAM policy...", flush=True)
             policy = service.projects().getIamPolicy(resource=resource).execute()
             bindings = policy.get('bindings', [])
+            print(f"DEBUG: [{project.project_id}] IAMPolicy: Found {len(bindings)} bindings", flush=True)
             
             for binding in bindings:
                 role_name = binding['role']

@@ -146,6 +146,17 @@ class GCPOrganizationClearView(generic.ObjectDeleteView):
         # Iterate and delete to avoid OOM on large datasets
         for project in projects:
             project.delete()
+            
+        # Clean up orphaned IAM Roles (discovered, no project, no bindings)
+        # These are usually predefined roles (e.g. roles/viewer) created during discovery
+        # We only delete them if they are not used by any other project/org
+        orphaned_roles = IAMRole.objects.filter(
+            discovered=True,
+            project__isnull=True,
+            bindings__isnull=True
+        )
+        roles_count = orphaned_roles.count()
+        orphaned_roles.delete()
 
         # Reset org status
         organization.discovery_status = 'pending'

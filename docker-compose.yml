@@ -67,7 +67,7 @@ services:
     command: ["python", "netbox/manage.py", "rqworker"]
     deploy:
       mode: replicated
-      replicas: 7
+      replicas: 5
 
 volumes:
   netbox-db-data:
