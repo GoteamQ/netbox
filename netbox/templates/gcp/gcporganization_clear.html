@@ -1,0 +1,27 @@
+{% extends 'generic/object_delete.html' %}
+{% load i18n %}
+
+{% block form %}
+    <form action="" method="post">
+        {% csrf_token %}
+        <div class="card">
+            <h5 class="card-header bg-danger text-white">
+                {% trans "Clear Discovered Data" %}
+            </h5>
+            <div class="card-body">
+                <p>
+                    {% blocktrans with name=object.name %}
+                    Are you sure you want to clear all discovered data for <strong>{{ name }}</strong>?
+                    {% endblocktrans %}
+                </p>
+                <p>
+                    {% trans "This will delete all Projects, Compute Instances, VPC Networks, and other resources associated with this organization." %}
+                </p>
+            </div>
+            <div class="card-footer text-end">
+                <a href="{{ return_url }}" class="btn btn-outline-secondary">{% trans "Cancel" %}</a>
+                <button type="submit" class="btn btn-danger">{% trans "Clear Data" %}</button>
+            </div>
+        </div>
+    </form>
+{% endblock %}

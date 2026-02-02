@@ -46,8 +46,9 @@ from .models import (
 
 class GCPOrganizationForm(NetBoxModelForm):
     service_account_json = forms.CharField(
-        widget=forms.Textarea(attrs={'rows': 10, 'class': 'font-monospace'}),
-        help_text='Paste the full JSON content of your GCP service account key file',
+        widget=forms.PasswordInput(render_value=False),
+        required=False,
+        help_text='Paste the full JSON content of your GCP service account key file. Leave blank to keep unchanged.',
     )
 
     class Meta:
@@ -67,6 +68,17 @@ class GCPOrganizationForm(NetBoxModelForm):
             'discover_iam',
             'tags',
         ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not self.instance.pk:
+            self.fields['service_account_json'].required = True
+
+    def clean_service_account_json(self):
+        data = self.cleaned_data['service_account_json']
+        if not data and self.instance.pk:
+            return self.instance.service_account_json
+        return data
 
 
 class GCPOrganizationFilterForm(NetBoxModelFilterSetForm):

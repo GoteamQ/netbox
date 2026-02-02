@@ -23,5 +23,91 @@
 {% endblock %}
 
 {% block content %}
-    {{ block.super }}
+<div class="row">
+    <div class="col col-md-6">
+        <div class="card">
+            <h5 class="card-header">GCP Organization</h5>
+            <div class="card-body">
+                <table class="table table-hover attr-table">
+                    <tr>
+                        <th scope="row">Name</th>
+                        <td>{{ object.name }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Organization ID</th>
+                        <td>{{ object.organization_id }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Active</th>
+                        <td>
+                            {% if object.is_active %}
+                                Active
+                            {% else %}
+                                Inactive
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Auto Discovery</th>
+                        <td>
+                            {% if object.auto_discover %}
+                                Enabled
+                            {% else %}
+                                Disabled
+                            {% endif %}
+                        </td>
+                    </tr>
+                     <tr>
+                        <th scope="row">Discovery Status</th>
+                        <td>
+                             {{ object.get_discovery_status_display }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Last Discovery</th>
+                        <td>{{ object.last_discovery|placeholder }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col col-md-6">
+        <div class="card">
+            <h5 class="card-header">Discovery Statistics</h5>
+            <div class="card-body">
+                <table class="table table-hover attr-table">
+                    <tr>
+                        <th scope="row">Total Projects</th>
+                        <td>{{ project_count }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <div class="card mt-3">
+            <h5 class="card-header">Recent Discovery Logs</h5>
+            <div class="card-body">
+                {% if discovery_logs %}
+                <table class="table table-hover table-sm">
+                    <thead>
+                        <tr>
+                            <th>Status</th>
+                            <th>Started</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in discovery_logs %}
+                        <tr>
+                            <td>{{ log.get_status_display }}</td>
+                            <td>{{ log.started_at }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <span class="text-muted">No logs found.</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

@@ -74,7 +74,11 @@ class GCPProjectFilterSet(NetBoxModelFilterSet):
 
     def search(self, queryset, name, value):
         return queryset.filter(
-            Q(name__icontains=value) | Q(project_id__icontains=value) | Q(project_number__icontains=value)
+            Q(name__icontains=value)
+            | Q(project_id__icontains=value)
+            | Q(project_number__icontains=value)
+            | Q(organization__name__icontains=value)
+            | Q(status__icontains=value)
         )
 
 
@@ -93,6 +97,11 @@ class ComputeInstanceFilterSet(NetBoxModelFilterSet):
             | Q(internal_ip__icontains=value)
             | Q(external_ip__icontains=value)
             | Q(status__icontains=value)
+            | Q(project__name__icontains=value)
+            | Q(project__project_id__icontains=value)
+            | Q(project__organization__name__icontains=value)
+            | Q(image__icontains=value)
+            | Q(network__icontains=value)
         )
 
 
@@ -104,7 +113,14 @@ class InstanceTemplateFilterSet(NetBoxModelFilterSet):
         fields = ['id', 'name', 'project', 'machine_type']
 
     def search(self, queryset, name, value):
-        return queryset.filter(Q(name__icontains=value) | Q(machine_type__icontains=value))
+        return queryset.filter(
+            Q(name__icontains=value)
+            | Q(machine_type__icontains=value)
+            | Q(project__name__icontains=value)
+            | Q(project__project_id__icontains=value)
+            | Q(project__organization__name__icontains=value)
+            | Q(image__icontains=value)
+        )
 
 
 class InstanceGroupFilterSet(NetBoxModelFilterSet):
@@ -115,7 +131,14 @@ class InstanceGroupFilterSet(NetBoxModelFilterSet):
         fields = ['id', 'name', 'project', 'zone', 'region', 'is_managed']
 
     def search(self, queryset, name, value):
-        return queryset.filter(Q(name__icontains=value) | Q(zone__icontains=value) | Q(region__icontains=value))
+        return queryset.filter(
+            Q(name__icontains=value)
+            | Q(zone__icontains=value)
+            | Q(region__icontains=value)
+            | Q(project__name__icontains=value)
+            | Q(project__project_id__icontains=value)
+            | Q(project__organization__name__icontains=value)
+        )
 
 
 class VPCNetworkFilterSet(NetBoxModelFilterSet):
@@ -126,7 +149,18 @@ class VPCNetworkFilterSet(NetBoxModelFilterSet):
         fields = ['id', 'name', 'project', 'routing_mode']
 
     def search(self, queryset, name, value):
-        return queryset.filter(Q(name__icontains=value) | Q(routing_mode__icontains=value))
+        if not value.strip():
+            return queryset
+        qs_filter = (
+            Q(name__icontains=value)
+            | Q(routing_mode__icontains=value)
+            | Q(project__name__icontains=value)
+            | Q(project__project_id__icontains=value)
+            | Q(project__organization__name__icontains=value)
+        )
+        if value.strip().isdigit():
+            qs_filter |= Q(mtu=int(value.strip()))
+        return queryset.filter(qs_filter)
 
 
 class SubnetFilterSet(NetBoxModelFilterSet):
@@ -143,6 +177,11 @@ class SubnetFilterSet(NetBoxModelFilterSet):
             | Q(region__icontains=value)
             | Q(ip_cidr_range__icontains=value)
             | Q(gateway_address__icontains=value)
+            | Q(project__name__icontains=value)
+            | Q(project__project_id__icontains=value)
+            | Q(network__name__icontains=value)
+            | Q(project__organization__name__icontains=value)
+            | Q(purpose__icontains=value)
         )
 
 
@@ -155,7 +194,18 @@ class FirewallRuleFilterSet(NetBoxModelFilterSet):
         fields = ['id', 'name', 'project', 'network', 'direction', 'action']
 
     def search(self, queryset, name, value):
-        return queryset.filter(Q(name__icontains=value) | Q(action__icontains=value) | Q(direction__icontains=value))
+        qs_filter = (
+            Q(name__icontains=value)
+            | Q(action__icontains=value)
+            | Q(direction__icontains=value)
+            | Q(project__name__icontains=value)
+            | Q(project__project_id__icontains=value)
+            | Q(network__name__icontains=value)
+            | Q(project__organization__name__icontains=value)
+        )
+        if value.strip().isdigit():
+            qs_filter |= Q(priority=int(value.strip()))
+        return queryset.filter(qs_filter)
 
 
 class CloudRouterFilterSet(NetBoxModelFilterSet):
@@ -167,7 +217,18 @@ class CloudRouterFilterSet(NetBoxModelFilterSet):
         fields = ['id', 'name', 'project', 'network', 'region']
 
     def search(self, queryset, name, value):
-        return queryset.filter(Q(name__icontains=value) | Q(region__icontains=value))
+        qs_filter = (
+            Q(name__icontains=value)
+            | Q(region__icontains=value)
+            | Q(project__name__icontains=value)
+            | Q(project__project_id__icontains=value)
+            | Q(network__name__icontains=value)
+            | Q(project__organization__name__icontains=value)
+        )
+        if value.strip().isdigit():
+            qs_filter |= Q(asn=int(value.strip()))
+            qs_filter |= Q(asn__icontains=value.strip())
+        return queryset.filter(qs_filter)
 
 
 class CloudNATFilterSet(NetBoxModelFilterSet):
@@ -179,7 +240,15 @@ class CloudNATFilterSet(NetBoxModelFilterSet):
         fields = ['id', 'name', 'project', 'router', 'region']
 
     def search(self, queryset, name, value):
-        return queryset.filter(Q(name__icontains=value) | Q(region__icontains=value))
+        return queryset.filter(
+            Q(name__icontains=value)
+            | Q(region__icontains=value)
+            | Q(project__name__icontains=value)
+            | Q(project__project_id__icontains=value)
+            | Q(router__name__icontains=value)
+            | Q(project__organization__name__icontains=value)
+            | Q(nat_ip_allocate_option__icontains=value)
+        )
 
 
 class LoadBalancerFilterSet(NetBoxModelFilterSet):
@@ -196,6 +265,9 @@ class LoadBalancerFilterSet(NetBoxModelFilterSet):
             | Q(region__icontains=value)
             | Q(lb_type__icontains=value)
             | Q(scheme__icontains=value)
+            | Q(project__name__icontains=value)
+            | Q(project__project_id__icontains=value)
+            | Q(project__organization__name__icontains=value)
         )
 
 
@@ -213,6 +285,10 @@ class CloudSQLInstanceFilterSet(NetBoxModelFilterSet):
             | Q(database_type__icontains=value)
             | Q(database_version__icontains=value)
             | Q(tier__icontains=value)
+            | Q(project__name__icontains=value)
+            | Q(project__project_id__icontains=value)
+            | Q(project__organization__name__icontains=value)
+            | Q(status__icontains=value)
         )
 
 
@@ -224,7 +300,14 @@ class CloudSpannerInstanceFilterSet(NetBoxModelFilterSet):
         fields = ['id', 'name', 'project', 'config', 'status']
 
     def search(self, queryset, name, value):
-        return queryset.filter(Q(name__icontains=value) | Q(config__icontains=value) | Q(display_name__icontains=value))
+        return queryset.filter(
+            Q(name__icontains=value)
+            | Q(config__icontains=value)
+            | Q(display_name__icontains=value)
+            | Q(project__name__icontains=value)
+            | Q(project__project_id__icontains=value)
+            | Q(project__organization__name__icontains=value)
+        )
 
 
 class FirestoreDatabaseFilterSet(NetBoxModelFilterSet):
@@ -236,7 +319,13 @@ class FirestoreDatabaseFilterSet(NetBoxModelFilterSet):
 
     def search(self, queryset, name, value):
         return queryset.filter(
-            Q(name__icontains=value) | Q(location__icontains=value) | Q(database_type__icontains=value)
+            Q(name__icontains=value)
+            | Q(location__icontains=value)
+            | Q(database_type__icontains=value)
+            | Q(project__name__icontains=value)
+            | Q(project__project_id__icontains=value)
+            | Q(project__organization__name__icontains=value)
+            | Q(status__icontains=value)
         )
 
 
@@ -249,7 +338,12 @@ class BigtableInstanceFilterSet(NetBoxModelFilterSet):
 
     def search(self, queryset, name, value):
         return queryset.filter(
-            Q(name__icontains=value) | Q(display_name__icontains=value) | Q(instance_type__icontains=value)
+            Q(name__icontains=value)
+            | Q(display_name__icontains=value)
+            | Q(instance_type__icontains=value)
+            | Q(project__name__icontains=value)
+            | Q(project__project_id__icontains=value)
+            | Q(project__organization__name__icontains=value)
         )
 
 
@@ -262,7 +356,12 @@ class CloudStorageBucketFilterSet(NetBoxModelFilterSet):
 
     def search(self, queryset, name, value):
         return queryset.filter(
-            Q(name__icontains=value) | Q(location__icontains=value) | Q(storage_class__icontains=value)
+            Q(name__icontains=value)
+            | Q(location__icontains=value)
+            | Q(storage_class__icontains=value)
+            | Q(project__name__icontains=value)
+            | Q(project__project_id__icontains=value)
+            | Q(project__organization__name__icontains=value)
         )
 
 
@@ -274,7 +373,15 @@ class PersistentDiskFilterSet(NetBoxModelFilterSet):
         fields = ['id', 'name', 'project', 'zone', 'disk_type', 'status']
 
     def search(self, queryset, name, value):
-        return queryset.filter(Q(name__icontains=value) | Q(zone__icontains=value) | Q(disk_type__icontains=value))
+        return queryset.filter(
+            Q(name__icontains=value)
+            | Q(zone__icontains=value)
+            | Q(disk_type__icontains=value)
+            | Q(project__name__icontains=value)
+            | Q(project__project_id__icontains=value)
+            | Q(project__organization__name__icontains=value)
+            | Q(status__icontains=value)
+        )
 
 
 class GKEClusterFilterSet(NetBoxModelFilterSet):
@@ -290,6 +397,10 @@ class GKEClusterFilterSet(NetBoxModelFilterSet):
             | Q(location__icontains=value)
             | Q(endpoint__icontains=value)
             | Q(master_version__icontains=value)
+            | Q(project__name__icontains=value)
+            | Q(project__project_id__icontains=value)
+            | Q(project__organization__name__icontains=value)
+            | Q(status__icontains=value)
         )
 
 
@@ -302,7 +413,14 @@ class GKENodePoolFilterSet(NetBoxModelFilterSet):
 
     def search(self, queryset, name, value):
         return queryset.filter(
-            Q(name__icontains=value) | Q(machine_type__icontains=value) | Q(version__icontains=value)
+            Q(name__icontains=value)
+            | Q(machine_type__icontains=value)
+            | Q(version__icontains=value)
+            | Q(cluster__name__icontains=value)
+            | Q(cluster__project__name__icontains=value)
+            | Q(cluster__project__project_id__icontains=value)
+            | Q(cluster__project__organization__name__icontains=value)
+            | Q(status__icontains=value)
         )
 
 
@@ -315,7 +433,12 @@ class ServiceAccountFilterSet(NetBoxModelFilterSet):
 
     def search(self, queryset, name, value):
         return queryset.filter(
-            Q(email__icontains=value) | Q(display_name__icontains=value) | Q(unique_id__icontains=value)
+            Q(email__icontains=value)
+            | Q(display_name__icontains=value)
+            | Q(unique_id__icontains=value)
+            | Q(project__name__icontains=value)
+            | Q(project__project_id__icontains=value)
+            | Q(project__organization__name__icontains=value)
         )
 
 
@@ -327,7 +450,14 @@ class IAMRoleFilterSet(NetBoxModelFilterSet):
         fields = ['id', 'name', 'title', 'stage', 'is_custom', 'project']
 
     def search(self, queryset, name, value):
-        return queryset.filter(Q(name__icontains=value) | Q(title__icontains=value) | Q(description__icontains=value))
+        return queryset.filter(
+            Q(name__icontains=value)
+            | Q(title__icontains=value)
+            | Q(description__icontains=value)
+            | Q(project__name__icontains=value)
+            | Q(project__project_id__icontains=value)
+            | Q(project__organization__name__icontains=value)
+        )
 
 
 class IAMBindingFilterSet(NetBoxModelFilterSet):
@@ -339,7 +469,13 @@ class IAMBindingFilterSet(NetBoxModelFilterSet):
         fields = ['id', 'project', 'role', 'member']
 
     def search(self, queryset, name, value):
-        return queryset.filter(member__icontains=value)
+        return queryset.filter(
+            Q(member__icontains=value)
+            | Q(role__name__icontains=value)
+            | Q(project__name__icontains=value)
+            | Q(project__project_id__icontains=value)
+            | Q(project__organization__name__icontains=value)
+        )
 
 
 class CloudFunctionFilterSet(NetBoxModelFilterSet):
@@ -355,6 +491,9 @@ class CloudFunctionFilterSet(NetBoxModelFilterSet):
             | Q(region__icontains=value)
             | Q(runtime__icontains=value)
             | Q(entry_point__icontains=value)
+            | Q(project__name__icontains=value)
+            | Q(project__project_id__icontains=value)
+            | Q(project__organization__name__icontains=value)
         )
 
 
@@ -367,7 +506,16 @@ class CloudRunFilterSet(NetBoxModelFilterSet):
 
     def search(self, queryset, name, value):
         return queryset.filter(
-            Q(name__icontains=value) | Q(region__icontains=value) | Q(image__icontains=value) | Q(url__icontains=value)
+            Q(name__icontains=value)
+            | Q(region__icontains=value)
+            | Q(image__icontains=value)
+            | Q(url__icontains=value)
+            | Q(project__name__icontains=value)
+            | Q(project__project_id__icontains=value)
+            | Q(project__organization__name__icontains=value)
+            | Q(status__icontains=value)
+            | Q(cpu__icontains=value)
+            | Q(memory__icontains=value)
         )
 
 
@@ -379,7 +527,12 @@ class PubSubTopicFilterSet(NetBoxModelFilterSet):
         fields = ['id', 'name', 'project']
 
     def search(self, queryset, name, value):
-        return queryset.filter(name__icontains=value)
+        return queryset.filter(
+            Q(name__icontains=value)
+            | Q(project__name__icontains=value)
+            | Q(project__project_id__icontains=value)
+            | Q(project__organization__name__icontains=value)
+        )
 
 
 class PubSubSubscriptionFilterSet(NetBoxModelFilterSet):
@@ -391,7 +544,13 @@ class PubSubSubscriptionFilterSet(NetBoxModelFilterSet):
         fields = ['id', 'name', 'project', 'topic']
 
     def search(self, queryset, name, value):
-        return queryset.filter(Q(name__icontains=value) | Q(topic__name__icontains=value))
+        return queryset.filter(
+            Q(name__icontains=value)
+            | Q(topic__name__icontains=value)
+            | Q(project__name__icontains=value)
+            | Q(project__project_id__icontains=value)
+            | Q(project__organization__name__icontains=value)
+        )
 
 
 class SecretManagerSecretFilterSet(NetBoxModelFilterSet):
@@ -402,7 +561,13 @@ class SecretManagerSecretFilterSet(NetBoxModelFilterSet):
         fields = ['id', 'name', 'project', 'replication_type']
 
     def search(self, queryset, name, value):
-        return queryset.filter(name__icontains=value)
+        return queryset.filter(
+            Q(name__icontains=value)
+            | Q(project__name__icontains=value)
+            | Q(project__project_id__icontains=value)
+            | Q(project__organization__name__icontains=value)
+            | Q(replication_type__icontains=value)
+        )
 
 
 class CloudDNSZoneFilterSet(NetBoxModelFilterSet):
@@ -414,7 +579,13 @@ class CloudDNSZoneFilterSet(NetBoxModelFilterSet):
 
     def search(self, queryset, name, value):
         return queryset.filter(
-            Q(name__icontains=value) | Q(dns_name__icontains=value) | Q(description__icontains=value)
+            Q(name__icontains=value)
+            | Q(dns_name__icontains=value)
+            | Q(description__icontains=value)
+            | Q(project__name__icontains=value)
+            | Q(project__project_id__icontains=value)
+            | Q(project__organization__name__icontains=value)
+            | Q(visibility__icontains=value)
         )
 
 
@@ -426,7 +597,17 @@ class CloudDNSRecordFilterSet(NetBoxModelFilterSet):
         fields = ['id', 'name', 'zone', 'record_type']
 
     def search(self, queryset, name, value):
-        return queryset.filter(name__icontains=value)
+        qs_filter = (
+            Q(name__icontains=value)
+            | Q(record_type__icontains=value)
+            | Q(zone__name__icontains=value)
+            | Q(zone__project__name__icontains=value)
+            | Q(zone__project__project_id__icontains=value)
+            | Q(zone__project__organization__name__icontains=value)
+        )
+        if value.strip().isdigit():
+            qs_filter |= Q(ttl=int(value.strip()))
+        return queryset.filter(qs_filter)
 
 
 class MemorystoreInstanceFilterSet(NetBoxModelFilterSet):
@@ -438,7 +619,15 @@ class MemorystoreInstanceFilterSet(NetBoxModelFilterSet):
 
     def search(self, queryset, name, value):
         return queryset.filter(
-            Q(name__icontains=value) | Q(region__icontains=value) | Q(tier__icontains=value) | Q(host__icontains=value)
+            Q(name__icontains=value)
+            | Q(region__icontains=value)
+            | Q(tier__icontains=value)
+            | Q(host__icontains=value)
+            | Q(project__name__icontains=value)
+            | Q(project__project_id__icontains=value)
+            | Q(project__organization__name__icontains=value)
+            | Q(status__icontains=value)
+            | Q(redis_version__icontains=value)
         )
 
 
@@ -450,7 +639,13 @@ class NCCHubFilterSet(NetBoxModelFilterSet):
         fields = ['id', 'name', 'project']
 
     def search(self, queryset, name, value):
-        return queryset.filter(Q(name__icontains=value) | Q(description__icontains=value))
+        return queryset.filter(
+            Q(name__icontains=value)
+            | Q(description__icontains=value)
+            | Q(project__name__icontains=value)
+            | Q(project__project_id__icontains=value)
+            | Q(project__organization__name__icontains=value)
+        )
 
 
 class NCCSpokeFilterSet(NetBoxModelFilterSet):
@@ -463,7 +658,15 @@ class NCCSpokeFilterSet(NetBoxModelFilterSet):
 
     def search(self, queryset, name, value):
         return queryset.filter(
-            Q(name__icontains=value) | Q(description__icontains=value) | Q(location__icontains=value)
+            Q(name__icontains=value)
+            | Q(description__icontains=value)
+            | Q(location__icontains=value)
+            | Q(project__name__icontains=value)
+            | Q(project__project_id__icontains=value)
+            | Q(project__organization__name__icontains=value)
+            | Q(hub__name__icontains=value)
+            | Q(spoke_type__icontains=value)
+            | Q(linked_vpc_network__name__icontains=value)
         )
 
 
@@ -476,7 +679,14 @@ class VPNGatewayFilterSet(NetBoxModelFilterSet):
         fields = ['id', 'name', 'project', 'network', 'region', 'gateway_type']
 
     def search(self, queryset, name, value):
-        return queryset.filter(Q(name__icontains=value) | Q(region__icontains=value) | Q(gateway_type__icontains=value))
+        return queryset.filter(
+            Q(name__icontains=value)
+            | Q(region__icontains=value)
+            | Q(gateway_type__icontains=value)
+            | Q(project__name__icontains=value)
+            | Q(project__project_id__icontains=value)
+            | Q(project__organization__name__icontains=value)
+        )
 
 
 class ExternalVPNGatewayFilterSet(NetBoxModelFilterSet):
@@ -488,7 +698,12 @@ class ExternalVPNGatewayFilterSet(NetBoxModelFilterSet):
 
     def search(self, queryset, name, value):
         return queryset.filter(
-            Q(name__icontains=value) | Q(description__icontains=value) | Q(redundancy_type__icontains=value)
+            Q(name__icontains=value)
+            | Q(description__icontains=value)
+            | Q(redundancy_type__icontains=value)
+            | Q(project__name__icontains=value)
+            | Q(project__project_id__icontains=value)
+            | Q(project__organization__name__icontains=value)
         )
 
 
@@ -501,7 +716,17 @@ class VPNTunnelFilterSet(NetBoxModelFilterSet):
         fields = ['id', 'name', 'project', 'region', 'vpn_gateway', 'status', 'ike_version']
 
     def search(self, queryset, name, value):
-        return queryset.filter(Q(name__icontains=value) | Q(region__icontains=value))
+        return queryset.filter(
+            Q(name__icontains=value)
+            | Q(region__icontains=value)
+            | Q(project__name__icontains=value)
+            | Q(project__project_id__icontains=value)
+            | Q(project__organization__name__icontains=value)
+            | Q(router__name__icontains=value)
+            | Q(status__icontains=value)
+            | Q(peer_ip__icontains=value)
+            | Q(vpn_gateway__name__icontains=value)
+        )
 
 
 class InterconnectAttachmentFilterSet(NetBoxModelFilterSet):
@@ -518,6 +743,9 @@ class InterconnectAttachmentFilterSet(NetBoxModelFilterSet):
             | Q(region__icontains=value)
             | Q(attachment_type__icontains=value)
             | Q(bandwidth__icontains=value)
+            | Q(project__name__icontains=value)
+            | Q(project__project_id__icontains=value)
+            | Q(project__organization__name__icontains=value)
         )
 
 
@@ -530,7 +758,17 @@ class ServiceAttachmentFilterSet(NetBoxModelFilterSet):
     class Meta:
         model = ServiceAttachment
         fields = ['id', 'name', 'project', 'region', 'connection_preference']
-        search_fields = ['name', 'region']
+
+    def search(self, queryset, name, value):
+        return queryset.filter(
+            Q(name__icontains=value)
+            | Q(region__icontains=value)
+            | Q(project__name__icontains=value)
+            | Q(project__project_id__icontains=value)
+            | Q(project__organization__name__icontains=value)
+            | Q(connection_preference__icontains=value)
+            | Q(nat_subnets__icontains=value)
+        )
 
 
 class ServiceConnectEndpointFilterSet(NetBoxModelFilterSet):
@@ -546,4 +784,15 @@ class ServiceConnectEndpointFilterSet(NetBoxModelFilterSet):
     class Meta:
         model = ServiceConnectEndpoint
         fields = ['id', 'name', 'project', 'region', 'network', 'ip_address']
-        search_fields = ['name', 'ip_address', 'region']
+
+    def search(self, queryset, name, value):
+        return queryset.filter(
+            Q(name__icontains=value)
+            | Q(ip_address__icontains=value)
+            | Q(region__icontains=value)
+            | Q(project__name__icontains=value)
+            | Q(project__project_id__icontains=value)
+            | Q(project__organization__name__icontains=value)
+            | Q(network__name__icontains=value)
+            | Q(target_service_attachment__icontains=value)
+        )
