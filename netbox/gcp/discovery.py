@@ -1,11 +1,17 @@
 import json
 import logging
-from datetime import datetime
 import threading
-import django_rq
+from datetime import datetime
 
-from googleapiclient.discovery import build
+import django_rq
+import httplib2
+import redis
+from django.conf import settings
 from django.utils import timezone
+from google.oauth2 import service_account
+from google_auth_httplib2 import AuthorizedHttp
+from googleapiclient.discovery import build
+from googleapiclient.errors import HttpError
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +38,6 @@ class GCPDiscoveryService:
 
         # Try to connect to Redis
         try:
-            import django_rq
 
             # Try multiple ways to get the connection
             try:
@@ -44,8 +49,6 @@ class GCPDiscoveryService:
         except Exception as e:
             logger.warning(f'Failed to connect to Redis: {e} - trying manual connection')
             try:
-                from django.conf import settings
-                import redis
 
                 config = settings.RQ_QUEUES.get('default', {})
                 if config:
@@ -245,31 +248,19 @@ class GCPDiscoveryService:
             self.log(f'Critical error discovering project {project.project_id}: {str(e)}', 'error')
 
     def _handle_http_error(self, context, e, resource_id=None):
-        from googleapiclient.errors import HttpError
 
         if not isinstance(e, HttpError):
             return False
 
         try:
             content = json.loads(e.content.decode('utf-8'))
-            error_obj = content.get('error', {})
-            errors_list = error_obj.get('errors', [])
-            reason = errors_list[0].get('reason') if errors_list else None
-            message = error_obj.get('message')
-            
-            if not reason:
-                # Check details for reason (e.g. SERVICE_DISABLED often appears here)
-                details = error_obj.get('details', [])
-                for detail in details:
-                    if detail.get('reason'):
-                        reason = detail.get('reason')
-                        break
-                        
+            reason = content.get('error', {}).get('errors', [{}])[0].get('reason')
+            message = content.get('error', {}).get('message')
         except Exception:
             reason = 'unknown'
             message = str(e)
 
-        if reason in {'notFound', 'permissionDenied', 'forbidden', 'SERVICE_DISABLED', 'accessNotConfigured'}:
+        if reason in {'notFound', 'permissionDenied', 'forbidden'}:
             suffix = f' for {resource_id}' if resource_id else ''
             self.log(f'{context}{suffix}: {message}', 'warning')
             return True
@@ -278,7 +269,6 @@ class GCPDiscoveryService:
 
     def setup_credentials(self):
         try:
-            from google.oauth2 import service_account
 
             sa_info = self.organization.get_service_account_info()
             if not sa_info:
@@ -300,9 +290,6 @@ class GCPDiscoveryService:
             return False
 
     def _create_service(self, service_name, version):
-        from googleapiclient.discovery import build
-        import httplib2
-        from google_auth_httplib2 import AuthorizedHttp
         
         # Set timeout to prevent hanging threads
         http = httplib2.Http(timeout=60)
@@ -335,7 +322,6 @@ class GCPDiscoveryService:
         return projects
 
     def _list_folders(self, parent):
-        from googleapiclient.discovery import build
 
         folders = []
         page_token = None
@@ -352,7 +338,6 @@ class GCPDiscoveryService:
         return folders
 
     def _get_enabled_services(self, project_id):
-        from googleapiclient.discovery import build
 
         try:
             service = self._create_service('serviceusage', 'v1')
@@ -482,8 +467,6 @@ class GCPDiscoveryService:
 
     def discover_projects(self):
         from .models import GCPProject
-        from googleapiclient.discovery import build
-        from googleapiclient.errors import HttpError
 
         self.log('Discovering projects...')
         projects = []
@@ -577,8 +560,6 @@ class GCPDiscoveryService:
 
     def discover_vpc_networks(self, project):
         from .models import VPCNetwork
-        from googleapiclient.discovery import build
-        from googleapiclient.errors import HttpError
 
         self.log(f'Discovering VPC networks in {project.project_id}...')
 
@@ -615,8 +596,6 @@ class GCPDiscoveryService:
 
     def discover_subnets(self, project):
         from .models import Subnet, VPCNetwork
-        from googleapiclient.discovery import build
-        from googleapiclient.errors import HttpError
 
         self.log(f'Discovering subnets in {project.project_id}...')
 
@@ -666,8 +645,6 @@ class GCPDiscoveryService:
 
     def discover_firewall_rules(self, project):
         from .models import FirewallRule, VPCNetwork
-        from googleapiclient.discovery import build
-        from googleapiclient.errors import HttpError
 
         self.log(f'Discovering firewall rules in {project.project_id}...')
 
@@ -719,8 +696,6 @@ class GCPDiscoveryService:
 
     def discover_cloud_routers(self, project):
         from .models import CloudRouter, VPCNetwork
-        from googleapiclient.discovery import build
-        from googleapiclient.errors import HttpError
 
         self.log(f'Discovering Cloud Routers in {project.project_id}...')
 
@@ -769,8 +744,6 @@ class GCPDiscoveryService:
 
     def discover_vpn_gateways(self, project):
         from .models import VPNGateway, VPCNetwork
-        from googleapiclient.discovery import build
-        from googleapiclient.errors import HttpError
 
         self.log(f'Discovering VPN Gateways in {project.project_id}...')
 
@@ -819,8 +792,6 @@ class GCPDiscoveryService:
 
     def discover_vpn_tunnels(self, project):
         from .models import VPNTunnel, VPNGateway, CloudRouter
-        from googleapiclient.discovery import build
-        from googleapiclient.errors import HttpError
 
         self.log(f'Discovering VPN Tunnels in {project.project_id}...')
 
@@ -884,8 +855,6 @@ class GCPDiscoveryService:
 
     def discover_compute_instances(self, project):
         from .models import ComputeInstance
-        from googleapiclient.discovery import build
-        from googleapiclient.errors import HttpError
 
         self.log(f'Discovering Compute instances in {project.project_id}...')
 
@@ -974,8 +943,6 @@ class GCPDiscoveryService:
 
     def discover_instance_templates(self, project):
         from .models import InstanceTemplate
-        from googleapiclient.discovery import build
-        from googleapiclient.errors import HttpError
 
         self.log(f'Discovering Instance Templates in {project.project_id}...')
 
@@ -1035,8 +1002,6 @@ class GCPDiscoveryService:
 
     def discover_persistent_disks(self, project):
         from .models import PersistentDisk
-        from googleapiclient.discovery import build
-        from googleapiclient.errors import HttpError
 
         self.log(f'Discovering Persistent Disks in {project.project_id}...')
 
@@ -1079,8 +1044,6 @@ class GCPDiscoveryService:
 
     def discover_cloud_sql(self, project):
         from .models import CloudSQLInstance
-        from googleapiclient.discovery import build
-        from googleapiclient.errors import HttpError
 
         self.log(f'Discovering Cloud SQL instances in {project.project_id}...')
 
@@ -1128,8 +1091,6 @@ class GCPDiscoveryService:
 
     def discover_cloud_spanner(self, project):
         from .models import CloudSpannerInstance
-        from googleapiclient.discovery import build
-        from googleapiclient.errors import HttpError
 
         self.log(f'Discovering Cloud Spanner instances in {project.project_id}...')
 
@@ -1166,8 +1127,6 @@ class GCPDiscoveryService:
 
     def discover_storage_buckets(self, project):
         from .models import CloudStorageBucket
-        from googleapiclient.discovery import build
-        from googleapiclient.errors import HttpError
 
         self.log(f'Discovering Cloud Storage buckets in {project.project_id}...')
 
@@ -1208,8 +1167,6 @@ class GCPDiscoveryService:
 
     def discover_gke_clusters(self, project):
         from .models import GKECluster, GKENodePool, VPCNetwork, Subnet
-        from googleapiclient.discovery import build
-        from googleapiclient.errors import HttpError
 
         self.log(f'Discovering GKE clusters in {project.project_id}...')
 
@@ -1288,8 +1245,6 @@ class GCPDiscoveryService:
 
     def discover_cloud_functions(self, project):
         from .models import CloudFunction
-        from googleapiclient.discovery import build
-        from googleapiclient.errors import HttpError
 
         self.log(f'Discovering Cloud Functions in {project.project_id}...')
 
@@ -1346,8 +1301,6 @@ class GCPDiscoveryService:
 
     def discover_cloud_run(self, project):
         from .models import CloudRun
-        from googleapiclient.discovery import build
-        from googleapiclient.errors import HttpError
 
         self.log(f'Discovering Cloud Run services in {project.project_id}...')
 
@@ -1402,8 +1355,6 @@ class GCPDiscoveryService:
 
     def discover_service_accounts(self, project):
         from .models import ServiceAccount
-        from googleapiclient.discovery import build
-        from googleapiclient.errors import HttpError
 
         self.log(f'Discovering Service Accounts in {project.project_id}...')
         print(f"DEBUG: [{project.project_id}] Discovering Service Accounts", flush=True)
@@ -1444,7 +1395,6 @@ class GCPDiscoveryService:
 
     def discover_instance_groups(self, project):
         from .models import InstanceGroup, InstanceTemplate
-        from googleapiclient.errors import HttpError
 
         self.log(f'Discovering Instance Groups in {project.project_id}...')
 
@@ -1549,8 +1499,6 @@ class GCPDiscoveryService:
 
     def discover_cloud_nats(self, project):
         from .models import CloudNAT, CloudRouter
-        from googleapiclient.discovery import build
-        from googleapiclient.errors import HttpError
 
         self.log(f'Discovering Cloud NATs in {project.project_id}...')
 
@@ -1606,8 +1554,6 @@ class GCPDiscoveryService:
 
     def discover_load_balancers(self, project):
         from .models import LoadBalancer, VPCNetwork
-        from googleapiclient.discovery import build
-        from googleapiclient.errors import HttpError
 
         self.log(f'Discovering Load Balancers (Forwarding Rules) in {project.project_id}...')
 
@@ -1672,7 +1618,6 @@ class GCPDiscoveryService:
 
     def discover_service_attachments(self, project):
         from .models import ServiceAttachment
-        from googleapiclient.errors import HttpError
 
         self.log(f'Discovering Service Attachments in {project.project_id}...')
 
@@ -1714,7 +1659,6 @@ class GCPDiscoveryService:
 
     def discover_psc_endpoints(self, project):
         from .models import ServiceConnectEndpoint, VPCNetwork
-        from googleapiclient.errors import HttpError
 
         self.log(f'Discovering PSC Endpoints in {project.project_id}...')
 
@@ -1776,8 +1720,6 @@ class GCPDiscoveryService:
 
     def discover_ncc_hubs(self, project):
         from .models import NCCHub
-        from googleapiclient.discovery import build
-        from googleapiclient.errors import HttpError
 
         self.log(f'Discovering NCC Hubs in {project.project_id}...')
 
@@ -1817,8 +1759,6 @@ class GCPDiscoveryService:
 
     def discover_ncc_spokes(self, project):
         from .models import NCCSpoke, NCCHub, VPCNetwork
-        from googleapiclient.discovery import build
-        from googleapiclient.errors import HttpError
 
         self.log(f'Discovering NCC Spokes in {project.project_id}...')
 
@@ -1901,8 +1841,6 @@ class GCPDiscoveryService:
 
     def discover_interconnect_attachments(self, project):
         from .models import InterconnectAttachment, CloudRouter
-        from googleapiclient.discovery import build
-        from googleapiclient.errors import HttpError
 
         self.log(f'Discovering Interconnect Attachments in {project.project_id}...')
 
@@ -1961,8 +1899,6 @@ class GCPDiscoveryService:
 
     def discover_external_vpn_gateways(self, project):
         from .models import ExternalVPNGateway
-        from googleapiclient.discovery import build
-        from googleapiclient.errors import HttpError
 
         self.log(f'Discovering External VPN Gateways in {project.project_id}...')
 
@@ -1996,8 +1932,6 @@ class GCPDiscoveryService:
 
     def discover_firestore(self, project):
         from .models import FirestoreDatabase
-        from googleapiclient.discovery import build
-        from googleapiclient.errors import HttpError
 
         self.log(f'Discovering Firestore Databases in {project.project_id}...')
 
@@ -2040,8 +1974,6 @@ class GCPDiscoveryService:
 
     def discover_bigtable(self, project):
         from .models import BigtableInstance
-        from googleapiclient.discovery import build
-        from googleapiclient.errors import HttpError
 
         self.log(f'Discovering Bigtable Instances in {project.project_id}...')
 
@@ -2080,8 +2012,6 @@ class GCPDiscoveryService:
 
     def discover_memorystore(self, project):
         from .models import MemorystoreInstance, VPCNetwork
-        from googleapiclient.discovery import build
-        from googleapiclient.errors import HttpError
 
         self.log(f'Discovering Memorystore (Redis) in {project.project_id}...')
 
@@ -2140,8 +2070,6 @@ class GCPDiscoveryService:
 
     def discover_pubsub(self, project):
         from .models import PubSubTopic, PubSubSubscription
-        from googleapiclient.discovery import build
-        from googleapiclient.errors import HttpError
 
         self.log(f'Discovering Pub/Sub in {project.project_id}...')
 
@@ -2230,7 +2158,6 @@ class GCPDiscoveryService:
 
     def discover_secret_manager_secrets(self, project):
         from .models import SecretManagerSecret
-        from googleapiclient.discovery import build
 
         try:
             service = self._create_service('secretmanager', 'v1')
@@ -2263,7 +2190,6 @@ class GCPDiscoveryService:
 
     def discover_cloud_dns_zones(self, project):
         from .models import CloudDNSZone, CloudDNSRecord
-        from googleapiclient.discovery import build
         
         try:
             service = self._create_service('dns', 'v1')
@@ -2325,7 +2251,6 @@ class GCPDiscoveryService:
 
     def discover_iam_roles(self, project):
         from .models import IAMRole
-        from googleapiclient.discovery import build
         
         try:
             print(f"DEBUG: [{project.project_id}] Discovering IAM Roles", flush=True)
@@ -2362,7 +2287,6 @@ class GCPDiscoveryService:
 
     def discover_iam_policy(self, project):
         from .models import IAMBinding, IAMRole
-        from googleapiclient.discovery import build
         
         try:
             print(f"DEBUG: [{project.project_id}] Discovering IAM Policy", flush=True)
