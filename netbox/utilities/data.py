@@ -35,6 +35,7 @@ def get_config_value_ci(config_dict, key, default=None):
             return value
     return default
 
+
 def deepmerge(original, new):
     """
     Deep merge two dictionaries (new into original) and return a new dict
