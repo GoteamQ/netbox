@@ -371,8 +371,8 @@ class InterfaceSerializer(OwnerMixin, NetBoxModelSerializer, CabledObjectSeriali
                 if vlan.site not in [device.site, None]:
                     raise serializers.ValidationError(
                         {
-                            'tagged_vlans': f"VLAN {vlan} must belong to the same site as the interface's parent device, "
-                            f'or it must be global.'
+                            'tagged_vlans': f"VLAN {vlan} must belong to the same site as the interface's parent "
+                            f"device, or it must be global."
                         }
                     )
 

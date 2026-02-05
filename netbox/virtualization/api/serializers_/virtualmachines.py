@@ -214,8 +214,8 @@ class VMInterfaceSerializer(OwnerMixin, NetBoxModelSerializer):
                 if vlan.site not in [virtual_machine.site, None]:
                     raise serializers.ValidationError(
                         {
-                            'tagged_vlans': f"VLAN {vlan} must belong to the same site as the interface's parent virtual "
-                            f'machine, or it must be global.'
+                            'tagged_vlans': f"VLAN {vlan} must belong to the same site as the interface's parent "
+                            f"virtual machine, or it must be global."
                         }
                     )
 

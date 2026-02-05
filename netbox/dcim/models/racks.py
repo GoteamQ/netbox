@@ -87,8 +87,8 @@ class RackBase(WeightMixin, PrimaryModel):
         null=True,
         help_text=(
             _(
-                'Maximum depth of a mounted device, in millimeters. For four-post racks, this is the distance between the '
-                'front and rear rails.'
+                'Maximum depth of a mounted device, in millimeters. For four-post racks, this is the distance between '
+                'the front and rear rails.'
             )
         ),
     )

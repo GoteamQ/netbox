@@ -120,7 +120,8 @@ class Aggregate(ContactsMixin, GetAvailablePrefixesMixin, PrimaryModel):
                 raise ValidationError(
                     {
                         'prefix': _(
-                            'Aggregates cannot overlap. {prefix} is already covered by an existing aggregate ({aggregate}).'
+                            'Aggregates cannot overlap. {prefix} is already covered by an existing aggregate '
+                            '({aggregate}).'
                         ).format(prefix=self.prefix, aggregate=covering_aggregates[0])
                     }
                 )
