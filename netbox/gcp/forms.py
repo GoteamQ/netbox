@@ -1,9 +1,9 @@
 from django import forms
-
-from netbox.forms import NetBoxModelForm, NetBoxModelFilterSetForm
+from netbox.forms import NetBoxModelForm, NetBoxModelFilterSetForm, NetBoxModelBulkEditForm, NetBoxModelImportForm, NetBoxModelBulkEditForm, NetBoxModelImportForm
 from utilities.forms.fields import DynamicModelChoiceField
 from .models import (
     GCPOrganization,
+    DiscoveryLog,
     GCPProject,
     ComputeInstance,
     InstanceTemplate,
@@ -656,3 +656,60 @@ class ServiceConnectEndpointFilterForm(NetBoxModelFilterSetForm):
     network = DynamicModelChoiceField(queryset=VPCNetwork.objects.all(), required=False)
     name = forms.CharField(required=False)
     region = forms.CharField(required=False)
+
+class GCPOrganizationBulkEditForm(NetBoxModelBulkEditForm):
+    is_active = forms.NullBooleanField(
+        required=False,
+        widget=forms.Select(choices=[
+            (None, '---------'),
+            (True, 'Yes'),
+            (False, 'No'),
+        ]),
+        label='Active'
+    )
+    auto_discover = forms.NullBooleanField(
+        required=False,
+        widget=forms.Select(choices=[
+            (None, '---------'),
+            (True, 'Yes'),
+            (False, 'No'),
+        ]),
+        label='Auto Discover'
+    )
+    
+    model = GCPOrganization
+    fieldsets = (
+        (None, ('is_active', 'auto_discover')),
+    )
+
+
+class GCPOrganizationImportForm(NetBoxModelImportForm):
+    class Meta:
+        model = GCPOrganization
+        fields = (
+            'name', 'organization_id', 'service_account_json', 'is_active', 'auto_discover',
+        )
+
+
+class DiscoveryLogForm(NetBoxModelForm):
+    organization = DynamicModelChoiceField(
+        queryset=GCPOrganization.objects.all()
+    )
+
+    class Meta:
+        model = DiscoveryLog
+        fields = (
+            'organization', 'status', 'error_message', 'log_output',
+        )
+
+
+class DiscoveryLogFilterForm(NetBoxModelFilterSetForm):
+    model = DiscoveryLog
+    organization = DynamicModelChoiceField(
+        queryset=GCPOrganization.objects.all(),
+        required=False
+    )
+    status = forms.ChoiceField(
+        choices=[('', '---------')] + list(DiscoveryLog.status.field.choices),
+        required=False
+    )

@@ -30,6 +30,7 @@ class GCPConfig(AppConfig):
             'dbshell',
             'loaddata',
             'dumpdata',
+            'test',
         }
         return not any(cmd in sys.argv for cmd in blocked_commands)
 
