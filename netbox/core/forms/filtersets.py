@@ -57,7 +57,7 @@ class JobFilterForm(SavedFiltersMixin, FilterForm):
     model = Job
     fieldsets = (
         FieldSet('q', 'filter_id'),
-        FieldSet('object_type_id', 'status', name=_('Attributes')),
+        FieldSet('object_type_id', 'status', 'queue_name', name=_('Attributes')),
         FieldSet(
             'created__before',
             'created__after',
@@ -76,16 +76,60 @@ class JobFilterForm(SavedFiltersMixin, FilterForm):
         queryset=ObjectType.objects.with_feature('jobs'),
         required=False,
     )
-    status = forms.MultipleChoiceField(label=_('Status'), choices=JobStatusChoices, required=False)
-    created__after = forms.DateTimeField(label=_('Created after'), required=False, widget=DateTimePicker())
-    created__before = forms.DateTimeField(label=_('Created before'), required=False, widget=DateTimePicker())
-    scheduled__after = forms.DateTimeField(label=_('Scheduled after'), required=False, widget=DateTimePicker())
-    scheduled__before = forms.DateTimeField(label=_('Scheduled before'), required=False, widget=DateTimePicker())
-    started__after = forms.DateTimeField(label=_('Started after'), required=False, widget=DateTimePicker())
-    started__before = forms.DateTimeField(label=_('Started before'), required=False, widget=DateTimePicker())
-    completed__after = forms.DateTimeField(label=_('Completed after'), required=False, widget=DateTimePicker())
-    completed__before = forms.DateTimeField(label=_('Completed before'), required=False, widget=DateTimePicker())
-    user = DynamicModelMultipleChoiceField(queryset=User.objects.all(), required=False, label=_('User'))
+    status = forms.MultipleChoiceField(
+        label=_('Status'),
+        choices=JobStatusChoices,
+        required=False
+    )
+    queue_name = forms.CharField(
+        label=_('Queue'),
+        required=False
+    )
+    created__after = forms.DateTimeField(
+        label=_('Created after'),
+        required=False,
+        widget=DateTimePicker()
+    )
+    created__before = forms.DateTimeField(
+        label=_('Created before'),
+        required=False,
+        widget=DateTimePicker()
+    )
+    scheduled__after = forms.DateTimeField(
+        label=_('Scheduled after'),
+        required=False,
+        widget=DateTimePicker()
+    )
+    scheduled__before = forms.DateTimeField(
+        label=_('Scheduled before'),
+        required=False,
+        widget=DateTimePicker()
+    )
+    started__after = forms.DateTimeField(
+        label=_('Started after'),
+        required=False,
+        widget=DateTimePicker()
+    )
+    started__before = forms.DateTimeField(
+        label=_('Started before'),
+        required=False,
+        widget=DateTimePicker()
+    )
+    completed__after = forms.DateTimeField(
+        label=_('Completed after'),
+        required=False,
+        widget=DateTimePicker()
+    )
+    completed__before = forms.DateTimeField(
+        label=_('Completed before'),
+        required=False,
+        widget=DateTimePicker()
+    )
+    user = DynamicModelMultipleChoiceField(
+        queryset=User.objects.all(),
+        required=False,
+        label=_('User')
+    )
 
 
 class ObjectChangeFilterForm(SavedFiltersMixin, FilterForm):

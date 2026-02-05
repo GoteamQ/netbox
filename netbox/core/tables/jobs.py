@@ -30,6 +30,9 @@ class JobTable(NetBoxTable):
     completed = columns.DateTimeColumn(
         verbose_name=_('Completed'),
     )
+    queue_name = tables.Column(
+        verbose_name=_('Queue'),
+    )
     log_entries = tables.Column(
         verbose_name=_('Log Entries'),
     )
@@ -50,6 +53,8 @@ class JobTable(NetBoxTable):
             'started',
             'completed',
             'user',
+            'queue_name',
+            'log_entries',
             'error',
             'job_id',
         )
