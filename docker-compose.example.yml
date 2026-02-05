@@ -20,7 +20,7 @@ services:
       - redis
     environment:
       ALLOWED_HOSTS: "localhost,127.0.0.1,0.0.0.0"
-      SECRET_KEY: ")%hadA7jDkTo1+0UkOq%WqX^bHR8Yfm5-P33X7hQKqk4yuD8&w"
+      SECRET_KEY: "CHANGE_ME" # Please replace this with a random 50-character string
       DB_NAME: netbox
       DB_USER: netbox
       DB_PASSWORD: netbox
@@ -49,7 +49,7 @@ services:
     restart: unless-stopped
     environment:
       ALLOWED_HOSTS: "localhost,127.0.0.1,0.0.0.0"
-      SECRET_KEY: ")%hadA7jDkTo1+0UkOq%WqX^bHR8Yfm5-P33X7hQKqk4yuD8&w"
+      SECRET_KEY: "CHANGE_ME" # Please replace this with a random 50-character string
       DB_NAME: netbox
       DB_USER: netbox
       DB_PASSWORD: netbox
