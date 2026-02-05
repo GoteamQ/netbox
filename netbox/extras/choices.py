@@ -10,8 +10,8 @@ from utilities.choices import ChoiceSet
 # CustomFields
 #
 
-class CustomFieldTypeChoices(ChoiceSet):
 
+class CustomFieldTypeChoices(ChoiceSet):
     TYPE_TEXT = 'text'
     TYPE_LONGTEXT = 'longtext'
     TYPE_INTEGER = 'integer'
@@ -44,7 +44,6 @@ class CustomFieldTypeChoices(ChoiceSet):
 
 
 class CustomFieldFilterLogicChoices(ChoiceSet):
-
     FILTER_DISABLED = 'disabled'
     FILTER_LOOSE = 'loose'
     FILTER_EXACT = 'exact'
@@ -57,7 +56,6 @@ class CustomFieldFilterLogicChoices(ChoiceSet):
 
 
 class CustomFieldUIVisibleChoices(ChoiceSet):
-
     ALWAYS = 'always'
     IF_SET = 'if-set'
     HIDDEN = 'hidden'
@@ -70,7 +68,6 @@ class CustomFieldUIVisibleChoices(ChoiceSet):
 
 
 class CustomFieldUIEditableChoices(ChoiceSet):
-
     YES = 'yes'
     NO = 'no'
     HIDDEN = 'hidden'
@@ -83,7 +80,6 @@ class CustomFieldUIEditableChoices(ChoiceSet):
 
 
 class CustomFieldChoiceSetBaseChoices(ChoiceSet):
-
     IATA = 'IATA'
     ISO_3166 = 'ISO_3166'
     UN_LOCODE = 'UN_LOCODE'
@@ -99,8 +95,8 @@ class CustomFieldChoiceSetBaseChoices(ChoiceSet):
 # CustomLinks
 #
 
-class CustomLinkButtonClassChoices(ButtonColorChoices):
 
+class CustomLinkButtonClassChoices(ButtonColorChoices):
     LINK = 'ghost-dark'
 
     CHOICES = (
@@ -113,8 +109,8 @@ class CustomLinkButtonClassChoices(ButtonColorChoices):
 # Bookmarks
 #
 
-class BookmarkOrderingChoices(ChoiceSet):
 
+class BookmarkOrderingChoices(ChoiceSet):
     ORDERING_NEWEST = '-created'
     ORDERING_OLDEST = 'created'
     ORDERING_ALPHABETICAL_AZ = 'name'
@@ -131,6 +127,7 @@ class BookmarkOrderingChoices(ChoiceSet):
 #
 # Journal entries
 #
+
 
 class JournalEntryKindChoices(ChoiceSet):
     key = 'JournalEntry.kind'
@@ -152,8 +149,8 @@ class JournalEntryKindChoices(ChoiceSet):
 # Reports and Scripts
 #
 
-class LogLevelChoices(ChoiceSet):
 
+class LogLevelChoices(ChoiceSet):
     LOG_DEBUG = 'debug'
     LOG_INFO = 'info'
     LOG_SUCCESS = 'success'
@@ -166,7 +163,6 @@ class LogLevelChoices(ChoiceSet):
         (LOG_SUCCESS, _('Success'), 'green'),
         (LOG_WARNING, _('Warning'), 'yellow'),
         (LOG_FAILURE, _('Failure'), 'red'),
-
     )
 
     SYSTEM_LEVELS = {
@@ -182,8 +178,8 @@ class LogLevelChoices(ChoiceSet):
 # Webhooks
 #
 
-class WebhookHttpMethodChoices(ChoiceSet):
 
+class WebhookHttpMethodChoices(ChoiceSet):
     METHOD_GET = 'GET'
     METHOD_POST = 'POST'
     METHOD_PUT = 'PUT'
@@ -202,6 +198,7 @@ class WebhookHttpMethodChoices(ChoiceSet):
 #
 # Dashboard widgets
 #
+
 
 class DashboardWidgetColorChoices(ChoiceSet):
     BLUE = 'blue'
@@ -239,8 +236,8 @@ class DashboardWidgetColorChoices(ChoiceSet):
 # Event Rules
 #
 
-class EventRuleActionChoices(ChoiceSet):
 
+class EventRuleActionChoices(ChoiceSet):
     WEBHOOK = 'webhook'
     SCRIPT = 'script'
     NOTIFICATION = 'notification'

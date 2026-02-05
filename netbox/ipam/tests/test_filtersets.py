@@ -43,7 +43,7 @@ class ASNRangeTestCase(TestCase, ChangeLoggedFilterSetTests):
                 tenant=None,
                 start=65000,
                 end=65009,
-                description='foobar1'
+                description='foobar1',
             ),
             ASNRange(
                 name='ASN Range 2',
@@ -52,7 +52,7 @@ class ASNRangeTestCase(TestCase, ChangeLoggedFilterSetTests):
                 tenant=tenants[0],
                 start=65010,
                 end=65019,
-                description='foobar2'
+                description='foobar2',
             ),
             ASNRange(
                 name='ASN Range 3',
@@ -61,7 +61,7 @@ class ASNRangeTestCase(TestCase, ChangeLoggedFilterSetTests):
                 tenant=tenants[1],
                 start=65020,
                 end=65029,
-                description='foobar3'
+                description='foobar3',
             ),
         )
         ASNRange.objects.bulk_create(asn_ranges)
@@ -224,7 +224,6 @@ class VRFTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
-
         route_targets = (
             RouteTarget(name='65000:1001'),
             RouteTarget(name='65000:1002'),
@@ -332,7 +331,6 @@ class RouteTargetTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
-
         tenant_groups = (
             TenantGroup(name='Tenant group 1', slug='tenant-group-1'),
             TenantGroup(name='Tenant group 2', slug='tenant-group-2'),
@@ -447,7 +445,6 @@ class RIRTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
-
         rirs = (
             RIR(name='RIR 1', slug='rir-1', is_private=False, description='foobar1'),
             RIR(name='RIR 2', slug='rir-2', is_private=False, description='foobar2'),
@@ -487,7 +484,6 @@ class AggregateTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
-
         rirs = (
             RIR(name='RIR 1', slug='rir-1'),
             RIR(name='RIR 2', slug='rir-2'),
@@ -573,7 +569,6 @@ class RoleTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
-
         roles = (
             Role(name='Role 1', slug='role-1', description='foobar1'),
             Role(name='Role 2', slug='role-2', description='foobar2'),
@@ -604,7 +599,6 @@ class PrefixTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
-
         regions = (
             Region(name='Test Region 1', slug='test-region-1'),
             Region(name='Test Region 2', slug='test-region-2'),
@@ -731,12 +725,7 @@ class PrefixTestCase(TestCase, ChangeLoggedFilterSetTests):
                 mark_utilized=True,
             ),
             Prefix(
-                prefix='2001:db8:0:1::/64',
-                tenant=tenants[0],
-                scope=sites[0],
-                vrf=vrfs[0],
-                vlan=vlans[0],
-                role=roles[0]
+                prefix='2001:db8:0:1::/64', tenant=tenants[0], scope=sites[0], vrf=vrfs[0], vlan=vlans[0], role=roles[0]
             ),
             Prefix(
                 prefix='2001:db8:0:2::/64',
@@ -908,7 +897,6 @@ class IPRangeTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
-
         vrfs = (
             VRF(name='VRF 1', rd='65000:100'),
             VRF(name='VRF 2', rd='65000:200'),
@@ -959,7 +947,7 @@ class IPRangeTestCase(TestCase, ChangeLoggedFilterSetTests):
                 tenant=tenants[0],
                 role=roles[0],
                 status=IPRangeStatusChoices.STATUS_ACTIVE,
-                description='foobar2'
+                description='foobar2',
             ),
             IPRange(
                 start_address='10.0.3.100/24',
@@ -968,7 +956,7 @@ class IPRangeTestCase(TestCase, ChangeLoggedFilterSetTests):
                 vrf=vrfs[1],
                 tenant=tenants[1],
                 role=roles[1],
-                status=IPRangeStatusChoices.STATUS_DEPRECATED
+                status=IPRangeStatusChoices.STATUS_DEPRECATED,
             ),
             IPRange(
                 start_address='10.0.4.100/24',
@@ -977,7 +965,7 @@ class IPRangeTestCase(TestCase, ChangeLoggedFilterSetTests):
                 vrf=vrfs[2],
                 tenant=tenants[2],
                 role=roles[2],
-                status=IPRangeStatusChoices.STATUS_RESERVED
+                status=IPRangeStatusChoices.STATUS_RESERVED,
             ),
             IPRange(
                 start_address='2001:db8:0:1::1/64',
@@ -997,7 +985,7 @@ class IPRangeTestCase(TestCase, ChangeLoggedFilterSetTests):
                 vrf=vrfs[0],
                 tenant=tenants[0],
                 role=roles[0],
-                status=IPRangeStatusChoices.STATUS_ACTIVE
+                status=IPRangeStatusChoices.STATUS_ACTIVE,
             ),
             IPRange(
                 start_address='2001:db8:0:3::1/64',
@@ -1006,7 +994,7 @@ class IPRangeTestCase(TestCase, ChangeLoggedFilterSetTests):
                 vrf=vrfs[1],
                 tenant=tenants[1],
                 role=roles[1],
-                status=IPRangeStatusChoices.STATUS_DEPRECATED
+                status=IPRangeStatusChoices.STATUS_DEPRECATED,
             ),
             IPRange(
                 start_address='2001:db8:0:4::1/64',
@@ -1015,7 +1003,7 @@ class IPRangeTestCase(TestCase, ChangeLoggedFilterSetTests):
                 vrf=vrfs[2],
                 tenant=tenants[2],
                 role=roles[2],
-                status=IPRangeStatusChoices.STATUS_RESERVED
+                status=IPRangeStatusChoices.STATUS_RESERVED,
             ),
         )
         IPRange.objects.bulk_create(ip_ranges)
@@ -1107,7 +1095,6 @@ class IPAddressTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
-
         vrfs = (
             VRF(name='VRF 1', rd='65000:100'),
             VRF(name='VRF 2', rd='65000:200'),
@@ -1180,7 +1167,7 @@ class IPAddressTestCase(TestCase, ChangeLoggedFilterSetTests):
                 assigned_object=None,
                 status=IPAddressStatusChoices.STATUS_ACTIVE,
                 dns_name='ipaddress-a',
-                description='foobar1'
+                description='foobar1',
             ),
             IPAddress(
                 address='10.0.0.2/24',
@@ -1188,7 +1175,7 @@ class IPAddressTestCase(TestCase, ChangeLoggedFilterSetTests):
                 vrf=vrfs[0],
                 assigned_object=interfaces[0],
                 status=IPAddressStatusChoices.STATUS_ACTIVE,
-                dns_name='ipaddress-b'
+                dns_name='ipaddress-b',
             ),
             IPAddress(
                 address='10.0.0.3/24',
@@ -1197,7 +1184,7 @@ class IPAddressTestCase(TestCase, ChangeLoggedFilterSetTests):
                 assigned_object=interfaces[1],
                 status=IPAddressStatusChoices.STATUS_RESERVED,
                 role=IPAddressRoleChoices.ROLE_VIP,
-                dns_name='ipaddress-c'
+                dns_name='ipaddress-c',
             ),
             IPAddress(
                 address='10.0.0.4/24',
@@ -1206,21 +1193,21 @@ class IPAddressTestCase(TestCase, ChangeLoggedFilterSetTests):
                 assigned_object=interfaces[2],
                 status=IPAddressStatusChoices.STATUS_DEPRECATED,
                 role=IPAddressRoleChoices.ROLE_SECONDARY,
-                dns_name='ipaddress-d'
+                dns_name='ipaddress-d',
             ),
             IPAddress(
                 address='10.0.0.5/24',
                 tenant=None,
                 vrf=None,
                 assigned_object=fhrp_groups[0],
-                status=IPAddressStatusChoices.STATUS_ACTIVE
+                status=IPAddressStatusChoices.STATUS_ACTIVE,
             ),
             IPAddress(
                 address='10.0.0.1/25',
                 tenant=None,
                 vrf=None,
                 assigned_object=None,
-                status=IPAddressStatusChoices.STATUS_ACTIVE
+                status=IPAddressStatusChoices.STATUS_ACTIVE,
             ),
             IPAddress(
                 address='2001:db8::1/64',
@@ -1229,7 +1216,7 @@ class IPAddressTestCase(TestCase, ChangeLoggedFilterSetTests):
                 assigned_object=None,
                 status=IPAddressStatusChoices.STATUS_ACTIVE,
                 dns_name='ipaddress-a',
-                description='foobar2'
+                description='foobar2',
             ),
             IPAddress(
                 address='2001:db8::2/64',
@@ -1237,7 +1224,7 @@ class IPAddressTestCase(TestCase, ChangeLoggedFilterSetTests):
                 vrf=vrfs[0],
                 assigned_object=vminterfaces[0],
                 status=IPAddressStatusChoices.STATUS_ACTIVE,
-                dns_name='ipaddress-b'
+                dns_name='ipaddress-b',
             ),
             IPAddress(
                 address='2001:db8::3/64',
@@ -1246,7 +1233,7 @@ class IPAddressTestCase(TestCase, ChangeLoggedFilterSetTests):
                 assigned_object=vminterfaces[1],
                 status=IPAddressStatusChoices.STATUS_RESERVED,
                 role=IPAddressRoleChoices.ROLE_VIP,
-                dns_name='ipaddress-c'
+                dns_name='ipaddress-c',
             ),
             IPAddress(
                 address='2001:db8::4/64',
@@ -1255,21 +1242,21 @@ class IPAddressTestCase(TestCase, ChangeLoggedFilterSetTests):
                 assigned_object=vminterfaces[2],
                 status=IPAddressStatusChoices.STATUS_DEPRECATED,
                 role=IPAddressRoleChoices.ROLE_SECONDARY,
-                dns_name='ipaddress-d'
+                dns_name='ipaddress-d',
             ),
             IPAddress(
                 address='2001:db8::5/64',
                 tenant=None,
                 vrf=None,
                 assigned_object=fhrp_groups[1],
-                status=IPAddressStatusChoices.STATUS_ACTIVE
+                status=IPAddressStatusChoices.STATUS_ACTIVE,
             ),
             IPAddress(
                 address='2001:db8::1/65',
                 tenant=None,
                 vrf=None,
                 assigned_object=None,
-                status=IPAddressStatusChoices.STATUS_ACTIVE
+                status=IPAddressStatusChoices.STATUS_ACTIVE,
             ),
         )
         IPAddress.objects.bulk_create(ipaddresses)
@@ -1450,7 +1437,6 @@ class FHRPGroupTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
-
         ip_addresses = (
             IPAddress(address=IPNetwork('192.168.1.1/24')),
             IPAddress(address=IPNetwork('192.168.2.1/24')),
@@ -1464,7 +1450,7 @@ class FHRPGroupTestCase(TestCase, ChangeLoggedFilterSetTests):
                 group_id=10,
                 auth_type=FHRPGroupAuthTypeChoices.AUTHENTICATION_PLAINTEXT,
                 auth_key='foo123',
-                description='foobar1'
+                description='foobar1',
             ),
             FHRPGroup(
                 protocol=FHRPGroupProtocolChoices.PROTOCOL_VRRP3,
@@ -1472,13 +1458,9 @@ class FHRPGroupTestCase(TestCase, ChangeLoggedFilterSetTests):
                 auth_type=FHRPGroupAuthTypeChoices.AUTHENTICATION_MD5,
                 auth_key='bar456',
                 name='bar123',
-                description='foobar2'
+                description='foobar2',
             ),
-            FHRPGroup(
-                protocol=FHRPGroupProtocolChoices.PROTOCOL_HSRP,
-                group_id=30,
-                description='foobar3'
-            ),
+            FHRPGroup(protocol=FHRPGroupProtocolChoices.PROTOCOL_HSRP, group_id=30, description='foobar3'),
         )
         FHRPGroup.objects.bulk_create(fhrp_groups)
         fhrp_groups[0].ip_addresses.set([ip_addresses[0]])
@@ -1498,10 +1480,12 @@ class FHRPGroupTestCase(TestCase, ChangeLoggedFilterSetTests):
         self.assertEqual(self.filterset(params, self.queryset).qs.count(), 2)
 
     def test_auth_type(self):
-        params = {'auth_type': [
-            FHRPGroupAuthTypeChoices.AUTHENTICATION_PLAINTEXT,
-            FHRPGroupAuthTypeChoices.AUTHENTICATION_MD5,
-        ]}
+        params = {
+            'auth_type': [
+                FHRPGroupAuthTypeChoices.AUTHENTICATION_PLAINTEXT,
+                FHRPGroupAuthTypeChoices.AUTHENTICATION_MD5,
+            ]
+        }
         self.assertEqual(self.filterset(params, self.queryset).qs.count(), 2)
 
     def test_auth_key(self):
@@ -1509,7 +1493,11 @@ class FHRPGroupTestCase(TestCase, ChangeLoggedFilterSetTests):
         self.assertEqual(self.filterset(params, self.queryset).qs.count(), 2)
 
     def test_name(self):
-        params = {'name': ['bar123', ]}
+        params = {
+            'name': [
+                'bar123',
+            ]
+        }
         self.assertEqual(self.filterset(params, self.queryset).qs.count(), 1)
 
     def test_description(self):
@@ -1532,7 +1520,6 @@ class FHRPGroupAssignmentTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
-
         device = create_test_device('device1')
         interfaces = (
             Interface(device=device, name='eth0'),
@@ -1606,7 +1593,6 @@ class VLANGroupTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
-
         region = Region(name='Region 1', slug='region-1')
         region.save()
 
@@ -1653,7 +1639,7 @@ class VLANGroupTestCase(TestCase, ChangeLoggedFilterSetTests):
                 vid_ranges=[NumericRange(1, 11), NumericRange(100, 200)],
                 scope=region,
                 description='foobar1',
-                tenant=tenants[0]
+                tenant=tenants[0],
             ),
             VLANGroup(
                 name='VLAN Group 2',
@@ -1661,7 +1647,7 @@ class VLANGroupTestCase(TestCase, ChangeLoggedFilterSetTests):
                 vid_ranges=[NumericRange(1, 11), NumericRange(200, 300)],
                 scope=sitegroup,
                 description='foobar2',
-                tenant=tenants[1]
+                tenant=tenants[1],
             ),
             VLANGroup(
                 name='VLAN Group 3',
@@ -1669,36 +1655,33 @@ class VLANGroupTestCase(TestCase, ChangeLoggedFilterSetTests):
                 vid_ranges=[NumericRange(1, 11), NumericRange(300, 400)],
                 scope=site,
                 description='foobar3',
-                tenant=tenants[1]
+                tenant=tenants[1],
             ),
             VLANGroup(
                 name='VLAN Group 4',
                 slug='vlan-group-4',
                 vid_ranges=[NumericRange(1, 11), NumericRange(400, 500)],
-                scope=location
+                scope=location,
             ),
             VLANGroup(
                 name='VLAN Group 5',
                 slug='vlan-group-5',
                 vid_ranges=[NumericRange(1, 11), NumericRange(500, 600)],
-                scope=rack
+                scope=rack,
             ),
             VLANGroup(
                 name='VLAN Group 6',
                 slug='vlan-group-6',
                 vid_ranges=[NumericRange(1, 11), NumericRange(600, 700)],
-                scope=clustergroup
+                scope=clustergroup,
             ),
             VLANGroup(
                 name='VLAN Group 7',
                 slug='vlan-group-7',
                 vid_ranges=[NumericRange(1, 11), NumericRange(700, 800)],
-                scope=cluster
+                scope=cluster,
             ),
-            VLANGroup(
-                name='VLAN Group 8',
-                slug='vlan-group-8'
-            ),
+            VLANGroup(name='VLAN Group 8', slug='vlan-group-8'),
         )
         VLANGroup.objects.bulk_create(vlan_groups)
 
@@ -1778,7 +1761,6 @@ class VLANTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
-
         regions = (
             Region(name='Test Region 1', slug='test-region-1'),
             Region(name='Test Region 2', slug='test-region-2'),
@@ -1901,7 +1883,6 @@ class VLANTestCase(TestCase, ChangeLoggedFilterSetTests):
             VLANGroup(name='Cluster 2', slug='cluster-2', scope=clusters[1]),
             VLANGroup(name='Cluster 3', slug='cluster-3', scope=clusters[2]),
             VLANGroup(name='Cluster 4', slug='cluster-4', scope=clusters[3]),
-
             # General purpose VLAN groups
             VLANGroup(name='VLAN Group 1', slug='vlan-group-1'),
             VLANGroup(name='VLAN Group 2', slug='vlan-group-2'),
@@ -2179,7 +2160,6 @@ class VLANTranslationPolicyTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
-
         vlan_translation_policies = (
             VLANTranslationPolicy(
                 name='Policy 1',
@@ -2211,7 +2191,6 @@ class VLANTranslationRuleTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
-
         vlan_translation_policies = (
             VLANTranslationPolicy(
                 name='Policy 1',
@@ -2278,35 +2257,23 @@ class ServiceTemplateTestCase(TestCase, ChangeLoggedFilterSetTests):
                 name='Service Template 1',
                 protocol=ServiceProtocolChoices.PROTOCOL_TCP,
                 ports=[1001],
-                description='foobar1'
+                description='foobar1',
             ),
             ServiceTemplate(
                 name='Service Template 2',
                 protocol=ServiceProtocolChoices.PROTOCOL_TCP,
                 ports=[1002],
-                description='foobar2'
+                description='foobar2',
             ),
             ServiceTemplate(
                 name='Service Template 3',
                 protocol=ServiceProtocolChoices.PROTOCOL_UDP,
                 ports=[1003],
-                description='foobar3'
+                description='foobar3',
             ),
-            ServiceTemplate(
-                name='Service Template 4',
-                protocol=ServiceProtocolChoices.PROTOCOL_TCP,
-                ports=[2001]
-            ),
-            ServiceTemplate(
-                name='Service Template 5',
-                protocol=ServiceProtocolChoices.PROTOCOL_TCP,
-                ports=[2002]
-            ),
-            ServiceTemplate(
-                name='Service Template 6',
-                protocol=ServiceProtocolChoices.PROTOCOL_UDP,
-                ports=[2003]
-            ),
+            ServiceTemplate(name='Service Template 4', protocol=ServiceProtocolChoices.PROTOCOL_TCP, ports=[2001]),
+            ServiceTemplate(name='Service Template 5', protocol=ServiceProtocolChoices.PROTOCOL_TCP, ports=[2002]),
+            ServiceTemplate(name='Service Template 6', protocol=ServiceProtocolChoices.PROTOCOL_UDP, ports=[2003]),
         )
         ServiceTemplate.objects.bulk_create(service_templates)
 
@@ -2338,7 +2305,6 @@ class ServiceTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
-
         site = Site.objects.create(name='Site 1', slug='site-1')
         manufacturer = Manufacturer.objects.create(name='Manufacturer 1', slug='manufacturer-1')
         device_type = DeviceType.objects.create(manufacturer=manufacturer, model='Device Type 1')
@@ -2351,11 +2317,7 @@ class ServiceTestCase(TestCase, ChangeLoggedFilterSetTests):
         )
         Device.objects.bulk_create(devices)
 
-        interface = Interface.objects.create(
-            device=devices[0],
-            name='eth0',
-            type=InterfaceTypeChoices.TYPE_VIRTUAL
-        )
+        interface = Interface.objects.create(device=devices[0], name='eth0', type=InterfaceTypeChoices.TYPE_VIRTUAL)
         interface_ct = ContentType.objects.get_for_model(Interface).pk
         ip_addresses = (
             IPAddress(address='192.0.2.1/24', assigned_object_type_id=interface_ct, assigned_object_id=interface.pk),
@@ -2394,12 +2356,7 @@ class ServiceTestCase(TestCase, ChangeLoggedFilterSetTests):
                 ports=[1002],
                 description='foobar2',
             ),
-            Service(
-                parent=devices[2],
-                name='Service 3',
-                protocol=ServiceProtocolChoices.PROTOCOL_UDP,
-                ports=[1003]
-            ),
+            Service(parent=devices[2], name='Service 3', protocol=ServiceProtocolChoices.PROTOCOL_UDP, ports=[1003]),
             Service(
                 parent=virtual_machines[0],
                 name='Service 4',

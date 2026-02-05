@@ -7,6 +7,7 @@ from utilities.choices import ChoiceSet
 # Circuits
 #
 
+
 class CircuitStatusChoices(ChoiceSet):
     key = 'Circuit.status'
 
@@ -49,15 +50,12 @@ class CircuitCommitRateChoices(ChoiceSet):
 # CircuitTerminations
 #
 
-class CircuitTerminationSideChoices(ChoiceSet):
 
+class CircuitTerminationSideChoices(ChoiceSet):
     SIDE_A = 'A'
     SIDE_Z = 'Z'
 
-    CHOICES = (
-        (SIDE_A, 'A'),
-        (SIDE_Z, 'Z')
-    )
+    CHOICES = ((SIDE_A, 'A'), (SIDE_Z, 'Z'))
 
 
 class CircuitTerminationPortSpeedChoices(ChoiceSet):
@@ -97,6 +95,7 @@ class CircuitPriorityChoices(ChoiceSet):
 #
 # Virtual circuits
 #
+
 
 class VirtualCircuitTerminationRoleChoices(ChoiceSet):
     ROLE_PEER = 'peer'

@@ -1,0 +1,14 @@
+.git
+.gitignore
+.github
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.sqlite3
+*.log
+node_modules/
+.netbox/
+.project-static/
+.project-static/**
+.DS_Store

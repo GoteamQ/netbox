@@ -53,11 +53,13 @@ __all__ = (
 # Django-tables2 overrides
 #
 
+
 @library.register
 class DateColumn(tables.Column):
     """
     Render a datetime.date in ISO 8601 format.
     """
+
     def render(self, value):
         if value:
             return value.isoformat()
@@ -80,6 +82,7 @@ class DateTimeColumn(tables.Column):
     Args:
         timespec: Granularity specification; passed through to datetime.isoformat()
     """
+
     def __init__(self, *args, timespec='seconds', **kwargs):
         self.timespec = timespec
         super().__init__(*args, **kwargs)
@@ -88,7 +91,7 @@ class DateTimeColumn(tables.Column):
         if value:
             current_tz = zoneinfo.ZoneInfo(settings.TIME_ZONE)
             value = value.astimezone(current_tz)
-            return f"{value.date().isoformat()} {value.time().isoformat(timespec=self.timespec)}"
+            return f'{value.date().isoformat()} {value.time().isoformat(timespec=self.timespec)}'
 
     def value(self, value):
         if value:
@@ -104,6 +107,7 @@ class DurationColumn(tables.Column):
     """
     Express a duration of time (in minutes) in a human-friendly format. Example: 437 minutes becomes "7h 17m"
     """
+
     def render(self, value):
         ret = ''
         if days := value // 1440:
@@ -122,6 +126,7 @@ class ManyToManyColumn(tables.ManyToManyColumn):
     """
     Overrides django-tables2's stock ManyToManyColumn to ensure that value() returns only plaintext data.
     """
+
     def value(self, value):
         items = [self.transform(item) for item in self.filter(value)]
         return self.separator.join(items)
@@ -132,6 +137,7 @@ class TemplateColumn(tables.TemplateColumn):
     Overrides django-tables2's stock TemplateColumn class to render a placeholder symbol if the returned value
     is an empty string.
     """
+
     PLACEHOLDER = mark_safe('&mdash;')
 
     def __init__(self, export_raw=False, **kwargs):
@@ -164,10 +170,12 @@ class TemplateColumn(tables.TemplateColumn):
 # Custom columns
 #
 
+
 class ToggleColumn(tables.CheckBoxColumn):
     """
     Extend CheckBoxColumn to add a "toggle all" checkbox in the column header.
     """
+
     def __init__(self, *args, **kwargs):
         default = kwargs.pop('default', '')
         visible = kwargs.pop('visible', False)
@@ -180,9 +188,7 @@ class ToggleColumn(tables.CheckBoxColumn):
                 'td': {
                     'class': 'w-1',
                 },
-                'input': {
-                    'class': 'form-check-input'
-                }
+                'input': {'class': 'form-check-input'},
             }
         super().__init__(*args, default=default, visible=visible, **kwargs)
 
@@ -197,6 +203,7 @@ class BooleanColumn(tables.Column):
     Custom implementation of BooleanColumn to render a nicely-formatted checkmark or X icon instead of a Unicode
     character.
     """
+
     TRUE_MARK = mark_safe('<span class="text-success"><i class="mdi mdi-check-bold"></i></span>')
     FALSE_MARK = mark_safe('<span class="text-danger"><i class="mdi mdi-close-thick"></i></span>')
     EMPTY_MARK = mark_safe('<span class="text-muted">&mdash;</span>')  # Placeholder
@@ -237,11 +244,8 @@ class ActionsColumn(tables.Column):
     :param split_actions: When True, converts the actions dropdown menu into a split button with first action as the
         direct button link and icon (default: True)
     """
-    attrs = {
-        'td': {
-            'class': 'text-end text-nowrap noprint p-1'
-        }
-    }
+
+    attrs = {'td': {'class': 'text-end text-nowrap noprint p-1'}}
     empty_values = ()
     actions = {
         'edit': ActionsItem('Edit', 'pencil', 'change', 'warning'),
@@ -256,9 +260,7 @@ class ActionsColumn(tables.Column):
         self.split_actions = split_actions
 
         # Determine which actions to enable
-        self.actions = {
-            name: self.actions[name] for name in actions
-        }
+        self.actions = {name: self.actions[name] for name in actions}
 
     def header(self):
         return ''
@@ -333,7 +335,7 @@ class ActionsColumn(tables.Column):
         # Render any extra buttons from template code
         if self.extra_buttons:
             template = Template(self.extra_buttons)
-            context = getattr(table, "context", Context())
+            context = getattr(table, 'context', Context())
             context.update({'record': record})
             html = template.render(context) + html
 
@@ -345,6 +347,7 @@ class ChoiceFieldColumn(tables.Column):
     Render a model's static ChoiceField with its value from `get_FOO_display()` as a colored badge. Background color is
     set by the instance's get_FOO_color() method, if defined, or can be overridden by a "color" callable.
     """
+
     DEFAULT_BG_COLOR = 'secondary'
 
     def __init__(self, *args, color=None, **kwargs):
@@ -374,6 +377,7 @@ class ContentTypeColumn(tables.Column):
     """
     Display a ContentType instance.
     """
+
     def render(self, value):
         if value is None:
             return None
@@ -389,6 +393,7 @@ class ContentTypesColumn(tables.ManyToManyColumn):
     """
     Display a list of ContentType instances.
     """
+
     def __init__(self, separator=None, *args, **kwargs):
         # Use a line break as the default separator
         if separator is None:
@@ -399,19 +404,16 @@ class ContentTypesColumn(tables.ManyToManyColumn):
         return object_type_name(obj, include_app=False)
 
     def value(self, value):
-        return ','.join([
-            object_type_identifier(ot) for ot in self.filter(value)
-        ])
+        return ','.join([object_type_identifier(ot) for ot in self.filter(value)])
 
 
 class ColorColumn(tables.Column):
     """
     Display an arbitrary color value, specified in RRGGBB format.
     """
+
     def render(self, value):
-        return mark_safe(
-            f'<span class="color-label" style="background-color: #{value}">&nbsp;</span>'
-        )
+        return mark_safe(f'<span class="color-label" style="background-color: #{value}">&nbsp;</span>')
 
     def value(self, value):
         return f'#{value}'
@@ -422,6 +424,7 @@ class ColoredLabelColumn(tables.TemplateColumn):
     Render a related object as a colored label. The related object must have a `color` attribute (specifying
     an RRGGBB value) and a `get_absolute_url()` method.
     """
+
     template_code = """
 {% load helpers %}
   {% if value %}
@@ -448,6 +451,7 @@ class LinkedCountColumn(tables.Column):
     :param view_kwargs: Additional kwargs to pass for URL resolution (optional)
     :param url_params: A dict of query parameters to append to the URL (e.g. ?foo=bar) (optional)
     """
+
     def __init__(self, viewname, *args, view_kwargs=None, url_params=None, default=0, **kwargs):
         self.viewname = viewname
         self.view_kwargs = view_kwargs or {}
@@ -458,10 +462,12 @@ class LinkedCountColumn(tables.Column):
         if value:
             url = reverse(self.viewname, kwargs=self.view_kwargs)
             if self.url_params:
-                url += '?' + '&'.join([
-                    f'{k}={getattr(record, v) or settings.FILTERS_NULL_CHOICE_VALUE}'
-                    for k, v in self.url_params.items()
-                ])
+                url += '?' + '&'.join(
+                    [
+                        f'{k}={getattr(record, v) or settings.FILTERS_NULL_CHOICE_VALUE}'
+                        for k, v in self.url_params.items()
+                    ]
+                )
             return mark_safe(f'<a href="{url}">{escape(value)}</a>')
         return value
 
@@ -473,6 +479,7 @@ class TagColumn(tables.TemplateColumn):
     """
     Display a list of Tags assigned to the object.
     """
+
     template_code = """
     {% load helpers %}
     {% for tag in value.all %}
@@ -491,23 +498,21 @@ class TagColumn(tables.TemplateColumn):
         )
 
     def value(self, value):
-        return ",".join([tag.name for tag in value.all()])
+        return ','.join([tag.name for tag in value.all()])
 
 
 class CustomFieldColumn(tables.Column):
     """
     Display custom fields in the appropriate format.
     """
+
     def __init__(self, customfield, *args, **kwargs):
         self.customfield = customfield
         kwargs['accessor'] = Accessor(f'custom_field_data__{customfield.name}')
         if 'verbose_name' not in kwargs:
             kwargs['verbose_name'] = customfield.label or customfield.name
         # We can't logically sort on FK values
-        if customfield.type in (
-            CustomFieldTypeChoices.TYPE_OBJECT,
-            CustomFieldTypeChoices.TYPE_MULTIOBJECT
-        ):
+        if customfield.type in (CustomFieldTypeChoices.TYPE_OBJECT, CustomFieldTypeChoices.TYPE_MULTIOBJECT):
             kwargs['orderable'] = False
 
         super().__init__(*args, **kwargs)
@@ -530,9 +535,7 @@ class CustomFieldColumn(tables.Column):
         if self.customfield.type == CustomFieldTypeChoices.TYPE_MULTISELECT:
             return ', '.join(self.customfield.get_choice_label(v) for v in value)
         if self.customfield.type == CustomFieldTypeChoices.TYPE_MULTIOBJECT:
-            return mark_safe(', '.join(
-                self._linkify_item(obj) for obj in self.customfield.deserialize(value)
-            ))
+            return mark_safe(', '.join(self._linkify_item(obj) for obj in self.customfield.deserialize(value)))
         if self.customfield.type == CustomFieldTypeChoices.TYPE_LONGTEXT and value:
             return render_markdown(value)
         if self.customfield.type == CustomFieldTypeChoices.TYPE_DATE and value:
@@ -554,6 +557,7 @@ class CustomLinkColumn(tables.Column):
     """
     Render a custom link as a table column.
     """
+
     def __init__(self, customlink, *args, **kwargs):
         self.customlink = customlink
         kwargs.setdefault('accessor', Accessor('pk'))
@@ -569,10 +573,12 @@ class CustomLinkColumn(tables.Column):
         }
         if request := getattr(table, 'context', {}).get('request'):
             # If the request is available, include it as context
-            context.update({
-                'request': request,
-                **auth(request),
-            })
+            context.update(
+                {
+                    'request': request,
+                    **auth(request),
+                }
+            )
 
         return self.customlink.render(context)
 
@@ -598,6 +604,7 @@ class MPTTColumn(tables.TemplateColumn):
     """
     Display a nested hierarchy for MPTT-enabled models.
     """
+
     template_code = """
         {% load helpers %}
         {% if not table.order_by %}
@@ -607,12 +614,7 @@ class MPTTColumn(tables.TemplateColumn):
     """
 
     def __init__(self, *args, **kwargs):
-        super().__init__(
-            template_code=self.template_code,
-            attrs={'td': {'class': 'text-nowrap'}},
-            *args,
-            **kwargs
-        )
+        super().__init__(template_code=self.template_code, attrs={'td': {'class': 'text-nowrap'}}, *args, **kwargs)
 
     def value(self, value):
         return value
@@ -622,6 +624,7 @@ class UtilizationColumn(tables.TemplateColumn):
     """
     Display a colored utilization bar graph.
     """
+
     template_code = """{% load helpers %}{% if record.pk %}{% utilization_graph value %}{% endif %}"""
 
     def __init__(self, *args, **kwargs):
@@ -635,6 +638,7 @@ class MarkdownColumn(tables.TemplateColumn):
     """
     Render a Markdown string.
     """
+
     template_code = """
     {% if value %}
       {{ value|markdown }}
@@ -657,6 +661,7 @@ class ArrayColumn(tables.Column):
     """
     List array items as a comma-separated list.
     """
+
     def __init__(self, *args, max_items=None, func=str, **kwargs):
         self.max_items = max_items
         self.func = func
@@ -668,7 +673,7 @@ class ArrayColumn(tables.Column):
         # Limit the returned items to the specified maximum number (if any)
         if self.max_items:
             omitted_count = len(value) - self.max_items
-            value = value[:self.max_items - 1]
+            value = value[: self.max_items - 1]
 
         # Apply custom processing function (if any) per item
         if self.func:
@@ -685,6 +690,7 @@ class ChoicesColumn(tables.Column):
     """
     Display the human-friendly labels of a set of choices.
     """
+
     def __init__(self, *args, max_items=None, **kwargs):
         self.max_items = max_items
         super().__init__(*args, **kwargs)
@@ -696,7 +702,7 @@ class ChoicesColumn(tables.Column):
         # Limit the returned items to the specified maximum number (if any)
         if self.max_items:
             omitted_count = len(value) - self.max_items
-            value = value[:self.max_items - 1]
+            value = value[: self.max_items - 1]
 
         # Annotate omitted items (if applicable)
         if omitted_count > 0:
@@ -709,6 +715,7 @@ class DistanceColumn(TemplateColumn):
     """
     Distance with template code for formatting
     """
+
     template_code = """
     {% load helpers %}
     {% if record.distance %}{{ record.distance|floatformat:"-2" }} {{ record.distance_unit }}{% endif %}
@@ -722,8 +729,7 @@ class DictColumn(tables.Column):
     """
     Render a dictionary of data in a simple key: value format, one pair per line.
     """
+
     def render(self, value):
-        output = '<br />'.join([
-            f'{escape(k)}: {escape(v)}' for k, v in value.items()
-        ])
+        output = '<br />'.join([f'{escape(k)}: {escape(v)}' for k, v in value.items()])
         return mark_safe(output)

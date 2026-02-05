@@ -27,12 +27,10 @@ __all__ = (
 
 
 class CoreMiddleware:
-
     def __init__(self, get_response):
         self.get_response = get_response
 
     def __call__(self, request):
-
         # Assign a random unique ID to the request. This will be used for change logging.
         request.id = uuid.uuid4()
 
@@ -99,12 +97,13 @@ class RemoteUserMiddleware(RemoteUserMiddleware_):
     """
     Custom implementation of Django's RemoteUserMiddleware which allows for a user-configurable HTTP header name.
     """
+
     async_capable = False
     force_logout_if_no_header = False
 
     def __init__(self, get_response):
         if get_response is None:
-            raise ValueError("get_response must be provided.")
+            raise ValueError('get_response must be provided.')
         self.get_response = get_response
 
     @property
@@ -119,11 +118,12 @@ class RemoteUserMiddleware(RemoteUserMiddleware_):
         # AuthenticationMiddleware is required so that request.user exists.
         if not hasattr(request, 'user'):
             raise ImproperlyConfigured(
-                "The Django remote user auth middleware requires the"
-                " authentication middleware to be installed.  Edit your"
-                " MIDDLEWARE setting to insert"
+                'The Django remote user auth middleware requires the'
+                ' authentication middleware to be installed.  Edit your'
+                ' MIDDLEWARE setting to insert'
                 " 'django.contrib.auth.middleware.AuthenticationMiddleware'"
-                " before the RemoteUserMiddleware class.")
+                ' before the RemoteUserMiddleware class.'
+            )
         try:
             username = request.META[self.header]
         except KeyError:
@@ -147,9 +147,8 @@ class RemoteUserMiddleware(RemoteUserMiddleware_):
         # We are seeing this user for the first time in this session, attempt
         # to authenticate the user.
         if settings.REMOTE_AUTH_GROUP_SYNC_ENABLED:
-            logger.debug("Trying to sync Groups")
-            user = auth.authenticate(
-                request, remote_user=username, remote_groups=self._get_groups(request))
+            logger.debug('Trying to sync Groups')
+            user = auth.authenticate(request, remote_user=username, remote_groups=self._get_groups(request))
         else:
             user = auth.authenticate(request, remote_user=username)
         if user:
@@ -171,16 +170,14 @@ class RemoteUserMiddleware(RemoteUserMiddleware_):
         return self.get_response(request)
 
     def _get_groups(self, request):
-        logger = logging.getLogger(
-            'netbox.authentication.RemoteUserMiddleware')
+        logger = logging.getLogger('netbox.authentication.RemoteUserMiddleware')
 
-        groups_string = request.META.get(
-            settings.REMOTE_AUTH_GROUP_HEADER, None)
+        groups_string = request.META.get(settings.REMOTE_AUTH_GROUP_HEADER, None)
         if groups_string:
             groups = groups_string.split(settings.REMOTE_AUTH_GROUP_SEPARATOR)
         else:
             groups = []
-        logger.debug(f"Groups are {groups}")
+        logger.debug(f'Groups are {groups}')
         return groups
 
 
@@ -219,9 +216,7 @@ class MaintenanceModeMiddleware:
 
     def __call__(self, request):
         if get_config().MAINTENANCE_MODE:
-            self._set_session_type(
-                allow_write=request.path_info.startswith(settings.MAINTENANCE_EXEMPT_PATHS)
-            )
+            self._set_session_type(allow_write=request.path_info.startswith(settings.MAINTENANCE_EXEMPT_PATHS))
 
         return self.get_response(request)
 
@@ -242,8 +237,10 @@ class MaintenanceModeMiddleware:
         Prevent any write-related database operations if an exception is raised.
         """
         if get_config().MAINTENANCE_MODE and isinstance(exception, InternalError):
-            error_message = 'NetBox is currently operating in maintenance mode and is unable to perform write ' \
-                            'operations. Please try again later.'
+            error_message = (
+                'NetBox is currently operating in maintenance mode and is unable to perform write '
+                'operations. Please try again later.'
+            )
 
             if is_api_request(request):
                 return handle_rest_api_exception(request, error=error_message)

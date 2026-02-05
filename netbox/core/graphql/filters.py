@@ -43,9 +43,9 @@ class DataSourceFilter(PrimaryModelFilter):
     name: FilterLookup[str] | None = strawberry_django.filter_field()
     type: FilterLookup[str] | None = strawberry_django.filter_field()
     source_url: FilterLookup[str] | None = strawberry_django.filter_field()
-    status: (
-        BaseFilterLookup[Annotated['DataSourceStatusEnum', strawberry.lazy('core.graphql.enums')]] | None
-    ) = strawberry_django.filter_field()
+    status: BaseFilterLookup[Annotated['DataSourceStatusEnum', strawberry.lazy('core.graphql.enums')]] | None = (
+        strawberry_django.filter_field()
+    )
     enabled: FilterLookup[bool] | None = strawberry_django.filter_field()
     ignore_rules: FilterLookup[str] | None = strawberry_django.filter_field()
     parameters: Annotated['JSONFilter', strawberry.lazy('netbox.graphql.filter_lookups')] | None = (
@@ -63,9 +63,9 @@ class ObjectChangeFilter(BaseModelFilter):
     user: Annotated['UserFilter', strawberry.lazy('users.graphql.filters')] | None = strawberry_django.filter_field()
     user_name: FilterLookup[str] | None = strawberry_django.filter_field()
     request_id: FilterLookup[str] | None = strawberry_django.filter_field()
-    action: (
-        BaseFilterLookup[Annotated['ObjectChangeActionEnum', strawberry.lazy('core.graphql.enums')]] | None
-    ) = strawberry_django.filter_field()
+    action: BaseFilterLookup[Annotated['ObjectChangeActionEnum', strawberry.lazy('core.graphql.enums')]] | None = (
+        strawberry_django.filter_field()
+    )
     changed_object_type: Annotated['ContentTypeFilter', strawberry.lazy('core.graphql.filters')] | None = (
         strawberry_django.filter_field()
     )

@@ -17,7 +17,7 @@ def to_grams(weight, unit) -> int:
     """
     try:
         if weight < 0:
-            raise ValueError(_("Weight must be a positive number"))
+            raise ValueError(_('Weight must be a positive number'))
     except TypeError:
         raise TypeError(_("Invalid value '{weight}' for weight (must be a number)").format(weight=weight))
 
@@ -30,9 +30,8 @@ def to_grams(weight, unit) -> int:
     if unit == WeightUnitChoices.UNIT_OUNCE:
         return int(weight * Decimal(28.3495))
     raise ValueError(
-        _("Unknown unit {unit}. Must be one of the following: {valid_units}").format(
-            unit=unit,
-            valid_units=', '.join(WeightUnitChoices.values())
+        _('Unknown unit {unit}. Must be one of the following: {valid_units}').format(
+            unit=unit, valid_units=', '.join(WeightUnitChoices.values())
         )
     )
 
@@ -46,7 +45,7 @@ def to_meters(length, unit) -> Decimal:
     except InvalidOperation:
         raise TypeError(_("Invalid value '{length}' for length (must be a number)").format(length=length))
     if length < 0:
-        raise ValueError(_("Length must be a positive number"))
+        raise ValueError(_('Length must be a positive number'))
 
     if unit == CableLengthUnitChoices.UNIT_KILOMETER:
         return round(Decimal(length * 1000), 4)
@@ -61,8 +60,7 @@ def to_meters(length, unit) -> Decimal:
     if unit == CableLengthUnitChoices.UNIT_INCH:
         return round(length * Decimal(0.0254), 4)
     raise ValueError(
-        _("Unknown unit {unit}. Must be one of the following: {valid_units}").format(
-            unit=unit,
-            valid_units=', '.join(CableLengthUnitChoices.values())
+        _('Unknown unit {unit}. Must be one of the following: {valid_units}').format(
+            unit=unit, valid_units=', '.join(CableLengthUnitChoices.values())
         )
     )

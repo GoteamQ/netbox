@@ -40,9 +40,7 @@ def process_request_as_job(view, request, name=None):
 
     # Record a message on the original request indicating deferral to a background job
     msg = _('Created background job {id}: <a href="{url}">{name}</a>').format(
-        id=job.pk,
-        url=job.get_absolute_url(),
-        name=job.name
+        id=job.pk, url=job.get_absolute_url(), name=job.name
     )
     messages.info(request, mark_safe(msg))
 

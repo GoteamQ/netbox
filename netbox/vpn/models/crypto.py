@@ -18,41 +18,29 @@ __all__ = (
 # IKE
 #
 
+
 class IKEProposal(PrimaryModel):
-    name = models.CharField(
-        verbose_name=_('name'),
-        max_length=100,
-        unique=True,
-        db_collation="natural_sort"
-    )
+    name = models.CharField(verbose_name=_('name'), max_length=100, unique=True, db_collation='natural_sort')
     authentication_method = models.CharField(
-        verbose_name=('authentication method'),
-        choices=AuthenticationMethodChoices
+        verbose_name=('authentication method'), choices=AuthenticationMethodChoices
     )
-    encryption_algorithm = models.CharField(
-        verbose_name=_('encryption algorithm'),
-        choices=EncryptionAlgorithmChoices
-    )
+    encryption_algorithm = models.CharField(verbose_name=_('encryption algorithm'), choices=EncryptionAlgorithmChoices)
     authentication_algorithm = models.CharField(
-        verbose_name=_('authentication algorithm'),
-        choices=AuthenticationAlgorithmChoices,
-        blank=True,
-        null=True
+        verbose_name=_('authentication algorithm'), choices=AuthenticationAlgorithmChoices, blank=True, null=True
     )
     group = models.PositiveSmallIntegerField(
-        verbose_name=_('group'),
-        choices=DHGroupChoices,
-        help_text=_('Diffie-Hellman group ID')
+        verbose_name=_('group'), choices=DHGroupChoices, help_text=_('Diffie-Hellman group ID')
     )
     sa_lifetime = models.PositiveIntegerField(
-        verbose_name=_('SA lifetime'),
-        blank=True,
-        null=True,
-        help_text=_('Security association lifetime (in seconds)')
+        verbose_name=_('SA lifetime'), blank=True, null=True, help_text=_('Security association lifetime (in seconds)')
     )
 
     clone_fields = (
-        'authentication_method', 'encryption_algorithm', 'authentication_algorithm', 'group', 'sa_lifetime',
+        'authentication_method',
+        'encryption_algorithm',
+        'authentication_algorithm',
+        'group',
+        'sa_lifetime',
     )
 
     class Meta:
@@ -65,39 +53,20 @@ class IKEProposal(PrimaryModel):
 
 
 class IKEPolicy(PrimaryModel):
-    name = models.CharField(
-        verbose_name=_('name'),
-        max_length=100,
-        unique=True,
-        db_collation="natural_sort"
-    )
+    name = models.CharField(verbose_name=_('name'), max_length=100, unique=True, db_collation='natural_sort')
     version = models.PositiveSmallIntegerField(
-        verbose_name=_('version'),
-        choices=IKEVersionChoices,
-        default=IKEVersionChoices.VERSION_2
+        verbose_name=_('version'), choices=IKEVersionChoices, default=IKEVersionChoices.VERSION_2
     )
-    mode = models.CharField(
-        verbose_name=_('mode'),
-        choices=IKEModeChoices,
-        blank=True,
-        null=True
-    )
-    proposals = models.ManyToManyField(
-        to='vpn.IKEProposal',
-        related_name='ike_policies',
-        verbose_name=_('proposals')
-    )
-    preshared_key = models.TextField(
-        verbose_name=_('pre-shared key'),
-        blank=True
-    )
+    mode = models.CharField(verbose_name=_('mode'), choices=IKEModeChoices, blank=True, null=True)
+    proposals = models.ManyToManyField(to='vpn.IKEProposal', related_name='ike_policies', verbose_name=_('proposals'))
+    preshared_key = models.TextField(verbose_name=_('pre-shared key'), blank=True)
 
     clone_fields = (
-        'version', 'mode', 'proposals',
+        'version',
+        'mode',
+        'proposals',
     )
-    prerequisite_models = (
-        'vpn.IKEProposal',
-    )
+    prerequisite_models = ('vpn.IKEProposal',)
 
     class Meta:
         ordering = ('name',)
@@ -112,51 +81,44 @@ class IKEPolicy(PrimaryModel):
 
         # Mode is required
         if self.version == IKEVersionChoices.VERSION_1 and not self.mode:
-            raise ValidationError(_("Mode is required for selected IKE version"))
+            raise ValidationError(_('Mode is required for selected IKE version'))
 
         # Mode cannot be used
         if self.version == IKEVersionChoices.VERSION_2 and self.mode:
-            raise ValidationError(_("Mode cannot be used for selected IKE version"))
+            raise ValidationError(_('Mode cannot be used for selected IKE version'))
 
 
 #
 # IPSec
 #
 
+
 class IPSecProposal(PrimaryModel):
-    name = models.CharField(
-        verbose_name=_('name'),
-        max_length=100,
-        unique=True,
-        db_collation="natural_sort"
-    )
+    name = models.CharField(verbose_name=_('name'), max_length=100, unique=True, db_collation='natural_sort')
     encryption_algorithm = models.CharField(
-        verbose_name=_('encryption'),
-        choices=EncryptionAlgorithmChoices,
-        blank=True,
-        null=True
+        verbose_name=_('encryption'), choices=EncryptionAlgorithmChoices, blank=True, null=True
     )
     authentication_algorithm = models.CharField(
-        verbose_name=_('authentication'),
-        choices=AuthenticationAlgorithmChoices,
-        blank=True,
-        null=True
+        verbose_name=_('authentication'), choices=AuthenticationAlgorithmChoices, blank=True, null=True
     )
     sa_lifetime_seconds = models.PositiveIntegerField(
         verbose_name=_('SA lifetime (seconds)'),
         blank=True,
         null=True,
-        help_text=_('Security association lifetime (seconds)')
+        help_text=_('Security association lifetime (seconds)'),
     )
     sa_lifetime_data = models.PositiveIntegerField(
         verbose_name=_('SA lifetime (KB)'),
         blank=True,
         null=True,
-        help_text=_('Security association lifetime (in kilobytes)')
+        help_text=_('Security association lifetime (in kilobytes)'),
     )
 
     clone_fields = (
-        'encryption_algorithm', 'authentication_algorithm', 'sa_lifetime_seconds', 'sa_lifetime_data',
+        'encryption_algorithm',
+        'authentication_algorithm',
+        'sa_lifetime_seconds',
+        'sa_lifetime_data',
     )
 
     class Meta:
@@ -172,35 +134,27 @@ class IPSecProposal(PrimaryModel):
 
         # Encryption and/or authentication algorithm must be defined
         if not self.encryption_algorithm and not self.authentication_algorithm:
-            raise ValidationError(_("Encryption and/or authentication algorithm must be defined"))
+            raise ValidationError(_('Encryption and/or authentication algorithm must be defined'))
 
 
 class IPSecPolicy(PrimaryModel):
-    name = models.CharField(
-        verbose_name=_('name'),
-        max_length=100,
-        unique=True,
-        db_collation="natural_sort"
-    )
+    name = models.CharField(verbose_name=_('name'), max_length=100, unique=True, db_collation='natural_sort')
     proposals = models.ManyToManyField(
-        to='vpn.IPSecProposal',
-        related_name='ipsec_policies',
-        verbose_name=_('proposals')
+        to='vpn.IPSecProposal', related_name='ipsec_policies', verbose_name=_('proposals')
     )
     pfs_group = models.PositiveSmallIntegerField(
         verbose_name=_('PFS group'),
         choices=DHGroupChoices,
         blank=True,
         null=True,
-        help_text=_('Diffie-Hellman group for Perfect Forward Secrecy')
+        help_text=_('Diffie-Hellman group for Perfect Forward Secrecy'),
     )
 
     clone_fields = (
-        'proposals', 'pfs_group',
+        'proposals',
+        'pfs_group',
     )
-    prerequisite_models = (
-        'vpn.IPSecProposal',
-    )
+    prerequisite_models = ('vpn.IPSecProposal',)
 
     class Meta:
         ordering = ('name',)
@@ -212,29 +166,15 @@ class IPSecPolicy(PrimaryModel):
 
 
 class IPSecProfile(PrimaryModel):
-    name = models.CharField(
-        verbose_name=_('name'),
-        max_length=100,
-        unique=True,
-        db_collation="natural_sort"
-    )
-    mode = models.CharField(
-        verbose_name=_('mode'),
-        choices=IPSecModeChoices
-    )
-    ike_policy = models.ForeignKey(
-        to='vpn.IKEPolicy',
-        on_delete=models.PROTECT,
-        related_name='ipsec_profiles'
-    )
-    ipsec_policy = models.ForeignKey(
-        to='vpn.IPSecPolicy',
-        on_delete=models.PROTECT,
-        related_name='ipsec_profiles'
-    )
+    name = models.CharField(verbose_name=_('name'), max_length=100, unique=True, db_collation='natural_sort')
+    mode = models.CharField(verbose_name=_('mode'), choices=IPSecModeChoices)
+    ike_policy = models.ForeignKey(to='vpn.IKEPolicy', on_delete=models.PROTECT, related_name='ipsec_profiles')
+    ipsec_policy = models.ForeignKey(to='vpn.IPSecPolicy', on_delete=models.PROTECT, related_name='ipsec_profiles')
 
     clone_fields = (
-        'mode', 'ike_policy', 'ipsec_policy',
+        'mode',
+        'ike_policy',
+        'ipsec_policy',
     )
     prerequisite_models = (
         'vpn.IKEPolicy',

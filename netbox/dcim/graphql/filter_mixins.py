@@ -40,27 +40,27 @@ class ScopedFilterMixin:
     _location: Annotated['LocationFilter', strawberry.lazy('dcim.graphql.filters')] | None = (
         strawberry_django.filter_field(name='location')
     )
-    _region: Annotated['RegionFilter', strawberry.lazy('dcim.graphql.filters')] | None = (
-        strawberry_django.filter_field(name='region')
+    _region: Annotated['RegionFilter', strawberry.lazy('dcim.graphql.filters')] | None = strawberry_django.filter_field(
+        name='region'
     )
     _site_group: Annotated['SiteGroupFilter', strawberry.lazy('dcim.graphql.filters')] | None = (
         strawberry_django.filter_field(name='site_group')
     )
-    _site: Annotated['SiteFilter', strawberry.lazy('dcim.graphql.filters')] | None = (
-        strawberry_django.filter_field(name='site')
+    _site: Annotated['SiteFilter', strawberry.lazy('dcim.graphql.filters')] | None = strawberry_django.filter_field(
+        name='site'
     )
 
 
 @dataclass
 class ComponentModelFilterMixin:
-    _site: Annotated['SiteFilter', strawberry.lazy('dcim.graphql.filters')] | None = (
-        strawberry_django.filter_field(name='site')
+    _site: Annotated['SiteFilter', strawberry.lazy('dcim.graphql.filters')] | None = strawberry_django.filter_field(
+        name='site'
     )
     _location: Annotated['LocationFilter', strawberry.lazy('dcim.graphql.filters')] | None = (
         strawberry_django.filter_field(name='location')
     )
-    _rack: Annotated['RackFilter', strawberry.lazy('dcim.graphql.filters')] | None = (
-        strawberry_django.filter_field(name='rack')
+    _rack: Annotated['RackFilter', strawberry.lazy('dcim.graphql.filters')] | None = strawberry_django.filter_field(
+        name='rack'
     )
     device: Annotated['DeviceFilter', strawberry.lazy('dcim.graphql.filters')] | None = strawberry_django.filter_field()
     device_id: ID | None = strawberry_django.filter_field()
@@ -82,9 +82,9 @@ class ModularComponentFilterMixin(ComponentModelFilterMixin):
 class CabledObjectModelFilterMixin:
     cable: Annotated['CableFilter', strawberry.lazy('dcim.graphql.filters')] | None = strawberry_django.filter_field()
     cable_id: ID | None = strawberry_django.filter_field()
-    cable_end: (
-        BaseFilterLookup[Annotated['CableEndEnum', strawberry.lazy('dcim.graphql.enums')]] | None
-    ) = strawberry_django.filter_field()
+    cable_end: BaseFilterLookup[Annotated['CableEndEnum', strawberry.lazy('dcim.graphql.enums')]] | None = (
+        strawberry_django.filter_field()
+    )
     mark_connected: FilterLookup[bool] | None = strawberry_django.filter_field()
 
 
@@ -120,9 +120,9 @@ class InterfaceBaseFilterMixin:
     mtu: Annotated['IntegerLookup', strawberry.lazy('netbox.graphql.filter_lookups')] | None = (
         strawberry_django.filter_field()
     )
-    mode: (
-        BaseFilterLookup[Annotated['InterfaceModeEnum', strawberry.lazy('dcim.graphql.enums')]] | None
-    ) = strawberry_django.filter_field()
+    mode: BaseFilterLookup[Annotated['InterfaceModeEnum', strawberry.lazy('dcim.graphql.enums')]] | None = (
+        strawberry_django.filter_field()
+    )
     bridge: Annotated['InterfaceFilter', strawberry.lazy('dcim.graphql.filters')] | None = (
         strawberry_django.filter_field()
     )
@@ -137,7 +137,7 @@ class InterfaceBaseFilterMixin:
         strawberry_django.filter_field()
     )
     vlan_translation_policy: (
-            Annotated['VLANTranslationPolicyFilter', strawberry.lazy('ipam.graphql.filters')] | None
+        Annotated['VLANTranslationPolicyFilter', strawberry.lazy('ipam.graphql.filters')] | None
     ) = strawberry_django.filter_field()
     primary_mac_address: Annotated['MACAddressFilter', strawberry.lazy('dcim.graphql.filters')] | None = (
         strawberry_django.filter_field()

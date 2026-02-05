@@ -10,7 +10,12 @@ from dcim.models import CabledObjectModel
 from netbox.models import ChangeLoggedModel, OrganizationalModel, PrimaryModel
 from netbox.models.mixins import DistanceMixin
 from netbox.models.features import (
-    ContactsMixin, CustomFieldsMixin, CustomLinksMixin, ExportTemplatesMixin, ImageAttachmentsMixin, TagsMixin,
+    ContactsMixin,
+    CustomFieldsMixin,
+    CustomLinksMixin,
+    ExportTemplatesMixin,
+    ImageAttachmentsMixin,
+    TagsMixin,
 )
 from .base import BaseCircuitType
 
@@ -28,6 +33,7 @@ class CircuitType(BaseCircuitType):
     Circuits can be organized by their functional role. For example, a user might wish to define CircuitTypes named
     "Long Haul," "Metro," or "Out-of-Band".
     """
+
     class Meta:
         ordering = ('name',)
         verbose_name = _('circuit type')
@@ -40,56 +46,26 @@ class Circuit(ContactsMixin, ImageAttachmentsMixin, DistanceMixin, PrimaryModel)
     circuits. Each circuit is also assigned a CircuitType and a Site, and may optionally be assigned to a particular
     ProviderAccount. Circuit port speed and commit rate are measured in Kbps.
     """
-    cid = models.CharField(
-        max_length=100,
-        verbose_name=_('circuit ID'),
-        help_text=_('Unique circuit ID')
-    )
-    provider = models.ForeignKey(
-        to='circuits.Provider',
-        on_delete=models.PROTECT,
-        related_name='circuits'
-    )
+
+    cid = models.CharField(max_length=100, verbose_name=_('circuit ID'), help_text=_('Unique circuit ID'))
+    provider = models.ForeignKey(to='circuits.Provider', on_delete=models.PROTECT, related_name='circuits')
     provider_account = models.ForeignKey(
-        to='circuits.ProviderAccount',
-        on_delete=models.PROTECT,
-        related_name='circuits',
-        blank=True,
-        null=True
+        to='circuits.ProviderAccount', on_delete=models.PROTECT, related_name='circuits', blank=True, null=True
     )
-    type = models.ForeignKey(
-        to='circuits.CircuitType',
-        on_delete=models.PROTECT,
-        related_name='circuits'
-    )
+    type = models.ForeignKey(to='circuits.CircuitType', on_delete=models.PROTECT, related_name='circuits')
     status = models.CharField(
         verbose_name=_('status'),
         max_length=50,
         choices=CircuitStatusChoices,
-        default=CircuitStatusChoices.STATUS_ACTIVE
+        default=CircuitStatusChoices.STATUS_ACTIVE,
     )
     tenant = models.ForeignKey(
-        to='tenancy.Tenant',
-        on_delete=models.PROTECT,
-        related_name='circuits',
-        blank=True,
-        null=True
+        to='tenancy.Tenant', on_delete=models.PROTECT, related_name='circuits', blank=True, null=True
     )
-    install_date = models.DateField(
-        blank=True,
-        null=True,
-        verbose_name=_('installed')
-    )
-    termination_date = models.DateField(
-        blank=True,
-        null=True,
-        verbose_name=_('terminates')
-    )
+    install_date = models.DateField(blank=True, null=True, verbose_name=_('installed'))
+    termination_date = models.DateField(blank=True, null=True, verbose_name=_('terminates'))
     commit_rate = models.PositiveIntegerField(
-        blank=True,
-        null=True,
-        verbose_name=_('commit rate (Kbps)'),
-        help_text=_("Committed rate")
+        blank=True, null=True, verbose_name=_('commit rate (Kbps)'), help_text=_('Committed rate')
     )
 
     # Cache associated CircuitTerminations
@@ -99,7 +75,7 @@ class Circuit(ContactsMixin, ImageAttachmentsMixin, DistanceMixin, PrimaryModel)
         related_name='+',
         editable=False,
         blank=True,
-        null=True
+        null=True,
     )
     termination_z = models.ForeignKey(
         to='circuits.CircuitTermination',
@@ -107,18 +83,25 @@ class Circuit(ContactsMixin, ImageAttachmentsMixin, DistanceMixin, PrimaryModel)
         related_name='+',
         editable=False,
         blank=True,
-        null=True
+        null=True,
     )
 
     group_assignments = GenericRelation(
         to='circuits.CircuitGroupAssignment',
         content_type_field='member_type',
         object_id_field='member_id',
-        related_query_name='circuit'
+        related_query_name='circuit',
     )
 
     clone_fields = (
-        'provider', 'provider_account', 'type', 'status', 'tenant', 'install_date', 'termination_date', 'commit_rate',
+        'provider',
+        'provider_account',
+        'type',
+        'status',
+        'tenant',
+        'install_date',
+        'termination_date',
+        'commit_rate',
         'description',
     )
     prerequisite_models = (
@@ -129,13 +112,9 @@ class Circuit(ContactsMixin, ImageAttachmentsMixin, DistanceMixin, PrimaryModel)
     class Meta:
         ordering = ['provider', 'provider_account', 'cid']
         constraints = (
+            models.UniqueConstraint(fields=('provider', 'cid'), name='%(app_label)s_%(class)s_unique_provider_cid'),
             models.UniqueConstraint(
-                fields=('provider', 'cid'),
-                name='%(app_label)s_%(class)s_unique_provider_cid'
-            ),
-            models.UniqueConstraint(
-                fields=('provider_account', 'cid'),
-                name='%(app_label)s_%(class)s_unique_provideraccount_cid'
+                fields=('provider_account', 'cid'), name='%(app_label)s_%(class)s_unique_provideraccount_cid'
             ),
         )
         verbose_name = _('circuit')
@@ -151,19 +130,16 @@ class Circuit(ContactsMixin, ImageAttachmentsMixin, DistanceMixin, PrimaryModel)
         super().clean()
 
         if self.provider_account and self.provider != self.provider_account.provider:
-            raise ValidationError({'provider_account': "The assigned account must belong to the assigned provider."})
+            raise ValidationError({'provider_account': 'The assigned account must belong to the assigned provider.'})
 
 
 class CircuitGroup(OrganizationalModel):
     """
     An administrative grouping of Circuits.
     """
+
     tenant = models.ForeignKey(
-        to='tenancy.Tenant',
-        on_delete=models.PROTECT,
-        related_name='circuit_groups',
-        blank=True,
-        null=True
+        to='tenancy.Tenant', on_delete=models.PROTECT, related_name='circuit_groups', blank=True, null=True
     )
 
     class Meta:
@@ -179,40 +155,21 @@ class CircuitGroupAssignment(CustomFieldsMixin, ExportTemplatesMixin, TagsMixin,
     """
     Assignment of a physical or virtual circuit to a CircuitGroup with an optional priority.
     """
-    member_type = models.ForeignKey(
-        to='contenttypes.ContentType',
-        on_delete=models.PROTECT,
-        related_name='+'
-    )
-    member_id = models.PositiveBigIntegerField(
-        verbose_name=_('member ID')
-    )
-    member = GenericForeignKey(
-        ct_field='member_type',
-        fk_field='member_id'
-    )
-    group = models.ForeignKey(
-        to='circuits.CircuitGroup',
-        on_delete=models.CASCADE,
-        related_name='assignments'
-    )
+
+    member_type = models.ForeignKey(to='contenttypes.ContentType', on_delete=models.PROTECT, related_name='+')
+    member_id = models.PositiveBigIntegerField(verbose_name=_('member ID'))
+    member = GenericForeignKey(ct_field='member_type', fk_field='member_id')
+    group = models.ForeignKey(to='circuits.CircuitGroup', on_delete=models.CASCADE, related_name='assignments')
     priority = models.CharField(
-        verbose_name=_('priority'),
-        max_length=50,
-        choices=CircuitPriorityChoices,
-        blank=True,
-        null=True
+        verbose_name=_('priority'), max_length=50, choices=CircuitPriorityChoices, blank=True, null=True
     )
-    prerequisite_models = (
-        'circuits.CircuitGroup',
-    )
+    prerequisite_models = ('circuits.CircuitGroup',)
 
     class Meta:
         ordering = ('group', 'member_type', 'member_id', 'priority', 'pk')
         constraints = (
             models.UniqueConstraint(
-                fields=('member_type', 'member_id', 'group'),
-                name='%(app_label)s_%(class)s_unique_member_group'
+                fields=('member_type', 'member_id', 'group'), name='%(app_label)s_%(class)s_unique_member_group'
             ),
         )
         verbose_name = _('Circuit group assignment')
@@ -220,7 +177,7 @@ class CircuitGroupAssignment(CustomFieldsMixin, ExportTemplatesMixin, TagsMixin,
 
     def __str__(self):
         if self.priority:
-            return f"{self.group} ({self.get_priority_display()})"
+            return f'{self.group} ({self.get_priority_display()})'
         return str(self.group)
 
     def get_absolute_url(self):
@@ -228,67 +185,36 @@ class CircuitGroupAssignment(CustomFieldsMixin, ExportTemplatesMixin, TagsMixin,
 
 
 class CircuitTermination(
-    CustomFieldsMixin,
-    CustomLinksMixin,
-    ExportTemplatesMixin,
-    TagsMixin,
-    ChangeLoggedModel,
-    CabledObjectModel
+    CustomFieldsMixin, CustomLinksMixin, ExportTemplatesMixin, TagsMixin, ChangeLoggedModel, CabledObjectModel
 ):
-    circuit = models.ForeignKey(
-        to='circuits.Circuit',
-        on_delete=models.CASCADE,
-        related_name='terminations'
-    )
+    circuit = models.ForeignKey(to='circuits.Circuit', on_delete=models.CASCADE, related_name='terminations')
     term_side = models.CharField(
-        max_length=1,
-        choices=CircuitTerminationSideChoices,
-        verbose_name=_('termination side')
+        max_length=1, choices=CircuitTerminationSideChoices, verbose_name=_('termination side')
     )
     termination_type = models.ForeignKey(
-        to='contenttypes.ContentType',
-        on_delete=models.PROTECT,
-        related_name='+',
-        blank=True,
-        null=True
+        to='contenttypes.ContentType', on_delete=models.PROTECT, related_name='+', blank=True, null=True
     )
-    termination_id = models.PositiveBigIntegerField(
-        blank=True,
-        null=True
-    )
-    termination = GenericForeignKey(
-        ct_field='termination_type',
-        fk_field='termination_id'
-    )
+    termination_id = models.PositiveBigIntegerField(blank=True, null=True)
+    termination = GenericForeignKey(ct_field='termination_type', fk_field='termination_id')
     port_speed = models.PositiveIntegerField(
-        verbose_name=_('port speed (Kbps)'),
-        blank=True,
-        null=True,
-        help_text=_('Physical circuit speed')
+        verbose_name=_('port speed (Kbps)'), blank=True, null=True, help_text=_('Physical circuit speed')
     )
     upstream_speed = models.PositiveIntegerField(
         blank=True,
         null=True,
         verbose_name=_('upstream speed (Kbps)'),
-        help_text=_('Upstream speed, if different from port speed')
+        help_text=_('Upstream speed, if different from port speed'),
     )
     xconnect_id = models.CharField(
-        max_length=50,
-        blank=True,
-        verbose_name=_('cross-connect ID'),
-        help_text=_('ID of the local cross-connect')
+        max_length=50, blank=True, verbose_name=_('cross-connect ID'), help_text=_('ID of the local cross-connect')
     )
     pp_info = models.CharField(
         max_length=100,
         blank=True,
         verbose_name=_('patch panel/port(s)'),
-        help_text=_('Patch panel ID and port number(s)')
+        help_text=_('Patch panel ID and port number(s)'),
     )
-    description = models.CharField(
-        verbose_name=_('description'),
-        max_length=200,
-        blank=True
-    )
+    description = models.CharField(verbose_name=_('description'), max_length=200, blank=True)
 
     # Cached associations to enable efficient filtering
     _provider_network = models.ForeignKey(
@@ -296,48 +222,29 @@ class CircuitTermination(
         on_delete=models.PROTECT,
         related_name='circuit_terminations',
         blank=True,
-        null=True
+        null=True,
     )
     _location = models.ForeignKey(
-        to='dcim.Location',
-        on_delete=models.CASCADE,
-        related_name='circuit_terminations',
-        blank=True,
-        null=True
+        to='dcim.Location', on_delete=models.CASCADE, related_name='circuit_terminations', blank=True, null=True
     )
     _site = models.ForeignKey(
-        to='dcim.Site',
-        on_delete=models.CASCADE,
-        related_name='circuit_terminations',
-        blank=True,
-        null=True
+        to='dcim.Site', on_delete=models.CASCADE, related_name='circuit_terminations', blank=True, null=True
     )
     _region = models.ForeignKey(
-        to='dcim.Region',
-        on_delete=models.CASCADE,
-        related_name='circuit_terminations',
-        blank=True,
-        null=True
+        to='dcim.Region', on_delete=models.CASCADE, related_name='circuit_terminations', blank=True, null=True
     )
     _site_group = models.ForeignKey(
-        to='dcim.SiteGroup',
-        on_delete=models.CASCADE,
-        related_name='circuit_terminations',
-        blank=True,
-        null=True
+        to='dcim.SiteGroup', on_delete=models.CASCADE, related_name='circuit_terminations', blank=True, null=True
     )
 
     class Meta:
         ordering = ['circuit', 'term_side']
         constraints = (
             models.UniqueConstraint(
-                fields=('circuit', 'term_side'),
-                name='%(app_label)s_%(class)s_unique_circuit_term_side'
+                fields=('circuit', 'term_side'), name='%(app_label)s_%(class)s_unique_circuit_term_side'
             ),
         )
-        indexes = (
-            models.Index(fields=('termination_type', 'termination_id')),
-        )
+        indexes = (models.Index(fields=('termination_type', 'termination_id')),)
         verbose_name = _('circuit termination')
         verbose_name_plural = _('circuit terminations')
 
@@ -351,7 +258,7 @@ class CircuitTermination(
         super().clean()
 
         if self.termination is None:
-            raise ValidationError(_("A circuit termination must attach to a terminating object."))
+            raise ValidationError(_('A circuit termination must attach to a terminating object.'))
 
     def save(self, *args, **kwargs):
         # Cache objects associated with the terminating object (for filtering)
@@ -378,6 +285,7 @@ class CircuitTermination(
                 self._location = self.termination
             elif termination_type == apps.get_model('circuits', 'providernetwork'):
                 self._provider_network = self.termination
+
     cache_related_objects.alters_data = True
 
     def to_objectchange(self, action):
@@ -393,8 +301,7 @@ class CircuitTermination(
         peer_side = 'Z' if self.term_side == 'A' else 'A'
         try:
             return CircuitTermination.objects.prefetch_related('termination').get(
-                circuit=self.circuit,
-                term_side=peer_side
+                circuit=self.circuit, term_side=peer_side
             )
         except CircuitTermination.DoesNotExist:
             return None

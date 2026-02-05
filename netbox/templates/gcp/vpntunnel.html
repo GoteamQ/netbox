@@ -1,0 +1,110 @@
+{% extends 'generic/object.html' %}
+{% load render_table from django_tables2 %}
+
+{% block content %}
+  <div class="row mb-3">
+    <div class="col col-md-6">
+      <div class="card">
+        <h5 class="card-header">VPN Tunnel</h5>
+        <div class="card-body">
+          <table class="table table-hover attr-table">
+            <tr>
+              <th scope="row">Name</th>
+              <td>{{ object.name }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Project</th>
+              <td><a href="{{ object.project.get_absolute_url }}">{{ object.project }}</a></td>
+            </tr>
+            <tr>
+              <th scope="row">Region</th>
+              <td>{{ object.region }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Status</th>
+              <td>{{ object.status }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Detailed Status</th>
+              <td>{{ object.detailed_status|placeholder }}</td>
+            </tr>
+            <tr>
+              <th scope="row">VPN Gateway</th>
+              <td>
+                {% if object.vpn_gateway %}
+                  <a href="{{ object.vpn_gateway.get_absolute_url }}">{{ object.vpn_gateway }}</a>
+                {% else %}
+                  {{ ''|placeholder }}
+                {% endif %}
+              </td>
+            </tr>
+            <tr>
+                <th scope="row">VPN Gateway Interface</th>
+                <td>{{ object.vpn_gateway_interface }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Peer External Gateway</th>
+              <td>
+                {% if object.peer_external_gateway %}
+                  <a href="{{ object.peer_external_gateway.get_absolute_url }}">{{ object.peer_external_gateway }}</a>
+                {% else %}
+                  {{ ''|placeholder }}
+                {% endif %}
+              </td>
+            </tr>
+             <tr>
+                <th scope="row">Peer External Gateway Interface</th>
+                <td>{{ object.peer_external_gateway_interface }}</td>
+            </tr>
+            <tr>
+                <th scope="row">Peer IP</th>
+                <td>{{ object.peer_ip|placeholder }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Router</th>
+              <td>
+                {% if object.router %}
+                  <a href="{{ object.router.get_absolute_url }}">{{ object.router }}</a>
+                {% else %}
+                  {{ ''|placeholder }}
+                {% endif %}
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      {% include 'inc/panels/custom_fields.html' %}
+    </div>
+    <div class="col col-md-6">
+        <div class="card">
+            <h5 class="card-header">Traffic Selectors</h5>
+            <div class="card-body">
+              <table class="table table-hover attr-table">
+                <tr>
+                    <th scope="row">Local Traffic Selector</th>
+                    <td>
+                        {% if object.local_traffic_selector %}
+                            <pre>{{ object.local_traffic_selector|json_script:"local-traffic" }}</pre>
+                        {% else %}
+                            {{ ''|placeholder }}
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">Remote Traffic Selector</th>
+                    <td>
+                        {% if object.remote_traffic_selector %}
+                            <pre>{{ object.remote_traffic_selector|json_script:"remote-traffic" }}</pre>
+                        {% else %}
+                            {{ ''|placeholder }}
+                        {% endif %}
+                    </td>
+                </tr>
+              </table>
+            </div>
+        </div>
+      {% include 'inc/panels/tags.html' %}
+      {% include 'inc/panels/comments.html' %}
+    </div>
+  </div>
+{% endblock content %}

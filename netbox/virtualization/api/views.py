@@ -13,6 +13,7 @@ class VirtualizationRootView(APIRootView):
     """
     Virtualization API root view
     """
+
     def get_view_name(self):
         return 'Virtualization'
 
@@ -20,6 +21,7 @@ class VirtualizationRootView(APIRootView):
 #
 # Clusters
 #
+
 
 class ClusterTypeViewSet(NetBoxModelViewSet):
     queryset = ClusterType.objects.all()
@@ -46,6 +48,7 @@ class ClusterViewSet(NetBoxModelViewSet):
 #
 # Virtual machines
 #
+
 
 class VirtualMachineViewSet(ConfigContextQuerySetMixin, RenderConfigMixin, NetBoxModelViewSet):
     queryset = VirtualMachine.objects.all()

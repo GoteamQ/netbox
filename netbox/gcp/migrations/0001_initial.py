@@ -1,0 +1,1323 @@
+from django.db import migrations, models
+import django.db.models.deletion
+import taggit.managers
+import utilities.json
+
+
+class Migration(migrations.Migration):
+    initial = True
+
+    dependencies = [
+        ('extras', '0001_initial'),
+    ]
+
+    operations = [
+        migrations.CreateModel(
+            name='GCPProject',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False)),
+                ('created', models.DateTimeField(auto_now_add=True, null=True)),
+                ('last_updated', models.DateTimeField(auto_now=True, null=True)),
+                (
+                    'custom_field_data',
+                    models.JSONField(blank=True, default=dict, encoder=utilities.json.CustomFieldJSONEncoder),
+                ),
+                ('name', models.CharField(max_length=255)),
+                ('project_id', models.CharField(max_length=255, unique=True)),
+                ('project_number', models.CharField(blank=True, max_length=50)),
+                ('status', models.CharField(default='ACTIVE', max_length=50)),
+                ('labels', models.JSONField(blank=True, null=True)),
+                ('tags', taggit.managers.TaggableManager(through='extras.TaggedItem', to='extras.Tag')),
+            ],
+            options={
+                'verbose_name': 'GCP Project',
+                'verbose_name_plural': 'GCP Projects',
+                'ordering': ['name'],
+            },
+        ),
+        migrations.CreateModel(
+            name='VPCNetwork',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False)),
+                ('created', models.DateTimeField(auto_now_add=True, null=True)),
+                ('last_updated', models.DateTimeField(auto_now=True, null=True)),
+                (
+                    'custom_field_data',
+                    models.JSONField(blank=True, default=dict, encoder=utilities.json.CustomFieldJSONEncoder),
+                ),
+                ('name', models.CharField(max_length=255)),
+                ('auto_create_subnetworks', models.BooleanField(default=False)),
+                ('routing_mode', models.CharField(default='REGIONAL', max_length=20)),
+                ('mtu', models.IntegerField(default=1460)),
+                ('description', models.TextField(blank=True)),
+                (
+                    'project',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name='vpc_networks', to='gcp.gcpproject'
+                    ),
+                ),
+                ('tags', taggit.managers.TaggableManager(through='extras.TaggedItem', to='extras.Tag')),
+            ],
+            options={
+                'verbose_name': 'VPC Network',
+                'verbose_name_plural': 'VPC Networks',
+                'ordering': ['name'],
+            },
+        ),
+        migrations.CreateModel(
+            name='ComputeInstance',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False)),
+                ('created', models.DateTimeField(auto_now_add=True, null=True)),
+                ('last_updated', models.DateTimeField(auto_now=True, null=True)),
+                (
+                    'custom_field_data',
+                    models.JSONField(blank=True, default=dict, encoder=utilities.json.CustomFieldJSONEncoder),
+                ),
+                ('name', models.CharField(max_length=255)),
+                ('zone', models.CharField(max_length=100)),
+                ('machine_type', models.CharField(max_length=100)),
+                ('status', models.CharField(default='RUNNING', max_length=50)),
+                ('internal_ip', models.GenericIPAddressField(blank=True, null=True)),
+                ('external_ip', models.GenericIPAddressField(blank=True, null=True)),
+                ('network', models.CharField(blank=True, max_length=255)),
+                ('subnet', models.CharField(blank=True, max_length=255)),
+                ('disk_size_gb', models.IntegerField(default=10)),
+                ('image', models.CharField(blank=True, max_length=255)),
+                ('labels', models.JSONField(blank=True, null=True)),
+                (
+                    'project',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='compute_instances',
+                        to='gcp.gcpproject',
+                    ),
+                ),
+                ('tags', taggit.managers.TaggableManager(through='extras.TaggedItem', to='extras.Tag')),
+            ],
+            options={
+                'verbose_name': 'Compute Instance',
+                'verbose_name_plural': 'Compute Instances',
+                'ordering': ['name'],
+            },
+        ),
+        migrations.CreateModel(
+            name='InstanceTemplate',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False)),
+                ('created', models.DateTimeField(auto_now_add=True, null=True)),
+                ('last_updated', models.DateTimeField(auto_now=True, null=True)),
+                (
+                    'custom_field_data',
+                    models.JSONField(blank=True, default=dict, encoder=utilities.json.CustomFieldJSONEncoder),
+                ),
+                ('name', models.CharField(max_length=255)),
+                ('machine_type', models.CharField(max_length=100)),
+                ('disk_size_gb', models.IntegerField(default=10)),
+                ('image', models.CharField(blank=True, max_length=255)),
+                ('network', models.CharField(blank=True, max_length=255)),
+                ('subnet', models.CharField(blank=True, max_length=255)),
+                ('labels', models.JSONField(blank=True, null=True)),
+                (
+                    'project',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='instance_templates',
+                        to='gcp.gcpproject',
+                    ),
+                ),
+                ('tags', taggit.managers.TaggableManager(through='extras.TaggedItem', to='extras.Tag')),
+            ],
+            options={
+                'verbose_name': 'Instance Template',
+                'verbose_name_plural': 'Instance Templates',
+                'ordering': ['name'],
+            },
+        ),
+        migrations.CreateModel(
+            name='InstanceGroup',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False)),
+                ('created', models.DateTimeField(auto_now_add=True, null=True)),
+                ('last_updated', models.DateTimeField(auto_now=True, null=True)),
+                (
+                    'custom_field_data',
+                    models.JSONField(blank=True, default=dict, encoder=utilities.json.CustomFieldJSONEncoder),
+                ),
+                ('name', models.CharField(max_length=255)),
+                ('zone', models.CharField(blank=True, max_length=100)),
+                ('region', models.CharField(blank=True, max_length=100)),
+                ('target_size', models.IntegerField(default=1)),
+                ('is_managed', models.BooleanField(default=True)),
+                (
+                    'project',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name='instance_groups', to='gcp.gcpproject'
+                    ),
+                ),
+                (
+                    'template',
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name='instance_groups',
+                        to='gcp.instancetemplate',
+                    ),
+                ),
+                ('tags', taggit.managers.TaggableManager(through='extras.TaggedItem', to='extras.Tag')),
+            ],
+            options={
+                'verbose_name': 'Instance Group',
+                'verbose_name_plural': 'Instance Groups',
+                'ordering': ['name'],
+            },
+        ),
+        migrations.CreateModel(
+            name='Subnet',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False)),
+                ('created', models.DateTimeField(auto_now_add=True, null=True)),
+                ('last_updated', models.DateTimeField(auto_now=True, null=True)),
+                (
+                    'custom_field_data',
+                    models.JSONField(blank=True, default=dict, encoder=utilities.json.CustomFieldJSONEncoder),
+                ),
+                ('name', models.CharField(max_length=255)),
+                ('region', models.CharField(max_length=100)),
+                ('ip_cidr_range', models.CharField(max_length=50)),
+                ('private_ip_google_access', models.BooleanField(default=False)),
+                ('secondary_ip_ranges', models.JSONField(blank=True, null=True)),
+                ('purpose', models.CharField(default='PRIVATE', max_length=50)),
+                (
+                    'project',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name='subnets', to='gcp.gcpproject'
+                    ),
+                ),
+                (
+                    'network',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name='subnets', to='gcp.vpcnetwork'
+                    ),
+                ),
+                ('tags', taggit.managers.TaggableManager(through='extras.TaggedItem', to='extras.Tag')),
+            ],
+            options={
+                'verbose_name': 'Subnet',
+                'verbose_name_plural': 'Subnets',
+                'ordering': ['name'],
+            },
+        ),
+        migrations.CreateModel(
+            name='FirewallRule',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False)),
+                ('created', models.DateTimeField(auto_now_add=True, null=True)),
+                ('last_updated', models.DateTimeField(auto_now=True, null=True)),
+                (
+                    'custom_field_data',
+                    models.JSONField(blank=True, default=dict, encoder=utilities.json.CustomFieldJSONEncoder),
+                ),
+                ('name', models.CharField(max_length=255)),
+                ('direction', models.CharField(default='INGRESS', max_length=20)),
+                ('priority', models.IntegerField(default=1000)),
+                ('action', models.CharField(default='ALLOW', max_length=10)),
+                ('source_ranges', models.JSONField(blank=True, null=True)),
+                ('destination_ranges', models.JSONField(blank=True, null=True)),
+                ('source_tags', models.JSONField(blank=True, null=True)),
+                ('target_tags', models.JSONField(blank=True, null=True)),
+                ('allowed', models.JSONField(blank=True, null=True)),
+                ('denied', models.JSONField(blank=True, null=True)),
+                ('disabled', models.BooleanField(default=False)),
+                (
+                    'project',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name='firewall_rules', to='gcp.gcpproject'
+                    ),
+                ),
+                (
+                    'network',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name='firewall_rules', to='gcp.vpcnetwork'
+                    ),
+                ),
+                ('tags', taggit.managers.TaggableManager(through='extras.TaggedItem', to='extras.Tag')),
+            ],
+            options={
+                'verbose_name': 'Firewall Rule',
+                'verbose_name_plural': 'Firewall Rules',
+                'ordering': ['name'],
+            },
+        ),
+        migrations.CreateModel(
+            name='CloudRouter',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False)),
+                ('created', models.DateTimeField(auto_now_add=True, null=True)),
+                ('last_updated', models.DateTimeField(auto_now=True, null=True)),
+                (
+                    'custom_field_data',
+                    models.JSONField(blank=True, default=dict, encoder=utilities.json.CustomFieldJSONEncoder),
+                ),
+                ('name', models.CharField(max_length=255)),
+                ('region', models.CharField(max_length=100)),
+                ('asn', models.BigIntegerField(default=64512)),
+                ('advertise_mode', models.CharField(default='DEFAULT', max_length=20)),
+                ('advertised_ip_ranges', models.JSONField(blank=True, null=True)),
+                (
+                    'project',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name='cloud_routers', to='gcp.gcpproject'
+                    ),
+                ),
+                (
+                    'network',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name='cloud_routers', to='gcp.vpcnetwork'
+                    ),
+                ),
+                ('tags', taggit.managers.TaggableManager(through='extras.TaggedItem', to='extras.Tag')),
+            ],
+            options={
+                'verbose_name': 'Cloud Router',
+                'verbose_name_plural': 'Cloud Routers',
+                'ordering': ['name'],
+            },
+        ),
+        migrations.CreateModel(
+            name='CloudNAT',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False)),
+                ('created', models.DateTimeField(auto_now_add=True, null=True)),
+                ('last_updated', models.DateTimeField(auto_now=True, null=True)),
+                (
+                    'custom_field_data',
+                    models.JSONField(blank=True, default=dict, encoder=utilities.json.CustomFieldJSONEncoder),
+                ),
+                ('name', models.CharField(max_length=255)),
+                ('region', models.CharField(max_length=100)),
+                ('nat_ip_allocate_option', models.CharField(default='AUTO_ONLY', max_length=50)),
+                (
+                    'source_subnetwork_ip_ranges',
+                    models.CharField(default='ALL_SUBNETWORKS_ALL_IP_RANGES', max_length=100),
+                ),
+                ('nat_ips', models.JSONField(blank=True, null=True)),
+                ('min_ports_per_vm', models.IntegerField(default=64)),
+                (
+                    'project',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name='cloud_nats', to='gcp.gcpproject'
+                    ),
+                ),
+                (
+                    'router',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name='cloud_nats', to='gcp.cloudrouter'
+                    ),
+                ),
+                ('tags', taggit.managers.TaggableManager(through='extras.TaggedItem', to='extras.Tag')),
+            ],
+            options={
+                'verbose_name': 'Cloud NAT',
+                'verbose_name_plural': 'Cloud NATs',
+                'ordering': ['name'],
+            },
+        ),
+        migrations.CreateModel(
+            name='LoadBalancer',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False)),
+                ('created', models.DateTimeField(auto_now_add=True, null=True)),
+                ('last_updated', models.DateTimeField(auto_now=True, null=True)),
+                (
+                    'custom_field_data',
+                    models.JSONField(blank=True, default=dict, encoder=utilities.json.CustomFieldJSONEncoder),
+                ),
+                ('name', models.CharField(max_length=255)),
+                ('scheme', models.CharField(default='EXTERNAL', max_length=20)),
+                ('lb_type', models.CharField(default='HTTP', max_length=20)),
+                ('region', models.CharField(blank=True, max_length=100)),
+                ('ip_address', models.GenericIPAddressField(blank=True, null=True)),
+                ('port', models.IntegerField(blank=True, null=True)),
+                ('backend_services', models.JSONField(blank=True, null=True)),
+                ('health_check', models.CharField(blank=True, max_length=255)),
+                (
+                    'project',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name='load_balancers', to='gcp.gcpproject'
+                    ),
+                ),
+                ('tags', taggit.managers.TaggableManager(through='extras.TaggedItem', to='extras.Tag')),
+            ],
+            options={
+                'verbose_name': 'Load Balancer',
+                'verbose_name_plural': 'Load Balancers',
+                'ordering': ['name'],
+            },
+        ),
+        migrations.CreateModel(
+            name='CloudSQLInstance',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False)),
+                ('created', models.DateTimeField(auto_now_add=True, null=True)),
+                ('last_updated', models.DateTimeField(auto_now=True, null=True)),
+                (
+                    'custom_field_data',
+                    models.JSONField(blank=True, default=dict, encoder=utilities.json.CustomFieldJSONEncoder),
+                ),
+                ('name', models.CharField(max_length=255)),
+                ('region', models.CharField(max_length=100)),
+                ('database_version', models.CharField(max_length=50)),
+                ('database_type', models.CharField(default='MYSQL', max_length=20)),
+                ('tier', models.CharField(max_length=50)),
+                ('storage_size_gb', models.IntegerField(default=10)),
+                ('storage_type', models.CharField(default='SSD', max_length=10)),
+                ('status', models.CharField(default='RUNNABLE', max_length=50)),
+                ('ip_address', models.GenericIPAddressField(blank=True, null=True)),
+                ('private_ip', models.GenericIPAddressField(blank=True, null=True)),
+                ('connection_name', models.CharField(blank=True, max_length=255)),
+                ('high_availability', models.BooleanField(default=False)),
+                ('backup_enabled', models.BooleanField(default=True)),
+                ('labels', models.JSONField(blank=True, null=True)),
+                (
+                    'project',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='cloud_sql_instances',
+                        to='gcp.gcpproject',
+                    ),
+                ),
+                ('tags', taggit.managers.TaggableManager(through='extras.TaggedItem', to='extras.Tag')),
+            ],
+            options={
+                'verbose_name': 'Cloud SQL Instance',
+                'verbose_name_plural': 'Cloud SQL Instances',
+                'ordering': ['name'],
+            },
+        ),
+        migrations.CreateModel(
+            name='CloudSpannerInstance',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False)),
+                ('created', models.DateTimeField(auto_now_add=True, null=True)),
+                ('last_updated', models.DateTimeField(auto_now=True, null=True)),
+                (
+                    'custom_field_data',
+                    models.JSONField(blank=True, default=dict, encoder=utilities.json.CustomFieldJSONEncoder),
+                ),
+                ('name', models.CharField(max_length=255)),
+                ('config', models.CharField(max_length=100)),
+                ('display_name', models.CharField(blank=True, max_length=255)),
+                ('node_count', models.IntegerField(default=1)),
+                ('processing_units', models.IntegerField(blank=True, null=True)),
+                ('status', models.CharField(default='READY', max_length=50)),
+                ('labels', models.JSONField(blank=True, null=True)),
+                (
+                    'project',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='cloud_spanner_instances',
+                        to='gcp.gcpproject',
+                    ),
+                ),
+                ('tags', taggit.managers.TaggableManager(through='extras.TaggedItem', to='extras.Tag')),
+            ],
+            options={
+                'verbose_name': 'Cloud Spanner Instance',
+                'verbose_name_plural': 'Cloud Spanner Instances',
+                'ordering': ['name'],
+            },
+        ),
+        migrations.CreateModel(
+            name='FirestoreDatabase',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False)),
+                ('created', models.DateTimeField(auto_now_add=True, null=True)),
+                ('last_updated', models.DateTimeField(auto_now=True, null=True)),
+                (
+                    'custom_field_data',
+                    models.JSONField(blank=True, default=dict, encoder=utilities.json.CustomFieldJSONEncoder),
+                ),
+                ('name', models.CharField(max_length=255)),
+                ('location', models.CharField(max_length=100)),
+                ('database_type', models.CharField(default='FIRESTORE_NATIVE', max_length=50)),
+                ('concurrency_mode', models.CharField(default='OPTIMISTIC', max_length=50)),
+                ('status', models.CharField(default='ACTIVE', max_length=50)),
+                (
+                    'project',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='firestore_databases',
+                        to='gcp.gcpproject',
+                    ),
+                ),
+                ('tags', taggit.managers.TaggableManager(through='extras.TaggedItem', to='extras.Tag')),
+            ],
+            options={
+                'verbose_name': 'Firestore Database',
+                'verbose_name_plural': 'Firestore Databases',
+                'ordering': ['name'],
+            },
+        ),
+        migrations.CreateModel(
+            name='BigtableInstance',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False)),
+                ('created', models.DateTimeField(auto_now_add=True, null=True)),
+                ('last_updated', models.DateTimeField(auto_now=True, null=True)),
+                (
+                    'custom_field_data',
+                    models.JSONField(blank=True, default=dict, encoder=utilities.json.CustomFieldJSONEncoder),
+                ),
+                ('name', models.CharField(max_length=255)),
+                ('display_name', models.CharField(blank=True, max_length=255)),
+                ('instance_type', models.CharField(default='PRODUCTION', max_length=20)),
+                ('storage_type', models.CharField(default='SSD', max_length=10)),
+                ('status', models.CharField(default='READY', max_length=50)),
+                ('labels', models.JSONField(blank=True, null=True)),
+                (
+                    'project',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='bigtable_instances',
+                        to='gcp.gcpproject',
+                    ),
+                ),
+                ('tags', taggit.managers.TaggableManager(through='extras.TaggedItem', to='extras.Tag')),
+            ],
+            options={
+                'verbose_name': 'Bigtable Instance',
+                'verbose_name_plural': 'Bigtable Instances',
+                'ordering': ['name'],
+            },
+        ),
+        migrations.CreateModel(
+            name='CloudStorageBucket',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False)),
+                ('created', models.DateTimeField(auto_now_add=True, null=True)),
+                ('last_updated', models.DateTimeField(auto_now=True, null=True)),
+                (
+                    'custom_field_data',
+                    models.JSONField(blank=True, default=dict, encoder=utilities.json.CustomFieldJSONEncoder),
+                ),
+                ('name', models.CharField(max_length=255, unique=True)),
+                ('location', models.CharField(max_length=100)),
+                ('storage_class', models.CharField(default='STANDARD', max_length=30)),
+                ('versioning_enabled', models.BooleanField(default=False)),
+                ('uniform_bucket_level_access', models.BooleanField(default=True)),
+                ('public_access_prevention', models.CharField(default='enforced', max_length=20)),
+                ('lifecycle_rules', models.JSONField(blank=True, null=True)),
+                ('labels', models.JSONField(blank=True, null=True)),
+                (
+                    'project',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name='storage_buckets', to='gcp.gcpproject'
+                    ),
+                ),
+                ('tags', taggit.managers.TaggableManager(through='extras.TaggedItem', to='extras.Tag')),
+            ],
+            options={
+                'verbose_name': 'Cloud Storage Bucket',
+                'verbose_name_plural': 'Cloud Storage Buckets',
+                'ordering': ['name'],
+            },
+        ),
+        migrations.CreateModel(
+            name='PersistentDisk',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False)),
+                ('created', models.DateTimeField(auto_now_add=True, null=True)),
+                ('last_updated', models.DateTimeField(auto_now=True, null=True)),
+                (
+                    'custom_field_data',
+                    models.JSONField(blank=True, default=dict, encoder=utilities.json.CustomFieldJSONEncoder),
+                ),
+                ('name', models.CharField(max_length=255)),
+                ('zone', models.CharField(max_length=100)),
+                ('disk_type', models.CharField(default='pd-standard', max_length=30)),
+                ('size_gb', models.IntegerField(default=10)),
+                ('status', models.CharField(default='READY', max_length=50)),
+                ('source_image', models.CharField(blank=True, max_length=255)),
+                ('source_snapshot', models.CharField(blank=True, max_length=255)),
+                ('attached_instances', models.JSONField(blank=True, null=True)),
+                ('labels', models.JSONField(blank=True, null=True)),
+                (
+                    'project',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='persistent_disks',
+                        to='gcp.gcpproject',
+                    ),
+                ),
+                ('tags', taggit.managers.TaggableManager(through='extras.TaggedItem', to='extras.Tag')),
+            ],
+            options={
+                'verbose_name': 'Persistent Disk',
+                'verbose_name_plural': 'Persistent Disks',
+                'ordering': ['name'],
+            },
+        ),
+        migrations.CreateModel(
+            name='GKECluster',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False)),
+                ('created', models.DateTimeField(auto_now_add=True, null=True)),
+                ('last_updated', models.DateTimeField(auto_now=True, null=True)),
+                (
+                    'custom_field_data',
+                    models.JSONField(blank=True, default=dict, encoder=utilities.json.CustomFieldJSONEncoder),
+                ),
+                ('name', models.CharField(max_length=255)),
+                ('location', models.CharField(max_length=100)),
+                ('master_version', models.CharField(max_length=50)),
+                ('status', models.CharField(default='RUNNING', max_length=50)),
+                ('endpoint', models.CharField(blank=True, max_length=255)),
+                ('cluster_ipv4_cidr', models.CharField(blank=True, max_length=50)),
+                ('services_ipv4_cidr', models.CharField(blank=True, max_length=50)),
+                ('enable_autopilot', models.BooleanField(default=False)),
+                ('private_cluster', models.BooleanField(default=False)),
+                ('labels', models.JSONField(blank=True, null=True)),
+                (
+                    'project',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name='gke_clusters', to='gcp.gcpproject'
+                    ),
+                ),
+                (
+                    'network',
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name='gke_clusters',
+                        to='gcp.vpcnetwork',
+                    ),
+                ),
+                (
+                    'subnet',
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name='gke_clusters',
+                        to='gcp.subnet',
+                    ),
+                ),
+                ('tags', taggit.managers.TaggableManager(through='extras.TaggedItem', to='extras.Tag')),
+            ],
+            options={
+                'verbose_name': 'GKE Cluster',
+                'verbose_name_plural': 'GKE Clusters',
+                'ordering': ['name'],
+            },
+        ),
+        migrations.CreateModel(
+            name='GKENodePool',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False)),
+                ('created', models.DateTimeField(auto_now_add=True, null=True)),
+                ('last_updated', models.DateTimeField(auto_now=True, null=True)),
+                (
+                    'custom_field_data',
+                    models.JSONField(blank=True, default=dict, encoder=utilities.json.CustomFieldJSONEncoder),
+                ),
+                ('name', models.CharField(max_length=255)),
+                ('machine_type', models.CharField(max_length=100)),
+                ('disk_size_gb', models.IntegerField(default=100)),
+                ('disk_type', models.CharField(default='pd-standard', max_length=30)),
+                ('node_count', models.IntegerField(default=3)),
+                ('min_node_count', models.IntegerField(blank=True, null=True)),
+                ('max_node_count', models.IntegerField(blank=True, null=True)),
+                ('autoscaling_enabled', models.BooleanField(default=False)),
+                ('preemptible', models.BooleanField(default=False)),
+                ('spot', models.BooleanField(default=False)),
+                ('status', models.CharField(default='RUNNING', max_length=50)),
+                ('version', models.CharField(blank=True, max_length=50)),
+                ('labels', models.JSONField(blank=True, null=True)),
+                (
+                    'cluster',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name='node_pools', to='gcp.gkecluster'
+                    ),
+                ),
+                ('tags', taggit.managers.TaggableManager(through='extras.TaggedItem', to='extras.Tag')),
+            ],
+            options={
+                'verbose_name': 'GKE Node Pool',
+                'verbose_name_plural': 'GKE Node Pools',
+                'ordering': ['name'],
+            },
+        ),
+        migrations.CreateModel(
+            name='ServiceAccount',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False)),
+                ('created', models.DateTimeField(auto_now_add=True, null=True)),
+                ('last_updated', models.DateTimeField(auto_now=True, null=True)),
+                (
+                    'custom_field_data',
+                    models.JSONField(blank=True, default=dict, encoder=utilities.json.CustomFieldJSONEncoder),
+                ),
+                ('email', models.EmailField(max_length=255, unique=True)),
+                ('display_name', models.CharField(blank=True, max_length=255)),
+                ('description', models.TextField(blank=True)),
+                ('disabled', models.BooleanField(default=False)),
+                ('unique_id', models.CharField(blank=True, max_length=50)),
+                (
+                    'project',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='service_accounts',
+                        to='gcp.gcpproject',
+                    ),
+                ),
+                ('tags', taggit.managers.TaggableManager(through='extras.TaggedItem', to='extras.Tag')),
+            ],
+            options={
+                'verbose_name': 'Service Account',
+                'verbose_name_plural': 'Service Accounts',
+                'ordering': ['email'],
+            },
+        ),
+        migrations.CreateModel(
+            name='IAMRole',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False)),
+                ('created', models.DateTimeField(auto_now_add=True, null=True)),
+                ('last_updated', models.DateTimeField(auto_now=True, null=True)),
+                (
+                    'custom_field_data',
+                    models.JSONField(blank=True, default=dict, encoder=utilities.json.CustomFieldJSONEncoder),
+                ),
+                ('name', models.CharField(max_length=255)),
+                ('title', models.CharField(blank=True, max_length=255)),
+                ('description', models.TextField(blank=True)),
+                ('stage', models.CharField(default='GA', max_length=20)),
+                ('included_permissions', models.JSONField(blank=True, null=True)),
+                ('is_custom', models.BooleanField(default=False)),
+                (
+                    'project',
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='custom_roles',
+                        to='gcp.gcpproject',
+                    ),
+                ),
+                ('tags', taggit.managers.TaggableManager(through='extras.TaggedItem', to='extras.Tag')),
+            ],
+            options={
+                'verbose_name': 'IAM Role',
+                'verbose_name_plural': 'IAM Roles',
+                'ordering': ['name'],
+            },
+        ),
+        migrations.CreateModel(
+            name='IAMBinding',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False)),
+                ('created', models.DateTimeField(auto_now_add=True, null=True)),
+                ('last_updated', models.DateTimeField(auto_now=True, null=True)),
+                (
+                    'custom_field_data',
+                    models.JSONField(blank=True, default=dict, encoder=utilities.json.CustomFieldJSONEncoder),
+                ),
+                ('member', models.CharField(max_length=255)),
+                ('condition', models.JSONField(blank=True, null=True)),
+                (
+                    'project',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name='iam_bindings', to='gcp.gcpproject'
+                    ),
+                ),
+                (
+                    'role',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name='bindings', to='gcp.iamrole'
+                    ),
+                ),
+                ('tags', taggit.managers.TaggableManager(through='extras.TaggedItem', to='extras.Tag')),
+            ],
+            options={
+                'verbose_name': 'IAM Binding',
+                'verbose_name_plural': 'IAM Bindings',
+                'ordering': ['project', 'role'],
+            },
+        ),
+        migrations.CreateModel(
+            name='CloudFunction',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False)),
+                ('created', models.DateTimeField(auto_now_add=True, null=True)),
+                ('last_updated', models.DateTimeField(auto_now=True, null=True)),
+                (
+                    'custom_field_data',
+                    models.JSONField(blank=True, default=dict, encoder=utilities.json.CustomFieldJSONEncoder),
+                ),
+                ('name', models.CharField(max_length=255)),
+                ('region', models.CharField(max_length=100)),
+                ('runtime', models.CharField(max_length=50)),
+                ('entry_point', models.CharField(blank=True, max_length=255)),
+                ('trigger_type', models.CharField(default='HTTP', max_length=50)),
+                ('trigger_url', models.URLField(blank=True)),
+                ('memory_mb', models.IntegerField(default=256)),
+                ('timeout_seconds', models.IntegerField(default=60)),
+                ('max_instances', models.IntegerField(blank=True, null=True)),
+                ('min_instances', models.IntegerField(default=0)),
+                ('status', models.CharField(default='ACTIVE', max_length=50)),
+                ('environment_variables', models.JSONField(blank=True, null=True)),
+                ('labels', models.JSONField(blank=True, null=True)),
+                (
+                    'project',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name='cloud_functions', to='gcp.gcpproject'
+                    ),
+                ),
+                (
+                    'service_account',
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name='cloud_functions',
+                        to='gcp.serviceaccount',
+                    ),
+                ),
+                ('tags', taggit.managers.TaggableManager(through='extras.TaggedItem', to='extras.Tag')),
+            ],
+            options={
+                'verbose_name': 'Cloud Function',
+                'verbose_name_plural': 'Cloud Functions',
+                'ordering': ['name'],
+            },
+        ),
+        migrations.CreateModel(
+            name='CloudRun',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False)),
+                ('created', models.DateTimeField(auto_now_add=True, null=True)),
+                ('last_updated', models.DateTimeField(auto_now=True, null=True)),
+                (
+                    'custom_field_data',
+                    models.JSONField(blank=True, default=dict, encoder=utilities.json.CustomFieldJSONEncoder),
+                ),
+                ('name', models.CharField(max_length=255)),
+                ('region', models.CharField(max_length=100)),
+                ('image', models.CharField(max_length=500)),
+                ('url', models.URLField(blank=True)),
+                ('port', models.IntegerField(default=8080)),
+                ('cpu', models.CharField(default='1', max_length=10)),
+                ('memory', models.CharField(default='512Mi', max_length=20)),
+                ('max_instances', models.IntegerField(blank=True, null=True)),
+                ('min_instances', models.IntegerField(default=0)),
+                ('concurrency', models.IntegerField(default=80)),
+                ('timeout_seconds', models.IntegerField(default=300)),
+                ('status', models.CharField(default='ACTIVE', max_length=50)),
+                ('ingress', models.CharField(default='all', max_length=50)),
+                ('labels', models.JSONField(blank=True, null=True)),
+                (
+                    'project',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='cloud_run_services',
+                        to='gcp.gcpproject',
+                    ),
+                ),
+                (
+                    'service_account',
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name='cloud_run_services',
+                        to='gcp.serviceaccount',
+                    ),
+                ),
+                ('tags', taggit.managers.TaggableManager(through='extras.TaggedItem', to='extras.Tag')),
+            ],
+            options={
+                'verbose_name': 'Cloud Run Service',
+                'verbose_name_plural': 'Cloud Run Services',
+                'ordering': ['name'],
+            },
+        ),
+        migrations.CreateModel(
+            name='PubSubTopic',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False)),
+                ('created', models.DateTimeField(auto_now_add=True, null=True)),
+                ('last_updated', models.DateTimeField(auto_now=True, null=True)),
+                (
+                    'custom_field_data',
+                    models.JSONField(blank=True, default=dict, encoder=utilities.json.CustomFieldJSONEncoder),
+                ),
+                ('name', models.CharField(max_length=255)),
+                ('labels', models.JSONField(blank=True, null=True)),
+                ('message_retention_duration', models.CharField(blank=True, max_length=50)),
+                ('schema_settings', models.JSONField(blank=True, null=True)),
+                (
+                    'project',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name='pubsub_topics', to='gcp.gcpproject'
+                    ),
+                ),
+                ('tags', taggit.managers.TaggableManager(through='extras.TaggedItem', to='extras.Tag')),
+            ],
+            options={
+                'verbose_name': 'Pub/Sub Topic',
+                'verbose_name_plural': 'Pub/Sub Topics',
+                'ordering': ['name'],
+            },
+        ),
+        migrations.CreateModel(
+            name='PubSubSubscription',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False)),
+                ('created', models.DateTimeField(auto_now_add=True, null=True)),
+                ('last_updated', models.DateTimeField(auto_now=True, null=True)),
+                (
+                    'custom_field_data',
+                    models.JSONField(blank=True, default=dict, encoder=utilities.json.CustomFieldJSONEncoder),
+                ),
+                ('name', models.CharField(max_length=255)),
+                ('ack_deadline_seconds', models.IntegerField(default=10)),
+                ('message_retention_duration', models.CharField(default='604800s', max_length=50)),
+                ('push_endpoint', models.URLField(blank=True)),
+                ('filter_expression', models.TextField(blank=True)),
+                ('labels', models.JSONField(blank=True, null=True)),
+                (
+                    'project',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='pubsub_subscriptions',
+                        to='gcp.gcpproject',
+                    ),
+                ),
+                (
+                    'topic',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name='subscriptions', to='gcp.pubsubtopic'
+                    ),
+                ),
+                (
+                    'dead_letter_topic',
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name='dead_letter_subscriptions',
+                        to='gcp.pubsubtopic',
+                    ),
+                ),
+                ('tags', taggit.managers.TaggableManager(through='extras.TaggedItem', to='extras.Tag')),
+            ],
+            options={
+                'verbose_name': 'Pub/Sub Subscription',
+                'verbose_name_plural': 'Pub/Sub Subscriptions',
+                'ordering': ['name'],
+            },
+        ),
+        migrations.CreateModel(
+            name='SecretManagerSecret',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False)),
+                ('created', models.DateTimeField(auto_now_add=True, null=True)),
+                ('last_updated', models.DateTimeField(auto_now=True, null=True)),
+                (
+                    'custom_field_data',
+                    models.JSONField(blank=True, default=dict, encoder=utilities.json.CustomFieldJSONEncoder),
+                ),
+                ('name', models.CharField(max_length=255)),
+                ('replication_type', models.CharField(default='automatic', max_length=20)),
+                ('replication_locations', models.JSONField(blank=True, null=True)),
+                ('labels', models.JSONField(blank=True, null=True)),
+                ('version_count', models.IntegerField(default=0)),
+                ('latest_version', models.CharField(blank=True, max_length=50)),
+                (
+                    'project',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name='secrets', to='gcp.gcpproject'
+                    ),
+                ),
+                ('tags', taggit.managers.TaggableManager(through='extras.TaggedItem', to='extras.Tag')),
+            ],
+            options={
+                'verbose_name': 'Secret Manager Secret',
+                'verbose_name_plural': 'Secret Manager Secrets',
+                'ordering': ['name'],
+            },
+        ),
+        migrations.CreateModel(
+            name='CloudDNSZone',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False)),
+                ('created', models.DateTimeField(auto_now_add=True, null=True)),
+                ('last_updated', models.DateTimeField(auto_now=True, null=True)),
+                (
+                    'custom_field_data',
+                    models.JSONField(blank=True, default=dict, encoder=utilities.json.CustomFieldJSONEncoder),
+                ),
+                ('name', models.CharField(max_length=255)),
+                ('dns_name', models.CharField(max_length=255)),
+                ('visibility', models.CharField(default='public', max_length=20)),
+                ('description', models.TextField(blank=True)),
+                ('name_servers', models.JSONField(blank=True, null=True)),
+                ('labels', models.JSONField(blank=True, null=True)),
+                (
+                    'project',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name='dns_zones', to='gcp.gcpproject'
+                    ),
+                ),
+                ('tags', taggit.managers.TaggableManager(through='extras.TaggedItem', to='extras.Tag')),
+            ],
+            options={
+                'verbose_name': 'Cloud DNS Zone',
+                'verbose_name_plural': 'Cloud DNS Zones',
+                'ordering': ['name'],
+            },
+        ),
+        migrations.CreateModel(
+            name='CloudDNSRecord',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False)),
+                ('created', models.DateTimeField(auto_now_add=True, null=True)),
+                ('last_updated', models.DateTimeField(auto_now=True, null=True)),
+                (
+                    'custom_field_data',
+                    models.JSONField(blank=True, default=dict, encoder=utilities.json.CustomFieldJSONEncoder),
+                ),
+                ('name', models.CharField(max_length=255)),
+                ('record_type', models.CharField(max_length=10)),
+                ('ttl', models.IntegerField(default=300)),
+                ('rrdatas', models.JSONField()),
+                (
+                    'zone',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name='records', to='gcp.clouddnszone'
+                    ),
+                ),
+                ('tags', taggit.managers.TaggableManager(through='extras.TaggedItem', to='extras.Tag')),
+            ],
+            options={
+                'verbose_name': 'Cloud DNS Record',
+                'verbose_name_plural': 'Cloud DNS Records',
+                'ordering': ['zone', 'name'],
+            },
+        ),
+        migrations.CreateModel(
+            name='MemorystoreInstance',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False)),
+                ('created', models.DateTimeField(auto_now_add=True, null=True)),
+                ('last_updated', models.DateTimeField(auto_now=True, null=True)),
+                (
+                    'custom_field_data',
+                    models.JSONField(blank=True, default=dict, encoder=utilities.json.CustomFieldJSONEncoder),
+                ),
+                ('name', models.CharField(max_length=255)),
+                ('region', models.CharField(max_length=100)),
+                ('tier', models.CharField(default='BASIC', max_length=20)),
+                ('memory_size_gb', models.IntegerField(default=1)),
+                ('redis_version', models.CharField(default='REDIS_6_X', max_length=20)),
+                ('host', models.CharField(blank=True, max_length=255)),
+                ('port', models.IntegerField(default=6379)),
+                ('status', models.CharField(default='READY', max_length=50)),
+                ('labels', models.JSONField(blank=True, null=True)),
+                (
+                    'project',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='memorystore_instances',
+                        to='gcp.gcpproject',
+                    ),
+                ),
+                (
+                    'authorized_network',
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name='memorystore_instances',
+                        to='gcp.vpcnetwork',
+                    ),
+                ),
+                ('tags', taggit.managers.TaggableManager(through='extras.TaggedItem', to='extras.Tag')),
+            ],
+            options={
+                'verbose_name': 'Memorystore Instance',
+                'verbose_name_plural': 'Memorystore Instances',
+                'ordering': ['name'],
+            },
+        ),
+        migrations.CreateModel(
+            name='NCCHub',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False)),
+                ('created', models.DateTimeField(auto_now_add=True, null=True)),
+                ('last_updated', models.DateTimeField(auto_now=True, null=True)),
+                (
+                    'custom_field_data',
+                    models.JSONField(blank=True, default=dict, encoder=utilities.json.CustomFieldJSONEncoder),
+                ),
+                ('name', models.CharField(max_length=255)),
+                ('description', models.TextField(blank=True)),
+                ('routing_vpcs', models.JSONField(blank=True, null=True)),
+                ('labels', models.JSONField(blank=True, null=True)),
+                (
+                    'project',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name='ncc_hubs', to='gcp.gcpproject'
+                    ),
+                ),
+                ('tags', taggit.managers.TaggableManager(through='extras.TaggedItem', to='extras.Tag')),
+            ],
+            options={
+                'verbose_name': 'NCC Hub',
+                'verbose_name_plural': 'NCC Hubs',
+                'ordering': ['name'],
+            },
+        ),
+        migrations.CreateModel(
+            name='NCCSpoke',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False)),
+                ('created', models.DateTimeField(auto_now_add=True, null=True)),
+                ('last_updated', models.DateTimeField(auto_now=True, null=True)),
+                (
+                    'custom_field_data',
+                    models.JSONField(blank=True, default=dict, encoder=utilities.json.CustomFieldJSONEncoder),
+                ),
+                ('name', models.CharField(max_length=255)),
+                ('spoke_type', models.CharField(max_length=50)),
+                ('location', models.CharField(max_length=100)),
+                ('description', models.TextField(blank=True)),
+                ('linked_vpn_tunnels', models.JSONField(blank=True, null=True)),
+                ('linked_interconnect_attachments', models.JSONField(blank=True, null=True)),
+                ('linked_router_appliance_instances', models.JSONField(blank=True, null=True)),
+                ('labels', models.JSONField(blank=True, null=True)),
+                (
+                    'project',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name='ncc_spokes', to='gcp.gcpproject'
+                    ),
+                ),
+                (
+                    'hub',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name='spokes', to='gcp.ncchub'
+                    ),
+                ),
+                (
+                    'linked_vpc_network',
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name='ncc_spokes',
+                        to='gcp.vpcnetwork',
+                    ),
+                ),
+                ('tags', taggit.managers.TaggableManager(through='extras.TaggedItem', to='extras.Tag')),
+            ],
+            options={
+                'verbose_name': 'NCC Spoke',
+                'verbose_name_plural': 'NCC Spokes',
+                'ordering': ['name'],
+            },
+        ),
+        migrations.CreateModel(
+            name='VPNGateway',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False)),
+                ('created', models.DateTimeField(auto_now_add=True, null=True)),
+                ('last_updated', models.DateTimeField(auto_now=True, null=True)),
+                (
+                    'custom_field_data',
+                    models.JSONField(blank=True, default=dict, encoder=utilities.json.CustomFieldJSONEncoder),
+                ),
+                ('name', models.CharField(max_length=255)),
+                ('region', models.CharField(max_length=100)),
+                ('gateway_type', models.CharField(default='HA_VPN', max_length=50)),
+                ('ip_addresses', models.JSONField(blank=True, null=True)),
+                ('description', models.TextField(blank=True)),
+                ('labels', models.JSONField(blank=True, null=True)),
+                (
+                    'project',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name='vpn_gateways', to='gcp.gcpproject'
+                    ),
+                ),
+                (
+                    'network',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name='vpn_gateways', to='gcp.vpcnetwork'
+                    ),
+                ),
+                ('tags', taggit.managers.TaggableManager(through='extras.TaggedItem', to='extras.Tag')),
+            ],
+            options={
+                'verbose_name': 'VPN Gateway',
+                'verbose_name_plural': 'VPN Gateways',
+                'ordering': ['name'],
+            },
+        ),
+        migrations.CreateModel(
+            name='ExternalVPNGateway',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False)),
+                ('created', models.DateTimeField(auto_now_add=True, null=True)),
+                ('last_updated', models.DateTimeField(auto_now=True, null=True)),
+                (
+                    'custom_field_data',
+                    models.JSONField(blank=True, default=dict, encoder=utilities.json.CustomFieldJSONEncoder),
+                ),
+                ('name', models.CharField(max_length=255)),
+                ('redundancy_type', models.CharField(default='TWO_IPS_REDUNDANCY', max_length=50)),
+                ('interfaces', models.JSONField(blank=True, null=True)),
+                ('description', models.TextField(blank=True)),
+                ('labels', models.JSONField(blank=True, null=True)),
+                (
+                    'project',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='external_vpn_gateways',
+                        to='gcp.gcpproject',
+                    ),
+                ),
+                ('tags', taggit.managers.TaggableManager(through='extras.TaggedItem', to='extras.Tag')),
+            ],
+            options={
+                'verbose_name': 'External VPN Gateway',
+                'verbose_name_plural': 'External VPN Gateways',
+                'ordering': ['name'],
+            },
+        ),
+        migrations.CreateModel(
+            name='VPNTunnel',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False)),
+                ('created', models.DateTimeField(auto_now_add=True, null=True)),
+                ('last_updated', models.DateTimeField(auto_now=True, null=True)),
+                (
+                    'custom_field_data',
+                    models.JSONField(blank=True, default=dict, encoder=utilities.json.CustomFieldJSONEncoder),
+                ),
+                ('name', models.CharField(max_length=255)),
+                ('region', models.CharField(max_length=100)),
+                ('vpn_gateway_interface', models.IntegerField(default=0)),
+                ('peer_external_gateway_interface', models.IntegerField(blank=True, default=0, null=True)),
+                ('peer_ip', models.GenericIPAddressField(blank=True, null=True)),
+                ('shared_secret_hash', models.CharField(blank=True, max_length=255)),
+                ('ike_version', models.IntegerField(default=2)),
+                ('local_traffic_selector', models.JSONField(blank=True, null=True)),
+                ('remote_traffic_selector', models.JSONField(blank=True, null=True)),
+                ('status', models.CharField(default='ESTABLISHED', max_length=50)),
+                ('detailed_status', models.TextField(blank=True)),
+                ('labels', models.JSONField(blank=True, null=True)),
+                (
+                    'project',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, related_name='vpn_tunnels', to='gcp.gcpproject'
+                    ),
+                ),
+                (
+                    'vpn_gateway',
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='tunnels',
+                        to='gcp.vpngateway',
+                    ),
+                ),
+                (
+                    'peer_external_gateway',
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name='tunnels',
+                        to='gcp.externalvpngateway',
+                    ),
+                ),
+                (
+                    'peer_gcp_gateway',
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name='peer_tunnels',
+                        to='gcp.vpngateway',
+                    ),
+                ),
+                (
+                    'router',
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name='vpn_tunnels',
+                        to='gcp.cloudrouter',
+                    ),
+                ),
+                ('tags', taggit.managers.TaggableManager(through='extras.TaggedItem', to='extras.Tag')),
+            ],
+            options={
+                'verbose_name': 'VPN Tunnel',
+                'verbose_name_plural': 'VPN Tunnels',
+                'ordering': ['name'],
+            },
+        ),
+        migrations.CreateModel(
+            name='InterconnectAttachment',
+            fields=[
+                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False)),
+                ('created', models.DateTimeField(auto_now_add=True, null=True)),
+                ('last_updated', models.DateTimeField(auto_now=True, null=True)),
+                (
+                    'custom_field_data',
+                    models.JSONField(blank=True, default=dict, encoder=utilities.json.CustomFieldJSONEncoder),
+                ),
+                ('name', models.CharField(max_length=255)),
+                ('region', models.CharField(max_length=100)),
+                ('attachment_type', models.CharField(default='DEDICATED', max_length=50)),
+                ('bandwidth', models.CharField(default='BPS_1G', max_length=20)),
+                ('vlan_tag', models.IntegerField(default=0)),
+                ('pairing_key', models.CharField(blank=True, max_length=255)),
+                ('partner_metadata', models.JSONField(blank=True, null=True)),
+                ('cloud_router_ip', models.GenericIPAddressField(blank=True, null=True)),
+                ('customer_router_ip', models.GenericIPAddressField(blank=True, null=True)),
+                ('state', models.CharField(default='ACTIVE', max_length=50)),
+                ('mtu', models.IntegerField(default=1440)),
+                ('encryption', models.CharField(default='NONE', max_length=20)),
+                ('description', models.TextField(blank=True)),
+                ('labels', models.JSONField(blank=True, null=True)),
+                (
+                    'project',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='interconnect_attachments',
+                        to='gcp.gcpproject',
+                    ),
+                ),
+                (
+                    'router',
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name='interconnect_attachments',
+                        to='gcp.cloudrouter',
+                    ),
+                ),
+                ('tags', taggit.managers.TaggableManager(through='extras.TaggedItem', to='extras.Tag')),
+            ],
+            options={
+                'verbose_name': 'Interconnect Attachment',
+                'verbose_name_plural': 'Interconnect Attachments',
+                'ordering': ['name'],
+            },
+        ),
+    ]

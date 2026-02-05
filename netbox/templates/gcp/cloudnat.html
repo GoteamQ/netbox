@@ -1,0 +1,69 @@
+{% extends 'generic/object.html' %}
+{% load render_table from django_tables2 %}
+
+{% block content %}
+  <div class="row">
+    <div class="col col-md-6">
+      <div class="card">
+        <h5 class="card-header">Cloud NAT</h5>
+        <div class="card-body">
+          <table class="table table-hover attr-table">
+            <tr>
+              <th scope="row">Name</th>
+              <td>{{ object.name }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Project</th>
+              <td>
+                {% if object.project %}
+                  <a href="{{ object.project.get_absolute_url }}">{{ object.project }}</a>
+                {% else %}
+                  {{ ''|placeholder }}
+                {% endif %}
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Router</th>
+              <td>
+                {% if object.router %}
+                  <a href="{{ object.router.get_absolute_url }}">{{ object.router }}</a>
+                {% else %}
+                  {{ ''|placeholder }}
+                {% endif %}
+              </td>
+            </tr>
+             <tr>
+              <th scope="row">Region</th>
+              <td>{{ object.region|placeholder }}</td>
+            </tr>
+             <tr>
+              <th scope="row">NAT IP Allocate Option</th>
+              <td>{{ object.nat_ip_allocate_option }}</td>
+            </tr>
+             <tr>
+              <th scope="row">Source Subnetwork IP Ranges</th>
+              <td>{{ object.source_subnetwork_ip_ranges_to_nat }}</td>
+            </tr>
+            <tr>
+               <th scope="row">NAT IPs</th>
+               <td>
+                 {% if object.nat_ips %}
+                    <pre>{{ object.nat_ips|json }}</pre>
+                 {% else %}
+                    {{ ''|placeholder }}
+                 {% endif %}
+               </td>
+             </tr>
+              <tr>
+              <th scope="row">Min Ports Per VM</th>
+              <td>{{ object.min_ports_per_vm }}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="col col-md-6">
+      <!-- Add related panels here if needed -->
+    </div>
+  </div>
+{% endblock %}

@@ -11,7 +11,10 @@ from django.utils.translation import gettext_lazy as _
 from users.constants import CONSTRAINT_TOKEN_USER
 from users.models import Group, ObjectPermission, User
 from utilities.permissions import (
-    permission_is_exempt, qs_filter_from_constraints, resolve_permission, resolve_permission_type,
+    permission_is_exempt,
+    qs_filter_from_constraints,
+    resolve_permission,
+    resolve_permission_type,
 )
 from .misc import _mirror_groups
 
@@ -60,11 +63,10 @@ def get_auth_backend_display(name):
 
 
 def get_saml_idps():
-    return getattr(settings, "SOCIAL_AUTH_SAML_ENABLED_IDPS", {}).keys()
+    return getattr(settings, 'SOCIAL_AUTH_SAML_ENABLED_IDPS', {}).keys()
 
 
 class ObjectPermissionMixin:
-
     def get_all_permissions(self, user_obj, obj=None):
         if not user_obj.is_active or user_obj.is_anonymous:
             return dict()
@@ -87,21 +89,23 @@ class ObjectPermissionMixin:
             constraints = constraints or tuple()
             if type(constraints) not in (list, tuple):
                 raise ImproperlyConfigured(
-                    f"Constraints for default permission {perm_name} must be defined as a list or tuple."
+                    f'Constraints for default permission {perm_name} must be defined as a list or tuple.'
                 )
             perms[perm_name].extend(constraints)
 
         # Retrieve all assigned and enabled ObjectPermissions
-        object_permissions = ObjectPermission.objects.filter(
-            self.get_permission_filter(user_obj),
-            enabled=True
-        ).order_by('id').distinct('id').prefetch_related('object_types')
+        object_permissions = (
+            ObjectPermission.objects.filter(self.get_permission_filter(user_obj), enabled=True)
+            .order_by('id')
+            .distinct('id')
+            .prefetch_related('object_types')
+        )
 
         # Create a dictionary mapping permissions to their constraints
         for obj_perm in object_permissions:
             for object_type in obj_perm.object_types.all():
                 for action in obj_perm.actions:
-                    perm_name = f"{object_type.app_label}.{action}_{object_type.model}"
+                    perm_name = f'{object_type.app_label}.{action}_{object_type.model}'
                     perms[perm_name].extend(obj_perm.list_constraints())
 
         return perms
@@ -135,9 +139,9 @@ class ObjectPermissionMixin:
         # Sanity check: Ensure that the requested permission applies to the specified object
         model = obj._meta.concrete_model
         if model._meta.label_lower != '.'.join((app_label, model_name)):
-            raise ValueError(_("Invalid permission {permission} for model {model}").format(
-                permission=perm, model=model
-            ))
+            raise ValueError(
+                _('Invalid permission {permission} for model {model}').format(permission=perm, model=model)
+            )
 
         # Compile a QuerySet filter that matches all instances of the specified model
         tokens = {
@@ -159,6 +163,7 @@ class RemoteUserBackend(_RemoteUserBackend):
     """
     Custom implementation of Django's RemoteUserBackend which provides configuration hooks for basic customization.
     """
+
     @property
     def create_unknown_user(self):
         return settings.REMOTE_AUTH_AUTO_CREATE_USER
@@ -176,20 +181,19 @@ class RemoteUserBackend(_RemoteUserBackend):
                     group_list.append(Group.objects.create(name=name))
                 else:
                     logging.error(
-                        f"Could not assign group {name} to remotely-authenticated user {user}: Group not found")
+                        f'Could not assign group {name} to remotely-authenticated user {user}: Group not found'
+                    )
         if group_list:
             user.groups.set(group_list)
-            logger.debug(
-                f"Assigned groups to remotely-authenticated user {user}: {group_list}")
+            logger.debug(f'Assigned groups to remotely-authenticated user {user}: {group_list}')
         else:
             user.groups.clear()
-            logger.debug(f"Stripping user {user} from Groups")
+            logger.debug(f'Stripping user {user} from Groups')
 
         # Evaluate superuser status
         user.is_superuser = self._is_superuser(user)
-        logger.debug(f"User {user} is Superuser: {user.is_superuser}")
-        logger.debug(
-            f"User {user} should be Superuser: {self._is_superuser(user)}")
+        logger.debug(f'User {user} is Superuser: {user.is_superuser}')
+        logger.debug(f'User {user} should be Superuser: {self._is_superuser(user)}')
 
         user.save()
         return user
@@ -203,8 +207,7 @@ class RemoteUserBackend(_RemoteUserBackend):
         object with the given username is not found in the database.
         """
         logger = logging.getLogger('netbox.auth.RemoteUserBackend')
-        logger.debug(
-            f"trying to authenticate {remote_user} with groups {remote_groups}")
+        logger.debug(f'trying to authenticate {remote_user} with groups {remote_groups}')
         if not remote_user:
             return
         user = None
@@ -214,9 +217,7 @@ class RemoteUserBackend(_RemoteUserBackend):
         # instead we use get_or_create when creating unknown users since it has
         # built-in safeguards for multiple threads.
         if self.create_unknown_user:
-            user, created = User._default_manager.get_or_create(**{
-                User.USERNAME_FIELD: username
-            })
+            user, created = User._default_manager.get_or_create(**{User.USERNAME_FIELD: username})
             if created:
                 user = self.configure_user(request, user)
         else:
@@ -236,17 +237,16 @@ class RemoteUserBackend(_RemoteUserBackend):
     def _is_superuser(self, user):
         logger = logging.getLogger('netbox.auth.RemoteUserBackend')
         superuser_groups = settings.REMOTE_AUTH_SUPERUSER_GROUPS
-        logger.debug(f"Superuser Groups: {superuser_groups}")
+        logger.debug(f'Superuser Groups: {superuser_groups}')
         superusers = settings.REMOTE_AUTH_SUPERUSERS
-        logger.debug(f"Superuser Users: {superusers}")
+        logger.debug(f'Superuser Users: {superusers}')
         user_groups = set()
         for g in user.groups.all():
             user_groups.add(g.name)
-        logger.debug(f"User {user.username} is in Groups:{user_groups}")
+        logger.debug(f'User {user.username} is in Groups:{user_groups}')
 
-        result = user.username in superusers or (
-            set(user_groups) & set(superuser_groups))
-        logger.debug(f"User {user.username} in Superuser Users :{result}")
+        result = user.username in superusers or (set(user_groups) & set(superuser_groups))
+        logger.debug(f'User {user.username} in Superuser Users :{result}')
         return bool(result)
 
     def _is_staff(self, user):
@@ -263,11 +263,11 @@ class RemoteUserBackend(_RemoteUserBackend):
                     group_list.append(Group.objects.get(name=name))
                 except Group.DoesNotExist:
                     logging.error(
-                        f"Could not assign group {name} to remotely-authenticated user {user}: Group not found")
+                        f'Could not assign group {name} to remotely-authenticated user {user}: Group not found'
+                    )
             if group_list:
                 user.groups.add(*group_list)
-                logger.debug(
-                    f"Assigned groups to remotely-authenticated user {user}: {group_list}")
+                logger.debug(f'Assigned groups to remotely-authenticated user {user}: {group_list}')
 
             # Assign default object permissions to the user
             permissions_list = []
@@ -283,15 +283,14 @@ class RemoteUserBackend(_RemoteUserBackend):
                 except ValueError:
                     logging.error(
                         f"Invalid permission name: '{permission_name}'. Permissions must be in the form "
-                        "<app>.<action>_<model>. (Example: dcim.add_site)"
+                        '<app>.<action>_<model>. (Example: dcim.add_site)'
                     )
             if permissions_list:
-                logger.debug(
-                    f"Assigned permissions to remotely-authenticated user {user}: {permissions_list}")
+                logger.debug(f'Assigned permissions to remotely-authenticated user {user}: {permissions_list}')
         else:
             logger.debug(
-                f"Skipped initial assignment of permissions and groups to remotely-authenticated user {user} as "
-                f"Group sync is enabled"
+                f'Skipped initial assignment of permissions and groups to remotely-authenticated user {user} as '
+                f'Group sync is enabled'
             )
 
         return user
@@ -307,9 +306,11 @@ try:
     class NBLDAPBackend(ObjectPermissionMixin, LDAPBackend_):
         def get_permission_filter(self, user_obj):
             permission_filter = super().get_permission_filter(user_obj)
-            if (self.settings.FIND_GROUP_PERMS and
-                    hasattr(user_obj, "ldap_user") and
-                    hasattr(user_obj.ldap_user, "group_names")):
+            if (
+                self.settings.FIND_GROUP_PERMS
+                and hasattr(user_obj, 'ldap_user')
+                and hasattr(user_obj.ldap_user, 'group_names')
+            ):
                 permission_filter = permission_filter | Q(groups__name__in=user_obj.ldap_user.group_names)
             return permission_filter
 
@@ -321,7 +322,6 @@ except ModuleNotFoundError:
 
 
 class LDAPBackend:
-
     def __new__(cls, *args, **kwargs):
         try:
             from django_auth_ldap.backend import LDAPSettings
@@ -329,7 +329,7 @@ class LDAPBackend:
         except ModuleNotFoundError as e:
             if getattr(e, 'name') == 'django_auth_ldap':
                 raise ImproperlyConfigured(
-                    "LDAP authentication has been configured, but django-auth-ldap is not installed."
+                    'LDAP authentication has been configured, but django-auth-ldap is not installed.'
                 )
             raise e
 
@@ -338,17 +338,15 @@ class LDAPBackend:
         except ModuleNotFoundError as e:
             if getattr(e, 'name') == 'ldap_config':
                 raise ImproperlyConfigured(
-                    "LDAP configuration file not found: Check that ldap_config.py has been created alongside "
-                    "configuration.py."
+                    'LDAP configuration file not found: Check that ldap_config.py has been created alongside '
+                    'configuration.py.'
                 )
             raise e
 
         try:
             getattr(ldap_config, 'AUTH_LDAP_SERVER_URI')
         except AttributeError:
-            raise ImproperlyConfigured(
-                "Required parameter AUTH_LDAP_SERVER_URI is missing from ldap_config.py."
-            )
+            raise ImproperlyConfigured('Required parameter AUTH_LDAP_SERVER_URI is missing from ldap_config.py.')
 
         obj = NBLDAPBackend()
 
@@ -388,9 +386,8 @@ def user_default_groups_handler(backend, user, response, *args, **kwargs):
             try:
                 group_list.append(Group.objects.get(name=name))
             except Group.DoesNotExist:
-                logging.error(
-                    f"Could not assign group {name} to remotely-authenticated user {user}: Group not found")
+                logging.error(f'Could not assign group {name} to remotely-authenticated user {user}: Group not found')
         if group_list:
             user.groups.add(*group_list)
         else:
-            logger.info(f"No valid group assignments for {user} - REMOTE_AUTH_DEFAULT_GROUPS may be incorrectly set?")
+            logger.info(f'No valid group assignments for {user} - REMOTE_AUTH_DEFAULT_GROUPS may be incorrectly set?')

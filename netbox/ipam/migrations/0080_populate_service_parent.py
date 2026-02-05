@@ -30,19 +30,14 @@ def repopulate_device_and_virtualmachine_relations(apps, schema_editor):
 
     Service.objects.using(db_alias).filter(
         parent_object_type=ContentType.objects.get_for_model(Device),
-    ).update(
-        device_id=F('parent_object_id')
-    )
+    ).update(device_id=F('parent_object_id'))
 
     Service.objects.using(db_alias).filter(
         parent_object_type=ContentType.objects.get_for_model(VirtualMachine),
-    ).update(
-        virtual_machine_id=F('parent_object_id')
-    )
+    ).update(virtual_machine_id=F('parent_object_id'))
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('dcim', '0202_location_comments_region_comments_sitegroup_comments'),
         ('ipam', '0079_add_service_fhrp_group_parent_gfk'),
@@ -50,10 +45,10 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-            migrations.RunPython(
-                populate_service_parent_gfk,
-                reverse_code=repopulate_device_and_virtualmachine_relations,
-            )
+        migrations.RunPython(
+            populate_service_parent_gfk,
+            reverse_code=repopulate_device_and_virtualmachine_relations,
+        )
     ]
 
 
@@ -64,15 +59,19 @@ def oc_service_parent(objectchange, reverting):
         if data is None:
             continue
         if device_id := data.get('device'):
-            data.update({
-                'parent_object_type': device_ct,
-                'parent_object_id': device_id,
-            })
+            data.update(
+                {
+                    'parent_object_type': device_ct,
+                    'parent_object_id': device_id,
+                }
+            )
         elif virtual_machine_id := data.get('virtual_machine'):
-            data.update({
-                'parent_object_type': virtual_machine_ct,
-                'parent_object_id': virtual_machine_id,
-            })
+            data.update(
+                {
+                    'parent_object_type': virtual_machine_ct,
+                    'parent_object_id': virtual_machine_id,
+                }
+            )
 
 
 objectchange_migrators = {

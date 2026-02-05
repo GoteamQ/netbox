@@ -12,6 +12,4 @@ def get_installed_apps():
             if type(version) is tuple:
                 version = '.'.join(str(n) for n in version)
             installed_apps[app_config.name] = version
-    return {
-        k: v for k, v in sorted(installed_apps.items())
-    }
+    return {k: v for k, v in sorted(installed_apps.items())}

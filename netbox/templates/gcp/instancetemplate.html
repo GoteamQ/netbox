@@ -1,0 +1,63 @@
+{% extends 'generic/object.html' %}
+{% load render_table from django_tables2 %}
+
+{% block content %}
+  <div class="row">
+    <div class="col col-md-6">
+      <div class="card">
+        <h5 class="card-header">Instance Template</h5>
+        <div class="card-body">
+          <table class="table table-hover attr-table">
+            <tr>
+              <th scope="row">Name</th>
+              <td>{{ object.name }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Project</th>
+              <td>
+                {% if object.project %}
+                  <a href="{{ object.project.get_absolute_url }}">{{ object.project }}</a>
+                {% else %}
+                  {{ ''|placeholder }}
+                {% endif %}
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Machine Type</th>
+              <td>{{ object.machine_type|placeholder }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Image</th>
+              <td>{{ object.image|placeholder }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Disk Size</th>
+              <td>{{ object.disk_size_gb }} GB</td>
+            </tr>
+            <tr>
+              <th scope="row">Network</th>
+              <td>{{ object.network|placeholder }}</td>
+            </tr>
+             <tr>
+              <th scope="row">Subnet</th>
+              <td>{{ object.subnet|placeholder }}</td>
+            </tr>
+            <tr>
+               <th scope="row">Labels</th>
+               <td>
+                 {% if object.labels %}
+                   <pre>{{ object.labels|json }}</pre>
+                 {% else %}
+                   {{ ''|placeholder }}
+                 {% endif %}
+               </td>
+             </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="col col-md-6">
+      <!-- Add related panels here if needed -->
+    </div>
+  </div>
+{% endblock %}

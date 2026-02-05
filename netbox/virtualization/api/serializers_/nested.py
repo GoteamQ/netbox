@@ -8,7 +8,6 @@ __all__ = (
 
 
 class NestedVirtualMachineSerializer(WritableNestedSerializer):
-
     class Meta:
         model = models.VirtualMachine
         fields = ['id', 'url', 'display_url', 'display', 'name']

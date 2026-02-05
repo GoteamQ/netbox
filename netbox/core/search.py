@@ -17,7 +17,5 @@ class DataSourceIndex(SearchIndex):
 @register_search
 class DataFileIndex(SearchIndex):
     model = models.DataFile
-    fields = (
-        ('path', 200),
-    )
+    fields = (('path', 200),)
     display_attrs = ('source',)

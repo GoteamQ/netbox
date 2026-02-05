@@ -58,7 +58,7 @@ DEFAULT_DASHBOARD = [
                 'tenancy.tenant',
                 'tenancy.contact',
             ]
-        }
+        },
     },
     {
         'widget': 'extras.NoteWidget',
@@ -72,7 +72,7 @@ DEFAULT_DASHBOARD = [
                 'widgets. You can also add new widgets using the "add widget" button below. Any changes affect only '
                 '_your_ dashboard, so feel free to experiment!'
             )
-        }
+        },
     },
     {
         'widget': 'extras.ObjectCountsWidget',
@@ -88,7 +88,7 @@ DEFAULT_DASHBOARD = [
                 'ipam.ipaddress',
                 'ipam.vlan',
             ]
-        }
+        },
     },
     {
         'widget': 'extras.RSSFeedWidget',
@@ -100,7 +100,7 @@ DEFAULT_DASHBOARD = [
             'max_entries': 10,
             'cache_timeout': 14400,
             'requires_internet': True,
-        }
+        },
     },
     {
         'widget': 'extras.ObjectCountsWidget',
@@ -114,7 +114,7 @@ DEFAULT_DASHBOARD = [
                 'circuits.providernetwork',
                 'circuits.provideraccount',
             ]
-        }
+        },
     },
     {
         'widget': 'extras.ObjectCountsWidget',
@@ -129,7 +129,7 @@ DEFAULT_DASHBOARD = [
                 'dcim.device',
                 'dcim.cable',
             ],
-        }
+        },
     },
     {
         'widget': 'extras.ObjectCountsWidget',
@@ -141,7 +141,7 @@ DEFAULT_DASHBOARD = [
                 'virtualization.cluster',
                 'virtualization.virtualmachine',
             ]
-        }
+        },
     },
     {
         'widget': 'extras.ObjectListWidget',
@@ -152,7 +152,7 @@ DEFAULT_DASHBOARD = [
         'config': {
             'model': 'core.objectchange',
             'page_size': 25,
-        }
+        },
     },
 ]
 

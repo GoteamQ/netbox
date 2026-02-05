@@ -13,14 +13,11 @@ from .models import *
 # Tenant groups
 #
 
+
 @register_model_view(TenantGroup, 'list', path='', detail=False)
 class TenantGroupListView(generic.ObjectListView):
     queryset = TenantGroup.objects.add_related_count(
-        TenantGroup.objects.all(),
-        Tenant,
-        'group',
-        'tenant_count',
-        cumulative=True
+        TenantGroup.objects.all(), Tenant, 'group', 'tenant_count', cumulative=True
     )
     filterset = filtersets.TenantGroupFilterSet
     filterset_form = forms.TenantGroupFilterForm
@@ -60,11 +57,7 @@ class TenantGroupBulkImportView(generic.BulkImportView):
 @register_model_view(TenantGroup, 'bulk_edit', path='edit', detail=False)
 class TenantGroupBulkEditView(generic.BulkEditView):
     queryset = TenantGroup.objects.add_related_count(
-        TenantGroup.objects.all(),
-        Tenant,
-        'group',
-        'tenant_count',
-        cumulative=True
+        TenantGroup.objects.all(), Tenant, 'group', 'tenant_count', cumulative=True
     )
     filterset = filtersets.TenantGroupFilterSet
     table = tables.TenantGroupTable
@@ -80,11 +73,7 @@ class TenantGroupBulkRenameView(generic.BulkRenameView):
 @register_model_view(TenantGroup, 'bulk_delete', path='delete', detail=False)
 class TenantGroupBulkDeleteView(generic.BulkDeleteView):
     queryset = TenantGroup.objects.add_related_count(
-        TenantGroup.objects.all(),
-        Tenant,
-        'group',
-        'tenant_count',
-        cumulative=True
+        TenantGroup.objects.all(), Tenant, 'group', 'tenant_count', cumulative=True
     )
     filterset = filtersets.TenantGroupFilterSet
     table = tables.TenantGroupTable
@@ -93,6 +82,7 @@ class TenantGroupBulkDeleteView(generic.BulkDeleteView):
 #
 #  Tenants
 #
+
 
 @register_model_view(Tenant, 'list', path='', detail=False)
 class TenantListView(generic.ObjectListView):
@@ -155,14 +145,11 @@ class TenantBulkDeleteView(generic.BulkDeleteView):
 # Contact groups
 #
 
+
 @register_model_view(ContactGroup, 'list', path='', detail=False)
 class ContactGroupListView(generic.ObjectListView):
     queryset = ContactGroup.objects.add_related_count(
-        ContactGroup.objects.all(),
-        Contact,
-        'groups',
-        'contact_count',
-        cumulative=True
+        ContactGroup.objects.all(), Contact, 'groups', 'contact_count', cumulative=True
     )
     filterset = filtersets.ContactGroupFilterSet
     filterset_form = forms.ContactGroupFilterForm
@@ -180,9 +167,7 @@ class ContactGroupView(GetRelatedModelsMixin, generic.ObjectView):
             'related_models': self.get_related_models(
                 request,
                 groups,
-                extra=(
-                    (Contact.objects.restrict(request.user, 'view').filter(groups__in=groups), 'group_id'),
-                ),
+                extra=((Contact.objects.restrict(request.user, 'view').filter(groups__in=groups), 'group_id'),),
             ),
         }
 
@@ -208,11 +193,7 @@ class ContactGroupBulkImportView(generic.BulkImportView):
 @register_model_view(ContactGroup, 'bulk_edit', path='edit', detail=False)
 class ContactGroupBulkEditView(generic.BulkEditView):
     queryset = ContactGroup.objects.add_related_count(
-        ContactGroup.objects.all(),
-        Contact,
-        'groups',
-        'contact_count',
-        cumulative=True
+        ContactGroup.objects.all(), Contact, 'groups', 'contact_count', cumulative=True
     )
     filterset = filtersets.ContactGroupFilterSet
     table = tables.ContactGroupTable
@@ -228,11 +209,7 @@ class ContactGroupBulkRenameView(generic.BulkRenameView):
 @register_model_view(ContactGroup, 'bulk_delete', path='delete', detail=False)
 class ContactGroupBulkDeleteView(generic.BulkDeleteView):
     queryset = ContactGroup.objects.add_related_count(
-        ContactGroup.objects.all(),
-        Contact,
-        'groups',
-        'contact_count',
-        cumulative=True
+        ContactGroup.objects.all(), Contact, 'groups', 'contact_count', cumulative=True
     )
     filterset = filtersets.ContactGroupFilterSet
     table = tables.ContactGroupTable
@@ -241,6 +218,7 @@ class ContactGroupBulkDeleteView(generic.BulkDeleteView):
 #
 # Contact roles
 #
+
 
 @register_model_view(ContactRole, 'list', path='', detail=False)
 class ContactRoleListView(generic.ObjectListView):
@@ -303,11 +281,10 @@ class ContactRoleBulkDeleteView(generic.BulkDeleteView):
 # Contacts
 #
 
+
 @register_model_view(Contact, 'list', path='', detail=False)
 class ContactListView(generic.ObjectListView):
-    queryset = Contact.objects.annotate(
-        assignment_count=count_related(ContactAssignment, 'contact')
-    )
+    queryset = Contact.objects.annotate(assignment_count=count_related(ContactAssignment, 'contact'))
     filterset = filtersets.ContactFilterSet
     filterset_form = forms.ContactFilterForm
     table = tables.ContactTable
@@ -338,9 +315,7 @@ class ContactBulkImportView(generic.BulkImportView):
 
 @register_model_view(Contact, 'bulk_edit', path='edit', detail=False)
 class ContactBulkEditView(generic.BulkEditView):
-    queryset = Contact.objects.annotate(
-        assignment_count=count_related(ContactAssignment, 'contact')
-    )
+    queryset = Contact.objects.annotate(assignment_count=count_related(ContactAssignment, 'contact'))
     filterset = filtersets.ContactFilterSet
     table = tables.ContactTable
     form = forms.ContactBulkEditForm
@@ -363,9 +338,7 @@ class ContactBulkRenameView(generic.BulkRenameView):
 
 @register_model_view(Contact, 'bulk_delete', path='delete', detail=False)
 class ContactBulkDeleteView(generic.BulkDeleteView):
-    queryset = Contact.objects.annotate(
-        assignment_count=count_related(ContactAssignment, 'contact')
-    )
+    queryset = Contact.objects.annotate(assignment_count=count_related(ContactAssignment, 'contact'))
     filterset = filtersets.ContactFilterSet
     table = tables.ContactTable
 
@@ -373,6 +346,7 @@ class ContactBulkDeleteView(generic.BulkDeleteView):
 #
 # Contact assignments
 #
+
 
 @register_model_view(ContactAssignment, 'list', path='', detail=False)
 class ContactAssignmentListView(generic.ObjectListView):

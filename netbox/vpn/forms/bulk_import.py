@@ -25,113 +25,99 @@ __all__ = (
 
 
 class TunnelGroupImportForm(OrganizationalModelImportForm):
-
     class Meta:
         model = TunnelGroup
         fields = ('name', 'slug', 'description', 'owner', 'comments', 'tags')
 
 
 class TunnelImportForm(PrimaryModelImportForm):
-    status = CSVChoiceField(
-        label=_('Status'),
-        choices=TunnelStatusChoices,
-        help_text=_('Operational status')
-    )
+    status = CSVChoiceField(label=_('Status'), choices=TunnelStatusChoices, help_text=_('Operational status'))
     group = CSVModelChoiceField(
-        label=_('Tunnel group'),
-        queryset=TunnelGroup.objects.all(),
-        required=False,
-        to_field_name='name'
+        label=_('Tunnel group'), queryset=TunnelGroup.objects.all(), required=False, to_field_name='name'
     )
     encapsulation = CSVChoiceField(
-        label=_('Encapsulation'),
-        choices=TunnelEncapsulationChoices,
-        help_text=_('Tunnel encapsulation')
+        label=_('Encapsulation'), choices=TunnelEncapsulationChoices, help_text=_('Tunnel encapsulation')
     )
     ipsec_profile = CSVModelChoiceField(
-        label=_('IPSec profile'),
-        queryset=IPSecProfile.objects.all(),
-        required=False,
-        to_field_name='name'
+        label=_('IPSec profile'), queryset=IPSecProfile.objects.all(), required=False, to_field_name='name'
     )
     tenant = CSVModelChoiceField(
         label=_('Tenant'),
         queryset=Tenant.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_('Assigned tenant')
+        help_text=_('Assigned tenant'),
     )
 
     class Meta:
         model = Tunnel
         fields = (
-            'name', 'status', 'group', 'encapsulation', 'ipsec_profile', 'tenant', 'tunnel_id', 'description',
-            'owner', 'comments', 'tags',
+            'name',
+            'status',
+            'group',
+            'encapsulation',
+            'ipsec_profile',
+            'tenant',
+            'tunnel_id',
+            'description',
+            'owner',
+            'comments',
+            'tags',
         )
 
 
 class TunnelTerminationImportForm(NetBoxModelImportForm):
-    tunnel = CSVModelChoiceField(
-        label=_('Tunnel'),
-        queryset=Tunnel.objects.all(),
-        to_field_name='name'
-    )
-    role = CSVChoiceField(
-        label=_('Role'),
-        choices=TunnelTerminationRoleChoices,
-        help_text=_('Operational role')
-    )
+    tunnel = CSVModelChoiceField(label=_('Tunnel'), queryset=Tunnel.objects.all(), to_field_name='name')
+    role = CSVChoiceField(label=_('Role'), choices=TunnelTerminationRoleChoices, help_text=_('Operational role'))
     device = CSVModelChoiceField(
         label=_('Device'),
         queryset=Device.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_('Parent device of assigned interface')
+        help_text=_('Parent device of assigned interface'),
     )
     virtual_machine = CSVModelChoiceField(
         label=_('Virtual machine'),
         queryset=VirtualMachine.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_('Parent VM of assigned interface')
+        help_text=_('Parent VM of assigned interface'),
     )
     termination = CSVModelChoiceField(
         label=_('Termination'),
         queryset=Interface.objects.none(),  # Can also refer to VMInterface
         required=False,
         to_field_name='name',
-        help_text=_('Device or virtual machine interface')
+        help_text=_('Device or virtual machine interface'),
     )
     outside_ip = CSVModelChoiceField(
-        label=_('Outside IP'),
-        queryset=IPAddress.objects.all(),
-        required=False,
-        to_field_name='address'
+        label=_('Outside IP'), queryset=IPAddress.objects.all(), required=False, to_field_name='address'
     )
 
     class Meta:
         model = TunnelTermination
         fields = (
-            'tunnel', 'role', 'outside_ip', 'tags',
+            'tunnel',
+            'role',
+            'outside_ip',
+            'tags',
         )
 
     def __init__(self, data=None, *args, **kwargs):
         super().__init__(data, *args, **kwargs)
 
         if data:
-
             # Limit termination queryset by assigned device/VM
             if data.get('device'):
                 self.fields['termination'].queryset = Interface.objects.filter(
-                    **{f"device__{self.fields['device'].to_field_name}": data['device']}
+                    **{f'device__{self.fields["device"].to_field_name}': data['device']}
                 )
             elif data.get('virtual_machine'):
                 self.fields['termination'].queryset = VMInterface.objects.filter(
-                    **{f"virtual_machine__{self.fields['virtual_machine'].to_field_name}": data['virtual_machine']}
+                    **{f'virtual_machine__{self.fields["virtual_machine"].to_field_name}': data['virtual_machine']}
                 )
 
     def save(self, *args, **kwargs):
-
         # Assign termination object
         if self.cleaned_data.get('termination'):
             self.instance.termination = self.cleaned_data['termination']
@@ -140,42 +126,32 @@ class TunnelTerminationImportForm(NetBoxModelImportForm):
 
 
 class IKEProposalImportForm(PrimaryModelImportForm):
-    authentication_method = CSVChoiceField(
-        label=_('Authentication method'),
-        choices=AuthenticationMethodChoices
-    )
-    encryption_algorithm = CSVChoiceField(
-        label=_('Encryption algorithm'),
-        choices=EncryptionAlgorithmChoices
-    )
+    authentication_method = CSVChoiceField(label=_('Authentication method'), choices=AuthenticationMethodChoices)
+    encryption_algorithm = CSVChoiceField(label=_('Encryption algorithm'), choices=EncryptionAlgorithmChoices)
     authentication_algorithm = CSVChoiceField(
-        label=_('Authentication algorithm'),
-        choices=AuthenticationAlgorithmChoices,
-        required=False
+        label=_('Authentication algorithm'), choices=AuthenticationAlgorithmChoices, required=False
     )
-    group = CSVChoiceField(
-        label=_('Group'),
-        choices=DHGroupChoices
-    )
+    group = CSVChoiceField(label=_('Group'), choices=DHGroupChoices)
 
     class Meta:
         model = IKEProposal
         fields = (
-            'name', 'description', 'authentication_method', 'encryption_algorithm', 'authentication_algorithm',
-            'group', 'sa_lifetime', 'owner', 'comments', 'tags',
+            'name',
+            'description',
+            'authentication_method',
+            'encryption_algorithm',
+            'authentication_algorithm',
+            'group',
+            'sa_lifetime',
+            'owner',
+            'comments',
+            'tags',
         )
 
 
 class IKEPolicyImportForm(PrimaryModelImportForm):
-    version = CSVChoiceField(
-        label=_('Version'),
-        choices=IKEVersionChoices
-    )
-    mode = CSVChoiceField(
-        label=_('Mode'),
-        choices=IKEModeChoices,
-        required=False
-    )
+    version = CSVChoiceField(label=_('Version'), choices=IKEVersionChoices)
+    mode = CSVChoiceField(label=_('Mode'), choices=IKEModeChoices, required=False)
     proposals = CSVModelMultipleChoiceField(
         queryset=IKEProposal.objects.all(),
         to_field_name='name',
@@ -185,35 +161,44 @@ class IKEPolicyImportForm(PrimaryModelImportForm):
     class Meta:
         model = IKEPolicy
         fields = (
-            'name', 'description', 'version', 'mode', 'proposals', 'preshared_key', 'owner', 'comments', 'tags',
+            'name',
+            'description',
+            'version',
+            'mode',
+            'proposals',
+            'preshared_key',
+            'owner',
+            'comments',
+            'tags',
         )
 
 
 class IPSecProposalImportForm(PrimaryModelImportForm):
     encryption_algorithm = CSVChoiceField(
-        label=_('Encryption algorithm'),
-        choices=EncryptionAlgorithmChoices,
-        required=False
+        label=_('Encryption algorithm'), choices=EncryptionAlgorithmChoices, required=False
     )
     authentication_algorithm = CSVChoiceField(
-        label=_('Authentication algorithm'),
-        choices=AuthenticationAlgorithmChoices,
-        required=False
+        label=_('Authentication algorithm'), choices=AuthenticationAlgorithmChoices, required=False
     )
 
     class Meta:
         model = IPSecProposal
         fields = (
-            'name', 'description', 'encryption_algorithm', 'authentication_algorithm', 'sa_lifetime_seconds',
-            'sa_lifetime_data', 'owner', 'comments', 'tags',
+            'name',
+            'description',
+            'encryption_algorithm',
+            'authentication_algorithm',
+            'sa_lifetime_seconds',
+            'sa_lifetime_data',
+            'owner',
+            'comments',
+            'tags',
         )
 
 
 class IPSecPolicyImportForm(PrimaryModelImportForm):
     pfs_group = CSVChoiceField(
-        label=_('Diffie-Hellman group for Perfect Forward Secrecy'),
-        choices=DHGroupChoices,
-        required=False
+        label=_('Diffie-Hellman group for Perfect Forward Secrecy'), choices=DHGroupChoices, required=False
     )
     proposals = CSVModelMultipleChoiceField(
         queryset=IPSecProposal.objects.all(),
@@ -224,31 +209,34 @@ class IPSecPolicyImportForm(PrimaryModelImportForm):
     class Meta:
         model = IPSecPolicy
         fields = (
-            'name', 'description', 'proposals', 'pfs_group', 'owner', 'comments', 'tags',
+            'name',
+            'description',
+            'proposals',
+            'pfs_group',
+            'owner',
+            'comments',
+            'tags',
         )
 
 
 class IPSecProfileImportForm(PrimaryModelImportForm):
-    mode = CSVChoiceField(
-        label=_('Mode'),
-        choices=IPSecModeChoices,
-        help_text=_('IPSec protocol')
-    )
-    ike_policy = CSVModelChoiceField(
-        label=_('IKE policy'),
-        queryset=IKEPolicy.objects.all(),
-        to_field_name='name'
-    )
+    mode = CSVChoiceField(label=_('Mode'), choices=IPSecModeChoices, help_text=_('IPSec protocol'))
+    ike_policy = CSVModelChoiceField(label=_('IKE policy'), queryset=IKEPolicy.objects.all(), to_field_name='name')
     ipsec_policy = CSVModelChoiceField(
-        label=_('IPSec policy'),
-        queryset=IPSecPolicy.objects.all(),
-        to_field_name='name'
+        label=_('IPSec policy'), queryset=IPSecPolicy.objects.all(), to_field_name='name'
     )
 
     class Meta:
         model = IPSecProfile
         fields = (
-            'name', 'mode', 'ike_policy', 'ipsec_policy', 'description', 'owner', 'comments', 'tags',
+            'name',
+            'mode',
+            'ike_policy',
+            'ipsec_policy',
+            'description',
+            'owner',
+            'comments',
+            'tags',
         )
 
 
@@ -259,21 +247,21 @@ class L2VPNImportForm(PrimaryModelImportForm):
         required=False,
         to_field_name='name',
     )
-    status = CSVChoiceField(
-        label=_('Status'),
-        choices=L2VPNStatusChoices,
-        help_text=_('Operational status')
-    )
-    type = CSVChoiceField(
-        label=_('Type'),
-        choices=L2VPNTypeChoices,
-        help_text=_('L2VPN type')
-    )
+    status = CSVChoiceField(label=_('Status'), choices=L2VPNStatusChoices, help_text=_('Operational status'))
+    type = CSVChoiceField(label=_('Type'), choices=L2VPNTypeChoices, help_text=_('L2VPN type'))
 
     class Meta:
         model = L2VPN
         fields = (
-            'identifier', 'name', 'slug', 'tenant', 'type', 'description', 'owner', 'comments', 'tags',
+            'identifier',
+            'name',
+            'slug',
+            'tenant',
+            'type',
+            'description',
+            'owner',
+            'comments',
+            'tags',
         )
 
 
@@ -289,28 +277,24 @@ class L2VPNTerminationImportForm(NetBoxModelImportForm):
         queryset=Device.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_('Parent device (for interface)')
+        help_text=_('Parent device (for interface)'),
     )
     virtual_machine = CSVModelChoiceField(
         label=_('Virtual machine'),
         queryset=VirtualMachine.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_('Parent virtual machine (for interface)')
+        help_text=_('Parent virtual machine (for interface)'),
     )
     interface = CSVModelChoiceField(
         label=_('Interface'),
         queryset=Interface.objects.none(),  # Can also refer to VMInterface
         required=False,
         to_field_name='name',
-        help_text=_('Assigned interface (device or VM)')
+        help_text=_('Assigned interface (device or VM)'),
     )
     vlan = CSVModelChoiceField(
-        label=_('VLAN'),
-        queryset=VLAN.objects.all(),
-        required=False,
-        to_field_name='name',
-        help_text=_('Assigned VLAN')
+        label=_('VLAN'), queryset=VLAN.objects.all(), required=False, to_field_name='name', help_text=_('Assigned VLAN')
     )
 
     class Meta:
@@ -321,15 +305,14 @@ class L2VPNTerminationImportForm(NetBoxModelImportForm):
         super().__init__(data, *args, **kwargs)
 
         if data:
-
             # Limit interface queryset by device or VM
             if data.get('device'):
                 self.fields['interface'].queryset = Interface.objects.filter(
-                    **{f"device__{self.fields['device'].to_field_name}": data['device']}
+                    **{f'device__{self.fields["device"].to_field_name}': data['device']}
                 )
             elif data.get('virtual_machine'):
                 self.fields['interface'].queryset = VMInterface.objects.filter(
-                    **{f"virtual_machine__{self.fields['virtual_machine'].to_field_name}": data['virtual_machine']}
+                    **{f'virtual_machine__{self.fields["virtual_machine"].to_field_name}': data['virtual_machine']}
                 )
 
     def clean(self):

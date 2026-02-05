@@ -7,6 +7,7 @@ from utilities.choices import ChoiceSet
 # Tunnels
 #
 
+
 class TunnelStatusChoices(ChoiceSet):
     key = 'Tunnel.status'
 
@@ -69,6 +70,7 @@ class TunnelTerminationRoleChoices(ChoiceSet):
 #
 # Crypto
 #
+
 
 class IKEVersionChoices(ChoiceSet):
     VERSION_1 = 1
@@ -154,10 +156,10 @@ class AuthenticationAlgorithmChoices(ChoiceSet):
 
 class DHGroupChoices(ChoiceSet):
     # https://www.iana.org/assignments/ikev2-parameters/ikev2-parameters.xhtml#ikev2-parameters-8
-    GROUP_1 = 1    # 768-bit MODP
-    GROUP_2 = 2    # 1024-but MODP
+    GROUP_1 = 1  # 768-bit MODP
+    GROUP_2 = 2  # 1024-but MODP
     # Groups 3-4 reserved
-    GROUP_5 = 5    # 1536-bit MODP
+    GROUP_5 = 5  # 1536-bit MODP
     # Groups 6-13 unassigned
     GROUP_14 = 14  # 2048-bit MODP
     GROUP_15 = 15  # 3072-bit MODP
@@ -214,6 +216,7 @@ class DHGroupChoices(ChoiceSet):
 # L2VPN
 #
 
+
 class L2VPNTypeChoices(ChoiceSet):
     TYPE_VPLS = 'vpls'
     TYPE_VPWS = 'vpws'
@@ -231,42 +234,46 @@ class L2VPNTypeChoices(ChoiceSet):
     TYPE_SPB = 'spb'
 
     CHOICES = (
-        ('VPLS', (
-            (TYPE_VPWS, 'VPWS'),
-            (TYPE_VPLS, 'VPLS'),
-        )),
-        ('VXLAN', (
-            (TYPE_VXLAN, 'VXLAN'),
-            (TYPE_VXLAN_EVPN, 'VXLAN-EVPN'),
-        )),
-        ('L2VPN E-VPN', (
-            (TYPE_MPLS_EVPN, 'MPLS EVPN'),
-            (TYPE_PBB_EVPN, 'PBB EVPN'),
-            (TYPE_EVPN_VPWS, 'EVPN VPWS')
-        )),
-        ('E-Line', (
-            (TYPE_EPL, 'EPL'),
-            (TYPE_EVPL, 'EVPL'),
-        )),
-        ('E-LAN', (
-            (TYPE_EPLAN, _('Ethernet Private LAN')),
-            (TYPE_EVPLAN, _('Ethernet Virtual Private LAN')),
-        )),
-        ('E-Tree', (
-            (TYPE_EPTREE, _('Ethernet Private Tree')),
-            (TYPE_EVPTREE, _('Ethernet Virtual Private Tree')),
-        )),
-        ('Other', (
-            (TYPE_SPB, _('SPB')),
-        )),
+        (
+            'VPLS',
+            (
+                (TYPE_VPWS, 'VPWS'),
+                (TYPE_VPLS, 'VPLS'),
+            ),
+        ),
+        (
+            'VXLAN',
+            (
+                (TYPE_VXLAN, 'VXLAN'),
+                (TYPE_VXLAN_EVPN, 'VXLAN-EVPN'),
+            ),
+        ),
+        ('L2VPN E-VPN', ((TYPE_MPLS_EVPN, 'MPLS EVPN'), (TYPE_PBB_EVPN, 'PBB EVPN'), (TYPE_EVPN_VPWS, 'EVPN VPWS'))),
+        (
+            'E-Line',
+            (
+                (TYPE_EPL, 'EPL'),
+                (TYPE_EVPL, 'EVPL'),
+            ),
+        ),
+        (
+            'E-LAN',
+            (
+                (TYPE_EPLAN, _('Ethernet Private LAN')),
+                (TYPE_EVPLAN, _('Ethernet Virtual Private LAN')),
+            ),
+        ),
+        (
+            'E-Tree',
+            (
+                (TYPE_EPTREE, _('Ethernet Private Tree')),
+                (TYPE_EVPTREE, _('Ethernet Virtual Private Tree')),
+            ),
+        ),
+        ('Other', ((TYPE_SPB, _('SPB')),)),
     )
 
-    P2P = (
-        TYPE_VPWS,
-        TYPE_EPL,
-        TYPE_EPLAN,
-        TYPE_EPTREE
-    )
+    P2P = (TYPE_VPWS, TYPE_EPL, TYPE_EPLAN, TYPE_EPTREE)
 
 
 class L2VPNStatusChoices(ChoiceSet):

@@ -2,7 +2,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('tenancy', '0019_contactgroup_comments_tenantgroup_comments'),
     ]
@@ -15,10 +14,7 @@ class Migration(migrations.Migration):
                     model_name='contact',
                     name='groups',
                     field=models.ManyToManyField(
-                        blank=True,
-                        related_name='contacts',
-                        related_query_name='contact',
-                        to='tenancy.contactgroup'
+                        blank=True, related_name='contacts', related_query_name='contact', to='tenancy.contactgroup'
                     ),
                 ),
                 # Remove the ContactGroupMembership model
@@ -40,13 +36,11 @@ class Migration(migrations.Migration):
                 ),
                 # Rename PK sequence
                 migrations.RunSQL(
-                    'ALTER TABLE tenancy_contactgroupmembership_id_seq '
-                    'RENAME TO tenancy_contact_groups_id_seq'
+                    'ALTER TABLE tenancy_contactgroupmembership_id_seq RENAME TO tenancy_contact_groups_id_seq'
                 ),
                 # Rename indexes
                 migrations.RunSQL(
-                    'ALTER INDEX tenancy_contactgroupmembership_pkey '
-                    'RENAME TO tenancy_contact_groups_pkey'
+                    'ALTER INDEX tenancy_contactgroupmembership_pkey RENAME TO tenancy_contact_groups_pkey'
                 ),
                 migrations.RunSQL(
                     'ALTER INDEX tenancy_contactgroupmembership_contact_id_04a138a7 '

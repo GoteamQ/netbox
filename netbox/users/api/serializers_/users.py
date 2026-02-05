@@ -22,7 +22,7 @@ class GroupSerializer(ValidatedModelSerializer):
         serializer=ObjectPermissionSerializer,
         nested=True,
         required=False,
-        many=True
+        many=True,
     )
 
     class Meta:
@@ -33,11 +33,7 @@ class GroupSerializer(ValidatedModelSerializer):
 
 class UserSerializer(ValidatedModelSerializer):
     groups = SerializedPKRelatedField(
-        queryset=Group.objects.all(),
-        serializer=GroupSerializer,
-        nested=True,
-        required=False,
-        many=True
+        queryset=Group.objects.all(), serializer=GroupSerializer, nested=True, required=False, many=True
     )
     permissions = SerializedPKRelatedField(
         source='object_permissions',
@@ -45,22 +41,31 @@ class UserSerializer(ValidatedModelSerializer):
         serializer=ObjectPermissionSerializer,
         nested=True,
         required=False,
-        many=True
+        many=True,
     )
 
     class Meta:
         model = User
         fields = (
-            'id', 'url', 'display_url', 'display', 'username', 'password', 'first_name', 'last_name', 'email',
-            'is_active', 'date_joined', 'last_login', 'groups', 'permissions',
+            'id',
+            'url',
+            'display_url',
+            'display',
+            'username',
+            'password',
+            'first_name',
+            'last_name',
+            'email',
+            'is_active',
+            'date_joined',
+            'last_login',
+            'groups',
+            'permissions',
         )
         brief_fields = ('id', 'url', 'display', 'username')
-        extra_kwargs = {
-            'password': {'write_only': True}
-        }
+        extra_kwargs = {'password': {'write_only': True}}
 
     def validate(self, data):
-
         # Enforce password validation rules (if configured)
         if not self.nested and data.get('password'):
             password_validation.validate_password(data['password'], self.instance)
@@ -91,5 +96,5 @@ class UserSerializer(ValidatedModelSerializer):
     @extend_schema_field(OpenApiTypes.STR)
     def get_display(self, obj):
         if full_name := obj.get_full_name():
-            return f"{obj.username} ({full_name})"
+            return f'{obj.username} ({full_name})'
         return obj.username

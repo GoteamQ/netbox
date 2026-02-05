@@ -20,6 +20,4 @@ class TokenPanel(panels.ObjectAttributesPanel):
 class TokenExamplePanel(panels.Panel):
     template_name = 'users/panels/token_example.html'
     title = _('Example Usage')
-    actions = [
-        actions.CopyContent('token-example')
-    ]
+    actions = [actions.CopyContent('token-example')]

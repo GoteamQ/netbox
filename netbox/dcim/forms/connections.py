@@ -9,16 +9,11 @@ from .model_forms import CableForm
 
 
 def get_cable_form(a_type, b_type):
-
     class FormMetaclass(forms.models.ModelFormMetaclass):
-
         def __new__(mcs, name, bases, attrs):
-
             for cable_end, term_cls in (('a', a_type), ('b', b_type)):
-
                 # Device component
                 if hasattr(term_cls, 'device'):
-
                     # Dynamically change the param field for interfaces to use virtual_chassis filter
                     query_param_device_field = 'device_id'
                     if term_cls == Interface:
@@ -29,9 +24,7 @@ def get_cable_form(a_type, b_type):
                         label=_('Device'),
                         required=False,
                         selector=True,
-                        initial_params={
-                            f'{term_cls._meta.model_name}s__in': f'${cable_end}_terminations'
-                        }
+                        initial_params={f'{term_cls._meta.model_name}s__in': f'${cable_end}_terminations'},
                     )
                     attrs[f'{cable_end}_terminations'] = DynamicModelMultipleChoiceField(
                         queryset=term_cls.objects.all(),
@@ -43,20 +36,17 @@ def get_cable_form(a_type, b_type):
                         query_params={
                             query_param_device_field: f'$termination_{cable_end}_device',
                             'kind': 'physical',  # Exclude virtual interfaces
-                        }
+                        },
                     )
 
                 # PowerFeed
                 elif term_cls == PowerFeed:
-
                     attrs[f'termination_{cable_end}_powerpanel'] = DynamicModelMultipleChoiceField(
                         queryset=PowerPanel.objects.all(),
                         label=_('Power Panel'),
                         required=False,
                         selector=True,
-                        initial_params={
-                            'powerfeeds__in': f'${cable_end}_terminations'
-                        }
+                        initial_params={'powerfeeds__in': f'${cable_end}_terminations'},
                     )
                     attrs[f'{cable_end}_terminations'] = DynamicModelMultipleChoiceField(
                         queryset=term_cls.objects.all(),
@@ -67,19 +57,16 @@ def get_cable_form(a_type, b_type):
                         },
                         query_params={
                             'power_panel_id': f'$termination_{cable_end}_powerpanel',
-                        }
+                        },
                     )
 
                 # CircuitTermination
                 elif term_cls == CircuitTermination:
-
                     attrs[f'termination_{cable_end}_circuit'] = DynamicModelMultipleChoiceField(
                         queryset=Circuit.objects.all(),
                         label=_('Circuit'),
                         selector=True,
-                        initial_params={
-                            'terminations__in': f'${cable_end}_terminations'
-                        }
+                        initial_params={'terminations__in': f'${cable_end}_terminations'},
                     )
                     attrs[f'{cable_end}_terminations'] = DynamicModelMultipleChoiceField(
                         queryset=term_cls.objects.all(),
@@ -90,13 +77,12 @@ def get_cable_form(a_type, b_type):
                         },
                         query_params={
                             'circuit_id': f'$termination_{cable_end}_circuit',
-                        }
+                        },
                     )
 
             return super().__new__(mcs, name, bases, attrs)
 
     class _CableForm(CableForm, metaclass=FormMetaclass):
-
         def __init__(self, *args, initial=None, **kwargs):
             initial = initial or {}
 
@@ -117,13 +103,15 @@ def get_cable_form(a_type, b_type):
             if self.instance and self.instance.pk:
                 # Initialize A/B terminations when modifying an existing Cable instance
                 if (
-                        a_type and self.instance.a_terminations and
-                        a_ct == ContentType.objects.get_for_model(self.instance.a_terminations[0])
+                    a_type
+                    and self.instance.a_terminations
+                    and a_ct == ContentType.objects.get_for_model(self.instance.a_terminations[0])
                 ):
                     self.initial['a_terminations'] = self.instance.a_terminations
                 if (
-                        b_type and self.instance.b_terminations and
-                        b_ct == ContentType.objects.get_for_model(self.instance.b_terminations[0])
+                    b_type
+                    and self.instance.b_terminations
+                    and b_ct == ContentType.objects.get_for_model(self.instance.b_terminations[0])
                 ):
                     self.initial['b_terminations'] = self.instance.b_terminations
             else:

@@ -7,7 +7,10 @@ from strawberry_django import BaseFilterLookup, FilterLookup
 
 from extras.graphql.filter_mixins import CustomFieldsFilterMixin, TagsFilterMixin
 from netbox.graphql.filters import (
-    ChangeLoggedModelFilter, NetBoxModelFilter, OrganizationalModelFilter, PrimaryModelFilter,
+    ChangeLoggedModelFilter,
+    NetBoxModelFilter,
+    OrganizationalModelFilter,
+    PrimaryModelFilter,
 )
 from tenancy.graphql.filter_mixins import ContactFilterMixin, TenancyFilterMixin
 from vpn import models
@@ -46,9 +49,7 @@ class TunnelTerminationFilter(CustomFieldsFilterMixin, TagsFilterMixin, ChangeLo
     )
     termination_type: (
         BaseFilterLookup[Annotated['TunnelTerminationTypeEnum', strawberry.lazy('vpn.graphql.enums')]] | None
-    ) = (
-        strawberry_django.filter_field()
-    )
+    ) = strawberry_django.filter_field()
     termination_type_id: ID | None = strawberry_django.filter_field()
     termination_id: ID | None = strawberry_django.filter_field()
     outside_ip: Annotated['IPAddressFilter', strawberry.lazy('ipam.graphql.filters')] | None = (
@@ -69,9 +70,7 @@ class TunnelFilter(TenancyFilterMixin, PrimaryModelFilter):
     group_id: ID | None = strawberry_django.filter_field()
     encapsulation: (
         BaseFilterLookup[Annotated['TunnelEncapsulationEnum', strawberry.lazy('vpn.graphql.enums')]] | None
-    ) = (
-        strawberry_django.filter_field()
-    )
+    ) = strawberry_django.filter_field()
     ipsec_profile: Annotated['IPSecProfileFilter', strawberry.lazy('vpn.graphql.filters')] | None = (
         strawberry_django.filter_field()
     )
@@ -88,19 +87,13 @@ class IKEProposalFilter(PrimaryModelFilter):
     name: FilterLookup[str] | None = strawberry_django.filter_field()
     authentication_method: (
         BaseFilterLookup[Annotated['AuthenticationMethodEnum', strawberry.lazy('vpn.graphql.enums')]] | None
-    ) = (
-        strawberry_django.filter_field()
-    )
+    ) = strawberry_django.filter_field()
     encryption_algorithm: (
         BaseFilterLookup[Annotated['EncryptionAlgorithmEnum', strawberry.lazy('vpn.graphql.enums')]] | None
-    ) = (
-        strawberry_django.filter_field()
-    )
+    ) = strawberry_django.filter_field()
     authentication_algorithm: (
         BaseFilterLookup[Annotated['AuthenticationAlgorithmEnum', strawberry.lazy('vpn.graphql.enums')]] | None
-    ) = (
-        strawberry_django.filter_field()
-    )
+    ) = strawberry_django.filter_field()
     group: BaseFilterLookup[Annotated['DHGroupEnum', strawberry.lazy('vpn.graphql.enums')]] | None = (
         strawberry_django.filter_field()
     )
@@ -132,16 +125,13 @@ class IPSecProposalFilter(PrimaryModelFilter):
     name: FilterLookup[str] | None = strawberry_django.filter_field()
     encryption_algorithm: (
         BaseFilterLookup[Annotated['EncryptionAlgorithmEnum', strawberry.lazy('vpn.graphql.enums')]] | None
-    ) = (
-        strawberry_django.filter_field()
-    )
+    ) = strawberry_django.filter_field()
     authentication_algorithm: (
         BaseFilterLookup[
             BaseFilterLookup[Annotated['AuthenticationAlgorithmEnum', strawberry.lazy('vpn.graphql.enums')]]
-        ] | None
-    ) = (
-        strawberry_django.filter_field()
-    )
+        ]
+        | None
+    ) = strawberry_django.filter_field()
     sa_lifetime_seconds: Annotated['IntegerLookup', strawberry.lazy('netbox.graphql.filter_lookups')] | None = (
         strawberry_django.filter_field()
     )

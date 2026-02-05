@@ -17,7 +17,6 @@ class ClusterTypeTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
-
         cluster_types = (
             ClusterType(name='Cluster Type 1', slug='cluster-type-1', description='foobar1'),
             ClusterType(name='Cluster Type 2', slug='cluster-type-2', description='foobar2'),
@@ -48,7 +47,6 @@ class ClusterGroupTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
-
         cluster_groups = (
             ClusterGroup(name='Cluster Group 1', slug='cluster-group-1', description='foobar1'),
             ClusterGroup(name='Cluster Group 2', slug='cluster-group-2', description='foobar2'),
@@ -79,7 +77,6 @@ class ClusterTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
-
         cluster_types = (
             ClusterType(name='Cluster Type 1', slug='cluster-type-1'),
             ClusterType(name='Cluster Type 2', slug='cluster-type-2'),
@@ -140,7 +137,7 @@ class ClusterTestCase(TestCase, ChangeLoggedFilterSetTests):
                 status=ClusterStatusChoices.STATUS_PLANNED,
                 scope=sites[0],
                 tenant=tenants[0],
-                description='foobar1'
+                description='foobar1',
             ),
             Cluster(
                 name='Cluster 2',
@@ -149,7 +146,7 @@ class ClusterTestCase(TestCase, ChangeLoggedFilterSetTests):
                 status=ClusterStatusChoices.STATUS_STAGING,
                 scope=sites[1],
                 tenant=tenants[1],
-                description='foobar2'
+                description='foobar2',
             ),
             Cluster(
                 name='Cluster 3',
@@ -158,7 +155,7 @@ class ClusterTestCase(TestCase, ChangeLoggedFilterSetTests):
                 status=ClusterStatusChoices.STATUS_ACTIVE,
                 scope=sites[2],
                 tenant=tenants[2],
-                description='foobar3'
+                description='foobar3',
             ),
         )
         for cluster in clusters:
@@ -236,7 +233,6 @@ class VirtualMachineTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
-
         cluster_types = (
             ClusterType(name='Cluster Type 1', slug='cluster-type-1'),
             ClusterType(name='Cluster Type 2', slug='cluster-type-2'),
@@ -333,8 +329,8 @@ class VirtualMachineTestCase(TestCase, ChangeLoggedFilterSetTests):
                 memory=1,
                 disk=1,
                 description='foobar1',
-                local_context_data={"foo": 123},
-                serial='111-aaa'
+                local_context_data={'foo': 123},
+                serial='111-aaa',
             ),
             VirtualMachine(
                 name='Virtual Machine 2',
@@ -563,7 +559,6 @@ class VMInterfaceTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
-
         cluster_types = (
             ClusterType(name='Cluster Type 1', slug='cluster-type-1'),
             ClusterType(name='Cluster Type 2', slug='cluster-type-2'),
@@ -642,7 +637,7 @@ class VMInterfaceTestCase(TestCase, ChangeLoggedFilterSetTests):
                 vrf=vrfs[2],
                 description='foobar3',
                 mode=InterfaceModeChoices.MODE_Q_IN_Q,
-                qinq_svlan=vlans[0]
+                qinq_svlan=vlans[0],
             ),
         )
         VMInterface.objects.bulk_create(interfaces)

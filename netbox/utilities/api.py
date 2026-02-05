@@ -1,6 +1,10 @@
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.core.exceptions import (
-    FieldDoesNotExist, FieldError, MultipleObjectsReturned, ObjectDoesNotExist, ValidationError,
+    FieldDoesNotExist,
+    FieldError,
+    MultipleObjectsReturned,
+    ObjectDoesNotExist,
+    ValidationError,
 )
 from django.db.models.fields.related import ManyToOneRel, RelatedField
 from django.urls import reverse
@@ -33,6 +37,7 @@ class IsSuperuser(BasePermission):
     """
     Allows access only to superusers.
     """
+
     def has_permission(self, request, view):
         return bool(request.user and request.user.is_superuser)
 
@@ -46,9 +51,7 @@ def get_serializer_for_model(model, prefix=''):
     try:
         return import_string(serializer_name)
     except ImportError:
-        raise SerializerNotFound(
-            f"Could not determine serializer for {app_label}.{model_name} with prefix '{prefix}'"
-        )
+        raise SerializerNotFound(f"Could not determine serializer for {app_label}.{model_name} with prefix '{prefix}'")
 
 
 def get_graphql_type_for_model(model):
@@ -60,7 +63,7 @@ def get_graphql_type_for_model(model):
     try:
         return import_string(class_name)
     except ImportError:
-        raise GraphQLTypeNotFound(f"Could not find GraphQL type for {app_label}.{model_name}")
+        raise GraphQLTypeNotFound(f'Could not find GraphQL type for {app_label}.{model_name}')
 
 
 def is_api_request(request):
@@ -176,11 +179,10 @@ def get_related_object_by_attrs(queryset, attrs):
             return queryset.get(**params)
         except ObjectDoesNotExist:
             raise ValidationError(
-                _("Related object not found using the provided attributes: {params}").format(params=params))
-        except MultipleObjectsReturned:
-            raise ValidationError(
-                _("Multiple objects match the provided attributes: {params}").format(params=params)
+                _('Related object not found using the provided attributes: {params}').format(params=params)
             )
+        except MultipleObjectsReturned:
+            raise ValidationError(_('Multiple objects match the provided attributes: {params}').format(params=params))
         except FieldError as e:
             raise ValidationError(e)
 
@@ -191,8 +193,8 @@ def get_related_object_by_attrs(queryset, attrs):
     except (TypeError, ValueError):
         raise ValidationError(
             _(
-                "Related objects must be referenced by numeric ID or by dictionary of attributes. Received an "
-                "unrecognized value: {value}"
+                'Related objects must be referenced by numeric ID or by dictionary of attributes. Received an '
+                'unrecognized value: {value}'
             ).format(value=attrs)
         )
 
@@ -200,4 +202,4 @@ def get_related_object_by_attrs(queryset, attrs):
     try:
         return queryset.get(pk=pk)
     except ObjectDoesNotExist:
-        raise ValidationError(_("Related object not found using the provided numeric ID: {id}").format(id=pk))
+        raise ValidationError(_('Related object not found using the provided numeric ID: {id}').format(id=pk))

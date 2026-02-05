@@ -29,6 +29,7 @@ PLACEHOLDER_HTML = '<span class="text-muted">&mdash;</span>'
 # Attributes
 #
 
+
 class ObjectAttribute:
     """
     Base class for representing an attribute of an object.
@@ -41,6 +42,7 @@ class ObjectAttribute:
         accessor (str): The dotted path to the attribute being rendered (e.g. "site.region.name")
         label (str): Human-friendly label for the rendered attribute
     """
+
     template_name = None
     label = None
     placeholder = mark_safe(PLACEHOLDER_HTML)
@@ -76,11 +78,14 @@ class ObjectAttribute:
         if value in (None, ''):
             return self.placeholder
 
-        return render_to_string(self.template_name, {
-            **self.get_context(obj, context),
-            'name': context['name'],
-            'value': value,
-        })
+        return render_to_string(
+            self.template_name,
+            {
+                **self.get_context(obj, context),
+                'name': context['name'],
+                'value': value,
+            },
+        )
 
 
 class TextAttr(ObjectAttribute):
@@ -92,6 +97,7 @@ class TextAttr(ObjectAttribute):
          format_string (str): If specified, the value will be formatted using this string when rendering
          copy_button (bool): Set to True to include a copy-to-clipboard button
     """
+
     template_name = 'ui/attrs/text.html'
 
     def __init__(self, *args, style=None, format_string=None, copy_button=False, **kwargs):
@@ -122,6 +128,7 @@ class NumericAttr(ObjectAttribute):
          unit_accessor (str): Accessor for the unit of measurement to display alongside the value (if any)
          copy_button (bool): Set to True to include a copy-to-clipboard button
     """
+
     template_name = 'ui/attrs/numeric.html'
 
     def __init__(self, *args, unit_accessor=None, copy_button=False, **kwargs):
@@ -144,6 +151,7 @@ class ChoiceAttr(ObjectAttribute):
     The class calls get_FOO_display() on the object to retrieve the human-friendly choice label. If a get_FOO_color()
     method exists on the object, it will be used to render a background color for the attribute value.
     """
+
     template_name = 'ui/attrs/choice.html'
 
     def get_value(self, obj):
@@ -169,6 +177,7 @@ class BooleanAttr(ObjectAttribute):
     Parameters:
          display_false (bool): If False, a placeholder will be rendered instead of the "False" indication
     """
+
     template_name = 'ui/attrs/boolean.html'
 
     def __init__(self, *args, display_false=True, **kwargs):
@@ -186,6 +195,7 @@ class ColorAttr(ObjectAttribute):
     """
     An RGB color value.
     """
+
     template_name = 'ui/attrs/color.html'
     label = _('Color')
 
@@ -194,6 +204,7 @@ class ImageAttr(ObjectAttribute):
     """
     An attribute representing an image field on the model. Displays the uploaded image.
     """
+
     template_name = 'ui/attrs/image.html'
 
 
@@ -206,6 +217,7 @@ class RelatedObjectAttr(ObjectAttribute):
          grouped_by (str): A second-order object to annotate alongside the related object; for example, an attribute
             representing the dcim.Site model might specify grouped_by="region"
     """
+
     template_name = 'ui/attrs/object.html'
 
     def __init__(self, *args, linkify=None, grouped_by=None, **kwargs):
@@ -231,6 +243,7 @@ class NestedObjectAttr(ObjectAttribute):
          linkify (bool): If True, the rendered value will be hyperlinked to the related object's detail view
          max_depth (int): Maximum number of ancestors to display (default: all)
     """
+
     template_name = 'ui/attrs/nested_object.html'
 
     def __init__(self, *args, linkify=None, max_depth=None, **kwargs):
@@ -242,7 +255,7 @@ class NestedObjectAttr(ObjectAttribute):
         value = self.get_value(obj)
         nodes = value.get_ancestors(include_self=True)
         if self.max_depth:
-            nodes = list(nodes)[-self.max_depth:]
+            nodes = list(nodes)[-self.max_depth :]
         return {
             'nodes': nodes,
             'linkify': self.linkify,
@@ -256,6 +269,7 @@ class AddressAttr(ObjectAttribute):
     Parameters:
          map_url (bool): If true, the address will render as a hyperlink using settings.MAPS_URL
     """
+
     template_name = 'ui/attrs/address.html'
 
     def __init__(self, *args, map_url=True, **kwargs):
@@ -282,6 +296,7 @@ class GPSCoordinatesAttr(ObjectAttribute):
          longitude_attr (float): The name of the field containing the longitude value
          map_url (bool): If true, the address will render as a hyperlink using settings.MAPS_URL
     """
+
     template_name = 'ui/attrs/gps_coordinates.html'
     label = _('GPS coordinates')
 
@@ -302,18 +317,22 @@ class GPSCoordinatesAttr(ObjectAttribute):
         longitude = resolve_attr_path(obj, self.longitude_attr)
         if latitude is None or longitude is None:
             return self.placeholder
-        return render_to_string(self.template_name, {
-            **context,
-            'latitude': latitude,
-            'longitude': longitude,
-            'map_url': self.map_url,
-        })
+        return render_to_string(
+            self.template_name,
+            {
+                **context,
+                'latitude': latitude,
+                'longitude': longitude,
+                'map_url': self.map_url,
+            },
+        )
 
 
 class TimezoneAttr(ObjectAttribute):
     """
     A timezone value. Includes the numeric offset from UTC.
     """
+
     template_name = 'ui/attrs/timezone.html'
 
 
@@ -325,6 +344,7 @@ class TemplatedAttr(ObjectAttribute):
          template_name (str): The name of the template to render
          context (dict): Additional context to pass to the template when rendering
     """
+
     def __init__(self, *args, template_name, context=None, **kwargs):
         super().__init__(*args, **kwargs)
         self.template_name = template_name
@@ -341,4 +361,5 @@ class UtilizationAttr(ObjectAttribute):
     """
     Renders the value of an attribute as a utilization graph.
     """
+
     template_name = 'ui/attrs/utilization.html'

@@ -100,9 +100,9 @@ def expand_alphanumeric_pattern(string):
     for i in parsed_range:
         if re.search(ALPHANUMERIC_EXPANSION_PATTERN, remnant):
             for string in expand_alphanumeric_pattern(remnant):
-                yield "{}{}{}".format(lead, i, string)
+                yield '{}{}{}'.format(lead, i, string)
         else:
-            yield "{}{}{}".format(lead, i, remnant)
+            yield '{}{}{}'.format(lead, i, remnant)
 
 
 def expand_ipaddress_pattern(string, family):
@@ -112,7 +112,7 @@ def expand_ipaddress_pattern(string, family):
       '2001:db8:0:[0,fd-ff]::/64' => ['2001:db8:0:0::/64', '2001:db8:0:fd::/64', ... '2001:db8:0:ff::/64']
     """
     if family not in [4, 6]:
-        raise Exception("Invalid IP address family: {}".format(family))
+        raise Exception('Invalid IP address family: {}'.format(family))
     if family == 4:
         regex = IP4_EXPANSION_PATTERN
         base = 10
@@ -171,9 +171,7 @@ def get_selected_values(form, field_name):
         choices = unpack_grouped_choices(field.choices)
         if type(filter_data) not in (list, tuple):
             filter_data = [filter_data]  # Ensure filter data is iterable
-        values = [
-            label for value, label in choices if str(value) in filter_data or None in filter_data
-        ]
+        values = [label for value, label in choices if str(value) in filter_data or None in filter_data]
 
     # If the field has a `null_option` attribute set and it is selected,
     # add it to the field's grouped choices.
@@ -232,22 +230,22 @@ def parse_csv(reader):
         if '.' in header:
             field, to_field = header.split('.', 1)
             if field in headers:
-                raise forms.ValidationError(_('Duplicate or conflicting column header for "{field}"').format(
-                    field=field
-                ))
+                raise forms.ValidationError(
+                    _('Duplicate or conflicting column header for "{field}"').format(field=field)
+                )
             headers[field] = to_field
         else:
             if header in headers:
-                raise forms.ValidationError(_('Duplicate or conflicting column header for "{header}"').format(
-                    header=header
-                ))
+                raise forms.ValidationError(
+                    _('Duplicate or conflicting column header for "{header}"').format(header=header)
+                )
             headers[header] = None
 
     # Parse CSV rows into a list of dictionaries mapped from the column headers.
     for i, row in enumerate(reader, start=1):
         if len(row) != len(headers):
             raise forms.ValidationError(
-                _("Row {row}: Expected {count_expected} columns but found {count_found}").format(
+                _('Row {row}: Expected {count_expected} columns but found {count_found}').format(
                     row=i, count_expected=len(headers), count_found=len(row)
                 )
             )
@@ -266,19 +264,21 @@ def validate_csv(headers, fields, required_fields):
     # Validate provided column headers
     is_update = False
     for field, to_field in headers.items():
-        if field == "id":
+        if field == 'id':
             is_update = True
             continue
         if field not in fields:
             raise forms.ValidationError(_('Unexpected column header "{field}" found.').format(field=field))
         if to_field and not hasattr(fields[field], 'to_field_name'):
-            raise forms.ValidationError(_('Column "{field}" is not a related object; cannot use dots').format(
-                field=field
-            ))
+            raise forms.ValidationError(
+                _('Column "{field}" is not a related object; cannot use dots').format(field=field)
+            )
         if to_field and not hasattr(fields[field].queryset.model, to_field):
-            raise forms.ValidationError(_('Invalid related object attribute for column "{field}": {to_field}').format(
-                field=field, to_field=to_field
-            ))
+            raise forms.ValidationError(
+                _('Invalid related object attribute for column "{field}": {to_field}').format(
+                    field=field, to_field=to_field
+                )
+            )
 
     # Validate required fields (if not an update)
     if not is_update:

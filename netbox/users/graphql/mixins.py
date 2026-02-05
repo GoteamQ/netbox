@@ -5,9 +5,7 @@ import strawberry
 if TYPE_CHECKING:
     from users.graphql.types import OwnerType
 
-__all__ = (
-    'OwnerMixin',
-)
+__all__ = ('OwnerMixin',)
 
 
 @strawberry.type

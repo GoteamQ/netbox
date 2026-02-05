@@ -1,0 +1,61 @@
+{% extends 'generic/object.html' %}
+{% load render_table from django_tables2 %}
+
+{% block content %}
+  <div class="row mb-3">
+    <div class="col col-md-6">
+      <div class="card">
+        <h5 class="card-header">GKE Node Pool</h5>
+        <div class="card-body">
+          <table class="table table-hover attr-table">
+            <tr>
+              <th scope="row">Name</th>
+              <td>{{ object.name }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Cluster</th>
+              <td><a href="{{ object.cluster.get_absolute_url }}">{{ object.cluster }}</a></td>
+            </tr>
+            <tr>
+              <th scope="row">Machine Type</th>
+              <td>{{ object.machine_type }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Disk Size (GB)</th>
+              <td>{{ object.disk_size_gb }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Disk Type</th>
+              <td>{{ object.disk_type }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Node Count</th>
+              <td>{{ object.node_count }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Min Node Count</th>
+              <td>{{ object.min_node_count }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Max Node Count</th>
+              <td>{{ object.max_node_count }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Status</th>
+              <td>{{ object.status }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Version</th>
+              <td>{{ object.version|placeholder }}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      {% include 'inc/panels/custom_fields.html' %}
+    </div>
+    <div class="col col-md-6">
+      {% include 'inc/panels/tags.html' %}
+      {% include 'inc/panels/comments.html' %}
+    </div>
+  </div>
+{% endblock content %}

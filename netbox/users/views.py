@@ -16,6 +16,7 @@ from .models import Group, User, ObjectPermission, Owner, OwnerGroup, Token
 # Tokens
 #
 
+
 @register_model_view(Token, 'list', path='', detail=False)
 class TokenListView(generic.ObjectListView):
     queryset = Token.objects.all()
@@ -73,6 +74,7 @@ class TokenBulkDeleteView(generic.BulkDeleteView):
 #
 # Users
 #
+
 
 @register_model_view(User, 'list', path='', detail=False)
 class UserListView(generic.ObjectListView):
@@ -142,6 +144,7 @@ class UserBulkDeleteView(generic.BulkDeleteView):
 # Groups
 #
 
+
 @register_model_view(Group, 'list', path='', detail=False)
 class GroupListView(generic.ObjectListView):
     queryset = Group.objects.annotate(users_count=Count('user')).order_by('name')
@@ -199,6 +202,7 @@ class GroupBulkDeleteView(generic.BulkDeleteView):
 # ObjectPermissions
 #
 
+
 @register_model_view(ObjectPermission, 'list', path='', detail=False)
 class ObjectPermissionListView(generic.ObjectListView):
     queryset = ObjectPermission.objects.all()
@@ -251,11 +255,10 @@ class ObjectPermissionBulkDeleteView(generic.BulkDeleteView):
 # Owner groups
 #
 
+
 @register_model_view(OwnerGroup, 'list', path='', detail=False)
 class OwnerGroupListView(generic.ObjectListView):
-    queryset = OwnerGroup.objects.annotate(
-       owner_count=count_related(Owner, 'group')
-    )
+    queryset = OwnerGroup.objects.annotate(owner_count=count_related(Owner, 'group'))
     filterset = filtersets.OwnerGroupFilterSet
     filterset_form = forms.OwnerGroupFilterForm
     table = tables.OwnerGroupTable
@@ -313,6 +316,7 @@ class OwnerGroupBulkDeleteView(generic.BulkDeleteView):
 #
 # Owners
 #
+
 
 @register_model_view(Owner, 'list', path='', detail=False)
 class OwnerListView(generic.ObjectListView):

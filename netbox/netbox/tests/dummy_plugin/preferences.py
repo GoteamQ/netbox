@@ -7,7 +7,7 @@ preferences = {
         choices=(
             ('foo', 'Foo'),
             ('bar', 'Bar'),
-        )
+        ),
     ),
     'pref2': UserPreference(
         label='Second preference',
@@ -15,6 +15,6 @@ preferences = {
             ('a', 'A'),
             ('b', 'B'),
             ('c', 'C'),
-        )
+        ),
     ),
 }

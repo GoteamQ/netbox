@@ -16,7 +16,6 @@ class ClusterGroupTestCase(ViewTestCases.OrganizationalObjectViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
-
         cluster_groups = (
             ClusterGroup(name='Cluster Group 1', slug='cluster-group-1'),
             ClusterGroup(name='Cluster Group 2', slug='cluster-group-2'),
@@ -34,17 +33,17 @@ class ClusterGroupTestCase(ViewTestCases.OrganizationalObjectViewTestCase):
         }
 
         cls.csv_data = (
-            "name,slug,description",
-            "Cluster Group 4,cluster-group-4,Fourth cluster group",
-            "Cluster Group 5,cluster-group-5,Fifth cluster group",
-            "Cluster Group 6,cluster-group-6,Sixth cluster group",
+            'name,slug,description',
+            'Cluster Group 4,cluster-group-4,Fourth cluster group',
+            'Cluster Group 5,cluster-group-5,Fifth cluster group',
+            'Cluster Group 6,cluster-group-6,Sixth cluster group',
         )
 
         cls.csv_update_data = (
-            "id,name,description",
-            f"{cluster_groups[0].pk},Cluster Group 7,Fourth cluster group7",
-            f"{cluster_groups[1].pk},Cluster Group 8,Fifth cluster group8",
-            f"{cluster_groups[2].pk},Cluster Group 9,Sixth cluster group9",
+            'id,name,description',
+            f'{cluster_groups[0].pk},Cluster Group 7,Fourth cluster group7',
+            f'{cluster_groups[1].pk},Cluster Group 8,Fifth cluster group8',
+            f'{cluster_groups[2].pk},Cluster Group 9,Sixth cluster group9',
         )
 
         cls.bulk_edit_data = {
@@ -57,7 +56,6 @@ class ClusterTypeTestCase(ViewTestCases.OrganizationalObjectViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
-
         cluster_types = (
             ClusterType(name='Cluster Type 1', slug='cluster-type-1'),
             ClusterType(name='Cluster Type 2', slug='cluster-type-2'),
@@ -75,17 +73,17 @@ class ClusterTypeTestCase(ViewTestCases.OrganizationalObjectViewTestCase):
         }
 
         cls.csv_data = (
-            "name,slug,description",
-            "Cluster Type 4,cluster-type-4,Fourth cluster type",
-            "Cluster Type 5,cluster-type-5,Fifth cluster type",
-            "Cluster Type 6,cluster-type-6,Sixth cluster type",
+            'name,slug,description',
+            'Cluster Type 4,cluster-type-4,Fourth cluster type',
+            'Cluster Type 5,cluster-type-5,Fifth cluster type',
+            'Cluster Type 6,cluster-type-6,Sixth cluster type',
         )
 
         cls.csv_update_data = (
-            "id,name,description",
-            f"{cluster_types[0].pk},Cluster Type 7,Fourth cluster type7",
-            f"{cluster_types[1].pk},Cluster Type 8,Fifth cluster type8",
-            f"{cluster_types[2].pk},Cluster Type 9,Sixth cluster type9",
+            'id,name,description',
+            f'{cluster_types[0].pk},Cluster Type 7,Fourth cluster type7',
+            f'{cluster_types[1].pk},Cluster Type 8,Fifth cluster type8',
+            f'{cluster_types[2].pk},Cluster Type 9,Sixth cluster type9',
         )
 
         cls.bulk_edit_data = {
@@ -98,7 +96,6 @@ class ClusterTestCase(ViewTestCases.PrimaryObjectViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
-
         sites = (
             Site(name='Site 1', slug='site-1'),
             Site(name='Site 2', slug='site-2'),
@@ -158,17 +155,17 @@ class ClusterTestCase(ViewTestCases.PrimaryObjectViewTestCase):
         }
 
         cls.csv_data = (
-            "name,type,status",
-            "Cluster 4,Cluster Type 1,active",
-            "Cluster 5,Cluster Type 1,active",
-            "Cluster 6,Cluster Type 1,active",
+            'name,type,status',
+            'Cluster 4,Cluster Type 1,active',
+            'Cluster 5,Cluster Type 1,active',
+            'Cluster 6,Cluster Type 1,active',
         )
 
         cls.csv_update_data = (
-            "id,name,comments",
-            f"{clusters[0].pk},Cluster 7,New comments 7",
-            f"{clusters[1].pk},Cluster 8,New comments 8",
-            f"{clusters[2].pk},Cluster 9,New comments 9",
+            'id,name,comments',
+            f'{clusters[0].pk},Cluster 7,New comments 7',
+            f'{clusters[1].pk},Cluster 8,New comments 8',
+            f'{clusters[2].pk},Cluster 9,New comments 9',
         )
 
         cls.bulk_edit_data = {
@@ -199,7 +196,6 @@ class VirtualMachineTestCase(ViewTestCases.PrimaryObjectViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
-
         roles = (
             DeviceRole(name='Device Role 1', slug='device-role-1'),
             DeviceRole(name='Device Role 2', slug='device-role-2'),
@@ -286,17 +282,17 @@ class VirtualMachineTestCase(ViewTestCases.PrimaryObjectViewTestCase):
         }
 
         cls.csv_data = (
-            "name,status,site,cluster,device",
-            "Virtual Machine 4,active,Site 1,Cluster 1,device1",
-            "Virtual Machine 5,active,Site 1,Cluster 1,device1",
-            "Virtual Machine 6,active,Site 1,Cluster 1,",
+            'name,status,site,cluster,device',
+            'Virtual Machine 4,active,Site 1,Cluster 1,device1',
+            'Virtual Machine 5,active,Site 1,Cluster 1,device1',
+            'Virtual Machine 6,active,Site 1,Cluster 1,',
         )
 
         cls.csv_update_data = (
-            "id,name,comments",
-            f"{virtual_machines[0].pk},Virtual Machine 7,New comments 7",
-            f"{virtual_machines[1].pk},Virtual Machine 8,New comments 8",
-            f"{virtual_machines[2].pk},Virtual Machine 9,New comments 9",
+            'id,name,comments',
+            f'{virtual_machines[0].pk},Virtual Machine 7,New comments 7',
+            f'{virtual_machines[1].pk},Virtual Machine 8,New comments 8',
+            f'{virtual_machines[2].pk},Virtual Machine 9,New comments 9',
         )
 
         cls.bulk_edit_data = {
@@ -329,8 +325,7 @@ class VirtualMachineTestCase(ViewTestCases.PrimaryObjectViewTestCase):
 
     def test_virtualmachine_renderconfig(self):
         configtemplate = ConfigTemplate.objects.create(
-            name='Test Config Template',
-            template_code='Config for VM {{ virtualmachine.name }}'
+            name='Test Config Template', template_code='Config for VM {{ virtualmachine.name }}'
         )
         vm = VirtualMachine.objects.first()
         vm.config_template = configtemplate
@@ -356,7 +351,6 @@ class VMInterfaceTestCase(ViewTestCases.DeviceComponentViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
-
         site = Site.objects.create(name='Site 1', slug='site-1')
         role = DeviceRole.objects.create(name='Device Role 1', slug='device-role-1')
         clustertype = ClusterType.objects.create(name='Cluster Type 1', slug='cluster-type-1')
@@ -367,12 +361,14 @@ class VMInterfaceTestCase(ViewTestCases.DeviceComponentViewTestCase):
         )
         VirtualMachine.objects.bulk_create(virtualmachines)
 
-        interfaces = VMInterface.objects.bulk_create([
-            VMInterface(virtual_machine=virtualmachines[0], name='Interface 1'),
-            VMInterface(virtual_machine=virtualmachines[0], name='Interface 2'),
-            VMInterface(virtual_machine=virtualmachines[0], name='Interface 3'),
-            VMInterface(virtual_machine=virtualmachines[1], name='BRIDGE'),
-        ])
+        interfaces = VMInterface.objects.bulk_create(
+            [
+                VMInterface(virtual_machine=virtualmachines[0], name='Interface 1'),
+                VMInterface(virtual_machine=virtualmachines[0], name='Interface 2'),
+                VMInterface(virtual_machine=virtualmachines[0], name='Interface 3'),
+                VMInterface(virtual_machine=virtualmachines[1], name='BRIDGE'),
+            ]
+        )
 
         vlans = (
             VLAN(vid=1, name='VLAN1', site=site),
@@ -420,26 +416,26 @@ class VMInterfaceTestCase(ViewTestCases.DeviceComponentViewTestCase):
         }
 
         cls.csv_data = (
-            "virtual_machine,name,vrf.pk,mode,untagged_vlan,tagged_vlans",
+            'virtual_machine,name,vrf.pk,mode,untagged_vlan,tagged_vlans',
             (
-                f"Virtual Machine 2,Interface 4,{vrfs[0].pk},"
+                f'Virtual Machine 2,Interface 4,{vrfs[0].pk},'
                 f"tagged,{vlans[0].vid},'{','.join([str(v.vid) for v in vlans[1:4]])}'"
             ),
             (
-                f"Virtual Machine 2,Interface 5,{vrfs[0].pk},"
+                f'Virtual Machine 2,Interface 5,{vrfs[0].pk},'
                 f"tagged,{vlans[0].vid},'{','.join([str(v.vid) for v in vlans[1:4]])}'"
             ),
             (
-                f"Virtual Machine 2,Interface 6,{vrfs[0].pk},"
+                f'Virtual Machine 2,Interface 6,{vrfs[0].pk},'
                 f"tagged,{vlans[0].vid},'{','.join([str(v.vid) for v in vlans[1:4]])}'"
             ),
         )
 
         cls.csv_update_data = (
-            "id,name,description",
-            f"{interfaces[0].pk},Interface 7,New description 7",
-            f"{interfaces[1].pk},Interface 8,New description 8",
-            f"{interfaces[2].pk},Interface 9,New description 9",
+            'id,name,description',
+            f'{interfaces[0].pk},Interface 7,New description 7',
+            f'{interfaces[1].pk},Interface 8,New description 8',
+            f'{interfaces[2].pk},Interface 9,New description 9',
         )
 
         cls.bulk_edit_data = {
@@ -457,11 +453,7 @@ class VMInterfaceTestCase(ViewTestCases.DeviceComponentViewTestCase):
         self.add_permissions('virtualization.delete_vminterface')
 
         # Create a child interface
-        child = VMInterface.objects.create(
-            virtual_machine=virtual_machine,
-            name='Interface 1A',
-            parent=interface1
-        )
+        child = VMInterface.objects.create(virtual_machine=virtual_machine, name='Interface 1A', parent=interface1)
         self.assertEqual(virtual_machine.interfaces.count(), 4)
 
         # Attempt to delete only the parent interface
@@ -489,11 +481,13 @@ class VirtualDiskTestCase(ViewTestCases.DeviceComponentViewTestCase):
     def setUpTestData(cls):
         virtualmachine = create_test_virtualmachine('Virtual Machine 1')
 
-        disks = VirtualDisk.objects.bulk_create([
-            VirtualDisk(virtual_machine=virtualmachine, name='Virtual Disk 1', size=10),
-            VirtualDisk(virtual_machine=virtualmachine, name='Virtual Disk 2', size=10),
-            VirtualDisk(virtual_machine=virtualmachine, name='Virtual Disk 3', size=10),
-        ])
+        disks = VirtualDisk.objects.bulk_create(
+            [
+                VirtualDisk(virtual_machine=virtualmachine, name='Virtual Disk 1', size=10),
+                VirtualDisk(virtual_machine=virtualmachine, name='Virtual Disk 2', size=10),
+                VirtualDisk(virtual_machine=virtualmachine, name='Virtual Disk 3', size=10),
+            ]
+        )
 
         tags = create_tags('Alpha', 'Bravo', 'Charlie')
 
@@ -513,17 +507,17 @@ class VirtualDiskTestCase(ViewTestCases.DeviceComponentViewTestCase):
         }
 
         cls.csv_data = (
-            "virtual_machine,name,size,description",
-            "Virtual Machine 1,Disk 4,20,Fourth",
-            "Virtual Machine 1,Disk 5,20,Fifth",
-            "Virtual Machine 1,Disk 6,20,Sixth",
+            'virtual_machine,name,size,description',
+            'Virtual Machine 1,Disk 4,20,Fourth',
+            'Virtual Machine 1,Disk 5,20,Fifth',
+            'Virtual Machine 1,Disk 6,20,Sixth',
         )
 
         cls.csv_update_data = (
-            "id,name,size",
-            f"{disks[0].pk},disk1,20",
-            f"{disks[1].pk},disk2,20",
-            f"{disks[2].pk},disk3,20",
+            'id,name,size',
+            f'{disks[0].pk},disk1,20',
+            f'{disks[1].pk},disk2,20',
+            f'{disks[2].pk},disk3,20',
         )
 
         cls.bulk_edit_data = {

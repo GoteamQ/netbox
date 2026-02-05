@@ -16,19 +16,15 @@ __all__ = (
 
 
 class GroupImportForm(CSVModelForm):
-
     class Meta:
         model = Group
         fields = ('name', 'description')
 
 
 class UserImportForm(CSVModelForm):
-
     class Meta:
         model = User
-        fields = (
-            'username', 'first_name', 'last_name', 'email', 'password', 'is_active', 'is_superuser'
-        )
+        fields = ('username', 'first_name', 'last_name', 'email', 'password', 'is_active', 'is_superuser')
 
     def save(self, *args, **kwargs):
         # Set the hashed password
@@ -42,25 +38,31 @@ class TokenImportForm(CSVModelForm):
         choices=TokenVersionChoices,
         initial=TokenVersionChoices.V2,
         required=False,
-        help_text=_("Specify version 1 or 2 (v2 will be used by default)")
+        help_text=_('Specify version 1 or 2 (v2 will be used by default)'),
     )
     token = forms.CharField(
-        label=_('Token'),
-        required=False,
-        help_text=_("If no token is provided, one will be generated automatically.")
+        label=_('Token'), required=False, help_text=_('If no token is provided, one will be generated automatically.')
     )
 
     class Meta:
         model = Token
-        fields = ('user', 'version', 'token', 'enabled', 'write_enabled', 'expires', 'description',)
+        fields = (
+            'user',
+            'version',
+            'token',
+            'enabled',
+            'write_enabled',
+            'expires',
+            'description',
+        )
 
 
 class OwnerGroupImportForm(CSVModelForm):
-
     class Meta:
         model = OwnerGroup
         fields = (
-            'name', 'description',
+            'name',
+            'description',
         )
 
 
@@ -84,5 +86,9 @@ class OwnerImportForm(CSVModelForm):
     class Meta:
         model = Owner
         fields = (
-            'group', 'name', 'description', 'user_groups', 'users',
+            'group',
+            'name',
+            'description',
+            'user_groups',
+            'users',
         )

@@ -249,5 +249,5 @@ ISO_3166 = [
     ('YT', 'YT (Mayotte)'),
     ('ZA', 'ZA (South Africa)'),
     ('ZM', 'ZM (Zambia)'),
-    ('ZW', 'ZW (Zimbabwe)')
+    ('ZW', 'ZW (Zimbabwe)'),
 ]

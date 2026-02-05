@@ -1,0 +1,93 @@
+{% extends 'generic/object.html' %}
+{% load render_table from django_tables2 %}
+
+{% block content %}
+  <div class="row">
+    <div class="col col-md-6">
+      <div class="card">
+        <h5 class="card-header">Firewall Rule</h5>
+        <div class="card-body">
+          <table class="table table-hover attr-table">
+            <tr>
+              <th scope="row">Name</th>
+              <td>{{ object.name }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Project</th>
+              <td>
+                {% if object.project %}
+                  <a href="{{ object.project.get_absolute_url }}">{{ object.project }}</a>
+                {% else %}
+                  {{ ''|placeholder }}
+                {% endif %}
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Network</th>
+              <td>{{ object.network|placeholder }}</td>
+            </tr>
+             <tr>
+              <th scope="row">Direction</th>
+              <td>{{ object.direction }}</td>
+            </tr>
+             <tr>
+              <th scope="row">Action</th>
+              <td>{{ object.action }}</td>
+            </tr>
+            <tr>
+               <th scope="row">Priority</th>
+               <td>{{ object.priority }}</td>
+             </tr>
+             <tr>
+               <th scope="row">Disabled</th>
+               <td>{{ object.disabled|placeholder }}</td>
+             </tr>
+             <tr>
+              <th scope="row">Source Ranges</th>
+              <td>
+                {% if object.source_ranges %}
+                   <pre>{{ object.source_ranges|json }}</pre>
+                {% else %}
+                   {{ ''|placeholder }}
+                {% endif %}
+              </td>
+            </tr>
+             <tr>
+              <th scope="row">Destination Ranges</th>
+              <td>
+                {% if object.destination_ranges %}
+                   <pre>{{ object.destination_ranges|json }}</pre>
+                {% else %}
+                   {{ ''|placeholder }}
+                {% endif %}
+              </td>
+            </tr>
+             <tr>
+              <th scope="row">Allowed</th>
+              <td>
+                {% if object.allowed %}
+                   <pre>{{ object.allowed|json }}</pre>
+                {% else %}
+                   {{ ''|placeholder }}
+                {% endif %}
+              </td>
+            </tr>
+             <tr>
+              <th scope="row">Denied</th>
+              <td>
+                {% if object.denied %}
+                   <pre>{{ object.denied|json }}</pre>
+                {% else %}
+                   {{ ''|placeholder }}
+                {% endif %}
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="col col-md-6">
+      <!-- Add related panels here if needed -->
+    </div>
+  </div>
+{% endblock %}

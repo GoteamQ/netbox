@@ -7,15 +7,18 @@ class NetBoxRouter(DefaultRouter):
     1. Support bulk operations
     2. Alphabetically order endpoints under the root view
     """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
         # Update the list view mappings to support bulk operations
-        self.routes[0].mapping.update({
-            'put': 'bulk_update',
-            'patch': 'bulk_partial_update',
-            'delete': 'bulk_destroy',
-        })
+        self.routes[0].mapping.update(
+            {
+                'put': 'bulk_update',
+                'patch': 'bulk_partial_update',
+                'delete': 'bulk_destroy',
+            }
+        )
 
     def get_api_root_view(self, api_urls=None):
         """

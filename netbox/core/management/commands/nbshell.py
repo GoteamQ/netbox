@@ -26,10 +26,7 @@ def get_models(app_config):
     """
     Return a list of all non-private models within an app.
     """
-    return [
-        model for model in app_config.get_models()
-        if not getattr(model, '_netbox_private', False)
-    ]
+    return [model for model in app_config.get_models() if not getattr(model, '_netbox_private', False)]
 
 
 def get_constants(app_config):
@@ -40,18 +37,17 @@ def get_constants(app_config):
         constants = import_string(f'{app_config.name}.constants')
     except ImportError:
         return {}
-    return {
-        name: value for name, value in vars(constants).items()
-    }
+    return {name: value for name, value in vars(constants).items()}
 
 
 class Command(BaseCommand):
-    help = "Start the Django shell with all NetBox models already imported"
+    help = 'Start the Django shell with all NetBox models already imported'
     django_models = {}
 
     def add_arguments(self, parser):
         parser.add_argument(
-            '-c', '--command',
+            '-c',
+            '--command',
             help='Python code to execute (instead of starting an interactive shell)',
         )
 
@@ -69,7 +65,7 @@ class Command(BaseCommand):
         """
         if app_label:
             if app_label not in self.django_models:
-                print(f"No models listed for {app_label}")
+                print(f'No models listed for {app_label}')
                 return
             app_labels = [app_label]
         else:
@@ -92,9 +88,7 @@ class Command(BaseCommand):
             if models := get_models(app_config):
                 for model in models:
                     setattr(namespace[app_name], model.__name__, model)
-                self.django_models[app_name] = sorted([
-                    model.__name__ for model in models
-                ])
+                self.django_models[app_name] = sorted([model.__name__ for model in models])
 
             # Populate constants
             for const_name, const_value in get_constants(app_config).items():
@@ -121,22 +115,14 @@ class Command(BaseCommand):
         ]
 
         if installed_plugins := get_installed_plugins():
-            plugin_list = ', '.join([
-                color('cyan', f'{name} v{version}') for name, version in installed_plugins.items()
-            ])
-            lines.append(
-                'Plugins: {plugin_list}'.format(
-                    plugin_list=plugin_list
-                )
+            plugin_list = ', '.join(
+                [color('cyan', f'{name} v{version}') for name, version in installed_plugins.items()]
             )
+            lines.append('Plugins: {plugin_list}'.format(plugin_list=plugin_list))
 
-        lines.append(
-            'lsapps() & lsmodels() will show available models. Use help(<model>) for more info.'
-        )
+        lines.append('lsapps() & lsmodels() will show available models. Use help(<model>) for more info.')
 
-        return '\n'.join([
-            f'### {line}' for line in lines
-        ])
+        return '\n'.join([f'### {line}' for line in lines])
 
     def handle(self, **options):
         namespace = self.get_namespace()

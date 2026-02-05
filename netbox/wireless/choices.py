@@ -30,7 +30,6 @@ class WirelessLANStatusChoices(ChoiceSet):
 
 
 class WirelessChannelChoices(ChoiceSet):
-
     # 2.4 GHz
     CHANNEL_24G_1 = '2.4g-1-2412-22'
     CHANNEL_24G_2 = '2.4g-2-2417-22'
@@ -253,7 +252,7 @@ class WirelessChannelChoices(ChoiceSet):
                 (CHANNEL_24G_11, '11 (2462 MHz)'),
                 (CHANNEL_24G_12, '12 (2467 MHz)'),
                 (CHANNEL_24G_13, '13 (2472 MHz)'),
-            )
+            ),
         ),
         (
             '5 GHz (802.11a/n/ac/ax)',
@@ -312,7 +311,7 @@ class WirelessChannelChoices(ChoiceSet):
                 (CHANNEL_5G_173, '173 (5865/20 MHz)'),
                 (CHANNEL_5G_175, '175 (5875/40 MHz)'),
                 (CHANNEL_5G_177, '177 (5885/20 MHz)'),
-            )
+            ),
         ),
         (
             '6 GHz (802.11ax)',
@@ -429,7 +428,7 @@ class WirelessChannelChoices(ChoiceSet):
                 (CHANNEL_6G_227, '227 (7085/40 MHz)'),
                 (CHANNEL_6G_229, '229 (7095/20 MHz)'),
                 (CHANNEL_6G_233, '233 (7115/20 MHz)'),
-            )
+            ),
         ),
         (
             '60 GHz (802.11ad/ay)',
@@ -452,7 +451,7 @@ class WirelessChannelChoices(ChoiceSet):
                 (CHANNEL_60G_25, '25 (61.56/8.64 GHz)'),
                 (CHANNEL_60G_26, '26 (63.72/8.64 GHz)'),
                 (CHANNEL_60G_27, '27 (65.88/8.64 GHz)'),
-            )
+            ),
         ),
     )
 

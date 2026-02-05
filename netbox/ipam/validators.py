@@ -6,9 +6,7 @@ from django.utils.translation import gettext_lazy as _
 def prefix_validator(prefix):
     if prefix.ip != prefix.cidr.ip:
         raise ValidationError(
-            _("{prefix} is not a valid prefix. Did you mean {suggested}?").format(
-                prefix=prefix, suggested=prefix.cidr
-            )
+            _('{prefix} is not a valid prefix. Did you mean {suggested}?').format(prefix=prefix, suggested=prefix.cidr)
         )
 
 
@@ -31,5 +29,5 @@ class MinPrefixLengthValidator(BaseValidator):
 DNSValidator = RegexValidator(
     regex=r'^([0-9A-Za-z_-]+|\*)(\.[0-9A-Za-z_-]+)*\.?$',
     message=_('Only alphanumeric characters, asterisks, hyphens, periods, and underscores are allowed in DNS names'),
-    code='invalid'
+    code='invalid',
 )

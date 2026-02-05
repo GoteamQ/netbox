@@ -9,9 +9,27 @@ from ipam.models import Prefix
 from virtualization.models import Cluster, VMInterface
 from wireless.models import WirelessLAN
 from .models import (
-    Cable, CablePath, CableTermination, ConsolePort, ConsoleServerPort, Device, DeviceBay, FrontPort, Interface,
-    InventoryItem, Location, ModuleBay, PathEndpoint, PortMapping, PowerOutlet, PowerPanel, PowerPort, Rack, RearPort,
-    Site, VirtualChassis,
+    Cable,
+    CablePath,
+    CableTermination,
+    ConsolePort,
+    ConsoleServerPort,
+    Device,
+    DeviceBay,
+    FrontPort,
+    Interface,
+    InventoryItem,
+    Location,
+    ModuleBay,
+    PathEndpoint,
+    PortMapping,
+    PowerOutlet,
+    PowerPanel,
+    PowerPort,
+    Rack,
+    RearPort,
+    Site,
+    VirtualChassis,
 )
 from .models.cables import trace_paths
 from .utils import create_cablepaths, rebuild_paths
@@ -33,6 +51,7 @@ COMPONENT_MODELS = (
 #
 # Location/rack/device assignment
 #
+
 
 @receiver(post_save, sender=Location)
 def handle_location_site_change(instance, created, **kwargs):
@@ -85,6 +104,7 @@ def handle_device_site_change(instance, created, **kwargs):
 # Virtual chassis
 #
 
+
 @receiver(post_save, sender=VirtualChassis)
 def assign_virtualchassis_master(instance, created, **kwargs):
     """
@@ -101,6 +121,7 @@ def assign_virtualchassis_master(instance, created, **kwargs):
 # Cables
 #
 
+
 @receiver(trace_paths, sender=Cable)
 def update_connected_endpoints(instance, created, raw=False, **kwargs):
     """
@@ -108,7 +129,7 @@ def update_connected_endpoints(instance, created, raw=False, **kwargs):
     """
     logger = logging.getLogger('netbox.dcim.cable')
     if raw:
-        logger.debug(f"Skipping endpoint updates for imported cable {instance}")
+        logger.debug(f'Skipping endpoint updates for imported cable {instance}')
         return
 
     # Update cable paths if new terminations have been set
@@ -220,7 +241,4 @@ def sync_cached_scope_fields(instance, created, **kwargs):
             objects_to_update.append(obj)
 
         if objects_to_update:
-            model.objects.bulk_update(
-                objects_to_update,
-                ['_location', '_site', '_site_group', '_region']
-            )
+            model.objects.bulk_update(objects_to_update, ['_location', '_site', '_site_group', '_region'])

@@ -11,6 +11,7 @@ class CollateAsChar(Func):
     """
     Disregard localization by collating a field as a plain character string. Helpful for ensuring predictable ordering.
     """
+
     function = 'C'
     template = '(%(expressions)s) COLLATE "%(function)s"'
 
@@ -21,4 +22,5 @@ class EmptyGroupByJSONBAgg(JSONBAgg):
     When used as an annotation for collecting config context data objects, the GROUP BY is
     incorrect. This subclass overrides the Django ORM aggregation control to remove the GROUP BY.
     """
+
     contains_aggregate = False

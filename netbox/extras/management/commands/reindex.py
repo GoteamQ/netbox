@@ -17,9 +17,7 @@ class Command(BaseCommand):
             help='One or more apps or models to reindex',
         )
         parser.add_argument(
-            '--lazy',
-            action='store_true',
-            help="For each model, reindex objects only if no cache entries already exist"
+            '--lazy', action='store_true', help='For each model, reindex objects only if no cache entries already exist'
         )
 
     def _get_indexers(self, *model_names):
@@ -42,7 +40,7 @@ class Command(BaseCommand):
                         idx = registry['search'][f'{app_label}.{model_name}']
                         indexers[idx.model] = idx
                     except KeyError:
-                        raise CommandError(f"No indexer registered for {label}")
+                        raise CommandError(f'No indexer registered for {label}')
 
                 # Label specifies all the models of an app
                 elif len(labels) == 1:
@@ -53,18 +51,17 @@ class Command(BaseCommand):
 
                 else:
                     raise CommandError(
-                        f"Invalid model: {label}. Model names must be in the format <app_label> or "
-                        f"<app_label>.<model_name>."
+                        f'Invalid model: {label}. Model names must be in the format <app_label> or '
+                        f'<app_label>.<model_name>.'
                     )
 
         return indexers
 
     def handle(self, *model_labels, **kwargs):
-
         # Determine which models to reindex
         indexers = self._get_indexers(*model_labels)
         if not indexers:
-            raise CommandError(_("No indexers found!"))
+            raise CommandError(_('No indexers found!'))
         self.stdout.write(f'Reindexing {len(indexers)} models.')
 
         # Clear cached values for the specified models (if not being lazy)

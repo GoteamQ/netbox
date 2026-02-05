@@ -91,9 +91,7 @@ class VirtualMachineFilter(
     platform_id: ID | None = strawberry_django.filter_field()
     status: (
         BaseFilterLookup[Annotated['VirtualMachineStatusEnum', strawberry.lazy('virtualization.graphql.enums')]] | None
-    ) = (
-        strawberry_django.filter_field()
-    )
+    ) = strawberry_django.filter_field()
     role: Annotated['DeviceRoleFilter', strawberry.lazy('dcim.graphql.filters')] | None = (
         strawberry_django.filter_field()
     )
@@ -128,10 +126,9 @@ class VirtualMachineFilter(
         strawberry_django.filter_field()
     )
     start_on_boot: (
-        BaseFilterLookup[Annotated['VirtualMachineStartOnBootEnum', strawberry.lazy('virtualization.graphql.enums')]
-    ] | None) = (
-        strawberry_django.filter_field()
-    )
+        BaseFilterLookup[Annotated['VirtualMachineStartOnBootEnum', strawberry.lazy('virtualization.graphql.enums')]]
+        | None
+    ) = strawberry_django.filter_field()
 
 
 @strawberry_django.filter_type(models.VMInterface, lookups=True)

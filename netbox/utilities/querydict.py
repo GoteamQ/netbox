@@ -37,9 +37,7 @@ def normalize_querydict(querydict):
     This function is necessary because QueryDict does not provide any built-in mechanism which preserves multiple
     values.
     """
-    return {
-        k: v if len(v) > 1 else v[0] for k, v in querydict.lists()
-    }
+    return {k: v if len(v) > 1 else v[0] for k, v in querydict.lists()}
 
 
 def prepare_cloned_fields(instance):
