@@ -110,13 +110,17 @@ class BulkUpdateModelMixin:
         # Map update data by object ID
         update_data = {obj.pop('id'): obj for obj in request.data}
 
-        data = self.perform_bulk_update(qs, update_data, partial=partial)
+        object_pks = self.perform_bulk_update(qs, update_data, partial=partial)
 
-        return Response(data, status=status.HTTP_200_OK)
+        # Prefetch related objects for all updated instances
+        qs = self.get_queryset().filter(pk__in=object_pks)
+        serializer = self.get_serializer(qs, many=True)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def perform_bulk_update(self, objects, update_data, partial):
+        updated_pks = []
         with transaction.atomic(using=router.db_for_write(self.queryset.model)):
-            data_list = []
             for obj in objects:
                 data = update_data.get(obj.id)
                 if hasattr(obj, 'snapshot'):
@@ -124,9 +128,9 @@ class BulkUpdateModelMixin:
                 serializer = self.get_serializer(obj, data=data, partial=partial)
                 serializer.is_valid(raise_exception=True)
                 self.perform_update(serializer)
-                data_list.append(serializer.data)
+                updated_pks.append(obj.pk)
 
-            return data_list
+        return updated_pks
 
     def bulk_partial_update(self, request, *args, **kwargs):
         kwargs['partial'] = True

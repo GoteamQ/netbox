@@ -21,6 +21,7 @@ class JobSerializer(BaseModelSerializer):
     class Meta:
         model = Job
         fields = [
+        fields = [
             'id',
             'url',
             'display_url',
@@ -39,6 +40,9 @@ class JobSerializer(BaseModelSerializer):
             'data',
             'error',
             'job_id',
+            'queue_name',
+            'log_entries',
+        ]
             'log_entries',
         ]
         brief_fields = ('url', 'created', 'completed', 'user', 'status')
