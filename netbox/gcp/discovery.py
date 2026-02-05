@@ -290,14 +290,14 @@ class GCPDiscoveryService:
             return False
 
     def _create_service(self, service_name, version):
-        
+
         # Set timeout to prevent hanging threads
         http = httplib2.Http(timeout=60)
-        
+
         # Authorize the http object (http and credentials args are mutually exclusive in build())
         if self.credentials:
-             http = AuthorizedHttp(self.credentials, http=http)
-            
+            http = AuthorizedHttp(self.credentials, http=http)
+
         return build(service_name, version, http=http, cache_discovery=False)
 
     def _normalize_org_id(self):
@@ -470,7 +470,7 @@ class GCPDiscoveryService:
 
         self.log('Discovering projects...')
         projects = []
-        
+
         # Cache for folder ownership to avoid repeated API calls
         # Key: folder_id (str), Value: bool (is_owned_by_org)
         folder_ownership_cache = {}
@@ -488,7 +488,7 @@ class GCPDiscoveryService:
                     parent = proj.get('parent', {})
                     parent_type = parent.get('type')
                     parent_id = str(parent.get('id', ''))
-                    
+
                     # 1. Direct child of the organization
                     if parent_type == 'organization' and parent_id == str(self.organization.organization_id):
                         is_owned_by_org = True
@@ -503,28 +503,28 @@ class GCPDiscoveryService:
                                 ancestry = service.projects().getAncestry(projectId=proj['projectId']).execute()
                                 is_folder_in_org = False
                                 found_folders = []
-                                
+
                                 # Walk up the ancestry
                                 for ancestor in ancestry.get('ancestor', []):
                                     resource = ancestor.get('resourceId', {})
                                     r_type = resource.get('type')
                                     r_id = str(resource.get('id', ''))
-                                    
+
                                     if r_type == 'organization' and r_id == str(self.organization.organization_id):
                                         is_folder_in_org = True
                                     elif r_type == 'folder':
                                         found_folders.append(r_id)
-                                
+
                                 # Update cache for all intermediate folders found in this path
                                 for f_id in found_folders:
                                     folder_ownership_cache[f_id] = is_folder_in_org
-                                
+
                                 is_owned_by_org = is_folder_in_org
-                                
+
                             except Exception:
                                 # If we cannot verify ancestry, skip the project to be safe
                                 pass
-                    
+
                     if not is_owned_by_org:
                         continue
 
@@ -864,7 +864,7 @@ class GCPDiscoveryService:
 
             while request is not None:
                 response = request.execute()
-                
+
                 # Check for warnings (e.g. unreachable zones)
                 if 'warning' in response:
                     warn_msg = response['warning'].get('message')
@@ -872,8 +872,12 @@ class GCPDiscoveryService:
 
                 for zone, instances_data in response.get('items', {}).items():
                     if 'warning' in instances_data:
-                         self.log(f'Warning for zone {zone} in {project.project_id}: {instances_data["warning"].get("message")}', 'warning')
-                         
+                        self.log(
+                            f'Warning for zone {zone} in {project.project_id}: '
+                            f'{instances_data["warning"].get("message")}',
+                            'warning',
+                        )
+
                     for instance in instances_data.get('instances', []):
                         zone_name = instance.get('zone', '').split('/')[-1]
                         machine_type = instance.get('machineType', '').split('/')[-1]
@@ -2083,7 +2087,9 @@ class GCPDiscoveryService:
             while request is not None:
                 print(f"DEBUG: [{project.project_id}] PubSub: Executing topics request...", flush=True)
                 response = request.execute()
-                print(f"DEBUG: [{project.project_id}] PubSub: Found {len(response.get('topics', []))} topics", flush=True)
+                print(
+                    f"DEBUG: [{project.project_id}] PubSub: Found {len(response.get('topics', []))} topics", flush=True
+                )
 
                 for topic in response.get('topics', []):
                     # name: projects/p/topics/t
@@ -2112,7 +2118,11 @@ class GCPDiscoveryService:
             while request is not None:
                 print(f"DEBUG: [{project.project_id}] PubSub: Executing subscriptions request...", flush=True)
                 response = request.execute()
-                print(f"DEBUG: [{project.project_id}] PubSub: Found {len(response.get('subscriptions', []))} subscriptions", flush=True)
+                num_subs = len(response.get('subscriptions', []))
+                print(
+                    f"DEBUG: [{project.project_id}] PubSub: Found {num_subs} subscriptions",
+                    flush=True,
+                )
 
                 for sub in response.get('subscriptions', []):
                     name = sub['name'].split('/')[-1]
@@ -2162,44 +2172,46 @@ class GCPDiscoveryService:
         try:
             service = self._create_service('secretmanager', 'v1')
             parent = f'projects/{project.project_id}'
-            
+
             request = service.projects().secrets().list(parent=parent)
             while request:
                 response = request.execute()
                 for secret in response.get('secrets', []):
                     name = secret['name'].split('/')[-1]
-                    
+
                     obj, created = SecretManagerSecret.objects.update_or_create(
                         project=project,
                         name=name,
                         defaults={
-                            'replication_type': secret.get('replication', {}).get('automatic') and 'AUTOMATIC' or 'USER_MANAGED',
+                            'replication_type': secret.get('replication', {}).get('automatic')
+                            and 'AUTOMATIC'
+                            or 'USER_MANAGED',
                             'self_link': secret.get('name', ''),
                             'labels': secret.get('labels'),
                             'discovered': True,
-                            'last_synced': timezone.now()
-                        }
+                            'last_synced': timezone.now(),
+                        },
                     )
                     self._increment_stat('secrets')
-                
+
                 request = service.projects().secrets().list_next(previous_request=request, previous_response=response)
-        
+
         except Exception as e:
             if not self._handle_http_error('Secret Manager discovery', e):
-                 self.log(f'Error discovering secrets: {e}', 'error')
+                self.log(f'Error discovering secrets: {e}', 'error')
 
     def discover_cloud_dns_zones(self, project):
-        from .models import CloudDNSZone, CloudDNSRecord
-        
+        from .models import CloudDNSZone
+
         try:
             service = self._create_service('dns', 'v1')
             project_id = project.project_id
-            
+
             request = service.managedZones().list(project=project_id)
             while request:
                 response = request.execute()
                 for zone in response.get('managedZones', []):
-                    
+
                     obj, created = CloudDNSZone.objects.update_or_create(
                         project=project,
                         name=zone['name'],
@@ -2214,7 +2226,7 @@ class GCPDiscoveryService:
                         }
                     )
                     self._increment_stat('dns_zones')
-                    
+
                     self.discover_cloud_dns_records(service, project, obj)
 
                 request = service.managedZones().list_next(previous_request=request, previous_response=response)
@@ -2225,13 +2237,13 @@ class GCPDiscoveryService:
 
     def discover_cloud_dns_records(self, service, project, zone):
         from .models import CloudDNSRecord
-        
+
         try:
             request = service.resourceRecordSets().list(project=project.project_id, managedZone=zone.name)
             while request:
                 response = request.execute()
                 for rrset in response.get('rrsets', []):
-                    
+
                     CloudDNSRecord.objects.update_or_create(
                         zone=zone,
                         name=rrset['name'],
@@ -2247,16 +2259,16 @@ class GCPDiscoveryService:
 
                 request = service.resourceRecordSets().list_next(previous_request=request, previous_response=response)
         except Exception as e:
-             self.log(f'Error discovering DNS records for {zone.name}: {e}', 'warning')
+            self.log(f'Error discovering DNS records for {zone.name}: {e}', 'warning')
 
     def discover_iam_roles(self, project):
         from .models import IAMRole
-        
+
         try:
             print(f"DEBUG: [{project.project_id}] Discovering IAM Roles", flush=True)
             service = self._create_service('iam', 'v1')
             parent = f'projects/{project.project_id}'
-            
+
             # List custom roles for the project
             print(f"DEBUG: [{project.project_id}] IAM: Listing roles...", flush=True)
             request = service.projects().roles().list(parent=parent, view='FULL')
@@ -2278,31 +2290,31 @@ class GCPDiscoveryService:
                         }
                     )
                     self._increment_stat('iam_roles')
-                
+
                 request = service.projects().roles().list_next(previous_request=request, previous_response=response)
 
         except Exception as e:
             if not self._handle_http_error('IAM Roles discovery', e):
-                 self.log(f'Error discovering IAM roles: {e}', 'error')
+                self.log(f'Error discovering IAM roles: {e}', 'error')
 
     def discover_iam_policy(self, project):
         from .models import IAMBinding, IAMRole
-        
+
         try:
             print(f"DEBUG: [{project.project_id}] Discovering IAM Policy", flush=True)
             # Use Cloud Resource Manager API to get policy
             service = self._create_service('cloudresourcemanager', 'v1')
             resource = project.project_id
-            
+
             print(f"DEBUG: [{project.project_id}] IAM: Getting IAM policy...", flush=True)
             policy = service.projects().getIamPolicy(resource=resource).execute()
             bindings = policy.get('bindings', [])
             print(f"DEBUG: [{project.project_id}] IAMPolicy: Found {len(bindings)} bindings", flush=True)
-            
+
             for binding in bindings:
                 role_name = binding['role']
                 members = binding['members']
-                
+
                 # Ensure Role exists
                 role_obj = IAMRole.objects.filter(name=role_name).first()
                 if not role_obj:
@@ -2315,7 +2327,7 @@ class GCPDiscoveryService:
                         discovered=True,
                         last_synced=timezone.now()
                     )
-                
+
                 for member in members:
                     IAMBinding.objects.update_or_create(
                         project=project,
@@ -2331,7 +2343,7 @@ class GCPDiscoveryService:
 
         except Exception as e:
             if not self._handle_http_error('IAM Policy discovery', e):
-                 self.log(f'Error discovering IAM policy: {e}', 'error')
+                self.log(f'Error discovering IAM policy: {e}', 'error')
 
 
 def run_discovery(organization_id):

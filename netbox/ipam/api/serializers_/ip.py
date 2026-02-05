@@ -221,9 +221,8 @@ class AvailableIPRequestSerializer(serializers.Serializer):
         if prefix_length < parent.mask_length:
             raise serializers.ValidationError(
                 {
-                    'prefix_length': 'Prefix length must be greater than or equal to the parent mask length ({})'.format(
-                        parent.mask_length
-                    )
+                    'prefix_length': 'Prefix length must be greater than or equal to the parent mask length '
+                    '({})'.format(parent.mask_length)
                 }
             )
         elif parent.family == 4 and prefix_length > 32:

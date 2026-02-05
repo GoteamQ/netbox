@@ -1,46 +1,47 @@
 from rest_framework import serializers
 
 from netbox.api.serializers import NetBoxModelSerializer
+
 from gcp.models import (
-    GCPOrganization,
-    DiscoveryLog,
-    GCPProject,
-    ComputeInstance,
-    InstanceTemplate,
-    InstanceGroup,
-    VPCNetwork,
-    Subnet,
-    FirewallRule,
-    CloudRouter,
+    BigtableInstance,
+    CloudDNSRecord,
+    CloudDNSZone,
+    CloudFunction,
     CloudNAT,
-    LoadBalancer,
+    CloudRouter,
+    CloudRun,
     CloudSQLInstance,
     CloudSpannerInstance,
-    FirestoreDatabase,
-    BigtableInstance,
     CloudStorageBucket,
-    PersistentDisk,
+    ComputeInstance,
+    DiscoveryLog,
+    ExternalVPNGateway,
+    FirewallRule,
+    FirestoreDatabase,
+    GCPOrganization,
+    GCPProject,
     GKECluster,
     GKENodePool,
-    ServiceAccount,
-    IAMRole,
     IAMBinding,
-    CloudFunction,
-    CloudRun,
-    PubSubTopic,
-    PubSubSubscription,
-    SecretManagerSecret,
-    CloudDNSZone,
-    CloudDNSRecord,
+    IAMRole,
+    InstanceGroup,
+    InstanceTemplate,
+    InterconnectAttachment,
+    LoadBalancer,
     MemorystoreInstance,
     NCCHub,
     NCCSpoke,
-    VPNGateway,
-    ExternalVPNGateway,
-    VPNTunnel,
-    InterconnectAttachment,
+    PersistentDisk,
+    PubSubSubscription,
+    PubSubTopic,
+    SecretManagerSecret,
+    ServiceAccount,
     ServiceAttachment,
     ServiceConnectEndpoint,
+    Subnet,
+    VPCNetwork,
+    VPNGateway,
+    VPNTunnel,
 )
 
 
@@ -199,7 +200,17 @@ class InstanceGroupSerializer(NetBoxModelSerializer):
 class VPCNetworkSerializer(NetBoxModelSerializer):
     class Meta:
         model = VPCNetwork
-        fields = ['id', 'url', 'display', 'name', 'project', 'auto_create_subnetworks', 'routing_mode', 'mtu', 'tags']
+        fields = [
+            'id',
+            'url',
+            'display',
+            'name',
+            'project',
+            'auto_create_subnetworks',
+            'routing_mode',
+            'mtu',
+            'tags',
+        ]
 
 
 class SubnetSerializer(NetBoxModelSerializer):
@@ -455,7 +466,17 @@ class GKENodePoolSerializer(NetBoxModelSerializer):
 class ServiceAccountSerializer(NetBoxModelSerializer):
     class Meta:
         model = ServiceAccount
-        fields = ['id', 'url', 'display', 'email', 'project', 'display_name', 'disabled', 'unique_id', 'tags']
+        fields = [
+            'id',
+            'url',
+            'display',
+            'email',
+            'project',
+            'display_name',
+            'disabled',
+            'unique_id',
+            'tags',
+        ]
 
 
 class IAMRoleSerializer(NetBoxModelSerializer):
@@ -479,7 +500,16 @@ class IAMRoleSerializer(NetBoxModelSerializer):
 class IAMBindingSerializer(NetBoxModelSerializer):
     class Meta:
         model = IAMBinding
-        fields = ['id', 'url', 'display', 'project', 'role', 'member', 'condition', 'tags']
+        fields = [
+            'id',
+            'url',
+            'display',
+            'project',
+            'role',
+            'member',
+            'condition',
+            'tags',
+        ]
 
 
 class CloudFunctionSerializer(NetBoxModelSerializer):
@@ -527,7 +557,15 @@ class CloudRunSerializer(NetBoxModelSerializer):
 class PubSubTopicSerializer(NetBoxModelSerializer):
     class Meta:
         model = PubSubTopic
-        fields = ['id', 'url', 'display', 'name', 'project', 'labels', 'tags']
+        fields = [
+            'id',
+            'url',
+            'display',
+            'name',
+            'project',
+            'labels',
+            'tags',
+        ]
 
 
 class PubSubSubscriptionSerializer(NetBoxModelSerializer):
@@ -585,7 +623,17 @@ class CloudDNSZoneSerializer(NetBoxModelSerializer):
 class CloudDNSRecordSerializer(NetBoxModelSerializer):
     class Meta:
         model = CloudDNSRecord
-        fields = ['id', 'url', 'display', 'zone', 'name', 'record_type', 'ttl', 'rrdatas', 'tags']
+        fields = [
+            'id',
+            'url',
+            'display',
+            'zone',
+            'name',
+            'record_type',
+            'ttl',
+            'rrdatas',
+            'tags',
+        ]
 
 
 class MemorystoreInstanceSerializer(NetBoxModelSerializer):
@@ -612,7 +660,16 @@ class MemorystoreInstanceSerializer(NetBoxModelSerializer):
 class NCCHubSerializer(NetBoxModelSerializer):
     class Meta:
         model = NCCHub
-        fields = ['id', 'url', 'display', 'name', 'project', 'description', 'labels', 'tags']
+        fields = [
+            'id',
+            'url',
+            'display',
+            'name',
+            'project',
+            'description',
+            'labels',
+            'tags',
+        ]
 
 
 class NCCSpokeSerializer(NetBoxModelSerializer):

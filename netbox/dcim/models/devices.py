@@ -248,8 +248,8 @@ class DeviceType(ImageAttachmentsMixin, PrimaryModel, WeightMixin):
                     {
                         'u_height': mark_safe(
                             _(
-                                'Unable to set 0U height: Found <a href="{url}">{racked_instance_count} instances</a> already '
-                                'mounted within racks.'
+                                'Unable to set 0U height: Found <a href="{url}">{racked_instance_count} instances</a> '
+                                'already mounted within racks.'
                             ).format(url=url, racked_instance_count=racked_instance_count)
                         )
                     }
@@ -658,8 +658,8 @@ class Device(
                     raise ValidationError(
                         {
                             'face': _(
-                                'Child device types cannot be assigned to a rack face. This is an attribute of the parent '
-                                'device.'
+                                'Child device types cannot be assigned to a rack face. This is an attribute of the '
+                                'parent device.'
                             )
                         }
                     )
@@ -746,8 +746,8 @@ class Device(
                 raise ValidationError(
                     {
                         'platform': _(
-                            "The assigned platform is limited to {platform_manufacturer} device types, but this device's "
-                            'type belongs to {devicetype_manufacturer}.'
+                            "The assigned platform is limited to {platform_manufacturer} device types, but this "
+                            "device's type belongs to {devicetype_manufacturer}."
                         ).format(
                             platform_manufacturer=self.platform.manufacturer,
                             devicetype_manufacturer=self.device_type.manufacturer,
@@ -1010,8 +1010,8 @@ class VirtualChassis(PrimaryModel):
         if interfaces:
             raise ProtectedError(
                 _(
-                    'Unable to delete virtual chassis {self}. There are member interfaces which form a cross-chassis LAG '
-                    'interfaces.'
+                    'Unable to delete virtual chassis {self}. There are member interfaces which form a '
+                    'cross-chassis LAG interfaces.'
                 ).format(self=self, interfaces=InterfaceSpeedChoices)
             )
 

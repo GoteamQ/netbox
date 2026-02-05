@@ -559,7 +559,8 @@ class FrontPortTemplate(ModularComponentTemplateModel):
                 raise ValidationError(
                     {
                         'positions': _(
-                            'The number of positions cannot be less than the number of mapped rear port templates ({count})'
+                            'The number of positions cannot be less than the number of mapped rear port templates '
+                            '({count})'
                         ).format(count=mapping_count)
                     }
                 )

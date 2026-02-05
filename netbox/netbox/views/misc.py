@@ -121,7 +121,7 @@ class HomeView(ConditionalLoginRequiredMixin, View):
                         url = reverse(f'{app_label}:{model_name.lower()}_list')
                     except NoReverseMatch:
                         url = '#'
-                    
+
                     gcp_stats.append({
                         'label': model._meta.verbose_name_plural,
                         'count': count,

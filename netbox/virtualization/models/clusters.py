@@ -123,7 +123,8 @@ class Cluster(ContactsMixin, CachedScopeMixin, PrimaryModel):
                     raise ValidationError(
                         {
                             'scope': _(
-                                '{count} devices are assigned as hosts for this cluster but are not in location {location}'
+                                '{count} devices are assigned as hosts for this cluster but are not in location '
+                                '{location}'
                             ).format(count=nonlocation_devices, location=location)
                         }
                     )

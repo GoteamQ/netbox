@@ -157,8 +157,8 @@ class FrontPortFormMixin(forms.Form):
             raise forms.ValidationError(
                 {
                     'rear_ports': _(
-                        'The total number of front port positions ({frontport_count}) must match the selected number of '
-                        'rear port positions ({rearport_count}).'
+                        'The total number of front port positions ({frontport_count}) must match the selected number '
+                        'of rear port positions ({rearport_count}).'
                     ).format(frontport_count=frontport_count, rearport_count=rearport_count)
                 }
             )

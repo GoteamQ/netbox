@@ -889,8 +889,8 @@ class Interface(
                 raise ValidationError(
                     {
                         'bridge': _(
-                            'The selected bridge interface ({interface}) belongs to {device}, which is not part of virtual '
-                            'chassis {virtual_chassis}.'
+                            'The selected bridge interface ({interface}) belongs to {device}, which is not part of '
+                            'virtual chassis {virtual_chassis}.'
                         ).format(
                             interface=self.bridge,
                             device=self.bridge.device,
@@ -923,8 +923,8 @@ class Interface(
                 raise ValidationError(
                     {
                         'lag': _(
-                            'The selected LAG interface ({lag}) belongs to {device}, which is not part of virtual chassis '
-                            '{virtual_chassis}.'.format(
+                            'The selected LAG interface ({lag}) belongs to {device}, which is not part of virtual '
+                            'chassis {virtual_chassis}.'.format(
                                 lag=self.lag, device=self.lag.device, virtual_chassis=self.device.virtual_chassis
                             )
                         )

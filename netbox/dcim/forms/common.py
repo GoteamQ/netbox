@@ -52,8 +52,8 @@ class InterfaceCommonForm(forms.Form):
                 raise forms.ValidationError(
                     {
                         'tagged_vlans': _(
-                            "The tagged VLANs ({vlans}) must belong to the same site as the interface's parent device/VM, "
-                            'or they must be global'
+                            "The tagged VLANs ({vlans}) must belong to the same site as the interface's parent "
+                            "device/VM, or they must be global"
                         ).format(vlans=', '.join(invalid_vlans))
                     }
                 )

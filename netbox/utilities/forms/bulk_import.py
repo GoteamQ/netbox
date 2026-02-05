@@ -156,8 +156,8 @@ class BulkImportForm(ChangelogMessageMixin, BackgroundJobMixin, SyncedDataMixin,
                     raise forms.ValidationError(
                         {
                             self.data_field: _(
-                                'Invalid YAML data. Data must be in the form of multiple documents, or a single document '
-                                'comprising a list of dictionaries.'
+                                'Invalid YAML data. Data must be in the form of multiple documents, or a single '
+                                'document comprising a list of dictionaries.'
                             )
                         }
                     )
