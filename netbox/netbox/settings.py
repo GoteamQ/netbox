@@ -302,7 +302,7 @@ DEFAULT_STORAGES = {
         "BACKEND": "django.core.files.storage.FileSystemStorage",
     },
     "staticfiles": {
-        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
     },
     "scripts": {
         "BACKEND": "extras.storage.ScriptFileSystemStorage",
@@ -494,6 +494,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django_htmx.middleware.HtmxMiddleware',
     'netbox.middleware.RemoteUserMiddleware',
     'netbox.middleware.CoreMiddleware',

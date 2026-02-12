@@ -1,14 +1,39 @@
+# VCS
 .git
 .gitignore
 .github
+
+# Python artifacts
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
+*.egg-info/
+.venv/
+venv/
+
+# Data / local state
 *.sqlite3
 *.log
-node_modules/
 .netbox/
+
+# JS / frontend tooling
+node_modules/
 .project-static/
 .project-static/**
+
+# Docs / meta (not needed in image)
+docs/
+contrib/
+mkdocs.yml
+*.md
+LICENSE.txt
+NOTICE
+
+# OS junk
 .DS_Store
+Thumbs.db
+
+# Docker-in-Docker
+docker-compose*.yml
+.dockerignore
