@@ -16,7 +16,12 @@ __all__ = (
 
 class PowerPanelSerializer(PrimaryModelSerializer):
     site = SiteSerializer(nested=True)
-    location = LocationSerializer(nested=True, required=False, allow_null=True, default=None)
+    location = LocationSerializer(
+        nested=True,
+        required=False,
+        allow_null=True,
+        default=None
+    )
 
     # Related object counts
     powerfeed_count = RelatedObjectCountField('powerfeeds')
@@ -24,28 +29,20 @@ class PowerPanelSerializer(PrimaryModelSerializer):
     class Meta:
         model = PowerPanel
         fields = [
-            'id',
-            'url',
-            'display_url',
-            'display',
-            'site',
-            'location',
-            'name',
-            'description',
-            'owner',
-            'comments',
-            'tags',
-            'custom_fields',
-            'powerfeed_count',
-            'created',
-            'last_updated',
+            'id', 'url', 'display_url', 'display', 'site', 'location', 'name', 'description', 'owner', 'comments',
+            'tags', 'custom_fields', 'powerfeed_count', 'created', 'last_updated',
         ]
         brief_fields = ('id', 'url', 'display', 'name', 'description', 'powerfeed_count')
 
 
 class PowerFeedSerializer(PrimaryModelSerializer, CabledObjectSerializer, ConnectedEndpointsSerializer):
     power_panel = PowerPanelSerializer(nested=True)
-    rack = RackSerializer(nested=True, required=False, allow_null=True, default=None)
+    rack = RackSerializer(
+        nested=True,
+        required=False,
+        allow_null=True,
+        default=None
+    )
     type = ChoiceField(
         choices=PowerFeedTypeChoices,
         default=lambda: PowerFeedTypeChoices.TYPE_PRIMARY,
@@ -62,41 +59,19 @@ class PowerFeedSerializer(PrimaryModelSerializer, CabledObjectSerializer, Connec
         choices=PowerFeedPhaseChoices,
         default=lambda: PowerFeedPhaseChoices.PHASE_SINGLE,
     )
-    tenant = TenantSerializer(nested=True, required=False, allow_null=True)
+    tenant = TenantSerializer(
+        nested=True,
+        required=False,
+        allow_null=True
+    )
 
     class Meta:
         model = PowerFeed
         fields = [
-            'id',
-            'url',
-            'display_url',
-            'display',
-            'power_panel',
-            'rack',
-            'name',
-            'status',
-            'type',
-            'supply',
-            'phase',
-            'voltage',
-            'amperage',
-            'max_utilization',
-            'mark_connected',
-            'cable',
-            'cable_end',
-            'link_peers',
-            'link_peers_type',
-            'connected_endpoints',
-            'connected_endpoints_type',
-            'connected_endpoints_reachable',
-            'description',
-            'tenant',
-            'owner',
-            'comments',
-            'tags',
-            'custom_fields',
-            'created',
-            'last_updated',
+            'id', 'url', 'display_url', 'display', 'power_panel', 'rack', 'name', 'status', 'type', 'supply',
+            'phase', 'voltage', 'amperage', 'max_utilization', 'mark_connected', 'cable', 'cable_end', 'link_peers',
+            'link_peers_type', 'connected_endpoints', 'connected_endpoints_type', 'connected_endpoints_reachable',
+            'description', 'tenant', 'owner', 'comments', 'tags', 'custom_fields', 'created', 'last_updated',
             '_occupied',
         ]
         brief_fields = ('id', 'url', 'display', 'name', 'description', 'cable', '_occupied')

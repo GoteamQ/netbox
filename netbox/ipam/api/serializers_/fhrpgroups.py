@@ -17,44 +17,23 @@ class FHRPGroupSerializer(PrimaryModelSerializer):
     class Meta:
         model = FHRPGroup
         fields = [
-            'id',
-            'name',
-            'url',
-            'display_url',
-            'display',
-            'protocol',
-            'group_id',
-            'auth_type',
-            'auth_key',
-            'description',
-            'owner',
-            'comments',
-            'tags',
-            'custom_fields',
-            'created',
-            'last_updated',
-            'ip_addresses',
+            'id', 'name', 'url', 'display_url', 'display', 'protocol', 'group_id', 'auth_type', 'auth_key',
+            'description', 'owner', 'comments', 'tags', 'custom_fields', 'created', 'last_updated', 'ip_addresses',
         ]
         brief_fields = ('id', 'url', 'display', 'protocol', 'group_id', 'description')
 
 
 class FHRPGroupAssignmentSerializer(NetBoxModelSerializer):
     group = FHRPGroupSerializer(nested=True)
-    interface_type = ContentTypeField(queryset=ContentType.objects.all())
+    interface_type = ContentTypeField(
+        queryset=ContentType.objects.all()
+    )
     interface = GFKSerializerField(read_only=True)
 
     class Meta:
         model = FHRPGroupAssignment
         fields = [
-            'id',
-            'url',
-            'display',
-            'group',
-            'interface_type',
-            'interface_id',
-            'interface',
-            'priority',
-            'created',
-            'last_updated',
+            'id', 'url', 'display', 'group', 'interface_type', 'interface_id', 'interface',
+            'priority', 'created', 'last_updated',
         ]
         brief_fields = ('id', 'url', 'display', 'group', 'interface_type', 'interface_id', 'priority')

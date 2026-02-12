@@ -20,6 +20,7 @@ BGP_ASN_ASDOT_BASE = 2**16
 
 
 class BaseIPField(models.Field):
+
     def python_type(self):
         return IPNetwork
 
@@ -36,7 +37,7 @@ class BaseIPField(models.Field):
             # Always return a netaddr.IPNetwork object. (netaddr.IPAddress does not provide a mask.)
             return IPNetwork(value)
         except AddrFormatError:
-            raise ValidationError(_('Invalid IP address format: {address}').format(address=value))
+            raise ValidationError(_("Invalid IP address format: {address}").format(address=value))
         except (TypeError, ValueError) as e:
             raise ValidationError(e)
 
@@ -60,7 +61,6 @@ class IPNetworkField(BaseIPField):
     """
     IP prefix (network and mask)
     """
-
     description = 'PostgreSQL CIDR field'
     default_validators = [validators.prefix_validator]
 
@@ -87,7 +87,6 @@ class IPAddressField(BaseIPField):
     """
     IP address (host address and mask)
     """
-
     description = 'PostgreSQL INET field'
 
     def db_type(self, connection):

@@ -27,36 +27,39 @@ EMPTY_VALUES = ('', None, [], ())
 
 
 class DataSourceForm(PrimaryModelForm):
-    type = forms.ChoiceField(choices=get_data_backend_choices, widget=HTMXSelect())
+    type = forms.ChoiceField(
+        choices=get_data_backend_choices,
+        widget=HTMXSelect()
+    )
 
     class Meta:
         model = DataSource
         fields = [
-            'name',
-            'type',
-            'source_url',
-            'enabled',
-            'description',
-            'sync_interval',
-            'ignore_rules',
-            'owner',
-            'comments',
-            'tags',
+            'name', 'type', 'source_url', 'enabled', 'description', 'sync_interval', 'ignore_rules', 'owner',
+            'comments', 'tags',
         ]
         widgets = {
             'ignore_rules': forms.Textarea(
-                attrs={'rows': 5, 'class': 'font-monospace', 'placeholder': '.cache\n*.txt'}
+                attrs={
+                    'rows': 5,
+                    'class': 'font-monospace',
+                    'placeholder': '.cache\n*.txt'
+                }
             ),
         }
 
     @property
     def fieldsets(self):
         fieldsets = [
-            FieldSet('name', 'type', 'source_url', 'description', 'tags', 'ignore_rules', name=_('Source')),
+            FieldSet(
+                'name', 'type', 'source_url', 'description', 'tags', 'ignore_rules', name=_('Source')
+            ),
             FieldSet('enabled', 'sync_interval', name=_('Sync')),
         ]
         if self.backend_fields:
-            fieldsets.append(FieldSet(*self.backend_fields, name=_('Backend Parameters')))
+            fieldsets.append(
+                FieldSet(*self.backend_fields, name=_('Backend Parameters'))
+            )
 
         return fieldsets
 
@@ -77,6 +80,7 @@ class DataSourceForm(PrimaryModelForm):
                     self.fields[field_name].initial = self.instance.parameters.get(name)
 
     def save(self, *args, **kwargs):
+
         parameters = {}
         for name in self.fields:
             if name.startswith('backend_'):
@@ -87,7 +91,9 @@ class DataSourceForm(PrimaryModelForm):
 
 
 class ManagedFileForm(SyncedDataMixin, NetBoxModelForm):
-    upload_file = forms.FileField(required=False)
+    upload_file = forms.FileField(
+        required=False
+    )
 
     fieldsets = (
         FieldSet('upload_file', name=_('File Upload')),
@@ -102,9 +108,9 @@ class ManagedFileForm(SyncedDataMixin, NetBoxModelForm):
         super().clean()
 
         if self.cleaned_data.get('upload_file') and self.cleaned_data.get('data_file'):
-            raise forms.ValidationError(_('Cannot upload a file and sync from an existing file'))
+            raise forms.ValidationError(_("Cannot upload a file and sync from an existing file"))
         if not self.cleaned_data.get('upload_file') and not self.cleaned_data.get('data_file'):
-            raise forms.ValidationError(_('Must upload a file or select a data file to sync'))
+            raise forms.ValidationError(_("Must upload a file or select a data file to sync"))
 
         return self.cleaned_data
 
@@ -119,7 +125,9 @@ class ManagedFileForm(SyncedDataMixin, NetBoxModelForm):
 
 
 class ConfigFormMetaclass(forms.models.ModelFormMetaclass):
+
     def __new__(mcs, name, bases, attrs):
+
         # Emulate a declared field for each supported configuration parameter
         param_fields = {}
         for param in PARAMS:
@@ -144,12 +152,12 @@ class ConfigRevisionForm(forms.ModelForm, metaclass=ConfigFormMetaclass):
     """
 
     fieldsets = (
-        FieldSet('RACK_ELEVATION_DEFAULT_UNIT_HEIGHT', 'RACK_ELEVATION_DEFAULT_UNIT_WIDTH', name=_('Rack Elevations')),
         FieldSet(
-            'POWERFEED_DEFAULT_VOLTAGE',
-            'POWERFEED_DEFAULT_AMPERAGE',
-            'POWERFEED_DEFAULT_MAX_UTILIZATION',
-            name=_('Power'),
+            'RACK_ELEVATION_DEFAULT_UNIT_HEIGHT', 'RACK_ELEVATION_DEFAULT_UNIT_WIDTH', name=_('Rack Elevations')
+        ),
+        FieldSet(
+            'POWERFEED_DEFAULT_VOLTAGE', 'POWERFEED_DEFAULT_AMPERAGE', 'POWERFEED_DEFAULT_MAX_UTILIZATION',
+            name=_('Power')
         ),
         FieldSet('ENFORCE_GLOBAL_UNIQUE', 'PREFER_IPV4', name=_('IPAM')),
         FieldSet('ALLOWED_URL_SCHEMES', name=_('Security')),
@@ -158,15 +166,10 @@ class ConfigRevisionForm(forms.ModelForm, metaclass=ConfigFormMetaclass):
         FieldSet('CUSTOM_VALIDATORS', 'PROTECTION_RULES', name=_('Validation')),
         FieldSet('DEFAULT_USER_PREFERENCES', name=_('User Preferences')),
         FieldSet(
-            'MAINTENANCE_MODE',
-            'COPILOT_ENABLED',
-            'GRAPHQL_ENABLED',
-            'CHANGELOG_RETENTION',
-            'JOB_RETENTION',
-            'MAPS_URL',
-            name=_('Miscellaneous'),
+            'MAINTENANCE_MODE', 'COPILOT_ENABLED', 'GRAPHQL_ENABLED', 'CHANGELOG_RETENTION', 'JOB_RETENTION',
+            'MAPS_URL', name=_('Miscellaneous'),
         ),
-        FieldSet('comment', name=_('Config Revision')),
+        FieldSet('comment', name=_('Config Revision'))
     )
 
     class Meta:

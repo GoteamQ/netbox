@@ -6,6 +6,7 @@ import utilities.json
 
 
 class Migration(migrations.Migration):
+
     dependencies = [
         ('core', '0015_remove_redundant_indexes'),
     ]
@@ -16,11 +17,12 @@ class Migration(migrations.Migration):
             name='log_entries',
             field=django.contrib.postgres.fields.ArrayField(
                 base_field=models.JSONField(
-                    decoder=utilities.json.JobLogDecoder, encoder=django.core.serializers.json.DjangoJSONEncoder
+                    decoder=utilities.json.JobLogDecoder,
+                    encoder=django.core.serializers.json.DjangoJSONEncoder
                 ),
                 blank=True,
                 default=list,
-                size=None,
+                size=None
             ),
         ),
     ]

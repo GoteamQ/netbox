@@ -15,12 +15,12 @@ ALLOWED_HOSTS = []
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',  # Database engine
-        'NAME': 'netbox',  # Database name
-        'USER': '',  # PostgreSQL username
-        'PASSWORD': '',  # PostgreSQL password
-        'HOST': 'localhost',  # Database server
-        'PORT': '',  # Database port (leave blank for default)
-        'CONN_MAX_AGE': 300,  # Max database connection age
+        'NAME': 'netbox',         # Database name
+        'USER': '',               # PostgreSQL username
+        'PASSWORD': '',           # PostgreSQL password
+        'HOST': 'localhost',      # Database server
+        'PORT': '',               # Database port (leave blank for default)
+        'CONN_MAX_AGE': 300,      # Max database connection age
     }
 }
 
@@ -59,7 +59,7 @@ REDIS = {
         # 'INSECURE_SKIP_TLS_VERIFY': False,
         # Set a path to a certificate authority, typically used with a self signed certificate.
         # 'CA_CERT_PATH': '/etc/ssl/certs/ca.crt',
-    },
+    }
 }
 
 # This key is used for secure generation of random numbers and strings. It must never be exposed outside of this file.

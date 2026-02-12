@@ -7,13 +7,21 @@ from vpn.models import *
 
 
 class TestL2VPNTermination(TestCase):
+
     @classmethod
     def setUpTestData(cls):
+
         site = Site.objects.create(name='Site 1')
         manufacturer = Manufacturer.objects.create(name='Manufacturer 1')
         device_type = DeviceType.objects.create(model='Device Type 1', manufacturer=manufacturer)
         role = DeviceRole.objects.create(name='Switch')
-        device = Device.objects.create(name='Device 1', site=site, device_type=device_type, role=role, status='active')
+        device = Device.objects.create(
+            name='Device 1',
+            site=site,
+            device_type=device_type,
+            role=role,
+            status='active'
+        )
 
         interfaces = (
             Interface(name='Interface 1', device=device, type='1000baset'),
@@ -32,7 +40,7 @@ class TestL2VPNTermination(TestCase):
             VLAN(name='VLAN 4', vid=654),
             VLAN(name='VLAN 5', vid=655),
             VLAN(name='VLAN 6', vid=656),
-            VLAN(name='VLAN 7', vid=657),
+            VLAN(name='VLAN 7', vid=657)
         )
 
         VLAN.objects.bulk_create(vlans)
@@ -47,7 +55,7 @@ class TestL2VPNTermination(TestCase):
         l2vpnterminations = (
             L2VPNTermination(l2vpn=l2vpns[0], assigned_object=vlans[0]),
             L2VPNTermination(l2vpn=l2vpns[0], assigned_object=vlans[1]),
-            L2VPNTermination(l2vpn=l2vpns[0], assigned_object=vlans[2]),
+            L2VPNTermination(l2vpn=l2vpns[0], assigned_object=vlans[2])
         )
 
         L2VPNTermination.objects.bulk_create(l2vpnterminations)

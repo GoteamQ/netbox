@@ -11,8 +11,13 @@ __all__ = (
 
 
 class DataSourceSerializer(PrimaryModelSerializer):
-    type = ChoiceField(choices=get_data_backend_choices())
-    status = ChoiceField(choices=DataSourceStatusChoices, read_only=True)
+    type = ChoiceField(
+        choices=get_data_backend_choices()
+    )
+    status = ChoiceField(
+        choices=DataSourceStatusChoices,
+        read_only=True
+    )
 
     # Related object counts
     file_count = RelatedObjectCountField('datafiles')
@@ -20,45 +25,23 @@ class DataSourceSerializer(PrimaryModelSerializer):
     class Meta:
         model = DataSource
         fields = [
-            'id',
-            'url',
-            'display_url',
-            'display',
-            'name',
-            'type',
-            'source_url',
-            'enabled',
-            'status',
-            'description',
-            'sync_interval',
-            'parameters',
-            'ignore_rules',
-            'owner',
-            'comments',
-            'custom_fields',
-            'created',
-            'last_updated',
-            'last_synced',
-            'file_count',
+            'id', 'url', 'display_url', 'display', 'name', 'type', 'source_url', 'enabled', 'status', 'description',
+            'sync_interval', 'parameters', 'ignore_rules', 'owner', 'comments', 'custom_fields', 'created',
+            'last_updated', 'last_synced', 'file_count',
         ]
         brief_fields = ('id', 'url', 'display', 'name', 'description')
 
 
 class DataFileSerializer(NetBoxModelSerializer):
-    source = DataSourceSerializer(nested=True, read_only=True)
+    source = DataSourceSerializer(
+        nested=True,
+        read_only=True
+    )
 
     class Meta:
         model = DataFile
         fields = [
-            'id',
-            'url',
-            'display_url',
-            'display',
-            'source',
-            'path',
-            'last_updated',
-            'size',
-            'hash',
+            'id', 'url', 'display_url', 'display', 'source', 'path', 'last_updated', 'size', 'hash',
         ]
         brief_fields = ('id', 'url', 'display', 'path')
         read_only_fields = ['path', 'last_updated', 'size', 'hash']

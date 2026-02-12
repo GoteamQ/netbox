@@ -9,9 +9,7 @@ from dcim.constants import LOCATION_SCOPE_TYPES
 from dcim.models import PortMapping, PortTemplateMapping, Site
 from utilities.forms import get_field_value
 from utilities.forms.fields import (
-    ContentTypeChoiceField,
-    CSVContentTypeField,
-    DynamicModelChoiceField,
+    ContentTypeChoiceField, CSVContentTypeField, DynamicModelChoiceField,
 )
 from utilities.templatetags.builtins.filters import bettertitle
 from utilities.forms.widgets import HTMXSelect
@@ -29,14 +27,14 @@ class ScopedForm(forms.Form):
         queryset=ContentType.objects.filter(model__in=LOCATION_SCOPE_TYPES),
         widget=HTMXSelect(),
         required=False,
-        label=_('Scope type'),
+        label=_('Scope type')
     )
     scope = DynamicModelChoiceField(
         label=_('Scope'),
         queryset=Site.objects.none(),  # Initial queryset
         required=False,
         disabled=True,
-        selector=True,
+        selector=True
     )
 
     def __init__(self, *args, **kwargs):
@@ -56,13 +54,11 @@ class ScopedForm(forms.Form):
         scope = self.cleaned_data.get('scope')
         scope_type = self.cleaned_data.get('scope_type')
         if scope_type and not scope:
-            raise ValidationError(
-                {
-                    'scope': _('Please select a {scope_type}.').format(
-                        scope_type=scope_type.model_class()._meta.model_name
-                    )
-                }
-            )
+            raise ValidationError({
+                'scope': _(
+                    "Please select a {scope_type}."
+                ).format(scope_type=scope_type.model_class()._meta.model_name)
+            })
 
         # Assign the selected scope (if any)
         self.instance.scope = scope
@@ -92,14 +88,14 @@ class ScopedBulkEditForm(forms.Form):
         queryset=ContentType.objects.filter(model__in=LOCATION_SCOPE_TYPES),
         widget=HTMXSelect(method='post', attrs={'hx-select': '#form_fields'}),
         required=False,
-        label=_('Scope type'),
+        label=_('Scope type')
     )
     scope = DynamicModelChoiceField(
         label=_('Scope'),
         queryset=Site.objects.none(),  # Initial queryset
         required=False,
         disabled=True,
-        selector=True,
+        selector=True
     )
 
     def __init__(self, *args, **kwargs):
@@ -121,7 +117,7 @@ class ScopedImportForm(forms.Form):
     scope_type = CSVContentTypeField(
         queryset=ContentType.objects.filter(model__in=LOCATION_SCOPE_TYPES),
         required=False,
-        label=_('Scope type (app & model)'),
+        label=_('Scope type (app & model)')
     )
 
     def clean(self):
@@ -130,18 +126,18 @@ class ScopedImportForm(forms.Form):
         scope_id = self.cleaned_data.get('scope_id')
         scope_type = self.cleaned_data.get('scope_type')
         if scope_type and not scope_id:
-            raise ValidationError(
-                {
-                    'scope_id': _('Please select a {scope_type}.').format(
-                        scope_type=scope_type.model_class()._meta.model_name
-                    )
-                }
-            )
+            raise ValidationError({
+                'scope_id': _(
+                    "Please select a {scope_type}."
+                ).format(scope_type=scope_type.model_class()._meta.model_name)
+            })
 
 
 class FrontPortFormMixin(forms.Form):
     rear_ports = forms.MultipleChoiceField(
-        choices=[], label=_('Rear ports'), widget=forms.SelectMultiple(attrs={'size': 8})
+        choices=[],
+        label=_('Rear ports'),
+        widget=forms.SelectMultiple(attrs={'size': 8})
     )
 
     def clean(self):
@@ -154,14 +150,15 @@ class FrontPortFormMixin(forms.Form):
         frontport_count = len(self.cleaned_data['name']) if type(self.cleaned_data['name']) is list else 1
         rearport_count = len(self.cleaned_data['rear_ports'])
         if frontport_count * positions != rearport_count:
-            raise forms.ValidationError(
-                {
-                    'rear_ports': _(
-                        'The total number of front port positions ({frontport_count}) must match the selected number '
-                        'of rear port positions ({rearport_count}).'
-                    ).format(frontport_count=frontport_count, rearport_count=rearport_count)
-                }
-            )
+            raise forms.ValidationError({
+                'rear_ports': _(
+                    "The total number of front port positions ({frontport_count}) must match the selected number of "
+                    "rear port positions ({rearport_count})."
+                ).format(
+                    frontport_count=frontport_count,
+                    rearport_count=rearport_count
+                )
+            })
 
     def _save_m2m(self):
         super()._save_m2m()
@@ -184,21 +181,24 @@ class FrontPortFormMixin(forms.Form):
         for i, rp_position in enumerate(self.cleaned_data['rear_ports'], start=1):
             rear_port_id, rear_port_position = rp_position.split(':')
             mappings.append(
-                self.port_mapping_model(
-                    **{
-                        **params,
-                        'front_port_id': self.instance.pk,
-                        'front_port_position': i,
-                        'rear_port_id': rear_port_id,
-                        'rear_port_position': rear_port_position,
-                    }
-                )
+                self.port_mapping_model(**{
+                    **params,
+                    'front_port_id': self.instance.pk,
+                    'front_port_position': i,
+                    'rear_port_id': rear_port_id,
+                    'rear_port_position': rear_port_position,
+                })
             )
         self.port_mapping_model.objects.bulk_create(mappings)
         # Send post_save signals
         for mapping in mappings:
             post_save.send(
-                sender=PortMapping, instance=mapping, created=True, raw=False, using=connection, update_fields=None
+                sender=PortMapping,
+                instance=mapping,
+                created=True,
+                raw=False,
+                using=connection,
+                update_fields=None
             )
 
     def _get_rear_port_choices(self, parent_filter, front_port):

@@ -24,23 +24,15 @@ class ObjectSelectorView(LoginRequiredMixin, View):
             if filterset:
                 queryset = filterset(request.GET, queryset, request=request).qs
 
-            return render(
-                request,
-                'htmx/object_selector_results.html',
-                {
-                    'results': queryset[:100],
-                },
-            )
+            return render(request, 'htmx/object_selector_results.html', {
+                'results': queryset[:100],
+            })
 
-        return render(
-            request,
-            self.template_name,
-            {
-                'form': form,
-                'model': model,
-                'target_id': request.GET.get('target'),
-            },
-        )
+        return render(request, self.template_name, {
+            'form': form,
+            'model': model,
+            'target_id': request.GET.get('target'),
+        })
 
     def _get_model(self, label):
         try:

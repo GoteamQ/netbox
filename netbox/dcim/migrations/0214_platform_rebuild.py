@@ -16,10 +16,14 @@ def rebuild_mptt(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
+
     dependencies = [
         ('dcim', '0213_platform_parent'),
     ]
 
     operations = [
-        migrations.RunPython(code=rebuild_mptt, reverse_code=migrations.RunPython.noop),
+        migrations.RunPython(
+            code=rebuild_mptt,
+            reverse_code=migrations.RunPython.noop
+        ),
     ]

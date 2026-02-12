@@ -23,17 +23,25 @@ class ConfirmationForm(forms.Form):
     """
     A generic confirmation form. The form is not valid unless the `confirm` field is checked.
     """
-
-    return_url = forms.CharField(required=False, widget=forms.HiddenInput())
-    confirm = forms.BooleanField(required=True, widget=forms.HiddenInput(), initial=True)
+    return_url = forms.CharField(
+        required=False,
+        widget=forms.HiddenInput()
+    )
+    confirm = forms.BooleanField(
+        required=True,
+        widget=forms.HiddenInput(),
+        initial=True
+    )
 
 
 class DeleteForm(ConfirmationForm):
     """
     Confirm the deletion of an object, optionally providing a changelog message.
     """
-
-    changelog_message = forms.CharField(required=False, max_length=200)
+    changelog_message = forms.CharField(
+        required=False,
+        max_length=200
+    )
 
     def __init__(self, *args, instance=None, **kwargs):
         super().__init__(*args, **kwargs)
@@ -50,7 +58,6 @@ class BulkEditForm(BackgroundJobMixin, forms.Form):
     Attributes:
         nullable_fields: A list of field names indicating which fields support being set to null/empty
     """
-
     nullable_fields = ()
 
 
@@ -58,10 +65,18 @@ class BulkRenameForm(forms.Form):
     """
     An extendable form to be used for renaming objects in bulk.
     """
-
-    find = forms.CharField(strip=False)
-    replace = forms.CharField(strip=False, required=False)
-    use_regex = forms.BooleanField(required=False, initial=True, label=_('Use regular expressions'))
+    find = forms.CharField(
+        strip=False
+    )
+    replace = forms.CharField(
+        strip=False,
+        required=False
+    )
+    use_regex = forms.BooleanField(
+        required=False,
+        initial=True,
+        label=_('Use regular expressions')
+    )
 
     def clean(self):
         super().clean()
@@ -71,12 +86,20 @@ class BulkRenameForm(forms.Form):
             try:
                 re.compile(self.cleaned_data['find'])
             except re.error:
-                raise forms.ValidationError({'find': 'Invalid regular expression'})
+                raise forms.ValidationError({
+                    'find': "Invalid regular expression"
+                })
 
 
 class BulkDeleteForm(BackgroundJobMixin, ConfirmationForm):
-    pk = forms.ModelMultipleChoiceField(queryset=None, widget=forms.MultipleHiddenInput)
-    changelog_message = forms.CharField(required=False, max_length=200)
+    pk = forms.ModelMultipleChoiceField(
+        queryset=None,
+        widget=forms.MultipleHiddenInput
+    )
+    changelog_message = forms.CharField(
+        required=False,
+        max_length=200
+    )
 
     def __init__(self, model, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -92,11 +115,10 @@ class CSVModelForm(forms.ModelForm):
     """
     ModelForm used for the import of objects in CSV format.
     """
-
     id = forms.IntegerField(
         label=_('ID'),
         required=False,
-        help_text=_('Numeric ID of an existing object to update (if not creating a new object)'),
+        help_text=_('Numeric ID of an existing object to update (if not creating a new object)')
     )
 
     def __init__(self, *args, headers=None, **kwargs):
@@ -112,7 +134,9 @@ class CSVModelForm(forms.ModelForm):
         # Flag any invalid CSV headers
         for header in self.headers:
             if header not in self.fields:
-                raise forms.ValidationError(_('Unrecognized header: {name}').format(name=header))
+                raise forms.ValidationError(
+                    _("Unrecognized header: {name}").format(name=header)
+                )
 
         return super().clean()
 
@@ -121,26 +145,31 @@ class FilterForm(FilterModifierMixin, forms.Form):
     """
     Base Form class for FilterSet forms.
     """
-
-    q = QueryField(required=False, label=_('Search'))
+    q = QueryField(
+        required=False,
+        label=_('Search')
+    )
 
 
 class TableConfigForm(forms.Form):
     """
     Form for configuring user's table preferences.
     """
-
     available_columns = forms.MultipleChoiceField(
         choices=[],
         required=False,
-        widget=forms.SelectMultiple(attrs={'size': 10, 'class': 'form-select'}),
-        label=_('Available Columns'),
+        widget=forms.SelectMultiple(
+            attrs={'size': 10, 'class': 'form-select'}
+        ),
+        label=_('Available Columns')
     )
     columns = forms.MultipleChoiceField(
         choices=[],
         required=False,
-        widget=forms.SelectMultiple(attrs={'size': 10, 'class': 'form-select select-all'}),
-        label=_('Selected Columns'),
+        widget=forms.SelectMultiple(
+            attrs={'size': 10, 'class': 'form-select select-all'}
+        ),
+        label=_('Selected Columns')
     )
 
     def __init__(self, table, *args, **kwargs):

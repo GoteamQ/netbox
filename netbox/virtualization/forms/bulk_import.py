@@ -25,12 +25,14 @@ __all__ = (
 
 
 class ClusterTypeImportForm(OrganizationalModelImportForm):
+
     class Meta:
         model = ClusterType
         fields = ('name', 'slug', 'description', 'owner', 'comments', 'tags')
 
 
 class ClusterGroupImportForm(OrganizationalModelImportForm):
+
     class Meta:
         model = ClusterGroup
         fields = ('name', 'slug', 'description', 'owner', 'comments', 'tags')
@@ -38,40 +40,42 @@ class ClusterGroupImportForm(OrganizationalModelImportForm):
 
 class ClusterImportForm(ScopedImportForm, PrimaryModelImportForm):
     type = CSVModelChoiceField(
-        label=_('Type'), queryset=ClusterType.objects.all(), to_field_name='name', help_text=_('Type of cluster')
+        label=_('Type'),
+        queryset=ClusterType.objects.all(),
+        to_field_name='name',
+        help_text=_('Type of cluster')
     )
     group = CSVModelChoiceField(
         label=_('Group'),
         queryset=ClusterGroup.objects.all(),
         to_field_name='name',
         required=False,
-        help_text=_('Assigned cluster group'),
+        help_text=_('Assigned cluster group')
     )
-    status = CSVChoiceField(label=_('Status'), choices=ClusterStatusChoices, help_text=_('Operational status'))
+    status = CSVChoiceField(
+        label=_('Status'),
+        choices=ClusterStatusChoices,
+        help_text=_('Operational status')
+    )
     site = CSVModelChoiceField(
-        label=_('Site'), queryset=Site.objects.all(), to_field_name='name', required=False, help_text=_('Assigned site')
+        label=_('Site'),
+        queryset=Site.objects.all(),
+        to_field_name='name',
+        required=False,
+        help_text=_('Assigned site')
     )
     tenant = CSVModelChoiceField(
         label=_('Tenant'),
         queryset=Tenant.objects.all(),
         to_field_name='name',
         required=False,
-        help_text=_('Assigned tenant'),
+        help_text=_('Assigned tenant')
     )
 
     class Meta:
         model = Cluster
         fields = (
-            'name',
-            'type',
-            'group',
-            'status',
-            'scope_type',
-            'scope_id',
-            'tenant',
-            'description',
-            'owner',
-            'comments',
+            'name', 'type', 'group', 'status', 'scope_type', 'scope_id', 'tenant', 'description', 'owner', 'comments',
             'tags',
         )
         labels = {
@@ -80,7 +84,11 @@ class ClusterImportForm(ScopedImportForm, PrimaryModelImportForm):
 
 
 class VirtualMachineImportForm(PrimaryModelImportForm):
-    status = CSVChoiceField(label=_('Status'), choices=VirtualMachineStatusChoices, help_text=_('Operational status'))
+    status = CSVChoiceField(
+        label=_('Status'),
+        choices=VirtualMachineStatusChoices,
+        help_text=_('Operational status')
+    )
     start_on_boot = CSVChoiceField(
         label=_('Start on boot'),
         choices=VirtualMachineStartOnBootChoices,
@@ -88,78 +96,70 @@ class VirtualMachineImportForm(PrimaryModelImportForm):
         required=False,
     )
     site = CSVModelChoiceField(
-        label=_('Site'), queryset=Site.objects.all(), to_field_name='name', required=False, help_text=_('Assigned site')
+        label=_('Site'),
+        queryset=Site.objects.all(),
+        to_field_name='name',
+        required=False,
+        help_text=_('Assigned site')
     )
     cluster = CSVModelChoiceField(
         label=_('Cluster'),
         queryset=Cluster.objects.all(),
         to_field_name='name',
         required=False,
-        help_text=_('Assigned cluster'),
+        help_text=_('Assigned cluster')
     )
     device = CSVModelChoiceField(
         label=_('Device'),
         queryset=Device.objects.all(),
         to_field_name='name',
         required=False,
-        help_text=_('Assigned device within cluster'),
+        help_text=_('Assigned device within cluster')
     )
     role = CSVModelChoiceField(
         label=_('Role'),
-        queryset=DeviceRole.objects.filter(vm_role=True),
+        queryset=DeviceRole.objects.filter(
+            vm_role=True
+        ),
         required=False,
         to_field_name='name',
-        help_text=_('Functional role'),
+        help_text=_('Functional role')
     )
     tenant = CSVModelChoiceField(
         label=_('Tenant'),
         queryset=Tenant.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_('Assigned tenant'),
+        help_text=_('Assigned tenant')
     )
     platform = CSVModelChoiceField(
         label=_('Platform'),
         queryset=Platform.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_('Assigned platform'),
+        help_text=_('Assigned platform')
     )
     config_template = CSVModelChoiceField(
         queryset=ConfigTemplate.objects.all(),
         to_field_name='name',
         required=False,
         label=_('Config template'),
-        help_text=_('Config template'),
+        help_text=_('Config template')
     )
 
     class Meta:
         model = VirtualMachine
         fields = (
-            'name',
-            'status',
-            'start_on_boot',
-            'role',
-            'site',
-            'cluster',
-            'device',
-            'tenant',
-            'platform',
-            'vcpus',
-            'memory',
-            'disk',
-            'description',
-            'serial',
-            'config_template',
-            'comments',
-            'owner',
-            'tags',
+            'name', 'status', 'start_on_boot', 'role', 'site', 'cluster', 'device', 'tenant', 'platform', 'vcpus',
+            'memory', 'disk', 'description', 'serial', 'config_template', 'comments', 'owner', 'tags',
         )
 
 
 class VMInterfaceImportForm(OwnerCSVMixin, NetBoxModelImportForm):
     virtual_machine = CSVModelChoiceField(
-        label=_('Virtual machine'), queryset=VirtualMachine.objects.all(), to_field_name='name'
+        label=_('Virtual machine'),
+        queryset=VirtualMachine.objects.all(),
+        to_field_name='name'
     )
     parent = CSVModelChoiceField(
         label=_('Parent'),
@@ -216,27 +216,18 @@ class VMInterfaceImportForm(OwnerCSVMixin, NetBoxModelImportForm):
         help_text=_('Assigned Q-in-Q Service VLAN ID (filtered by VLAN group)'),
     )
     vrf = CSVModelChoiceField(
-        label=_('VRF'), queryset=VRF.objects.all(), required=False, to_field_name='rd', help_text=_('Assigned VRF')
+        label=_('VRF'),
+        queryset=VRF.objects.all(),
+        required=False,
+        to_field_name='rd',
+        help_text=_('Assigned VRF')
     )
 
     class Meta:
         model = VMInterface
         fields = (
-            'virtual_machine',
-            'name',
-            'parent',
-            'bridge',
-            'enabled',
-            'mtu',
-            'description',
-            'mode',
-            'vlan_group',
-            'untagged_vlan',
-            'tagged_vlans',
-            'qinq_svlan',
-            'vrf',
-            'owner',
-            'tags',
+            'virtual_machine', 'name', 'parent', 'bridge', 'enabled', 'mtu', 'description', 'mode', 'vlan_group',
+            'untagged_vlan', 'tagged_vlans', 'qinq_svlan', 'vrf', 'owner', 'tags',
         )
 
     def __init__(self, data=None, *args, **kwargs):
@@ -245,13 +236,15 @@ class VMInterfaceImportForm(OwnerCSVMixin, NetBoxModelImportForm):
         if data:
             # Limit interface choices for parent & bridge interfaces to the assigned VM
             if virtual_machine := data.get('virtual_machine'):
-                params = {f'virtual_machine__{self.fields["virtual_machine"].to_field_name}': virtual_machine}
+                params = {
+                    f"virtual_machine__{self.fields['virtual_machine'].to_field_name}": virtual_machine
+                }
                 self.fields['parent'].queryset = self.fields['parent'].queryset.filter(**params)
                 self.fields['bridge'].queryset = self.fields['bridge'].queryset.filter(**params)
 
             # Limit choices for VLANs to the assigned VLAN group
             if vlan_group := data.get('vlan_group'):
-                params = {f'group__{self.fields["vlan_group"].to_field_name}': vlan_group}
+                params = {f"group__{self.fields['vlan_group'].to_field_name}": vlan_group}
                 self.fields['untagged_vlan'].queryset = self.fields['untagged_vlan'].queryset.filter(**params)
                 self.fields['tagged_vlans'].queryset = self.fields['tagged_vlans'].queryset.filter(**params)
                 self.fields['qinq_svlan'].queryset = self.fields['qinq_svlan'].queryset.filter(**params)
@@ -266,9 +259,13 @@ class VMInterfaceImportForm(OwnerCSVMixin, NetBoxModelImportForm):
 
 class VirtualDiskImportForm(OwnerCSVMixin, NetBoxModelImportForm):
     virtual_machine = CSVModelChoiceField(
-        label=_('Virtual machine'), queryset=VirtualMachine.objects.all(), to_field_name='name'
+        label=_('Virtual machine'),
+        queryset=VirtualMachine.objects.all(),
+        to_field_name='name'
     )
 
     class Meta:
         model = VirtualDisk
-        fields = ('virtual_machine', 'name', 'size', 'description', 'owner', 'tags')
+        fields = (
+            'virtual_machine', 'name', 'size', 'description', 'owner', 'tags'
+        )

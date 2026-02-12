@@ -29,6 +29,7 @@ __all__ = (
 
 @register_filterset
 class ClusterTypeFilterSet(OrganizationalModelFilterSet):
+
     class Meta:
         model = ClusterType
         fields = ('id', 'name', 'slug', 'description')
@@ -36,6 +37,7 @@ class ClusterTypeFilterSet(OrganizationalModelFilterSet):
 
 @register_filterset
 class ClusterGroupFilterSet(OrganizationalModelFilterSet, ContactModelFilterSet):
+
     class Meta:
         model = ClusterGroup
         fields = ('id', 'name', 'slug', 'description')
@@ -63,7 +65,10 @@ class ClusterFilterSet(PrimaryModelFilterSet, TenancyFilterSet, ScopedFilterSet,
         to_field_name='slug',
         label=_('Cluster type (slug)'),
     )
-    status = django_filters.MultipleChoiceFilter(choices=ClusterStatusChoices, null_value=None)
+    status = django_filters.MultipleChoiceFilter(
+        choices=ClusterStatusChoices,
+        null_value=None
+    )
 
     class Meta:
         model = Cluster
@@ -73,7 +78,9 @@ class ClusterFilterSet(PrimaryModelFilterSet, TenancyFilterSet, ScopedFilterSet,
         if not value.strip():
             return queryset
         return queryset.filter(
-            Q(name__icontains=value) | Q(description__icontains=value) | Q(comments__icontains=value)
+            Q(name__icontains=value) |
+            Q(description__icontains=value) |
+            Q(comments__icontains=value)
         )
 
 
@@ -85,8 +92,14 @@ class VirtualMachineFilterSet(
     LocalConfigContextFilterSet,
     PrimaryIPFilterSet,
 ):
-    status = django_filters.MultipleChoiceFilter(choices=VirtualMachineStatusChoices, null_value=None)
-    start_on_boot = django_filters.MultipleChoiceFilter(choices=VirtualMachineStartOnBootChoices, null_value=None)
+    status = django_filters.MultipleChoiceFilter(
+        choices=VirtualMachineStatusChoices,
+        null_value=None
+    )
+    start_on_boot = django_filters.MultipleChoiceFilter(
+        choices=VirtualMachineStartOnBootChoices,
+        null_value=None
+    )
     cluster_group_id = django_filters.ModelMultipleChoiceFilter(
         field_name='cluster__group',
         queryset=ClusterGroup.objects.all(),
@@ -165,7 +178,9 @@ class VirtualMachineFilterSet(
         to_field_name='slug',
         label=_('Site (slug)'),
     )
-    name = MultiValueCharFilter(lookup_expr='iexact')
+    name = MultiValueCharFilter(
+        lookup_expr='iexact'
+    )
     role_id = TreeNodeMultipleChoiceFilter(
         queryset=DeviceRole.objects.all(),
         lookup_expr='in',
@@ -207,27 +222,20 @@ class VirtualMachineFilterSet(
     class Meta:
         model = VirtualMachine
         fields = (
-            'id',
-            'cluster',
-            'vcpus',
-            'memory',
-            'disk',
-            'description',
-            'interface_count',
-            'virtual_disk_count',
-            'serial',
+            'id', 'cluster', 'vcpus', 'memory', 'disk', 'description', 'interface_count', 'virtual_disk_count',
+            'serial'
         )
 
     def search(self, queryset, name, value):
         if not value.strip():
             return queryset
         return queryset.filter(
-            Q(name__icontains=value)
-            | Q(description__icontains=value)
-            | Q(comments__icontains=value)
-            | Q(primary_ip4__address__startswith=value)
-            | Q(primary_ip6__address__startswith=value)
-            | Q(serial__icontains=value)
+            Q(name__icontains=value) |
+            Q(description__icontains=value) |
+            Q(comments__icontains=value) |
+            Q(primary_ip4__address__startswith=value) |
+            Q(primary_ip6__address__startswith=value) |
+            Q(serial__icontains=value)
         )
 
     def _has_primary_ip(self, queryset, name, value):
@@ -294,7 +302,10 @@ class VMInterfaceFilterSet(CommonInterfaceFilterSet, OwnerFilterMixin, NetBoxMod
     def search(self, queryset, name, value):
         if not value.strip():
             return queryset
-        return queryset.filter(Q(name__icontains=value) | Q(description__icontains=value))
+        return queryset.filter(
+            Q(name__icontains=value) |
+            Q(description__icontains=value)
+        )
 
 
 @register_filterset
@@ -318,4 +329,7 @@ class VirtualDiskFilterSet(OwnerFilterMixin, NetBoxModelFilterSet):
     def search(self, queryset, name, value):
         if not value.strip():
             return queryset
-        return queryset.filter(Q(name__icontains=value) | Q(description__icontains=value))
+        return queryset.filter(
+            Q(name__icontains=value) |
+            Q(description__icontains=value)
+        )

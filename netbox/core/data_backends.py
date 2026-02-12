@@ -47,7 +47,7 @@ class LocalBackend(DataBackend):
 
     @contextmanager
     def fetch(self):
-        logger.debug('Data source type is local; skipping fetch')
+        logger.debug("Data source type is local; skipping fetch")
         local_path = urlparse(self.url).path  # Strip file:// scheme
 
         yield local_path
@@ -62,17 +62,19 @@ class GitBackend(DataBackend):
             required=False,
             label=_('Username'),
             widget=forms.TextInput(attrs={'class': 'form-control'}),
-            help_text=_('Only used for cloning with HTTP(S)'),
+            help_text=_("Only used for cloning with HTTP(S)"),
         ),
         'password': forms.CharField(
             required=False,
             label=_('Password'),
             widget=forms.TextInput(attrs={'class': 'form-control'}),
-            help_text=_('Only used for cloning with HTTP(S)'),
+            help_text=_("Only used for cloning with HTTP(S)"),
         ),
         'branch': forms.CharField(
-            required=False, label=_('Branch'), widget=forms.TextInput(attrs={'class': 'form-control'})
-        ),
+            required=False,
+            label=_('Branch'),
+            widget=forms.TextInput(attrs={'class': 'form-control'})
+        )
     }
     sensitive_parameters = ['password']
 
@@ -87,10 +89,10 @@ class GitBackend(DataBackend):
         proxies = resolve_proxies(url=self.url, context={'client': self}) or {}
         if proxy := proxies.get(self.url_scheme):
             if urlparse(proxy).scheme not in HTTP_PROXY_SUPPORTED_SCHEMAS:
-                raise ImproperlyConfigured(f'Unsupported Git DataSource proxy scheme: {urlparse(proxy).scheme}')
+                raise ImproperlyConfigured(f"Unsupported Git DataSource proxy scheme: {urlparse(proxy).scheme}")
 
             if self.url_scheme in ('http', 'https'):
-                config.set('http', 'proxy', proxy)
+                config.set("http", "proxy", proxy)
                 if urlparse(proxy).scheme in HTTP_PROXY_SUPPORTED_SOCK_SCHEMAS:
                     self.socks_proxy = proxy
 
@@ -103,9 +105,9 @@ class GitBackend(DataBackend):
         local_path = tempfile.TemporaryDirectory()
 
         clone_args = {
-            'branch': self.params.get('branch'),
-            'config': self.config,
-            'errstream': porcelain.NoneStream(),
+            "branch": self.params.get('branch'),
+            "config": self.config,
+            "errstream": porcelain.NoneStream(),
         }
 
         # check if using socks for proxy - if so need to use custom pool_manager
@@ -118,19 +120,19 @@ class GitBackend(DataBackend):
             if not url_has_embedded_credentials(self.url) and self.params.get('username'):
                 clone_args.update(
                     {
-                        'username': self.params.get('username'),
-                        'password': self.params.get('password'),
+                        "username": self.params.get('username'),
+                        "password": self.params.get('password'),
                     }
                 )
         if self.url_scheme:
-            clone_args['quiet'] = True
-            clone_args['depth'] = 1
+            clone_args["quiet"] = True
+            clone_args["depth"] = 1
 
-        logger.debug(f'Cloning git repo: {self.url}')
+        logger.debug(f"Cloning git repo: {self.url}")
         try:
             porcelain.clone(self.url, local_path.name, **clone_args)
         except BaseException as e:
-            raise SyncError(_('Fetching remote data failed ({name}): {error}').format(name=type(e).__name__, error=e))
+            raise SyncError(_("Fetching remote data failed ({name}): {error}").format(name=type(e).__name__, error=e))
 
         yield local_path.name
 
@@ -143,10 +145,12 @@ class S3Backend(DataBackend):
     label = 'Amazon S3'
     parameters = {
         'aws_access_key_id': forms.CharField(
-            label=_('AWS access key ID'), widget=forms.TextInput(attrs={'class': 'form-control'})
+            label=_('AWS access key ID'),
+            widget=forms.TextInput(attrs={'class': 'form-control'})
         ),
         'aws_secret_access_key': forms.CharField(
-            label=_('AWS secret access key'), widget=forms.TextInput(attrs={'class': 'form-control'})
+            label=_('AWS secret access key'),
+            widget=forms.TextInput(attrs={'class': 'form-control'})
         ),
     }
     sensitive_parameters = ['aws_secret_access_key']
@@ -176,7 +180,7 @@ class S3Backend(DataBackend):
             aws_access_key_id=aws_access_key_id,
             aws_secret_access_key=aws_secret_access_key,
             config=self.config,
-            endpoint_url=self._endpoint_url,
+            endpoint_url=self._endpoint_url
         )
         bucket = s3.Bucket(self._bucket_name)
 
@@ -206,7 +210,7 @@ class S3Backend(DataBackend):
     @property
     def _endpoint_url(self):
         url_path = urlparse(self.url)
-        return url_path._replace(params='', fragment='', query='', path='').geturl()
+        return url_path._replace(params="", fragment="", query="", path="").geturl()
 
     @property
     def _remote_path(self):

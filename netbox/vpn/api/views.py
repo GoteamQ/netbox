@@ -24,7 +24,6 @@ class VPNRootView(APIRootView):
     """
     VPN API root view
     """
-
     def get_view_name(self):
         return 'VPN'
 
@@ -32,7 +31,6 @@ class VPNRootView(APIRootView):
 #
 # Viewsets
 #
-
 
 class TunnelGroupViewSet(NetBoxModelViewSet):
     queryset = TunnelGroup.objects.all()

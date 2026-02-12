@@ -24,22 +24,8 @@ class WirelessLANGroupSerializer(NestedGroupModelSerializer):
     class Meta:
         model = WirelessLANGroup
         fields = [
-            'id',
-            'url',
-            'display_url',
-            'display',
-            'name',
-            'slug',
-            'parent',
-            'description',
-            'tags',
-            'custom_fields',
-            'created',
-            'last_updated',
-            'wirelesslan_count',
-            'owner',
-            'comments',
-            '_depth',
+            'id', 'url', 'display_url', 'display', 'name', 'slug', 'parent', 'description', 'tags', 'custom_fields',
+            'created', 'last_updated', 'wirelesslan_count', 'owner', 'comments', '_depth',
         ]
         brief_fields = ('id', 'url', 'display', 'name', 'slug', 'description', 'wirelesslan_count', '_depth')
 
@@ -52,10 +38,12 @@ class WirelessLANSerializer(PrimaryModelSerializer):
     auth_type = ChoiceField(choices=WirelessAuthTypeChoices, required=False, allow_blank=True)
     auth_cipher = ChoiceField(choices=WirelessAuthCipherChoices, required=False, allow_blank=True)
     scope_type = ContentTypeField(
-        queryset=ContentType.objects.filter(model__in=LOCATION_SCOPE_TYPES),
+        queryset=ContentType.objects.filter(
+            model__in=LOCATION_SCOPE_TYPES
+        ),
         allow_null=True,
         required=False,
-        default=None,
+        default=None
     )
     scope_id = serializers.IntegerField(allow_null=True, required=False, default=None)
     scope = GFKSerializerField(read_only=True)
@@ -63,28 +51,8 @@ class WirelessLANSerializer(PrimaryModelSerializer):
     class Meta:
         model = WirelessLAN
         fields = [
-            'id',
-            'url',
-            'display_url',
-            'display',
-            'ssid',
-            'description',
-            'group',
-            'status',
-            'vlan',
-            'scope_type',
-            'scope_id',
-            'scope',
-            'tenant',
-            'auth_type',
-            'auth_cipher',
-            'auth_psk',
-            'description',
-            'owner',
-            'comments',
-            'tags',
-            'custom_fields',
-            'created',
-            'last_updated',
+            'id', 'url', 'display_url', 'display', 'ssid', 'description', 'group', 'status', 'vlan', 'scope_type',
+            'scope_id', 'scope', 'tenant', 'auth_type', 'auth_cipher', 'auth_psk', 'description', 'owner', 'comments',
+            'tags', 'custom_fields', 'created', 'last_updated',
         ]
         brief_fields = ('id', 'url', 'display', 'ssid', 'description')

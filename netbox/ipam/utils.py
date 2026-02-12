@@ -21,7 +21,6 @@ class AvailableIPSpace:
     """
     A representation of available IP space between two IP addresses/ranges.
     """
-
     size: int
     first_ip: str
 
@@ -48,6 +47,7 @@ def add_requested_prefixes(parent, prefix_list, show_available=True, show_assign
 
     # Add available prefixes to the table if requested
     if prefix_list and show_available:
+
         # Find all unallocated space, add fake Prefix objects to child_prefixes.
         # IMPORTANT: These are unsaved Prefix instances (pk=None). If this is ever changed to use
         # saved Prefix instances with real pks, bulk delete will fail for mixed-type selections
@@ -69,8 +69,12 @@ def add_requested_prefixes(parent, prefix_list, show_available=True, show_assign
 def annotate_ip_space(prefix):
     # Compile child objects
     records = []
-    records.extend([(iprange.start_address.ip, iprange) for iprange in prefix.get_child_ranges(mark_populated=True)])
-    records.extend([(ip.address.ip, ip) for ip in prefix.get_child_ips()])
+    records.extend([
+        (iprange.start_address.ip, iprange) for iprange in prefix.get_child_ranges(mark_populated=True)
+    ])
+    records.extend([
+        (ip.address.ip, ip) for ip in prefix.get_child_ips()
+    ])
     records = sorted(records, key=lambda x: x[0])
 
     # Determine the first & last valid IP addresses in the prefix
@@ -86,7 +90,7 @@ def annotate_ip_space(prefix):
         return [
             AvailableIPSpace(
                 size=int(last_ip_in_prefix - first_ip_in_prefix + 1),
-                first_ip=f'{first_ip_in_prefix}/{prefix.mask_length}',
+                first_ip=f'{first_ip_in_prefix}/{prefix.mask_length}'
             )
         ]
 
@@ -95,11 +99,10 @@ def annotate_ip_space(prefix):
 
     # Account for any available IPs before the first real IP
     if records[0][0] > first_ip_in_prefix:
-        output.append(
-            AvailableIPSpace(
-                size=int(records[0][0] - first_ip_in_prefix), first_ip=f'{first_ip_in_prefix}/{prefix.mask_length}'
-            )
-        )
+        output.append(AvailableIPSpace(
+            size=int(records[0][0] - first_ip_in_prefix),
+            first_ip=f'{first_ip_in_prefix}/{prefix.mask_length}'
+        ))
 
     # Add IP ranges & addresses, annotating available space in between records
     for record in records:
@@ -107,7 +110,10 @@ def annotate_ip_space(prefix):
             # Annotate available space
             if (diff := int(record[0]) - int(prev_ip)) > 1:
                 first_skipped = f'{prev_ip + 1}/{prefix.mask_length}'
-                output.append(AvailableIPSpace(size=diff - 1, first_ip=first_skipped))
+                output.append(AvailableIPSpace(
+                    size=diff - 1,
+                    first_ip=first_skipped
+                ))
 
         output.append(record[1])
 
@@ -119,9 +125,10 @@ def annotate_ip_space(prefix):
 
     # Include any remaining available IPs
     if prev_ip < last_ip_in_prefix:
-        output.append(
-            AvailableIPSpace(size=int(last_ip_in_prefix - prev_ip), first_ip=f'{prev_ip + 1}/{prefix.mask_length}')
-        )
+        output.append(AvailableIPSpace(
+            size=int(last_ip_in_prefix - prev_ip),
+            first_ip=f'{prev_ip + 1}/{prefix.mask_length}'
+        ))
 
     return output
 
@@ -134,11 +141,16 @@ def available_vlans_from_range(vlans, vlan_group, vid_range):
     max_vid = int(vid_range.upper) if vid_range else VLAN_VID_MAX
 
     if not vlans:
-        return [{'vid': min_vid, 'vlan_group': vlan_group, 'available': max_vid - min_vid}]
+        return [{
+            'vid': min_vid,
+            'vlan_group': vlan_group,
+            'available': max_vid - min_vid
+        }]
 
     prev_vid = min_vid - 1
     new_vlans = []
     for vlan in vlans:
+
         # Ignore VIDs outside the range
         if not min_vid <= vlan.vid < max_vid:
             continue
@@ -146,25 +158,21 @@ def available_vlans_from_range(vlans, vlan_group, vid_range):
         # Annotate any available VIDs between the previous (or minimum) VID
         # and the current VID
         if vlan.vid - prev_vid > 1:
-            new_vlans.append(
-                {
-                    'vid': prev_vid + 1,
-                    'vlan_group': vlan_group,
-                    'available': vlan.vid - prev_vid - 1,
-                }
-            )
+            new_vlans.append({
+                'vid': prev_vid + 1,
+                'vlan_group': vlan_group,
+                'available': vlan.vid - prev_vid - 1,
+            })
 
         prev_vid = vlan.vid
 
     # Annotate any remaining available VLANs
     if prev_vid < max_vid - 1:
-        new_vlans.append(
-            {
-                'vid': prev_vid + 1,
-                'vlan_group': vlan_group,
-                'available': max_vid - prev_vid - 1,
-            }
-        )
+        new_vlans.append({
+            'vid': prev_vid + 1,
+            'vlan_group': vlan_group,
+            'available': max_vid - prev_vid - 1,
+        })
 
     return new_vlans
 
@@ -187,7 +195,6 @@ def rebuild_prefixes(vrf):
     """
     Rebuild the prefix hierarchy for all prefixes in the specified VRF (or global table).
     """
-
     def contains(parent, child):
         return child in parent and child != parent
 
@@ -195,13 +202,11 @@ def rebuild_prefixes(vrf):
         # Increment child count on parent nodes
         for n in stack:
             n['children'] += 1
-        stack.append(
-            {
-                'pk': [prefix['pk']],
-                'prefix': prefix['prefix'],
-                'children': 0,
-            }
-        )
+        stack.append({
+            'pk': [prefix['pk']],
+            'prefix': prefix['prefix'],
+            'children': 0,
+        })
 
     stack = []
     update_queue = []
@@ -209,6 +214,7 @@ def rebuild_prefixes(vrf):
 
     # Iterate through all Prefixes in the VRF, growing and shrinking the stack as we go
     for i, p in enumerate(prefixes):
+
         # Grow the stack if this is a child of the most recent prefix
         if not stack or contains(stack[-1]['prefix'], p['prefix']):
             push_to_stack(p)
@@ -223,7 +229,9 @@ def rebuild_prefixes(vrf):
             while stack and not contains(stack[-1]['prefix'], p['prefix']):
                 node = stack.pop()
                 for pk in node['pk']:
-                    update_queue.append(Prefix(pk=pk, _depth=len(stack), _children=node['children']))
+                    update_queue.append(
+                        Prefix(pk=pk, _depth=len(stack), _children=node['children'])
+                    )
             push_to_stack(p)
 
         # Flush the update queue once it reaches 100 Prefixes
@@ -235,7 +243,9 @@ def rebuild_prefixes(vrf):
     while stack:
         node = stack.pop()
         for pk in node['pk']:
-            update_queue.append(Prefix(pk=pk, _depth=len(stack), _children=node['children']))
+            update_queue.append(
+                Prefix(pk=pk, _depth=len(stack), _children=node['children'])
+            )
 
     # Final flush of any remaining Prefixes
     Prefix.objects.bulk_update(update_queue, ['_depth', '_children'])
@@ -247,7 +257,7 @@ def get_next_available_prefix(ipset, prefix_size):
     """
     for available_prefix in ipset.iter_cidrs():
         if prefix_size >= available_prefix.prefixlen:
-            allocated_prefix = f'{available_prefix.network}/{prefix_size}'
+            allocated_prefix = f"{available_prefix.network}/{prefix_size}"
             ipset.remove(allocated_prefix)
             return allocated_prefix
     return None

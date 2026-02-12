@@ -7,7 +7,6 @@ from utilities.choices import ChoiceSet
 # Data sources
 #
 
-
 class DataSourceStatusChoices(ChoiceSet):
     NEW = 'new'
     QUEUED = 'queued'
@@ -28,7 +27,6 @@ class DataSourceStatusChoices(ChoiceSet):
 # Managed files
 #
 
-
 class ManagedFileRootPathChoices(ChoiceSet):
     SCRIPTS = 'scripts'  # settings.SCRIPTS_ROOT
     REPORTS = 'reports'  # settings.REPORTS_ROOT
@@ -43,8 +41,8 @@ class ManagedFileRootPathChoices(ChoiceSet):
 # Jobs
 #
 
-
 class JobStatusChoices(ChoiceSet):
+
     STATUS_PENDING = 'pending'
     STATUS_SCHEDULED = 'scheduled'
     STATUS_RUNNING = 'running'
@@ -94,8 +92,8 @@ class JobIntervalChoices(ChoiceSet):
 # ObjectChanges
 #
 
-
 class ObjectChangeActionChoices(ChoiceSet):
+
     ACTION_CREATE = 'create'
     ACTION_UPDATE = 'update'
     ACTION_DELETE = 'delete'

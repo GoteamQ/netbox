@@ -16,6 +16,7 @@ from wireless.models import WirelessLink
 
 
 class DeviceComponentFilterSetTests:
+
     def test_q(self):
         params = {'q': 'First'}
         self.assertEqual(self.filterset(params, self.queryset).qs.count(), 1)
@@ -51,6 +52,7 @@ class DeviceComponentFilterSetTests:
 
 
 class DeviceComponentTemplateFilterSetTests:
+
     def test_q(self):
         params = {'q': 'foobar1'}
         self.assertEqual(self.filterset(params, self.queryset).qs.count(), 1)
@@ -71,20 +73,17 @@ class RegionTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
+
         parent_regions = (
             Region(
-                name='Region 1',
-                slug='region-1',
-                description='foobar1',
-                comments="There's nothing that",
+                name='Region 1', slug='region-1', description='foobar1', comments="There's nothing that",
             ),
             Region(
-                name='Region 2',
-                slug='region-2',
-                description='foobar2',
-                comments='a hundred men or more',
+                name='Region 2', slug='region-2', description='foobar2', comments='a hundred men or more',
             ),
-            Region(name='Region 3', slug='region-3', description='foobar3', comments='could ever do'),
+            Region(
+                name='Region 3', slug='region-3', description='foobar3', comments='could ever do'
+            ),
         )
         for region in parent_regions:
             region.save()
@@ -155,6 +154,7 @@ class SiteGroupTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
+
         parent_groups = (
             SiteGroup(name='Site Group 1', slug='site-group-1', description='foobar1'),
             SiteGroup(name='Site Group 2', slug='site-group-2', description='foobar2'),
@@ -170,10 +170,7 @@ class SiteGroupTestCase(TestCase, ChangeLoggedFilterSetTests):
             SiteGroup(name='Site Group 2B', slug='site-group-2b', parent=parent_groups[1]),
             SiteGroup(name='Site Group 3A', slug='site-group-3a', parent=parent_groups[2]),
             SiteGroup(
-                name='Site Group 3B',
-                slug='site-group-3b',
-                parent=parent_groups[2],
-                comments='this is a parent group',
+                name='Site Group 3B', slug='site-group-3b', parent=parent_groups[2], comments='this is a parent group',
             ),
         )
         for site_group in groups:
@@ -181,10 +178,7 @@ class SiteGroupTestCase(TestCase, ChangeLoggedFilterSetTests):
 
         child_groups = (
             SiteGroup(
-                name='Site Group 1A1',
-                slug='site-group-1a1',
-                parent=groups[0],
-                comments='this is a child group',
+                name='Site Group 1A1', slug='site-group-1a1', parent=groups[0], comments='this is a child group',
             ),
             SiteGroup(name='Site Group 1B1', slug='site-group-1b1', parent=groups[1]),
             SiteGroup(name='Site Group 2A1', slug='site-group-2a1', parent=groups[2]),
@@ -240,6 +234,7 @@ class SiteTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
+
         regions = (
             Region(name='Region 1', slug='region-1'),
             Region(name='Region 2', slug='region-2'),
@@ -397,6 +392,7 @@ class LocationTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
+
         regions = (
             Region(name='Region 1', slug='region-1'),
             Region(name='Region 2', slug='region-2'),
@@ -544,6 +540,7 @@ class RackRoleTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
+
         rack_roles = (
             RackRole(name='Rack Role 1', slug='rack-role-1', color='ff0000', description='foobar1'),
             RackRole(name='Rack Role 2', slug='rack-role-2', color='00ff00', description='foobar2'),
@@ -641,7 +638,7 @@ class RackTypeTestCase(TestCase, ChangeLoggedFilterSetTests):
                 weight=30,
                 max_weight=3000,
                 weight_unit=WeightUnitChoices.UNIT_KILOGRAM,
-                description='foobar3',
+                description='foobar3'
             ),
         )
         RackType.objects.bulk_create(racks)
@@ -732,6 +729,7 @@ class RackTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
+
         regions = (
             Region(name='Region 1', slug='region-1'),
             Region(name='Region 2', slug='region-2'),
@@ -788,7 +786,7 @@ class RackTestCase(TestCase, ChangeLoggedFilterSetTests):
                 weight=10,
                 max_weight=1000,
                 weight_unit=WeightUnitChoices.UNIT_POUND,
-                description='foobar1',
+                description='foobar1'
             ),
             RackType(
                 manufacturer=manufacturers[1],
@@ -807,7 +805,7 @@ class RackTestCase(TestCase, ChangeLoggedFilterSetTests):
                 weight=20,
                 max_weight=2000,
                 weight_unit=WeightUnitChoices.UNIT_POUND,
-                description='foobar2',
+                description='foobar2'
             ),
         )
         RackType.objects.bulk_create(rack_types)
@@ -857,7 +855,7 @@ class RackTestCase(TestCase, ChangeLoggedFilterSetTests):
                 max_weight=1000,
                 weight_unit=WeightUnitChoices.UNIT_POUND,
                 description='foobar1',
-                airflow=RackAirflowChoices.FRONT_TO_REAR,
+                airflow=RackAirflowChoices.FRONT_TO_REAR
             ),
             Rack(
                 name='Rack 2',
@@ -881,7 +879,7 @@ class RackTestCase(TestCase, ChangeLoggedFilterSetTests):
                 max_weight=2000,
                 weight_unit=WeightUnitChoices.UNIT_POUND,
                 description='foobar2',
-                airflow=RackAirflowChoices.REAR_TO_FRONT,
+                airflow=RackAirflowChoices.REAR_TO_FRONT
             ),
             Rack(
                 name='Rack 3',
@@ -904,7 +902,7 @@ class RackTestCase(TestCase, ChangeLoggedFilterSetTests):
                 weight=30,
                 max_weight=3000,
                 weight_unit=WeightUnitChoices.UNIT_KILOGRAM,
-                description='foobar3',
+                description='foobar3'
             ),
             Rack(
                 name='Rack 4',
@@ -915,7 +913,7 @@ class RackTestCase(TestCase, ChangeLoggedFilterSetTests):
                 status=RackStatusChoices.STATUS_PLANNED,
                 role=rack_roles[2],
                 rack_type=rack_types[0],
-                description='foobar4',
+                description='foobar4'
             ),
             Rack(
                 name='Rack 5',
@@ -926,7 +924,7 @@ class RackTestCase(TestCase, ChangeLoggedFilterSetTests):
                 status=RackStatusChoices.STATUS_PLANNED,
                 role=rack_roles[2],
                 rack_type=rack_types[1],
-                description='foobar5',
+                description='foobar5'
             ),
         )
         Rack.objects.bulk_create(racks)
@@ -1088,6 +1086,7 @@ class RackReservationTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
+
         regions = (
             Region(name='Region 1', slug='region-1'),
             Region(name='Region 2', slug='region-2'),
@@ -1244,6 +1243,7 @@ class ManufacturerTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
+
         manufacturers = (
             Manufacturer(name='Manufacturer 1', slug='manufacturer-1', description='foobar1'),
             Manufacturer(name='Manufacturer 2', slug='manufacturer-2', description='foobar2'),
@@ -1275,6 +1275,7 @@ class DeviceTypeTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
+
         manufacturers = (
             Manufacturer(name='Manufacturer 1', slug='manufacturer-1'),
             Manufacturer(name='Manufacturer 2', slug='manufacturer-2'),
@@ -1303,7 +1304,7 @@ class DeviceTypeTestCase(TestCase, ChangeLoggedFilterSetTests):
                 rear_image='rear.png',
                 weight=10,
                 weight_unit=WeightUnitChoices.UNIT_POUND,
-                description='foobar1',
+                description='foobar1'
             ),
             DeviceType(
                 manufacturer=manufacturers[1],
@@ -1317,7 +1318,7 @@ class DeviceTypeTestCase(TestCase, ChangeLoggedFilterSetTests):
                 airflow=DeviceAirflowChoices.AIRFLOW_FRONT_TO_REAR,
                 weight=20,
                 weight_unit=WeightUnitChoices.UNIT_POUND,
-                description='foobar2',
+                description='foobar2'
             ),
             DeviceType(
                 manufacturer=manufacturers[2],
@@ -1330,42 +1331,32 @@ class DeviceTypeTestCase(TestCase, ChangeLoggedFilterSetTests):
                 airflow=DeviceAirflowChoices.AIRFLOW_REAR_TO_FRONT,
                 weight=30,
                 weight_unit=WeightUnitChoices.UNIT_KILOGRAM,
-                description='foobar3',
+                description='foobar3'
             ),
         )
         DeviceType.objects.bulk_create(device_types)
 
         # Add component templates for filtering
-        ConsolePortTemplate.objects.bulk_create(
-            (
-                ConsolePortTemplate(device_type=device_types[0], name='Console Port 1'),
-                ConsolePortTemplate(device_type=device_types[1], name='Console Port 2'),
-            )
-        )
-        ConsoleServerPortTemplate.objects.bulk_create(
-            (
-                ConsoleServerPortTemplate(device_type=device_types[0], name='Console Server Port 1'),
-                ConsoleServerPortTemplate(device_type=device_types[1], name='Console Server Port 2'),
-            )
-        )
-        PowerPortTemplate.objects.bulk_create(
-            (
-                PowerPortTemplate(device_type=device_types[0], name='Power Port 1'),
-                PowerPortTemplate(device_type=device_types[1], name='Power Port 2'),
-            )
-        )
-        PowerOutletTemplate.objects.bulk_create(
-            (
-                PowerOutletTemplate(device_type=device_types[0], name='Power Outlet 1'),
-                PowerOutletTemplate(device_type=device_types[1], name='Power Outlet 2'),
-            )
-        )
-        InterfaceTemplate.objects.bulk_create(
-            (
-                InterfaceTemplate(device_type=device_types[0], name='Interface 1'),
-                InterfaceTemplate(device_type=device_types[1], name='Interface 2'),
-            )
-        )
+        ConsolePortTemplate.objects.bulk_create((
+            ConsolePortTemplate(device_type=device_types[0], name='Console Port 1'),
+            ConsolePortTemplate(device_type=device_types[1], name='Console Port 2'),
+        ))
+        ConsoleServerPortTemplate.objects.bulk_create((
+            ConsoleServerPortTemplate(device_type=device_types[0], name='Console Server Port 1'),
+            ConsoleServerPortTemplate(device_type=device_types[1], name='Console Server Port 2'),
+        ))
+        PowerPortTemplate.objects.bulk_create((
+            PowerPortTemplate(device_type=device_types[0], name='Power Port 1'),
+            PowerPortTemplate(device_type=device_types[1], name='Power Port 2'),
+        ))
+        PowerOutletTemplate.objects.bulk_create((
+            PowerOutletTemplate(device_type=device_types[0], name='Power Outlet 1'),
+            PowerOutletTemplate(device_type=device_types[1], name='Power Outlet 2'),
+        ))
+        InterfaceTemplate.objects.bulk_create((
+            InterfaceTemplate(device_type=device_types[0], name='Interface 1'),
+            InterfaceTemplate(device_type=device_types[1], name='Interface 2'),
+        ))
         rear_ports = (
             RearPortTemplate(device_type=device_types[0], name='Rear Port 1', type=PortTypeChoices.TYPE_8P8C),
             RearPortTemplate(device_type=device_types[1], name='Rear Port 2', type=PortTypeChoices.TYPE_8P8C),
@@ -1376,24 +1367,18 @@ class DeviceTypeTestCase(TestCase, ChangeLoggedFilterSetTests):
             FrontPortTemplate(device_type=device_types[1], name='Front Port 2', type=PortTypeChoices.TYPE_8P8C),
         )
         FrontPortTemplate.objects.bulk_create(front_ports)
-        PortTemplateMapping.objects.bulk_create(
-            [
-                PortTemplateMapping(device_type=device_types[0], front_port=front_ports[0], rear_port=rear_ports[0]),
-                PortTemplateMapping(device_type=device_types[1], front_port=front_ports[1], rear_port=rear_ports[1]),
-            ]
-        )
-        ModuleBayTemplate.objects.bulk_create(
-            (
-                ModuleBayTemplate(device_type=device_types[0], name='Module Bay 1'),
-                ModuleBayTemplate(device_type=device_types[1], name='Module Bay 2'),
-            )
-        )
-        DeviceBayTemplate.objects.bulk_create(
-            (
-                DeviceBayTemplate(device_type=device_types[0], name='Device Bay 1'),
-                DeviceBayTemplate(device_type=device_types[1], name='Device Bay 2'),
-            )
-        )
+        PortTemplateMapping.objects.bulk_create([
+            PortTemplateMapping(device_type=device_types[0], front_port=front_ports[0], rear_port=rear_ports[0]),
+            PortTemplateMapping(device_type=device_types[1], front_port=front_ports[1], rear_port=rear_ports[1]),
+        ])
+        ModuleBayTemplate.objects.bulk_create((
+            ModuleBayTemplate(device_type=device_types[0], name='Module Bay 1'),
+            ModuleBayTemplate(device_type=device_types[1], name='Module Bay 2'),
+        ))
+        DeviceBayTemplate.objects.bulk_create((
+            DeviceBayTemplate(device_type=device_types[0], name='Device Bay 1'),
+            DeviceBayTemplate(device_type=device_types[1], name='Device Bay 2'),
+        ))
         # Assigned DeviceType must have parent subdevice_role
         inventory_item = InventoryItemTemplate(device_type=device_types[1], name='Inventory Item 1')
         inventory_item.save()
@@ -1531,16 +1516,17 @@ class ModuleTypeTestCase(TestCase, ChangeLoggedFilterSetTests):
     ignore_fields = ['attribute_data']
 
     PROFILE_SCHEMA = {
-        'properties': {
-            'string': {'type': 'string'},
-            'integer': {'type': 'integer'},
-            'number': {'type': 'number'},
-            'boolean': {'type': 'boolean'},
+        "properties": {
+            "string": {"type": "string"},
+            "integer": {"type": "integer"},
+            "number": {"type": "number"},
+            "boolean": {"type": "boolean"},
         }
     }
 
     @classmethod
     def setUpTestData(cls):
+
         manufacturers = (
             Manufacturer(name='Manufacturer 1', slug='manufacturer-1'),
             Manufacturer(name='Manufacturer 2', slug='manufacturer-2'),
@@ -1548,9 +1534,18 @@ class ModuleTypeTestCase(TestCase, ChangeLoggedFilterSetTests):
         )
         Manufacturer.objects.bulk_create(manufacturers)
         module_type_profiles = (
-            ModuleTypeProfile(name='Module Type Profile 1', schema=cls.PROFILE_SCHEMA),
-            ModuleTypeProfile(name='Module Type Profile 2', schema=cls.PROFILE_SCHEMA),
-            ModuleTypeProfile(name='Module Type Profile 3', schema=cls.PROFILE_SCHEMA),
+            ModuleTypeProfile(
+                name='Module Type Profile 1',
+                schema=cls.PROFILE_SCHEMA
+            ),
+            ModuleTypeProfile(
+                name='Module Type Profile 2',
+                schema=cls.PROFILE_SCHEMA
+            ),
+            ModuleTypeProfile(
+                name='Module Type Profile 3',
+                schema=cls.PROFILE_SCHEMA
+            ),
         )
         ModuleTypeProfile.objects.bulk_create(module_type_profiles)
 
@@ -1569,7 +1564,7 @@ class ModuleTypeTestCase(TestCase, ChangeLoggedFilterSetTests):
                     'integer': 1,
                     'number': 1.0,
                     'boolean': True,
-                },
+                }
             ),
             ModuleType(
                 manufacturer=manufacturers[1],
@@ -1585,7 +1580,7 @@ class ModuleTypeTestCase(TestCase, ChangeLoggedFilterSetTests):
                     'integer': 2,
                     'number': 2.0,
                     'boolean_': False,
-                },
+                }
             ),
             ModuleType(
                 manufacturer=manufacturers[2],
@@ -1600,42 +1595,32 @@ class ModuleTypeTestCase(TestCase, ChangeLoggedFilterSetTests):
                     'integer': 3,
                     'number': 3.0,
                     'boolean': None,
-                },
+                }
             ),
         )
         ModuleType.objects.bulk_create(module_types)
 
         # Add component templates for filtering
-        ConsolePortTemplate.objects.bulk_create(
-            (
-                ConsolePortTemplate(module_type=module_types[0], name='Console Port 1'),
-                ConsolePortTemplate(module_type=module_types[1], name='Console Port 2'),
-            )
-        )
-        ConsoleServerPortTemplate.objects.bulk_create(
-            (
-                ConsoleServerPortTemplate(module_type=module_types[0], name='Console Server Port 1'),
-                ConsoleServerPortTemplate(module_type=module_types[1], name='Console Server Port 2'),
-            )
-        )
-        PowerPortTemplate.objects.bulk_create(
-            (
-                PowerPortTemplate(module_type=module_types[0], name='Power Port 1'),
-                PowerPortTemplate(module_type=module_types[1], name='Power Port 2'),
-            )
-        )
-        PowerOutletTemplate.objects.bulk_create(
-            (
-                PowerOutletTemplate(module_type=module_types[0], name='Power Outlet 1'),
-                PowerOutletTemplate(module_type=module_types[1], name='Power Outlet 2'),
-            )
-        )
-        InterfaceTemplate.objects.bulk_create(
-            (
-                InterfaceTemplate(module_type=module_types[0], name='Interface 1'),
-                InterfaceTemplate(module_type=module_types[1], name='Interface 2'),
-            )
-        )
+        ConsolePortTemplate.objects.bulk_create((
+            ConsolePortTemplate(module_type=module_types[0], name='Console Port 1'),
+            ConsolePortTemplate(module_type=module_types[1], name='Console Port 2'),
+        ))
+        ConsoleServerPortTemplate.objects.bulk_create((
+            ConsoleServerPortTemplate(module_type=module_types[0], name='Console Server Port 1'),
+            ConsoleServerPortTemplate(module_type=module_types[1], name='Console Server Port 2'),
+        ))
+        PowerPortTemplate.objects.bulk_create((
+            PowerPortTemplate(module_type=module_types[0], name='Power Port 1'),
+            PowerPortTemplate(module_type=module_types[1], name='Power Port 2'),
+        ))
+        PowerOutletTemplate.objects.bulk_create((
+            PowerOutletTemplate(module_type=module_types[0], name='Power Outlet 1'),
+            PowerOutletTemplate(module_type=module_types[1], name='Power Outlet 2'),
+        ))
+        InterfaceTemplate.objects.bulk_create((
+            InterfaceTemplate(module_type=module_types[0], name='Interface 1'),
+            InterfaceTemplate(module_type=module_types[1], name='Interface 2'),
+        ))
         rear_ports = (
             RearPortTemplate(module_type=module_types[0], name='Rear Port 1', type=PortTypeChoices.TYPE_8P8C),
             RearPortTemplate(module_type=module_types[1], name='Rear Port 2', type=PortTypeChoices.TYPE_8P8C),
@@ -1646,12 +1631,10 @@ class ModuleTypeTestCase(TestCase, ChangeLoggedFilterSetTests):
             FrontPortTemplate(module_type=module_types[1], name='Front Port 2', type=PortTypeChoices.TYPE_8P8C),
         )
         FrontPortTemplate.objects.bulk_create(front_ports)
-        PortTemplateMapping.objects.bulk_create(
-            [
-                PortTemplateMapping(module_type=module_types[0], front_port=front_ports[0], rear_port=rear_ports[0]),
-                PortTemplateMapping(module_type=module_types[1], front_port=front_ports[1], rear_port=rear_ports[1]),
-            ]
-        )
+        PortTemplateMapping.objects.bulk_create([
+            PortTemplateMapping(module_type=module_types[0], front_port=front_ports[0], rear_port=rear_ports[0]),
+            PortTemplateMapping(module_type=module_types[1], front_port=front_ports[1], rear_port=rear_ports[1]),
+        ])
 
     def test_q(self):
         params = {'q': 'foobar1'}
@@ -1725,7 +1708,7 @@ class ModuleTypeTestCase(TestCase, ChangeLoggedFilterSetTests):
         self.assertEqual(self.filterset(params, self.queryset).qs.count(), 1)
 
     def test_profile(self):
-        profiles = ModuleTypeProfile.objects.filter(name__startswith='Module Type Profile')[:2]
+        profiles = ModuleTypeProfile.objects.filter(name__startswith="Module Type Profile")[:2]
         params = {'profile_id': [profiles[0].pk, profiles[1].pk]}
         self.assertEqual(self.filterset(params, self.queryset).qs.count(), 2)
         params = {'profile': [profiles[0].name, profiles[1].name]}
@@ -1748,17 +1731,47 @@ class ModuleTypeProfileTestCase(TestCase, ChangeLoggedFilterSetTests):
     ignore_fields = ['schema']
 
     SCHEMAS = [
-        {'properties': {'foo': {'type': 'string'}}},
-        {'properties': {'foo': {'type': 'integer'}}},
-        {'properties': {'foo': {'type': 'boolean'}}},
+        {
+            "properties": {
+                "foo": {
+                    "type": "string"
+                }
+            }
+        },
+        {
+            "properties": {
+                "foo": {
+                    "type": "integer"
+                }
+            }
+        },
+        {
+            "properties": {
+                "foo": {
+                    "type": "boolean"
+                }
+            }
+        },
     ]
 
     @classmethod
     def setUpTestData(cls):
         module_type_profiles = (
-            ModuleTypeProfile(name='Module Type Profile 1', description='foobar1', schema=cls.SCHEMAS[0]),
-            ModuleTypeProfile(name='Module Type Profile 2', description='foobar2 2', schema=cls.SCHEMAS[1]),
-            ModuleTypeProfile(name='Module Type Profile 3', description='foobar3', schema=cls.SCHEMAS[2]),
+            ModuleTypeProfile(
+                name='Module Type Profile 1',
+                description='foobar1',
+                schema=cls.SCHEMAS[0]
+            ),
+            ModuleTypeProfile(
+                name='Module Type Profile 2',
+                description='foobar2 2',
+                schema=cls.SCHEMAS[1]
+            ),
+            ModuleTypeProfile(
+                name='Module Type Profile 3',
+                description='foobar3',
+                schema=cls.SCHEMAS[2]
+            ),
         )
         ModuleTypeProfile.objects.bulk_create(module_type_profiles)
 
@@ -1777,6 +1790,7 @@ class ConsolePortTemplateTestCase(TestCase, DeviceComponentTemplateFilterSetTest
 
     @classmethod
     def setUpTestData(cls):
+
         manufacturer = Manufacturer.objects.create(name='Manufacturer 1', slug='manufacturer-1')
 
         device_types = (
@@ -1786,13 +1800,11 @@ class ConsolePortTemplateTestCase(TestCase, DeviceComponentTemplateFilterSetTest
         )
         DeviceType.objects.bulk_create(device_types)
 
-        ConsolePortTemplate.objects.bulk_create(
-            (
-                ConsolePortTemplate(device_type=device_types[0], name='Console Port 1', description='foobar1'),
-                ConsolePortTemplate(device_type=device_types[1], name='Console Port 2', description='foobar2'),
-                ConsolePortTemplate(device_type=device_types[2], name='Console Port 3', description='foobar3'),
-            )
-        )
+        ConsolePortTemplate.objects.bulk_create((
+            ConsolePortTemplate(device_type=device_types[0], name='Console Port 1', description='foobar1'),
+            ConsolePortTemplate(device_type=device_types[1], name='Console Port 2', description='foobar2'),
+            ConsolePortTemplate(device_type=device_types[2], name='Console Port 3', description='foobar3'),
+        ))
 
     def test_name(self):
         params = {'name': ['Console Port 1', 'Console Port 2']}
@@ -1805,6 +1817,7 @@ class ConsoleServerPortTemplateTestCase(TestCase, DeviceComponentTemplateFilterS
 
     @classmethod
     def setUpTestData(cls):
+
         manufacturer = Manufacturer.objects.create(name='Manufacturer 1', slug='manufacturer-1')
 
         device_types = (
@@ -1814,19 +1827,11 @@ class ConsoleServerPortTemplateTestCase(TestCase, DeviceComponentTemplateFilterS
         )
         DeviceType.objects.bulk_create(device_types)
 
-        ConsoleServerPortTemplate.objects.bulk_create(
-            (
-                ConsoleServerPortTemplate(
-                    device_type=device_types[0], name='Console Server Port 1', description='foobar1'
-                ),
-                ConsoleServerPortTemplate(
-                    device_type=device_types[1], name='Console Server Port 2', description='foobar2'
-                ),
-                ConsoleServerPortTemplate(
-                    device_type=device_types[2], name='Console Server Port 3', description='foobar3'
-                ),
-            )
-        )
+        ConsoleServerPortTemplate.objects.bulk_create((
+            ConsoleServerPortTemplate(device_type=device_types[0], name='Console Server Port 1', description='foobar1'),
+            ConsoleServerPortTemplate(device_type=device_types[1], name='Console Server Port 2', description='foobar2'),
+            ConsoleServerPortTemplate(device_type=device_types[2], name='Console Server Port 3', description='foobar3'),
+        ))
 
     def test_name(self):
         params = {'name': ['Console Server Port 1', 'Console Server Port 2']}
@@ -1839,6 +1844,7 @@ class PowerPortTemplateTestCase(TestCase, DeviceComponentTemplateFilterSetTests,
 
     @classmethod
     def setUpTestData(cls):
+
         manufacturer = Manufacturer.objects.create(name='Manufacturer 1', slug='manufacturer-1')
 
         device_types = (
@@ -1848,31 +1854,29 @@ class PowerPortTemplateTestCase(TestCase, DeviceComponentTemplateFilterSetTests,
         )
         DeviceType.objects.bulk_create(device_types)
 
-        PowerPortTemplate.objects.bulk_create(
-            (
-                PowerPortTemplate(
-                    device_type=device_types[0],
-                    name='Power Port 1',
-                    maximum_draw=100,
-                    allocated_draw=50,
-                    description='foobar1',
-                ),
-                PowerPortTemplate(
-                    device_type=device_types[1],
-                    name='Power Port 2',
-                    maximum_draw=200,
-                    allocated_draw=100,
-                    description='foobar2',
-                ),
-                PowerPortTemplate(
-                    device_type=device_types[2],
-                    name='Power Port 3',
-                    maximum_draw=300,
-                    allocated_draw=150,
-                    description='foobar3',
-                ),
-            )
-        )
+        PowerPortTemplate.objects.bulk_create((
+            PowerPortTemplate(
+                device_type=device_types[0],
+                name='Power Port 1',
+                maximum_draw=100,
+                allocated_draw=50,
+                description='foobar1'
+            ),
+            PowerPortTemplate(
+                device_type=device_types[1],
+                name='Power Port 2',
+                maximum_draw=200,
+                allocated_draw=100,
+                description='foobar2'
+            ),
+            PowerPortTemplate(
+                device_type=device_types[2],
+                name='Power Port 3',
+                maximum_draw=300,
+                allocated_draw=150,
+                description='foobar3'
+            ),
+        ))
 
     def test_name(self):
         params = {'name': ['Power Port 1', 'Power Port 2']}
@@ -1893,6 +1897,7 @@ class PowerOutletTemplateTestCase(TestCase, DeviceComponentTemplateFilterSetTest
 
     @classmethod
     def setUpTestData(cls):
+
         manufacturer = Manufacturer.objects.create(name='Manufacturer 1', slug='manufacturer-1')
 
         device_types = (
@@ -1902,31 +1907,29 @@ class PowerOutletTemplateTestCase(TestCase, DeviceComponentTemplateFilterSetTest
         )
         DeviceType.objects.bulk_create(device_types)
 
-        PowerOutletTemplate.objects.bulk_create(
-            (
-                PowerOutletTemplate(
-                    device_type=device_types[0],
-                    name='Power Outlet 1',
-                    feed_leg=PowerOutletFeedLegChoices.FEED_LEG_A,
-                    color=ColorChoices.COLOR_RED,
-                    description='foobar1',
-                ),
-                PowerOutletTemplate(
-                    device_type=device_types[1],
-                    name='Power Outlet 2',
-                    feed_leg=PowerOutletFeedLegChoices.FEED_LEG_B,
-                    color=ColorChoices.COLOR_GREEN,
-                    description='foobar2',
-                ),
-                PowerOutletTemplate(
-                    device_type=device_types[2],
-                    name='Power Outlet 3',
-                    feed_leg=PowerOutletFeedLegChoices.FEED_LEG_C,
-                    color=ColorChoices.COLOR_BLUE,
-                    description='foobar3',
-                ),
-            )
-        )
+        PowerOutletTemplate.objects.bulk_create((
+            PowerOutletTemplate(
+                device_type=device_types[0],
+                name='Power Outlet 1',
+                feed_leg=PowerOutletFeedLegChoices.FEED_LEG_A,
+                color=ColorChoices.COLOR_RED,
+                description='foobar1'
+            ),
+            PowerOutletTemplate(
+                device_type=device_types[1],
+                name='Power Outlet 2',
+                feed_leg=PowerOutletFeedLegChoices.FEED_LEG_B,
+                color=ColorChoices.COLOR_GREEN,
+                description='foobar2'
+            ),
+            PowerOutletTemplate(
+                device_type=device_types[2],
+                name='Power Outlet 3',
+                feed_leg=PowerOutletFeedLegChoices.FEED_LEG_C,
+                color=ColorChoices.COLOR_BLUE,
+                description='foobar3'
+            ),
+        ))
 
     def test_name(self):
         params = {'name': ['Power Outlet 1', 'Power Outlet 2']}
@@ -1947,6 +1950,7 @@ class InterfaceTemplateTestCase(TestCase, DeviceComponentTemplateFilterSetTests,
 
     @classmethod
     def setUpTestData(cls):
+
         manufacturer = Manufacturer.objects.create(name='Manufacturer 1', slug='manufacturer-1')
 
         device_types = (
@@ -1965,7 +1969,7 @@ class InterfaceTemplateTestCase(TestCase, DeviceComponentTemplateFilterSetTests,
                 mgmt_only=True,
                 poe_mode=InterfacePoEModeChoices.MODE_PD,
                 poe_type=InterfacePoETypeChoices.TYPE_1_8023AF,
-                description='foobar1',
+                description='foobar1'
             ),
             InterfaceTemplate(
                 device_type=device_types[1],
@@ -1975,14 +1979,14 @@ class InterfaceTemplateTestCase(TestCase, DeviceComponentTemplateFilterSetTests,
                 mgmt_only=False,
                 poe_mode=InterfacePoEModeChoices.MODE_PSE,
                 poe_type=InterfacePoETypeChoices.TYPE_2_8023AT,
-                description='foobar2',
+                description='foobar2'
             ),
             InterfaceTemplate(
                 device_type=device_types[2],
                 name='Interface 3',
                 type=InterfaceTypeChoices.TYPE_1GE_SFP,
                 mgmt_only=False,
-                description='foobar3',
+                description='foobar3'
             ),
         )
         InterfaceTemplate.objects.bulk_create(interface_templates)
@@ -2029,6 +2033,7 @@ class FrontPortTemplateTestCase(TestCase, DeviceComponentTemplateFilterSetTests,
 
     @classmethod
     def setUpTestData(cls):
+
         manufacturer = Manufacturer.objects.create(name='Manufacturer 1', slug='manufacturer-1')
 
         device_types = (
@@ -2052,7 +2057,7 @@ class FrontPortTemplateTestCase(TestCase, DeviceComponentTemplateFilterSetTests,
                 type=PortTypeChoices.TYPE_8P8C,
                 positions=1,
                 color=ColorChoices.COLOR_RED,
-                description='foobar1',
+                description='foobar1'
             ),
             FrontPortTemplate(
                 device_type=device_types[1],
@@ -2060,7 +2065,7 @@ class FrontPortTemplateTestCase(TestCase, DeviceComponentTemplateFilterSetTests,
                 type=PortTypeChoices.TYPE_110_PUNCH,
                 positions=2,
                 color=ColorChoices.COLOR_GREEN,
-                description='foobar2',
+                description='foobar2'
             ),
             FrontPortTemplate(
                 device_type=device_types[2],
@@ -2068,17 +2073,15 @@ class FrontPortTemplateTestCase(TestCase, DeviceComponentTemplateFilterSetTests,
                 type=PortTypeChoices.TYPE_BNC,
                 positions=3,
                 color=ColorChoices.COLOR_BLUE,
-                description='foobar3',
+                description='foobar3'
             ),
         )
         FrontPortTemplate.objects.bulk_create(front_ports)
-        PortTemplateMapping.objects.bulk_create(
-            [
-                PortTemplateMapping(device_type=device_types[0], front_port=front_ports[0], rear_port=rear_ports[0]),
-                PortTemplateMapping(device_type=device_types[1], front_port=front_ports[1], rear_port=rear_ports[1]),
-                PortTemplateMapping(device_type=device_types[2], front_port=front_ports[2], rear_port=rear_ports[2]),
-            ]
-        )
+        PortTemplateMapping.objects.bulk_create([
+            PortTemplateMapping(device_type=device_types[0], front_port=front_ports[0], rear_port=rear_ports[0]),
+            PortTemplateMapping(device_type=device_types[1], front_port=front_ports[1], rear_port=rear_ports[1]),
+            PortTemplateMapping(device_type=device_types[2], front_port=front_ports[2], rear_port=rear_ports[2]),
+        ])
 
     def test_name(self):
         params = {'name': ['Front Port 1', 'Front Port 2']}
@@ -2103,6 +2106,7 @@ class RearPortTemplateTestCase(TestCase, DeviceComponentTemplateFilterSetTests, 
 
     @classmethod
     def setUpTestData(cls):
+
         manufacturer = Manufacturer.objects.create(name='Manufacturer 1', slug='manufacturer-1')
 
         device_types = (
@@ -2112,34 +2116,32 @@ class RearPortTemplateTestCase(TestCase, DeviceComponentTemplateFilterSetTests, 
         )
         DeviceType.objects.bulk_create(device_types)
 
-        RearPortTemplate.objects.bulk_create(
-            (
-                RearPortTemplate(
-                    device_type=device_types[0],
-                    name='Rear Port 1',
-                    type=PortTypeChoices.TYPE_8P8C,
-                    color=ColorChoices.COLOR_RED,
-                    positions=1,
-                    description='foobar1',
-                ),
-                RearPortTemplate(
-                    device_type=device_types[1],
-                    name='Rear Port 2',
-                    type=PortTypeChoices.TYPE_110_PUNCH,
-                    color=ColorChoices.COLOR_GREEN,
-                    positions=2,
-                    description='foobar2',
-                ),
-                RearPortTemplate(
-                    device_type=device_types[2],
-                    name='Rear Port 3',
-                    type=PortTypeChoices.TYPE_BNC,
-                    color=ColorChoices.COLOR_BLUE,
-                    positions=3,
-                    description='foobar3',
-                ),
-            )
-        )
+        RearPortTemplate.objects.bulk_create((
+            RearPortTemplate(
+                device_type=device_types[0],
+                name='Rear Port 1',
+                type=PortTypeChoices.TYPE_8P8C,
+                color=ColorChoices.COLOR_RED,
+                positions=1,
+                description='foobar1'
+            ),
+            RearPortTemplate(
+                device_type=device_types[1],
+                name='Rear Port 2',
+                type=PortTypeChoices.TYPE_110_PUNCH,
+                color=ColorChoices.COLOR_GREEN,
+                positions=2,
+                description='foobar2'
+            ),
+            RearPortTemplate(
+                device_type=device_types[2],
+                name='Rear Port 3',
+                type=PortTypeChoices.TYPE_BNC,
+                color=ColorChoices.COLOR_BLUE,
+                positions=3,
+                description='foobar3'
+            ),
+        ))
 
     def test_name(self):
         params = {'name': ['Rear Port 1', 'Rear Port 2']}
@@ -2164,6 +2166,7 @@ class ModuleBayTemplateTestCase(TestCase, DeviceComponentTemplateFilterSetTests,
 
     @classmethod
     def setUpTestData(cls):
+
         manufacturer = Manufacturer.objects.create(name='Manufacturer 1', slug='manufacturer-1')
 
         device_types = (
@@ -2181,7 +2184,9 @@ class ModuleBayTemplateTestCase(TestCase, DeviceComponentTemplateFilterSetTests,
 
         ModuleBayTemplate.objects.bulk_create(
             (
-                ModuleBayTemplate(device_type=device_types[0], name='Module Bay 1', description='foobar1'),
+                ModuleBayTemplate(
+                    device_type=device_types[0], name='Module Bay 1', description='foobar1'
+                ),
                 ModuleBayTemplate(
                     device_type=device_types[1], name='Module Bay 2', description='foobar2', module_type=module_types[0]
                 ),
@@ -2207,6 +2212,7 @@ class DeviceBayTemplateTestCase(TestCase, DeviceComponentTemplateFilterSetTests,
 
     @classmethod
     def setUpTestData(cls):
+
         manufacturer = Manufacturer.objects.create(name='Manufacturer 1', slug='manufacturer-1')
 
         device_types = (
@@ -2216,13 +2222,11 @@ class DeviceBayTemplateTestCase(TestCase, DeviceComponentTemplateFilterSetTests,
         )
         DeviceType.objects.bulk_create(device_types)
 
-        DeviceBayTemplate.objects.bulk_create(
-            (
-                DeviceBayTemplate(device_type=device_types[0], name='Device Bay 1', description='foobar1'),
-                DeviceBayTemplate(device_type=device_types[1], name='Device Bay 2', description='foobar2'),
-                DeviceBayTemplate(device_type=device_types[2], name='Device Bay 3', description='foobar3'),
-            )
-        )
+        DeviceBayTemplate.objects.bulk_create((
+            DeviceBayTemplate(device_type=device_types[0], name='Device Bay 1', description='foobar1'),
+            DeviceBayTemplate(device_type=device_types[1], name='Device Bay 2', description='foobar2'),
+            DeviceBayTemplate(device_type=device_types[2], name='Device Bay 3', description='foobar3'),
+        ))
 
     def test_name(self):
         params = {'name': ['Device Bay 1', 'Device Bay 2']}
@@ -2264,7 +2268,7 @@ class InventoryItemTemplateTestCase(TestCase, DeviceComponentTemplateFilterSetTe
                 role=inventory_item_roles[0],
                 manufacturer=manufacturers[0],
                 part_id='1001',
-                description='foobar1',
+                description='foobar1'
             ),
             InventoryItemTemplate(
                 device_type=device_types[1],
@@ -2273,7 +2277,7 @@ class InventoryItemTemplateTestCase(TestCase, DeviceComponentTemplateFilterSetTe
                 role=inventory_item_roles[1],
                 manufacturer=manufacturers[1],
                 part_id='1002',
-                description='foobar2',
+                description='foobar2'
             ),
             InventoryItemTemplate(
                 device_type=device_types[2],
@@ -2282,7 +2286,7 @@ class InventoryItemTemplateTestCase(TestCase, DeviceComponentTemplateFilterSetTe
                 role=inventory_item_roles[2],
                 manufacturer=manufacturers[2],
                 part_id='1003',
-                description='foobar3',
+                description='foobar3'
             ),
         )
         for item in inventory_item_templates:
@@ -2345,32 +2349,63 @@ class DeviceRoleTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
+
         parent_roles = (
             DeviceRole(name='Device Role 1', slug='device-role-1', color='ff0000', vm_role=True, description='foobar1'),
             DeviceRole(name='Device Role 2', slug='device-role-2', color='00ff00', vm_role=True, description='foobar2'),
-            DeviceRole(name='Device Role 3', slug='device-role-3', color='0000ff', vm_role=False),
+            DeviceRole(name='Device Role 3', slug='device-role-3', color='0000ff', vm_role=False)
         )
         for role in parent_roles:
             role.save()
 
         roles = (
             DeviceRole(
-                name='Device Role 1A', slug='device-role-1a', color='aa0000', vm_role=True, parent=parent_roles[0]
+                name='Device Role 1A',
+                slug='device-role-1a',
+                color='aa0000',
+                vm_role=True,
+                parent=parent_roles[0]
             ),
             DeviceRole(
-                name='Device Role 2A', slug='device-role-2a', color='00aa00', vm_role=True, parent=parent_roles[1]
+                name='Device Role 2A',
+                slug='device-role-2a',
+                color='00aa00',
+                vm_role=True,
+                parent=parent_roles[1]
             ),
             DeviceRole(
-                name='Device Role 3A', slug='device-role-3a', color='0000aa', vm_role=False, parent=parent_roles[2]
-            ),
+                name='Device Role 3A',
+                slug='device-role-3a',
+                color='0000aa',
+                vm_role=False,
+                parent=parent_roles[2]
+            )
         )
         for role in roles:
             role.save()
 
         child_roles = (
-            DeviceRole(name='Device Role 1A1', slug='device-role-1a1', color='bb0000', vm_role=True, parent=roles[0]),
-            DeviceRole(name='Device Role 2A1', slug='device-role-2a1', color='00bb00', vm_role=True, parent=roles[1]),
-            DeviceRole(name='Device Role 3A1', slug='device-role-3a1', color='0000bb', vm_role=False, parent=roles[2]),
+            DeviceRole(
+                name='Device Role 1A1',
+                slug='device-role-1a1',
+                color='bb0000',
+                vm_role=True,
+                parent=roles[0]
+            ),
+            DeviceRole(
+                name='Device Role 2A1',
+                slug='device-role-2a1',
+                color='00bb00',
+                vm_role=True,
+                parent=roles[1]
+            ),
+            DeviceRole(
+                name='Device Role 3A1',
+                slug='device-role-3a1',
+                color='0000bb',
+                vm_role=False,
+                parent=roles[2]
+            )
         )
         for role in child_roles:
             role.save()
@@ -2422,6 +2457,7 @@ class PlatformTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
+
         manufacturers = (
             Manufacturer(name='Manufacturer 1', slug='manufacturer-1'),
             Manufacturer(name='Manufacturer 2', slug='manufacturer-2'),
@@ -2507,7 +2543,10 @@ class PlatformTestCase(TestCase, ChangeLoggedFilterSetTests):
     def test_available_for_device_type(self):
         manufacturers = Manufacturer.objects.all()[:2]
         device_type = DeviceType.objects.create(
-            manufacturer=manufacturers[0], model='Device Type 1', slug='device-type-1', u_height=1
+            manufacturer=manufacturers[0],
+            model='Device Type 1',
+            slug='device-type-1',
+            u_height=1
         )
         params = {'available_for_device_type': device_type.pk}
         self.assertEqual(self.filterset(params, self.queryset).qs.count(), 4)
@@ -2520,6 +2559,7 @@ class DeviceTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
+
         manufacturers = (
             Manufacturer(name='Manufacturer 1', slug='manufacturer-1'),
             Manufacturer(name='Manufacturer 2', slug='manufacturer-2'),
@@ -2635,8 +2675,8 @@ class DeviceTestCase(TestCase, ChangeLoggedFilterSetTests):
                 longitude=10,
                 status=DeviceStatusChoices.STATUS_ACTIVE,
                 cluster=clusters[0],
-                local_context_data={'foo': 123},
-                description='foobar1',
+                local_context_data={"foo": 123},
+                description='foobar1'
             ),
             Device(
                 name='Device 2',
@@ -2656,7 +2696,7 @@ class DeviceTestCase(TestCase, ChangeLoggedFilterSetTests):
                 status=DeviceStatusChoices.STATUS_STAGED,
                 airflow=DeviceAirflowChoices.AIRFLOW_FRONT_TO_REAR,
                 cluster=clusters[1],
-                description='foobar2',
+                description='foobar2'
             ),
             Device(
                 name='Device 3',
@@ -2676,36 +2716,28 @@ class DeviceTestCase(TestCase, ChangeLoggedFilterSetTests):
                 status=DeviceStatusChoices.STATUS_FAILED,
                 airflow=DeviceAirflowChoices.AIRFLOW_REAR_TO_FRONT,
                 cluster=clusters[2],
-                description='foobar3',
+                description='foobar3'
             ),
         )
         Device.objects.bulk_create(devices)
 
         # Add components for filtering
-        ConsolePort.objects.bulk_create(
-            (
-                ConsolePort(device=devices[0], name='Console Port 1'),
-                ConsolePort(device=devices[1], name='Console Port 2'),
-            )
-        )
-        ConsoleServerPort.objects.bulk_create(
-            (
-                ConsoleServerPort(device=devices[0], name='Console Server Port 1'),
-                ConsoleServerPort(device=devices[1], name='Console Server Port 2'),
-            )
-        )
-        PowerPort.objects.bulk_create(
-            (
-                PowerPort(device=devices[0], name='Power Port 1'),
-                PowerPort(device=devices[1], name='Power Port 2'),
-            )
-        )
-        PowerOutlet.objects.bulk_create(
-            (
-                PowerOutlet(device=devices[0], name='Power Outlet 1'),
-                PowerOutlet(device=devices[1], name='Power Outlet 2'),
-            )
-        )
+        ConsolePort.objects.bulk_create((
+            ConsolePort(device=devices[0], name='Console Port 1'),
+            ConsolePort(device=devices[1], name='Console Port 2'),
+        ))
+        ConsoleServerPort.objects.bulk_create((
+            ConsoleServerPort(device=devices[0], name='Console Server Port 1'),
+            ConsoleServerPort(device=devices[1], name='Console Server Port 2'),
+        ))
+        PowerPort.objects.bulk_create((
+            PowerPort(device=devices[0], name='Power Port 1'),
+            PowerPort(device=devices[1], name='Power Port 2'),
+        ))
+        PowerOutlet.objects.bulk_create((
+            PowerOutlet(device=devices[0], name='Power Outlet 1'),
+            PowerOutlet(device=devices[1], name='Power Outlet 2'),
+        ))
         interfaces = (
             Interface(device=devices[0], name='Interface 1'),
             Interface(device=devices[1], name='Interface 2'),
@@ -2728,20 +2760,16 @@ class DeviceTestCase(TestCase, ChangeLoggedFilterSetTests):
             FrontPort(device=devices[1], name='Front Port 2', type=PortTypeChoices.TYPE_8P8C),
         )
         FrontPort.objects.bulk_create(front_ports)
-        PortMapping.objects.bulk_create(
-            [
-                PortMapping(device=devices[0], front_port=front_ports[0], rear_port=rear_ports[0]),
-                PortMapping(device=devices[1], front_port=front_ports[1], rear_port=rear_ports[1]),
-            ]
-        )
+        PortMapping.objects.bulk_create([
+            PortMapping(device=devices[0], front_port=front_ports[0], rear_port=rear_ports[0]),
+            PortMapping(device=devices[1], front_port=front_ports[1], rear_port=rear_ports[1]),
+        ])
         ModuleBay.objects.create(device=devices[0], name='Module Bay 1')
         ModuleBay.objects.create(device=devices[1], name='Module Bay 2')
-        DeviceBay.objects.bulk_create(
-            (
-                DeviceBay(device=devices[0], name='Device Bay 1'),
-                DeviceBay(device=devices[1], name='Device Bay 2'),
-            )
-        )
+        DeviceBay.objects.bulk_create((
+            DeviceBay(device=devices[0], name='Device Bay 1'),
+            DeviceBay(device=devices[1], name='Device Bay 2'),
+        ))
 
         # Assign primary IPs for filtering
         ipaddresses = (
@@ -2762,7 +2790,7 @@ class DeviceTestCase(TestCase, ChangeLoggedFilterSetTests):
         Device.objects.filter(pk=devices[1].pk).update(virtual_chassis=virtual_chassis, vc_position=2, vc_priority=2)
 
         # VirtualDeviceContext assignment for filtering
-        VirtualDeviceContext.objects.create(device=devices[0], name='VDC 1', identifier=1, status='active')
+        VirtualDeviceContext.objects.create(device=devices[0], name="VDC 1", identifier=1, status='active')
 
     def test_q(self):
         params = {'q': 'foobar1'}
@@ -3044,14 +3072,12 @@ class ModuleTestCase(TestCase, ChangeLoggedFilterSetTests):
         for group in groups:
             group.save()
 
-        sites = Site.objects.bulk_create(
-            (
-                Site(name='Site 1', slug='site-1', region=regions[0], group=groups[0]),
-                Site(name='Site 2', slug='site-2', region=regions[1], group=groups[1]),
-                Site(name='Site 3', slug='site-3', region=regions[2], group=groups[2]),
-                Site(name='Site X', slug='site-x'),
-            )
-        )
+        sites = Site.objects.bulk_create((
+            Site(name='Site 1', slug='site-1', region=regions[0], group=groups[0]),
+            Site(name='Site 2', slug='site-2', region=regions[1], group=groups[1]),
+            Site(name='Site 3', slug='site-3', region=regions[2], group=groups[2]),
+            Site(name='Site X', slug='site-x'),
+        ))
 
         manufacturers = (
             Manufacturer(name='Manufacturer 1', slug='manufacturer-1'),
@@ -3150,7 +3176,7 @@ class ModuleTestCase(TestCase, ChangeLoggedFilterSetTests):
                 status=ModuleStatusChoices.STATUS_ACTIVE,
                 serial='A',
                 asset_tag='A',
-                description='foobar1',
+                description='foobar1'
             ),
             Module(
                 device=devices[0],
@@ -3159,7 +3185,7 @@ class ModuleTestCase(TestCase, ChangeLoggedFilterSetTests):
                 status=ModuleStatusChoices.STATUS_ACTIVE,
                 serial='B',
                 asset_tag='B',
-                description='foobar2',
+                description='foobar2'
             ),
             Module(
                 device=devices[0],
@@ -3168,7 +3194,7 @@ class ModuleTestCase(TestCase, ChangeLoggedFilterSetTests):
                 status=ModuleStatusChoices.STATUS_ACTIVE,
                 serial='C',
                 asset_tag='C',
-                description='foobar3',
+                description='foobar3'
             ),
             Module(
                 device=devices[1],
@@ -3176,7 +3202,7 @@ class ModuleTestCase(TestCase, ChangeLoggedFilterSetTests):
                 module_type=module_types[0],
                 status=ModuleStatusChoices.STATUS_ACTIVE,
                 serial='D',
-                asset_tag='D',
+                asset_tag='D'
             ),
             Module(
                 device=devices[1],
@@ -3184,7 +3210,7 @@ class ModuleTestCase(TestCase, ChangeLoggedFilterSetTests):
                 module_type=module_types[1],
                 status=ModuleStatusChoices.STATUS_ACTIVE,
                 serial='E',
-                asset_tag='E',
+                asset_tag='E'
             ),
             Module(
                 device=devices[1],
@@ -3192,7 +3218,7 @@ class ModuleTestCase(TestCase, ChangeLoggedFilterSetTests):
                 module_type=module_types[2],
                 status=ModuleStatusChoices.STATUS_ACTIVE,
                 serial='F',
-                asset_tag='F',
+                asset_tag='F'
             ),
             Module(
                 device=devices[2],
@@ -3200,7 +3226,7 @@ class ModuleTestCase(TestCase, ChangeLoggedFilterSetTests):
                 module_type=module_types[0],
                 status=ModuleStatusChoices.STATUS_ACTIVE,
                 serial='G',
-                asset_tag='G',
+                asset_tag='G'
             ),
             Module(
                 device=devices[2],
@@ -3208,7 +3234,7 @@ class ModuleTestCase(TestCase, ChangeLoggedFilterSetTests):
                 module_type=module_types[1],
                 status=ModuleStatusChoices.STATUS_PLANNED,
                 serial='H',
-                asset_tag='H',
+                asset_tag='H'
             ),
             Module(
                 device=devices[2],
@@ -3216,7 +3242,7 @@ class ModuleTestCase(TestCase, ChangeLoggedFilterSetTests):
                 module_type=module_types[2],
                 status=ModuleStatusChoices.STATUS_FAILED,
                 serial='I',
-                asset_tag='I',
+                asset_tag='I'
             ),
         )
         Module.objects.bulk_create(modules)
@@ -3310,6 +3336,7 @@ class ConsolePortTestCase(TestCase, DeviceComponentFilterSetTests, ChangeLoggedF
 
     @classmethod
     def setUpTestData(cls):
+
         regions = (
             Region(name='Region 1', slug='region-1'),
             Region(name='Region 2', slug='region-2'),
@@ -3326,14 +3353,12 @@ class ConsolePortTestCase(TestCase, DeviceComponentFilterSetTests, ChangeLoggedF
         for group in groups:
             group.save()
 
-        sites = Site.objects.bulk_create(
-            (
-                Site(name='Site 1', slug='site-1', region=regions[0], group=groups[0]),
-                Site(name='Site 2', slug='site-2', region=regions[1], group=groups[1]),
-                Site(name='Site 3', slug='site-3', region=regions[2], group=groups[2]),
-                Site(name='Site X', slug='site-x'),
-            )
-        )
+        sites = Site.objects.bulk_create((
+            Site(name='Site 1', slug='site-1', region=regions[0], group=groups[0]),
+            Site(name='Site 2', slug='site-2', region=regions[1], group=groups[1]),
+            Site(name='Site 3', slug='site-3', region=regions[2], group=groups[2]),
+            Site(name='Site X', slug='site-x'),
+        ))
 
         manufacturer = Manufacturer.objects.create(name='Manufacturer 1', slug='manufacturer-1')
         device_types = (
@@ -3407,7 +3432,13 @@ class ConsolePortTestCase(TestCase, DeviceComponentFilterSetTests, ChangeLoggedF
                 status='offline',
             ),
             # For cable connections
-            Device(name=None, device_type=device_types[0], role=roles[0], site=sites[3], status='offline'),
+            Device(
+                name=None,
+                device_type=device_types[0],
+                role=roles[0],
+                site=sites[3],
+                status='offline'
+            ),
         )
         Device.objects.bulk_create(devices)
 
@@ -3556,6 +3587,7 @@ class ConsoleServerPortTestCase(TestCase, DeviceComponentFilterSetTests, ChangeL
 
     @classmethod
     def setUpTestData(cls):
+
         regions = (
             Region(name='Region 1', slug='region-1'),
             Region(name='Region 2', slug='region-2'),
@@ -3572,14 +3604,12 @@ class ConsoleServerPortTestCase(TestCase, DeviceComponentFilterSetTests, ChangeL
         for group in groups:
             group.save()
 
-        sites = Site.objects.bulk_create(
-            (
-                Site(name='Site 1', slug='site-1', region=regions[0], group=groups[0]),
-                Site(name='Site 2', slug='site-2', region=regions[1], group=groups[1]),
-                Site(name='Site 3', slug='site-3', region=regions[2], group=groups[2]),
-                Site(name='Site X', slug='site-x'),
-            )
-        )
+        sites = Site.objects.bulk_create((
+            Site(name='Site 1', slug='site-1', region=regions[0], group=groups[0]),
+            Site(name='Site 2', slug='site-2', region=regions[1], group=groups[1]),
+            Site(name='Site 3', slug='site-3', region=regions[2], group=groups[2]),
+            Site(name='Site X', slug='site-x'),
+        ))
 
         manufacturer = Manufacturer.objects.create(name='Manufacturer 1', slug='manufacturer-1')
         device_types = (
@@ -3653,7 +3683,13 @@ class ConsoleServerPortTestCase(TestCase, DeviceComponentFilterSetTests, ChangeL
                 status='offline',
             ),
             # For cable connections
-            Device(name=None, device_type=device_types[2], role=roles[2], site=sites[3], status='offline'),
+            Device(
+                name=None,
+                device_type=device_types[2],
+                role=roles[2],
+                site=sites[3],
+                status='offline'
+            ),
         )
         Device.objects.bulk_create(devices)
 
@@ -3802,6 +3838,7 @@ class PowerPortTestCase(TestCase, DeviceComponentFilterSetTests, ChangeLoggedFil
 
     @classmethod
     def setUpTestData(cls):
+
         regions = (
             Region(name='Region 1', slug='region-1'),
             Region(name='Region 2', slug='region-2'),
@@ -3818,14 +3855,12 @@ class PowerPortTestCase(TestCase, DeviceComponentFilterSetTests, ChangeLoggedFil
         for group in groups:
             group.save()
 
-        sites = Site.objects.bulk_create(
-            (
-                Site(name='Site 1', slug='site-1', region=regions[0], group=groups[0]),
-                Site(name='Site 2', slug='site-2', region=regions[1], group=groups[1]),
-                Site(name='Site 3', slug='site-3', region=regions[2], group=groups[2]),
-                Site(name='Site X', slug='site-x'),
-            )
-        )
+        sites = Site.objects.bulk_create((
+            Site(name='Site 1', slug='site-1', region=regions[0], group=groups[0]),
+            Site(name='Site 2', slug='site-2', region=regions[1], group=groups[1]),
+            Site(name='Site 3', slug='site-3', region=regions[2], group=groups[2]),
+            Site(name='Site X', slug='site-x'),
+        ))
 
         manufacturer = Manufacturer.objects.create(name='Manufacturer 1', slug='manufacturer-1')
         device_types = (
@@ -3899,7 +3934,13 @@ class PowerPortTestCase(TestCase, DeviceComponentFilterSetTests, ChangeLoggedFil
                 status='offline',
             ),
             # For cable connections
-            Device(name=None, device_type=device_types[2], role=roles[2], site=sites[3], status='offline'),
+            Device(
+                name=None,
+                device_type=device_types[2],
+                role=roles[2],
+                site=sites[3],
+                status='offline'
+            ),
         )
         Device.objects.bulk_create(devices)
 
@@ -4062,6 +4103,7 @@ class PowerOutletTestCase(TestCase, DeviceComponentFilterSetTests, ChangeLoggedF
 
     @classmethod
     def setUpTestData(cls):
+
         regions = (
             Region(name='Region 1', slug='region-1'),
             Region(name='Region 2', slug='region-2'),
@@ -4078,14 +4120,12 @@ class PowerOutletTestCase(TestCase, DeviceComponentFilterSetTests, ChangeLoggedF
         for group in groups:
             group.save()
 
-        sites = Site.objects.bulk_create(
-            (
-                Site(name='Site 1', slug='site-1', region=regions[0], group=groups[0]),
-                Site(name='Site 2', slug='site-2', region=regions[1], group=groups[1]),
-                Site(name='Site 3', slug='site-3', region=regions[2], group=groups[2]),
-                Site(name='Site X', slug='site-x'),
-            )
-        )
+        sites = Site.objects.bulk_create((
+            Site(name='Site 1', slug='site-1', region=regions[0], group=groups[0]),
+            Site(name='Site 2', slug='site-2', region=regions[1], group=groups[1]),
+            Site(name='Site 3', slug='site-3', region=regions[2], group=groups[2]),
+            Site(name='Site X', slug='site-x'),
+        ))
 
         manufacturer = Manufacturer.objects.create(name='Manufacturer 1', slug='manufacturer-1')
         device_types = (
@@ -4159,7 +4199,13 @@ class PowerOutletTestCase(TestCase, DeviceComponentFilterSetTests, ChangeLoggedF
                 status='offline',
             ),
             # For cable connections
-            Device(name=None, device_type=device_types[2], role=roles[2], site=sites[3], status='offline'),
+            Device(
+                name=None,
+                device_type=device_types[2],
+                role=roles[2],
+                site=sites[3],
+                status='offline'
+            ),
         )
         Device.objects.bulk_create(devices)
 
@@ -4327,13 +4373,11 @@ class PowerOutletTestCase(TestCase, DeviceComponentFilterSetTests, ChangeLoggedF
         params = {'status': [PowerOutletStatusChoices.STATUS_FAULTY]}
         self.assertEqual(self.filterset(params, self.queryset).qs.count(), 1)
 
-        params = {
-            'status': [
-                PowerOutletStatusChoices.STATUS_ENABLED,
-                PowerOutletStatusChoices.STATUS_DISABLED,
-                PowerOutletStatusChoices.STATUS_FAULTY,
-            ]
-        }
+        params = {'status': [
+            PowerOutletStatusChoices.STATUS_ENABLED,
+            PowerOutletStatusChoices.STATUS_DISABLED,
+            PowerOutletStatusChoices.STATUS_FAULTY,
+        ]}
         self.assertEqual(self.filterset(params, self.queryset).qs.count(), 3)
 
 
@@ -4344,6 +4388,7 @@ class InterfaceTestCase(TestCase, DeviceComponentFilterSetTests, ChangeLoggedFil
 
     @classmethod
     def setUpTestData(cls):
+
         regions = (
             Region(name='Region 1', slug='region-1'),
             Region(name='Region 2', slug='region-2'),
@@ -4360,14 +4405,12 @@ class InterfaceTestCase(TestCase, DeviceComponentFilterSetTests, ChangeLoggedFil
         for group in groups:
             group.save()
 
-        sites = Site.objects.bulk_create(
-            (
-                Site(name='Site 1', slug='site-1', region=regions[0], group=groups[0]),
-                Site(name='Site 2', slug='site-2', region=regions[1], group=groups[1]),
-                Site(name='Site 3', slug='site-3', region=regions[2], group=groups[2]),
-                Site(name='Site X', slug='site-x'),
-            )
-        )
+        sites = Site.objects.bulk_create((
+            Site(name='Site 1', slug='site-1', region=regions[0], group=groups[0]),
+            Site(name='Site 2', slug='site-2', region=regions[1], group=groups[1]),
+            Site(name='Site 3', slug='site-3', region=regions[2], group=groups[2]),
+            Site(name='Site X', slug='site-x'),
+        ))
 
         manufacturer = Manufacturer.objects.create(name='Manufacturer 1', slug='manufacturer-1')
         device_types = (
@@ -4864,29 +4907,13 @@ class InterfaceTestCase(TestCase, DeviceComponentFilterSetTests, ChangeLoggedFil
         vc = VirtualChassis.objects.first()
         master = vc.master
         member = vc.members.exclude(pk=master.pk).first()
-        params = {
-            'virtual_chassis_member_or_master_id': [
-                master.pk,
-            ]
-        }
+        params = {'virtual_chassis_member_or_master_id': [master.pk,]}
         self.assertEqual(self.filterset(params, self.queryset).qs.count(), 2)
-        params = {
-            'virtual_chassis_member_or_master_id': [
-                member.pk,
-            ]
-        }
+        params = {'virtual_chassis_member_or_master_id': [member.pk,]}
         self.assertEqual(self.filterset(params, self.queryset).qs.count(), 1)
-        params = {
-            'virtual_chassis_member_or_master': [
-                master.name,
-            ]
-        }
+        params = {'virtual_chassis_member_or_master': [master.name,]}
         self.assertEqual(self.filterset(params, self.queryset).qs.count(), 2)
-        params = {
-            'virtual_chassis_member_or_master': [
-                member.name,
-            ]
-        }
+        params = {'virtual_chassis_member_or_master': [member.name,]}
         self.assertEqual(self.filterset(params, self.queryset).qs.count(), 1)
 
     def test_virtual_chassis_member(self):
@@ -4998,6 +5025,7 @@ class FrontPortTestCase(TestCase, DeviceComponentFilterSetTests, ChangeLoggedFil
 
     @classmethod
     def setUpTestData(cls):
+
         regions = (
             Region(name='Region 1', slug='region-1'),
             Region(name='Region 2', slug='region-2'),
@@ -5014,14 +5042,12 @@ class FrontPortTestCase(TestCase, DeviceComponentFilterSetTests, ChangeLoggedFil
         for group in groups:
             group.save()
 
-        sites = Site.objects.bulk_create(
-            (
-                Site(name='Site 1', slug='site-1', region=regions[0], group=groups[0]),
-                Site(name='Site 2', slug='site-2', region=regions[1], group=groups[1]),
-                Site(name='Site 3', slug='site-3', region=regions[2], group=groups[2]),
-                Site(name='Site X', slug='site-x'),
-            )
-        )
+        sites = Site.objects.bulk_create((
+            Site(name='Site 1', slug='site-1', region=regions[0], group=groups[0]),
+            Site(name='Site 2', slug='site-2', region=regions[1], group=groups[1]),
+            Site(name='Site 3', slug='site-3', region=regions[2], group=groups[2]),
+            Site(name='Site X', slug='site-x'),
+        ))
 
         manufacturer = Manufacturer.objects.create(name='Manufacturer 1', slug='manufacturer-1')
         device_types = (
@@ -5095,7 +5121,13 @@ class FrontPortTestCase(TestCase, DeviceComponentFilterSetTests, ChangeLoggedFil
                 status='offline',
             ),
             # For cable connections
-            Device(name=None, device_type=device_types[2], role=roles[2], site=sites[3], status='offline'),
+            Device(
+                name=None,
+                device_type=device_types[2],
+                role=roles[2],
+                site=sites[3],
+                status='offline'
+            ),
         )
         Device.objects.bulk_create(devices)
 
@@ -5193,20 +5225,14 @@ class FrontPortTestCase(TestCase, DeviceComponentFilterSetTests, ChangeLoggedFil
             ),
         )
         FrontPort.objects.bulk_create(front_ports)
-        PortMapping.objects.bulk_create(
-            [
-                PortMapping(device=devices[0], front_port=front_ports[0], rear_port=rear_ports[0]),
-                PortMapping(
-                    device=devices[1], front_port=front_ports[1], rear_port=rear_ports[1], rear_port_position=2
-                ),
-                PortMapping(
-                    device=devices[2], front_port=front_ports[2], rear_port=rear_ports[2], rear_port_position=3
-                ),
-                PortMapping(device=devices[3], front_port=front_ports[3], rear_port=rear_ports[3]),
-                PortMapping(device=devices[3], front_port=front_ports[4], rear_port=rear_ports[4]),
-                PortMapping(device=devices[3], front_port=front_ports[5], rear_port=rear_ports[5]),
-            ]
-        )
+        PortMapping.objects.bulk_create([
+            PortMapping(device=devices[0], front_port=front_ports[0], rear_port=rear_ports[0]),
+            PortMapping(device=devices[1], front_port=front_ports[1], rear_port=rear_ports[1], rear_port_position=2),
+            PortMapping(device=devices[2], front_port=front_ports[2], rear_port=rear_ports[2], rear_port_position=3),
+            PortMapping(device=devices[3], front_port=front_ports[3], rear_port=rear_ports[3]),
+            PortMapping(device=devices[3], front_port=front_ports[4], rear_port=rear_ports[4]),
+            PortMapping(device=devices[3], front_port=front_ports[5], rear_port=rear_ports[5]),
+        ])
 
         # Cables
         Cable(a_terminations=[front_ports[0]], b_terminations=[front_ports[3]]).save()
@@ -5304,6 +5330,7 @@ class RearPortTestCase(TestCase, DeviceComponentFilterSetTests, ChangeLoggedFilt
 
     @classmethod
     def setUpTestData(cls):
+
         regions = (
             Region(name='Region 1', slug='region-1'),
             Region(name='Region 2', slug='region-2'),
@@ -5320,14 +5347,12 @@ class RearPortTestCase(TestCase, DeviceComponentFilterSetTests, ChangeLoggedFilt
         for group in groups:
             group.save()
 
-        sites = Site.objects.bulk_create(
-            (
-                Site(name='Site 1', slug='site-1', region=regions[0], group=groups[0]),
-                Site(name='Site 2', slug='site-2', region=regions[1], group=groups[1]),
-                Site(name='Site 3', slug='site-3', region=regions[2], group=groups[2]),
-                Site(name='Site X', slug='site-x'),
-            )
-        )
+        sites = Site.objects.bulk_create((
+            Site(name='Site 1', slug='site-1', region=regions[0], group=groups[0]),
+            Site(name='Site 2', slug='site-2', region=regions[1], group=groups[1]),
+            Site(name='Site 3', slug='site-3', region=regions[2], group=groups[2]),
+            Site(name='Site X', slug='site-x'),
+        ))
 
         manufacturer = Manufacturer.objects.create(name='Manufacturer 1', slug='manufacturer-1')
         device_types = (
@@ -5401,7 +5426,13 @@ class RearPortTestCase(TestCase, DeviceComponentFilterSetTests, ChangeLoggedFilt
                 status='offline',
             ),
             # For cable connections
-            Device(name=None, device_type=device_types[2], role=roles[2], site=sites[3], status='offline'),
+            Device(
+                name=None,
+                device_type=device_types[2],
+                role=roles[2],
+                site=sites[3],
+                status='offline'
+            ),
         )
         Device.objects.bulk_create(devices)
 
@@ -5588,6 +5619,7 @@ class ModuleBayTestCase(TestCase, DeviceComponentFilterSetTests, ChangeLoggedFil
 
     @classmethod
     def setUpTestData(cls):
+
         regions = (
             Region(name='Region 1', slug='region-1'),
             Region(name='Region 2', slug='region-2'),
@@ -5604,14 +5636,12 @@ class ModuleBayTestCase(TestCase, DeviceComponentFilterSetTests, ChangeLoggedFil
         for group in groups:
             group.save()
 
-        sites = Site.objects.bulk_create(
-            (
-                Site(name='Site 1', slug='site-1', region=regions[0], group=groups[0]),
-                Site(name='Site 2', slug='site-2', region=regions[1], group=groups[1]),
-                Site(name='Site 3', slug='site-3', region=regions[2], group=groups[2]),
-                Site(name='Site X', slug='site-x'),
-            )
-        )
+        sites = Site.objects.bulk_create((
+            Site(name='Site 1', slug='site-1', region=regions[0], group=groups[0]),
+            Site(name='Site 2', slug='site-2', region=regions[1], group=groups[1]),
+            Site(name='Site 3', slug='site-3', region=regions[2], group=groups[2]),
+            Site(name='Site X', slug='site-x'),
+        ))
 
         manufacturer = Manufacturer.objects.create(name='Manufacturer 1', slug='manufacturer-1')
         device_types = (
@@ -5772,6 +5802,7 @@ class DeviceBayTestCase(TestCase, DeviceComponentFilterSetTests, ChangeLoggedFil
 
     @classmethod
     def setUpTestData(cls):
+
         regions = (
             Region(name='Region 1', slug='region-1'),
             Region(name='Region 2', slug='region-2'),
@@ -5788,14 +5819,12 @@ class DeviceBayTestCase(TestCase, DeviceComponentFilterSetTests, ChangeLoggedFil
         for group in groups:
             group.save()
 
-        sites = Site.objects.bulk_create(
-            (
-                Site(name='Site 1', slug='site-1', region=regions[0], group=groups[0]),
-                Site(name='Site 2', slug='site-2', region=regions[1], group=groups[1]),
-                Site(name='Site 3', slug='site-3', region=regions[2], group=groups[2]),
-                Site(name='Site X', slug='site-x'),
-            )
-        )
+        sites = Site.objects.bulk_create((
+            Site(name='Site 1', slug='site-1', region=regions[0], group=groups[0]),
+            Site(name='Site 2', slug='site-2', region=regions[1], group=groups[1]),
+            Site(name='Site 3', slug='site-3', region=regions[2], group=groups[2]),
+            Site(name='Site X', slug='site-x'),
+        ))
 
         manufacturer = Manufacturer.objects.create(name='Manufacturer 1', slug='manufacturer-1')
         device_types = (
@@ -6236,15 +6265,25 @@ class InventoryItemRoleTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
+
         roles = (
             InventoryItemRole(
-                name='Inventory Item Role 1', slug='inventory-item-role-1', color='ff0000', description='foobar1'
+                name='Inventory Item Role 1',
+                slug='inventory-item-role-1',
+                color='ff0000',
+                description='foobar1'
             ),
             InventoryItemRole(
-                name='Inventory Item Role 2', slug='inventory-item-role-2', color='00ff00', description='foobar2'
+                name='Inventory Item Role 2',
+                slug='inventory-item-role-2',
+                color='00ff00',
+                description='foobar2'
             ),
             InventoryItemRole(
-                name='Inventory Item Role 3', slug='inventory-item-role-3', color='0000ff', description='foobar3'
+                name='Inventory Item Role 3',
+                slug='inventory-item-role-3',
+                color='0000ff',
+                description='foobar3'
             ),
         )
         InventoryItemRole.objects.bulk_create(roles)
@@ -6276,6 +6315,7 @@ class VirtualChassisTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
+
         manufacturer = Manufacturer.objects.create(name='Manufacturer 1', slug='manufacturer-1')
         device_type = DeviceType.objects.create(manufacturer=manufacturer, model='Model 1', slug='model-1')
         role = DeviceRole.objects.create(name='Device Role 1', slug='device-role-1')
@@ -6375,6 +6415,7 @@ class CableTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
+
         sites = (
             Site(name='Site 1', slug='site-1'),
             Site(name='Site 2', slug='site-2'),
@@ -6511,7 +6552,7 @@ class CableTestCase(TestCase, ChangeLoggedFilterSetTests):
                 color='aa1409',
                 length=10,
                 length_unit=CableLengthUnitChoices.UNIT_FOOT,
-                description='foobar1',
+                description='foobar1'
             ),
             Cable(
                 a_terminations=[interfaces[3]],
@@ -6523,7 +6564,7 @@ class CableTestCase(TestCase, ChangeLoggedFilterSetTests):
                 color='aa1409',
                 length=20,
                 length_unit=CableLengthUnitChoices.UNIT_FOOT,
-                description='foobar2',
+                description='foobar2'
             ),
             Cable(
                 a_terminations=[interfaces[5]],
@@ -6535,7 +6576,7 @@ class CableTestCase(TestCase, ChangeLoggedFilterSetTests):
                 color='f44336',
                 length=30,
                 length_unit=CableLengthUnitChoices.UNIT_FOOT,
-                description='foobar3',
+                description='foobar3'
             ),
             Cable(
                 a_terminations=[interfaces[7]],
@@ -6546,7 +6587,7 @@ class CableTestCase(TestCase, ChangeLoggedFilterSetTests):
                 status=LinkStatusChoices.STATUS_PLANNED,
                 color='f44336',
                 length=40,
-                length_unit=CableLengthUnitChoices.UNIT_FOOT,
+                length_unit=CableLengthUnitChoices.UNIT_FOOT
             ),
             Cable(
                 a_terminations=[interfaces[9]],
@@ -6557,7 +6598,7 @@ class CableTestCase(TestCase, ChangeLoggedFilterSetTests):
                 status=LinkStatusChoices.STATUS_PLANNED,
                 color='e91e63',
                 length=10,
-                length_unit=CableLengthUnitChoices.UNIT_METER,
+                length_unit=CableLengthUnitChoices.UNIT_METER
             ),
             Cable(
                 a_terminations=[interfaces[11]],
@@ -6568,17 +6609,42 @@ class CableTestCase(TestCase, ChangeLoggedFilterSetTests):
                 status=LinkStatusChoices.STATUS_PLANNED,
                 color='e91e63',
                 length=20,
-                length_unit=CableLengthUnitChoices.UNIT_METER,
+                length_unit=CableLengthUnitChoices.UNIT_METER
             ),
+
             # Cables for filtering by termination object
-            Cable(a_terminations=[console_port], label='Cable 7'),
-            Cable(a_terminations=[console_server_port], label='Cable 8'),
-            Cable(a_terminations=[power_port], label='Cable 9'),
-            Cable(a_terminations=[power_outlet], label='Cable 10'),
-            Cable(a_terminations=[front_port], label='Cable 11'),
-            Cable(a_terminations=[rear_port], label='Cable 12'),
-            Cable(a_terminations=[power_feed], label='Cable 13'),
-            Cable(a_terminations=[circuit_termination], label='Cable 14'),
+            Cable(
+                a_terminations=[console_port],
+                label='Cable 7'
+            ),
+            Cable(
+                a_terminations=[console_server_port],
+                label='Cable 8'
+            ),
+            Cable(
+                a_terminations=[power_port],
+                label='Cable 9'
+            ),
+            Cable(
+                a_terminations=[power_outlet],
+                label='Cable 10'
+            ),
+            Cable(
+                a_terminations=[front_port],
+                label='Cable 11'
+            ),
+            Cable(
+                a_terminations=[rear_port],
+                label='Cable 12'
+            ),
+            Cable(
+                a_terminations=[power_feed],
+                label='Cable 13'
+            ),
+            Cable(
+                a_terminations=[circuit_termination],
+                label='Cable 14'
+            ),
         )
         for cable in cables:
             cable.save()
@@ -6663,9 +6729,10 @@ class CableTestCase(TestCase, ChangeLoggedFilterSetTests):
         # self.assertEqual(self.filterset(params, self.queryset).qs.count(), 1)
 
     def test_termination_ids(self):
-        interface_ids = CableTermination.objects.filter(cable__in=Cable.objects.all()[:3], cable_end='A').values_list(
-            'termination_id', flat=True
-        )
+        interface_ids = CableTermination.objects.filter(
+            cable__in=Cable.objects.all()[:3],
+            cable_end='A'
+        ).values_list('termination_id', flat=True)
         params = {
             'termination_a_type': 'dcim.interface',
             'termination_a_id': list(interface_ids),
@@ -6717,6 +6784,7 @@ class PowerPanelTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
+
         regions = (
             Region(name='Region 1', slug='region-1'),
             Region(name='Region 2', slug='region-2'),
@@ -6801,6 +6869,7 @@ class PowerFeedTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
+
         regions = (
             Region(name='Region 1', slug='region-1'),
             Region(name='Region 2', slug='region-2'),
@@ -6866,7 +6935,7 @@ class PowerFeedTestCase(TestCase, ChangeLoggedFilterSetTests):
                 voltage=100,
                 amperage=100,
                 max_utilization=10,
-                description='foobar1',
+                description='foobar1'
             ),
             PowerFeed(
                 power_panel=power_panels[1],
@@ -6880,7 +6949,7 @@ class PowerFeedTestCase(TestCase, ChangeLoggedFilterSetTests):
                 voltage=200,
                 amperage=200,
                 max_utilization=20,
-                description='foobar2',
+                description='foobar2'
             ),
             PowerFeed(
                 power_panel=power_panels[2],
@@ -6894,7 +6963,7 @@ class PowerFeedTestCase(TestCase, ChangeLoggedFilterSetTests):
                 voltage=300,
                 amperage=300,
                 max_utilization=30,
-                description='foobar3',
+                description='foobar3'
             ),
         )
         PowerFeed.objects.bulk_create(power_feeds)
@@ -7016,6 +7085,7 @@ class VirtualDeviceContextTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
+
         sites = (
             Site(name='Site 1', slug='site-1'),
             Site(name='Site 2', slug='site-2'),
@@ -7047,29 +7117,35 @@ class VirtualDeviceContextTestCase(TestCase, ChangeLoggedFilterSetTests):
                 name='VDC 1',
                 identifier=1,
                 status=VirtualDeviceContextStatusChoices.STATUS_ACTIVE,
-                description='foobar1',
+                description='foobar1'
             ),
             VirtualDeviceContext(
                 device=devices[0],
                 name='VDC 2',
                 identifier=2,
                 status=VirtualDeviceContextStatusChoices.STATUS_PLANNED,
-                description='foobar2',
+                description='foobar2'
             ),
             VirtualDeviceContext(
                 device=devices[1],
                 name='VDC 1',
                 status=VirtualDeviceContextStatusChoices.STATUS_OFFLINE,
-                description='foobar3',
+                description='foobar3'
             ),
             VirtualDeviceContext(
-                device=devices[1], name='VDC 2', status=VirtualDeviceContextStatusChoices.STATUS_PLANNED
+                device=devices[1],
+                name='VDC 2',
+                status=VirtualDeviceContextStatusChoices.STATUS_PLANNED
             ),
             VirtualDeviceContext(
-                device=devices[2], name='VDC 1', status=VirtualDeviceContextStatusChoices.STATUS_ACTIVE
+                device=devices[2],
+                name='VDC 1',
+                status=VirtualDeviceContextStatusChoices.STATUS_ACTIVE
             ),
             VirtualDeviceContext(
-                device=devices[2], name='VDC 2', status=VirtualDeviceContextStatusChoices.STATUS_ACTIVE
+                device=devices[2],
+                name='VDC 2',
+                status=VirtualDeviceContextStatusChoices.STATUS_ACTIVE
             ),
         )
         VirtualDeviceContext.objects.bulk_create(vdcs)

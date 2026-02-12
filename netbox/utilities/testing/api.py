@@ -33,7 +33,6 @@ __all__ = (
 # REST/GraphQL API Tests
 #
 
-
 class APITestCase(ModelTestCase):
     """
     Base test case for API requests.
@@ -41,7 +40,6 @@ class APITestCase(ModelTestCase):
     client_class: Test client class
     view_namespace: Namespace for API views. If None, the model's app_label will be used.
     """
-
     client_class = APIClient
     view_namespace = None
 
@@ -68,7 +66,9 @@ class APITestCase(ModelTestCase):
 
 
 class APIViewTestCases:
+
     class GetObjectViewTestCase(APITestCase):
+
         @override_settings(EXEMPT_VIEW_PERMISSIONS=['*'], LOGIN_REQUIRED=False)
         def test_get_object_anonymous(self):
             """
@@ -97,13 +97,16 @@ class APIViewTestCases:
             """
             GET a single object as an authenticated user with permission to view the object.
             """
-            self.assertGreaterEqual(
-                self._get_queryset().count(), 2, f'Test requires the creation of at least two {self.model} instances'
-            )
+            self.assertGreaterEqual(self._get_queryset().count(), 2,
+                                    f"Test requires the creation of at least two {self.model} instances")
             instance1, instance2 = self._get_queryset()[:2]
 
             # Add object-level permission
-            obj_perm = ObjectPermission(name='Test permission', constraints={'pk': instance1.pk}, actions=['view'])
+            obj_perm = ObjectPermission(
+                name='Test permission',
+                constraints={'pk': instance1.pk},
+                actions=['view']
+            )
             obj_perm.save()
             obj_perm.users.add(self.user)
             obj_perm.object_types.add(ObjectType.objects.get_for_model(self.model))
@@ -169,14 +172,15 @@ class APIViewTestCases:
             """
             GET a list of objects as an authenticated user with permission to view the objects.
             """
-            self.assertGreaterEqual(
-                self._get_queryset().count(), 3, f'Test requires the creation of at least three {self.model} instances'
-            )
+            self.assertGreaterEqual(self._get_queryset().count(), 3,
+                                    f"Test requires the creation of at least three {self.model} instances")
             instance1, instance2 = self._get_queryset()[:2]
 
             # Add object-level permission
             obj_perm = ObjectPermission(
-                name='Test permission', constraints={'pk__in': [instance1.pk, instance2.pk]}, actions=['view']
+                name='Test permission',
+                constraints={'pk__in': [instance1.pk, instance2.pk]},
+                actions=['view']
             )
             obj_perm.save()
             obj_perm.users.add(self.user)
@@ -215,7 +219,10 @@ class APIViewTestCases:
             POST a single object with permission.
             """
             # Add object-level permission
-            obj_perm = ObjectPermission(name='Test permission', actions=['add'])
+            obj_perm = ObjectPermission(
+                name='Test permission',
+                actions=['add']
+            )
             obj_perm.save()
             obj_perm.users.add(self.user)
             obj_perm.object_types.add(ObjectType.objects.get_for_model(self.model))
@@ -231,7 +238,12 @@ class APIViewTestCases:
             self.assertHttpStatus(response, status.HTTP_201_CREATED)
             self.assertEqual(self._get_queryset().count(), initial_count + 1)
             instance = self._get_queryset().get(pk=response.data['id'])
-            self.assertInstanceEqual(instance, self.create_data[0], exclude=self.validation_excluded_fields, api=True)
+            self.assertInstanceEqual(
+                instance,
+                self.create_data[0],
+                exclude=self.validation_excluded_fields,
+                api=True
+            )
 
             # Verify ObjectChange creation
             if issubclass(self.model, ChangeLoggingMixin):
@@ -247,7 +259,10 @@ class APIViewTestCases:
             POST a set of objects in a single request.
             """
             # Add object-level permission
-            obj_perm = ObjectPermission(name='Test permission', actions=['add'])
+            obj_perm = ObjectPermission(
+                name='Test permission',
+                actions=['add']
+            )
             obj_perm.save()
             obj_perm.users.add(self.user)
             obj_perm.object_types.add(ObjectType.objects.get_for_model(self.model))
@@ -275,12 +290,14 @@ class APIViewTestCases:
                     self._get_queryset().get(pk=obj['id']),
                     self.create_data[i],
                     exclude=self.validation_excluded_fields,
-                    api=True,
+                    api=True
                 )
 
             # Verify ObjectChange creation
             if issubclass(self.model, ChangeLoggingMixin):
-                id_list = [obj['id'] for obj in response.data]
+                id_list = [
+                    obj['id'] for obj in response.data
+                ]
                 objectchanges = ObjectChange.objects.filter(
                     changed_object_type=ContentType.objects.get_for_model(self.model),
                     changed_object_id__in=id_list,
@@ -316,7 +333,10 @@ class APIViewTestCases:
             update_data = self.update_data or getattr(self, 'create_data')[0]
 
             # Add object-level permission
-            obj_perm = ObjectPermission(name='Test permission', actions=['change'])
+            obj_perm = ObjectPermission(
+                name='Test permission',
+                actions=['change']
+            )
             obj_perm.save()
             obj_perm.users.add(self.user)
             obj_perm.object_types.add(ObjectType.objects.get_for_model(self.model))
@@ -330,12 +350,18 @@ class APIViewTestCases:
             response = self.client.patch(url, data, format='json', **self.header)
             self.assertHttpStatus(response, status.HTTP_200_OK)
             instance.refresh_from_db()
-            self.assertInstanceEqual(instance, data, exclude=self.validation_excluded_fields, api=True)
+            self.assertInstanceEqual(
+                instance,
+                data,
+                exclude=self.validation_excluded_fields,
+                api=True
+            )
 
             # Verify ObjectChange creation
             if hasattr(self.model, 'to_objectchange'):
                 objectchange = ObjectChange.objects.get(
-                    changed_object_type=ContentType.objects.get_for_model(instance), changed_object_id=instance.pk
+                    changed_object_type=ContentType.objects.get_for_model(instance),
+                    changed_object_id=instance.pk
                 )
                 self.assertEqual(objectchange.action, ObjectChangeActionChoices.ACTION_UPDATE)
                 self.assertEqual(objectchange.message, data['changelog_message'])
@@ -345,17 +371,22 @@ class APIViewTestCases:
             PATCH a set of objects in a single request.
             """
             if self.bulk_update_data is None:
-                self.skipTest('Bulk update data not set')
+                self.skipTest("Bulk update data not set")
 
             # Add object-level permission
-            obj_perm = ObjectPermission(name='Test permission', actions=['change'])
+            obj_perm = ObjectPermission(
+                name='Test permission',
+                actions=['change']
+            )
             obj_perm.save()
             obj_perm.users.add(self.user)
             obj_perm.object_types.add(ObjectType.objects.get_for_model(self.model))
 
             id_list = list(self._get_queryset().values_list('id', flat=True)[:3])
-            self.assertEqual(len(id_list), 3, 'Insufficient number of objects to test bulk update')
-            data = [{'id': id, **self.bulk_update_data} for id in id_list]
+            self.assertEqual(len(id_list), 3, "Insufficient number of objects to test bulk update")
+            data = [
+                {'id': id, **self.bulk_update_data} for id in id_list
+            ]
 
             # If supported, add a changelog message
             changelog_message = get_random_string(10)
@@ -377,7 +408,8 @@ class APIViewTestCases:
             # Verify ObjectChange creation
             if issubclass(self.model, ChangeLoggingMixin):
                 objectchanges = ObjectChange.objects.filter(
-                    changed_object_type=ContentType.objects.get_for_model(self.model), changed_object_id__in=id_list
+                    changed_object_type=ContentType.objects.get_for_model(self.model),
+                    changed_object_id__in=id_list
                 )
                 self.assertEqual(len(objectchanges), len(data))
                 for oc in objectchanges:
@@ -385,6 +417,7 @@ class APIViewTestCases:
                     self.assertEqual(oc.message, changelog_message)
 
     class DeleteObjectViewTestCase(APITestCase):
+
         def test_delete_object_without_permission(self):
             """
             DELETE a single object without permission.
@@ -404,7 +437,10 @@ class APIViewTestCases:
             url = self._get_detail_url(instance)
 
             # Add object-level permission
-            obj_perm = ObjectPermission(name='Test permission', actions=['delete'])
+            obj_perm = ObjectPermission(
+                name='Test permission',
+                actions=['delete']
+            )
             obj_perm.save()
             obj_perm.users.add(self.user)
             obj_perm.object_types.add(ObjectType.objects.get_for_model(self.model))
@@ -422,7 +458,8 @@ class APIViewTestCases:
             # Verify ObjectChange creation
             if hasattr(self.model, 'to_objectchange'):
                 objectchange = ObjectChange.objects.get(
-                    changed_object_type=ContentType.objects.get_for_model(instance), changed_object_id=instance.pk
+                    changed_object_type=ContentType.objects.get_for_model(instance),
+                    changed_object_id=instance.pk
                 )
                 self.assertEqual(objectchange.action, ObjectChangeActionChoices.ACTION_DELETE)
                 self.assertEqual(objectchange.message, data['changelog_message'])
@@ -432,7 +469,10 @@ class APIViewTestCases:
             DELETE a set of objects in a single request.
             """
             # Add object-level permission
-            obj_perm = ObjectPermission(name='Test permission', actions=['delete'])
+            obj_perm = ObjectPermission(
+                name='Test permission',
+                actions=['delete']
+            )
             obj_perm.save()
             obj_perm.users.add(self.user)
             obj_perm.object_types.add(ObjectType.objects.get_for_model(self.model))
@@ -440,8 +480,8 @@ class APIViewTestCases:
             # Target the three most recently created objects to avoid triggering recursive deletions
             # (e.g. with MPTT objects)
             id_list = list(self._get_queryset().order_by('-id').values_list('id', flat=True)[:3])
-            self.assertEqual(len(id_list), 3, 'Insufficient number of objects to test bulk deletion')
-            data = [{'id': id} for id in id_list]
+            self.assertEqual(len(id_list), 3, "Insufficient number of objects to test bulk deletion")
+            data = [{"id": id} for id in id_list]
 
             # If supported, add a changelog message
             changelog_message = get_random_string(10)
@@ -457,7 +497,8 @@ class APIViewTestCases:
             # Verify ObjectChange creation
             if issubclass(self.model, ChangeLoggingMixin):
                 objectchanges = ObjectChange.objects.filter(
-                    changed_object_type=ContentType.objects.get_for_model(self.model), changed_object_id__in=id_list
+                    changed_object_type=ContentType.objects.get_for_model(self.model),
+                    changed_object_id__in=id_list
                 )
                 self.assertEqual(len(objectchanges), len(data))
                 for oc in objectchanges:
@@ -465,6 +506,7 @@ class APIViewTestCases:
                     self.assertEqual(oc.message, changelog_message)
 
     class GraphQLTestCase(APITestCase):
+
         def _get_graphql_base_name(self):
             """
             Return graphql_base_name, if set. Otherwise, construct the base name for the query
@@ -488,8 +530,10 @@ class APIViewTestCases:
                 strawberry_django.fields.types.DjangoImageType,
             )
             for field in type_class.__strawberry_definition__.fields:
-                if field.type in file_fields or (
-                    type(field.type) is StrawberryOptional and field.type.of_type in file_fields
+                if (
+                    field.type in file_fields or (
+                        type(field.type) is StrawberryOptional and field.type.of_type in file_fields
+                    )
                 ):
                     # image / file fields nullable or not...
                     fields_string += f'{field.name} {{ name }}\n'
@@ -572,14 +616,14 @@ class APIViewTestCases:
                 'HTTP_ACCEPT': 'application/json',
             }
             with disable_warnings('django.request'):
-                response = self.client.post(url, data={'query': query}, format='json', **header)
+                response = self.client.post(url, data={'query': query}, format="json", **header)
             self.assertHttpStatus(response, status.HTTP_403_FORBIDDEN)
 
             # Add constrained permission
             obj_perm = ObjectPermission(
                 name='Test permission',
                 actions=['view'],
-                constraints={'id': 0},  # Impossible constraint
+                constraints={'id': 0}  # Impossible constraint
             )
             obj_perm.save()
             obj_perm.users.add(self.user)
@@ -587,7 +631,7 @@ class APIViewTestCases:
 
             # Request should succeed but return empty result
             with disable_logging():
-                response = self.client.post(url, data={'query': query}, format='json', **self.header)
+                response = self.client.post(url, data={'query': query}, format="json", **self.header)
             self.assertHttpStatus(response, status.HTTP_200_OK)
             data = json.loads(response.content)
             self.assertIn('errors', data)
@@ -598,7 +642,7 @@ class APIViewTestCases:
             obj_perm.save()
 
             # Request should return requested object
-            response = self.client.post(url, data={'query': query}, format='json', **self.header)
+            response = self.client.post(url, data={'query': query}, format="json", **self.header)
             self.assertHttpStatus(response, status.HTTP_200_OK)
             data = json.loads(response.content)
             self.assertNotIn('errors', data)
@@ -615,21 +659,21 @@ class APIViewTestCases:
                 'HTTP_ACCEPT': 'application/json',
             }
             with disable_warnings('django.request'):
-                response = self.client.post(url, data={'query': query}, format='json', **header)
+                response = self.client.post(url, data={'query': query}, format="json", **header)
             self.assertHttpStatus(response, status.HTTP_403_FORBIDDEN)
 
             # Add constrained permission
             obj_perm = ObjectPermission(
                 name='Test permission',
                 actions=['view'],
-                constraints={'id': 0},  # Impossible constraint
+                constraints={'id': 0}  # Impossible constraint
             )
             obj_perm.save()
             obj_perm.users.add(self.user)
             obj_perm.object_types.add(ObjectType.objects.get_for_model(self.model))
 
             # Request should succeed but return empty results list
-            response = self.client.post(url, data={'query': query}, format='json', **self.header)
+            response = self.client.post(url, data={'query': query}, format="json", **self.header)
             self.assertHttpStatus(response, status.HTTP_200_OK)
             data = json.loads(response.content)
             self.assertNotIn('errors', data)
@@ -640,7 +684,7 @@ class APIViewTestCases:
             obj_perm.save()
 
             # Request should return all objects
-            response = self.client.post(url, data={'query': query}, format='json', **self.header)
+            response = self.client.post(url, data={'query': query}, format="json", **self.header)
             self.assertHttpStatus(response, status.HTTP_200_OK)
             data = json.loads(response.content)
             self.assertNotIn('errors', data)
@@ -656,12 +700,15 @@ class APIViewTestCases:
             query = self._build_filtered_query(field_name, **self.graphql_filter)
 
             # Add object-level permission
-            obj_perm = ObjectPermission(name='Test permission', actions=['view'])
+            obj_perm = ObjectPermission(
+                name='Test permission',
+                actions=['view']
+            )
             obj_perm.save()
             obj_perm.users.add(self.user)
             obj_perm.object_types.add(ObjectType.objects.get_for_model(self.model))
 
-            response = self.client.post(url, data={'query': query}, format='json', **self.header)
+            response = self.client.post(url, data={'query': query}, format="json", **self.header)
             self.assertHttpStatus(response, status.HTTP_200_OK)
             data = json.loads(response.content)
             self.assertNotIn('errors', data)
@@ -673,6 +720,6 @@ class APIViewTestCases:
         CreateObjectViewTestCase,
         UpdateObjectViewTestCase,
         DeleteObjectViewTestCase,
-        GraphQLTestCase,
+        GraphQLTestCase
     ):
         pass

@@ -22,6 +22,7 @@ from utilities.testing import APITestCase
 
 
 class EventRuleTest(APITestCase):
+
     def setUp(self):
         super().setUp()
 
@@ -31,57 +32,52 @@ class EventRuleTest(APITestCase):
 
     @classmethod
     def setUpTestData(cls):
+
         site_type = ObjectType.objects.get_for_model(Site)
         DUMMY_URL = 'http://localhost:9000/'
         DUMMY_SECRET = 'LOOKATMEIMASECRETSTRING'
 
-        webhooks = Webhook.objects.bulk_create(
-            (
-                Webhook(name='Webhook 1', payload_url=DUMMY_URL, secret=DUMMY_SECRET, additional_headers='X-Foo: Bar'),
-                Webhook(name='Webhook 2', payload_url=DUMMY_URL, secret=DUMMY_SECRET),
-                Webhook(name='Webhook 3', payload_url=DUMMY_URL, secret=DUMMY_SECRET),
-            )
-        )
+        webhooks = Webhook.objects.bulk_create((
+            Webhook(name='Webhook 1', payload_url=DUMMY_URL, secret=DUMMY_SECRET, additional_headers='X-Foo: Bar'),
+            Webhook(name='Webhook 2', payload_url=DUMMY_URL, secret=DUMMY_SECRET),
+            Webhook(name='Webhook 3', payload_url=DUMMY_URL, secret=DUMMY_SECRET),
+        ))
 
         webhook_type = ObjectType.objects.get(app_label='extras', model='webhook')
-        event_rules = EventRule.objects.bulk_create(
-            (
-                EventRule(
-                    name='Event Rule 1',
-                    event_types=[OBJECT_CREATED],
-                    action_type=EventRuleActionChoices.WEBHOOK,
-                    action_object_type=webhook_type,
-                    action_object_id=webhooks[0].id,
-                    action_data={'foo': 1},
-                ),
-                EventRule(
-                    name='Event Rule 2',
-                    event_types=[OBJECT_UPDATED],
-                    action_type=EventRuleActionChoices.WEBHOOK,
-                    action_object_type=webhook_type,
-                    action_object_id=webhooks[0].id,
-                    action_data={'foo': 2},
-                ),
-                EventRule(
-                    name='Event Rule 3',
-                    event_types=[OBJECT_DELETED],
-                    action_type=EventRuleActionChoices.WEBHOOK,
-                    action_object_type=webhook_type,
-                    action_object_id=webhooks[0].id,
-                    action_data={'foo': 3},
-                ),
-            )
-        )
+        event_rules = EventRule.objects.bulk_create((
+            EventRule(
+                name='Event Rule 1',
+                event_types=[OBJECT_CREATED],
+                action_type=EventRuleActionChoices.WEBHOOK,
+                action_object_type=webhook_type,
+                action_object_id=webhooks[0].id,
+                action_data={"foo": 1},
+            ),
+            EventRule(
+                name='Event Rule 2',
+                event_types=[OBJECT_UPDATED],
+                action_type=EventRuleActionChoices.WEBHOOK,
+                action_object_type=webhook_type,
+                action_object_id=webhooks[0].id,
+                action_data={"foo": 2},
+            ),
+            EventRule(
+                name='Event Rule 3',
+                event_types=[OBJECT_DELETED],
+                action_type=EventRuleActionChoices.WEBHOOK,
+                action_object_type=webhook_type,
+                action_object_id=webhooks[0].id,
+                action_data={"foo": 3},
+            ),
+        ))
         for event_rule in event_rules:
             event_rule.object_types.set([site_type])
 
-        Tag.objects.bulk_create(
-            (
-                Tag(name='Foo', slug='foo'),
-                Tag(name='Bar', slug='bar'),
-                Tag(name='Baz', slug='baz'),
-            )
-        )
+        Tag.objects.bulk_create((
+            Tag(name='Foo', slug='foo'),
+            Tag(name='Bar', slug='bar'),
+            Tag(name='Baz', slug='baz'),
+        ))
 
     def test_eventrule_conditions(self):
         """
@@ -97,7 +93,7 @@ class EventRuleTest(APITestCase):
                         'value': 'active',
                     }
                 ]
-            },
+            }
         )
 
         # Create a Site to evaluate
@@ -125,7 +121,7 @@ class EventRuleTest(APITestCase):
             'tags': [
                 {'name': 'Foo'},
                 {'name': 'Bar'},
-            ],
+            ]
         }
         url = reverse('dcim-api:site-list')
         self.add_permissions('dcim.add_site')
@@ -159,7 +155,7 @@ class EventRuleTest(APITestCase):
                 'tags': [
                     {'name': 'Foo'},
                     {'name': 'Bar'},
-                ],
+                ]
             },
             {
                 'name': 'Site 2',
@@ -167,7 +163,7 @@ class EventRuleTest(APITestCase):
                 'tags': [
                     {'name': 'Foo'},
                     {'name': 'Bar'},
-                ],
+                ]
             },
             {
                 'name': 'Site 3',
@@ -175,7 +171,7 @@ class EventRuleTest(APITestCase):
                 'tags': [
                     {'name': 'Foo'},
                     {'name': 'Bar'},
-                ],
+                ]
             },
         ]
         url = reverse('dcim-api:site-list')
@@ -205,7 +201,13 @@ class EventRuleTest(APITestCase):
         site.tags.set(Tag.objects.filter(name__in=['Foo', 'Bar']))
 
         # Update an object via the REST API
-        data = {'name': 'Site X', 'comments': 'Updated the site', 'tags': [{'name': 'Baz'}]}
+        data = {
+            'name': 'Site X',
+            'comments': 'Updated the site',
+            'tags': [
+                {'name': 'Baz'}
+            ]
+        }
         url = reverse('dcim-api:site-detail', kwargs={'pk': site.pk})
         self.add_permissions('dcim.change_site')
         response = self.client.patch(url, data, format='json', **self.header)
@@ -241,9 +243,27 @@ class EventRuleTest(APITestCase):
 
         # Update three objects via the REST API
         data = [
-            {'id': sites[0].pk, 'name': 'Site X', 'tags': [{'name': 'Baz'}]},
-            {'id': sites[1].pk, 'name': 'Site Y', 'tags': [{'name': 'Baz'}]},
-            {'id': sites[2].pk, 'name': 'Site Z', 'tags': [{'name': 'Baz'}]},
+            {
+                'id': sites[0].pk,
+                'name': 'Site X',
+                'tags': [
+                    {'name': 'Baz'}
+                ]
+            },
+            {
+                'id': sites[1].pk,
+                'name': 'Site Y',
+                'tags': [
+                    {'name': 'Baz'}
+                ]
+            },
+            {
+                'id': sites[2].pk,
+                'name': 'Site Z',
+                'tags': [
+                    {'name': 'Baz'}
+                ]
+            },
         ]
         url = reverse('dcim-api:site-list')
         self.add_permissions('dcim.change_site')
@@ -303,7 +323,9 @@ class EventRuleTest(APITestCase):
             site.tags.set(Tag.objects.filter(name__in=['Foo', 'Bar']))
 
         # Delete three objects via the REST API
-        data = [{'id': site.pk} for site in sites]
+        data = [
+            {'id': site.pk} for site in sites
+        ]
         url = reverse('dcim-api:site-list')
         self.add_permissions('dcim.delete_site')
         response = self.client.delete(url, data, format='json', **self.header)
@@ -389,7 +411,7 @@ class EventRuleTest(APITestCase):
             site.save()
             site.description = 'foo'
             site.save()
-        self.assertEqual(self.queue.count, 1, msg='Duplicate jobs found in queue')
+        self.assertEqual(self.queue.count, 1, msg="Duplicate jobs found in queue")
         job = self.queue.get_jobs()[0]
         self.assertEqual(job.kwargs['event_type'], OBJECT_CREATED)
         self.queue.empty()
@@ -401,7 +423,7 @@ class EventRuleTest(APITestCase):
             site.save()
             site.description = 'bar'
             site.save()
-        self.assertEqual(self.queue.count, 1, msg='Duplicate jobs found in queue')
+        self.assertEqual(self.queue.count, 1, msg="Duplicate jobs found in queue")
         job = self.queue.get_jobs()[0]
         self.assertEqual(job.kwargs['event_type'], OBJECT_UPDATED)
         self.queue.empty()
@@ -412,7 +434,7 @@ class EventRuleTest(APITestCase):
             site.description = 'foo'
             site.save()
             site.delete()
-        self.assertEqual(self.queue.count, 1, msg='Duplicate jobs found in queue')
+        self.assertEqual(self.queue.count, 1, msg="Duplicate jobs found in queue")
         job = self.queue.get_jobs()[0]
         self.assertEqual(job.kwargs['event_type'], OBJECT_DELETED)
         self.queue.empty()

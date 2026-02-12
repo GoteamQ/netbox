@@ -20,6 +20,7 @@ class NestedIPAddressSerializer(WritableNestedSerializer):
 
 
 class NestedVLANSerializer(WritableNestedSerializer):
+
     class Meta:
         model = models.VLAN
         fields = ['id', 'url', 'display', 'vid', 'name', 'description']

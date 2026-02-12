@@ -13,13 +13,7 @@ from netbox.graphql.filters import ChangeLoggedModelFilter, PrimaryModelFilter
 if TYPE_CHECKING:
     from core.graphql.filters import ContentTypeFilter
     from dcim.graphql.filters import (
-        DeviceRoleFilter,
-        DeviceTypeFilter,
-        LocationFilter,
-        PlatformFilter,
-        RegionFilter,
-        SiteFilter,
-        SiteGroupFilter,
+        DeviceRoleFilter, DeviceTypeFilter, LocationFilter, PlatformFilter, RegionFilter, SiteFilter, SiteGroupFilter,
     )
     from tenancy.graphql.filters import TenantFilter, TenantGroupFilter
     from netbox.graphql.enums import ColorEnum
@@ -147,7 +141,9 @@ class CustomFieldFilter(ChangeLoggedModelFilter):
     )
     filter_logic: (
         BaseFilterLookup[Annotated['CustomFieldFilterLogicEnum', strawberry.lazy('extras.graphql.enums')]] | None
-    ) = strawberry_django.filter_field()
+    ) = (
+        strawberry_django.filter_field()
+    )
     default: Annotated['JSONFilter', strawberry.lazy('netbox.graphql.filter_lookups')] | None = (
         strawberry_django.filter_field()
     )
@@ -170,10 +166,14 @@ class CustomFieldFilter(ChangeLoggedModelFilter):
     choice_set_id: ID | None = strawberry_django.filter_field()
     ui_visible: (
         BaseFilterLookup[Annotated['CustomFieldUIVisibleEnum', strawberry.lazy('extras.graphql.enums')]] | None
-    ) = strawberry_django.filter_field()
+    ) = (
+        strawberry_django.filter_field()
+    )
     ui_editable: (
         BaseFilterLookup[Annotated['CustomFieldUIEditableEnum', strawberry.lazy('extras.graphql.enums')]] | None
-    ) = strawberry_django.filter_field()
+    ) = (
+        strawberry_django.filter_field()
+    )
     is_cloneable: FilterLookup[bool] | None = strawberry_django.filter_field()
     comments: FilterLookup[str] | None = strawberry_django.filter_field()
 
@@ -184,7 +184,9 @@ class CustomFieldChoiceSetFilter(ChangeLoggedModelFilter):
     description: FilterLookup[str] | None = strawberry_django.filter_field()
     base_choices: (
         BaseFilterLookup[Annotated['CustomFieldChoiceSetBaseEnum', strawberry.lazy('extras.graphql.enums')]] | None
-    ) = strawberry_django.filter_field()
+    ) = (
+        strawberry_django.filter_field()
+    )
     extra_choices: Annotated['StringArrayLookup', strawberry.lazy('netbox.graphql.filter_lookups')] | None = (
         strawberry_django.filter_field()
     )
@@ -203,7 +205,9 @@ class CustomLinkFilter(ChangeLoggedModelFilter):
     group_name: FilterLookup[str] | None = strawberry_django.filter_field()
     button_class: (
         BaseFilterLookup[Annotated['CustomLinkButtonClassEnum', strawberry.lazy('extras.graphql.enums')]] | None
-    ) = strawberry_django.filter_field()
+    ) = (
+        strawberry_django.filter_field()
+    )
     new_window: FilterLookup[bool] | None = strawberry_django.filter_field()
 
 
@@ -307,7 +311,9 @@ class WebhookFilter(CustomFieldsFilterMixin, TagsFilterMixin, ChangeLoggedModelF
     payload_url: FilterLookup[str] | None = strawberry_django.filter_field()
     http_method: (
         BaseFilterLookup[Annotated['WebhookHttpMethodEnum', strawberry.lazy('extras.graphql.enums')]] | None
-    ) = strawberry_django.filter_field()
+    ) = (
+        strawberry_django.filter_field()
+    )
     http_content_type: FilterLookup[str] | None = strawberry_django.filter_field()
     additional_headers: FilterLookup[str] | None = strawberry_django.filter_field()
     body_template: FilterLookup[str] | None = strawberry_django.filter_field()

@@ -15,20 +15,29 @@ from utilities.forms.utils import parse_csv
 
 
 class BulkImportForm(ChangelogMessageMixin, BackgroundJobMixin, SyncedDataMixin, forms.Form):
-    import_method = forms.ChoiceField(choices=ImportMethodChoices, required=False)
+    import_method = forms.ChoiceField(
+        choices=ImportMethodChoices,
+        required=False
+    )
     data = forms.CharField(
         required=False,
         widget=forms.Textarea(attrs={'class': 'font-monospace'}),
-        help_text=_('Enter object data in CSV, JSON or YAML format.'),
+        help_text=_("Enter object data in CSV, JSON or YAML format.")
     )
-    upload_file = forms.FileField(label=_('Data file'), required=False)
-    format = forms.ChoiceField(choices=ImportFormatChoices, initial=ImportFormatChoices.AUTO)
+    upload_file = forms.FileField(
+        label=_("Data file"),
+        required=False
+    )
+    format = forms.ChoiceField(
+        choices=ImportFormatChoices,
+        initial=ImportFormatChoices.AUTO
+    )
     csv_delimiter = forms.ChoiceField(
         choices=CSVDelimiterChoices,
         initial=CSVDelimiterChoices.AUTO,
-        label=_('CSV delimiter'),
-        help_text=_('The character which delimits CSV fields. Applies only to CSV format.'),
-        required=False,
+        label=_("CSV delimiter"),
+        help_text=_("The character which delimits CSV fields. Applies only to CSV format."),
+        required=False
     )
 
     data_field = 'data'
@@ -41,7 +50,7 @@ class BulkImportForm(ChangelogMessageMixin, BackgroundJobMixin, SyncedDataMixin,
 
         # Determine whether we're reading from form data or an uploaded file
         if self.cleaned_data['data'] and import_method != ImportMethodChoices.DIRECT:
-            raise forms.ValidationError(_('Form data must be empty when uploading/selecting a file.'))
+            raise forms.ValidationError(_("Form data must be empty when uploading/selecting a file."))
         if import_method == ImportMethodChoices.UPLOAD:
             self.upload_file = 'upload_file'
             file = self.files.get('upload_file')
@@ -70,7 +79,7 @@ class BulkImportForm(ChangelogMessageMixin, BackgroundJobMixin, SyncedDataMixin,
         elif format == ImportFormatChoices.YAML:
             self.cleaned_data['data'] = self._clean_yaml(data)
         else:
-            raise forms.ValidationError(_('Unknown data format: {format}').format(format=format))
+            raise forms.ValidationError(_("Unknown data format: {format}").format(format=format))
 
     def _detect_format(self, data):
         """
@@ -89,7 +98,9 @@ class BulkImportForm(ChangelogMessageMixin, BackgroundJobMixin, SyncedDataMixin,
                 return ImportFormatChoices.CSV
         except IndexError:
             pass
-        raise forms.ValidationError({'format': _('Unable to detect data format. Please specify.')})
+        raise forms.ValidationError({
+            'format': _('Unable to detect data format. Please specify.')
+        })
 
     def _clean_csv(self, data, delimiter=CSVDelimiterChoices.AUTO):
         """
@@ -110,11 +121,9 @@ class BulkImportForm(ChangelogMessageMixin, BackgroundJobMixin, SyncedDataMixin,
         elif delimiter == CSVDelimiterChoices.TAB:
             dialect = csv.excel_tab
         else:
-            raise forms.ValidationError(
-                {
-                    'csv_delimiter': _('Invalid CSV delimiter'),
-                }
-            )
+            raise forms.ValidationError({
+                'csv_delimiter': _('Invalid CSV delimiter'),
+            })
 
         stream = StringIO(data.strip())
         reader = csv.reader(stream, dialect=dialect)
@@ -137,7 +146,9 @@ class BulkImportForm(ChangelogMessageMixin, BackgroundJobMixin, SyncedDataMixin,
                 data = [data]
             return data
         except json.decoder.JSONDecodeError as err:
-            raise forms.ValidationError({self.data_field: f'Invalid JSON data: {err}'})
+            raise forms.ValidationError({
+                self.data_field: f"Invalid JSON data: {err}"
+            })
 
     def _clean_yaml(self, data):
         """
@@ -153,15 +164,15 @@ class BulkImportForm(ChangelogMessageMixin, BackgroundJobMixin, SyncedDataMixin,
                 elif type(data) is dict:
                     records.append(data)
                 else:
-                    raise forms.ValidationError(
-                        {
-                            self.data_field: _(
-                                'Invalid YAML data. Data must be in the form of multiple documents, or a single '
-                                'document comprising a list of dictionaries.'
-                            )
-                        }
-                    )
+                    raise forms.ValidationError({
+                        self.data_field: _(
+                            "Invalid YAML data. Data must be in the form of multiple documents, or a single document "
+                            "comprising a list of dictionaries."
+                        )
+                    })
         except yaml.error.YAMLError as err:
-            raise forms.ValidationError({self.data_field: f'Invalid YAML data: {err}'})
+            raise forms.ValidationError({
+                self.data_field: f"Invalid YAML data: {err}"
+            })
 
         return records

@@ -20,41 +20,40 @@ __all__ = (
 # Tenants
 #
 
-
 class TenantGroupForm(NestedGroupModelForm):
-    parent = DynamicModelChoiceField(label=_('Parent'), queryset=TenantGroup.objects.all(), required=False)
+    parent = DynamicModelChoiceField(
+        label=_('Parent'),
+        queryset=TenantGroup.objects.all(),
+        required=False
+    )
 
-    fieldsets = (FieldSet('parent', 'name', 'slug', 'description', 'tags', name=_('Tenant Group')),)
+    fieldsets = (
+        FieldSet('parent', 'name', 'slug', 'description', 'tags', name=_('Tenant Group')),
+    )
 
     class Meta:
         model = TenantGroup
         fields = [
-            'parent',
-            'name',
-            'slug',
-            'description',
-            'owner',
-            'comments',
-            'tags',
+            'parent', 'name', 'slug', 'description', 'owner', 'comments', 'tags',
         ]
 
 
 class TenantForm(PrimaryModelForm):
     slug = SlugField()
-    group = DynamicModelChoiceField(label=_('Group'), queryset=TenantGroup.objects.all(), required=False)
+    group = DynamicModelChoiceField(
+        label=_('Group'),
+        queryset=TenantGroup.objects.all(),
+        required=False
+    )
 
-    fieldsets = (FieldSet('name', 'slug', 'group', 'description', 'tags', name=_('Tenant')),)
+    fieldsets = (
+        FieldSet('name', 'slug', 'group', 'description', 'tags', name=_('Tenant')),
+    )
 
     class Meta:
         model = Tenant
         fields = (
-            'name',
-            'slug',
-            'group',
-            'description',
-            'owner',
-            'comments',
-            'tags',
+            'name', 'slug', 'group', 'description', 'owner', 'comments', 'tags',
         )
 
 
@@ -62,11 +61,16 @@ class TenantForm(PrimaryModelForm):
 # Contacts
 #
 
-
 class ContactGroupForm(NestedGroupModelForm):
-    parent = DynamicModelChoiceField(label=_('Parent'), queryset=ContactGroup.objects.all(), required=False)
+    parent = DynamicModelChoiceField(
+        label=_('Parent'),
+        queryset=ContactGroup.objects.all(),
+        required=False
+    )
 
-    fieldsets = (FieldSet('parent', 'name', 'slug', 'description', 'tags', name=_('Contact Group')),)
+    fieldsets = (
+        FieldSet('parent', 'name', 'slug', 'description', 'tags', name=_('Contact Group')),
+    )
 
     class Meta:
         model = ContactGroup
@@ -74,7 +78,9 @@ class ContactGroupForm(NestedGroupModelForm):
 
 
 class ContactRoleForm(OrganizationalModelForm):
-    fieldsets = (FieldSet('name', 'slug', 'description', 'tags', name=_('Contact Role')),)
+    fieldsets = (
+        FieldSet('name', 'slug', 'description', 'tags', name=_('Contact Role')),
+    )
 
     class Meta:
         model = ContactRole
@@ -82,7 +88,11 @@ class ContactRoleForm(OrganizationalModelForm):
 
 
 class ContactForm(PrimaryModelForm):
-    groups = DynamicModelMultipleChoiceField(label=_('Groups'), queryset=ContactGroup.objects.all(), required=False)
+    groups = DynamicModelMultipleChoiceField(
+        label=_('Groups'),
+        queryset=ContactGroup.objects.all(),
+        required=False
+    )
     link = forms.URLField(
         label=_('Link'),
         assume_scheme='https',
@@ -91,24 +101,15 @@ class ContactForm(PrimaryModelForm):
 
     fieldsets = (
         FieldSet(
-            'groups', 'name', 'title', 'phone', 'email', 'address', 'link', 'description', 'tags', name=_('Contact')
+            'groups', 'name', 'title', 'phone', 'email', 'address', 'link', 'description', 'tags',
+            name=_('Contact')
         ),
     )
 
     class Meta:
         model = Contact
         fields = (
-            'groups',
-            'name',
-            'title',
-            'phone',
-            'email',
-            'address',
-            'link',
-            'description',
-            'owner',
-            'comments',
-            'tags',
+            'groups', 'name', 'title', 'phone', 'email', 'address', 'link', 'description', 'owner', 'comments', 'tags',
         )
         widgets = {
             'address': forms.Textarea(attrs={'rows': 3}),
@@ -117,18 +118,34 @@ class ContactForm(PrimaryModelForm):
 
 class ContactAssignmentForm(NetBoxModelForm):
     group = DynamicModelChoiceField(
-        label=_('Group'), queryset=ContactGroup.objects.all(), required=False, initial_params={'contact': '$contact'}
+        label=_('Group'),
+        queryset=ContactGroup.objects.all(),
+        required=False,
+        initial_params={
+            'contact': '$contact'
+        }
     )
     contact = DynamicModelChoiceField(
-        label=_('Contact'), queryset=Contact.objects.all(), query_params={'group_id': '$group'}
+        label=_('Contact'),
+        queryset=Contact.objects.all(),
+        query_params={
+            'group_id': '$group'
+        }
     )
-    role = DynamicModelChoiceField(label=_('Role'), queryset=ContactRole.objects.all())
+    role = DynamicModelChoiceField(
+        label=_('Role'),
+        queryset=ContactRole.objects.all()
+    )
 
-    fieldsets = (FieldSet(ObjectAttribute('object'), 'group', 'contact', 'role', 'priority', 'tags'),)
+    fieldsets = (
+        FieldSet(ObjectAttribute('object'), 'group', 'contact', 'role', 'priority', 'tags'),
+    )
 
     class Meta:
         model = ContactAssignment
-        fields = ('object_type', 'object_id', 'group', 'contact', 'role', 'priority', 'tags')
+        fields = (
+            'object_type', 'object_id', 'group', 'contact', 'role', 'priority', 'tags'
+        )
         widgets = {
             'object_type': forms.HiddenInput(),
             'object_id': forms.HiddenInput(),

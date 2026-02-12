@@ -29,9 +29,9 @@ PREFIX_LENGTH_MAX = 127  # IPv6
 #
 
 IPADDRESS_ASSIGNMENT_MODELS = Q(
-    Q(app_label='dcim', model='interface')
-    | Q(app_label='ipam', model='fhrpgroup')
-    | Q(app_label='virtualization', model='vminterface')
+    Q(app_label='dcim', model='interface') |
+    Q(app_label='ipam', model='fhrpgroup') |
+    Q(app_label='virtualization', model='vminterface')
 )
 
 IPADDRESS_MASK_LENGTH_MIN = 1
@@ -75,13 +75,7 @@ VLAN_VID_MAX = 4094
 
 # models values for ContentTypes which may be VLANGroup scope types
 VLANGROUP_SCOPE_TYPES = (
-    'region',
-    'sitegroup',
-    'site',
-    'location',
-    'rack',
-    'clustergroup',
-    'cluster',
+    'region', 'sitegroup', 'site', 'location', 'rack', 'clustergroup', 'cluster',
 )
 
 
@@ -90,9 +84,9 @@ VLANGROUP_SCOPE_TYPES = (
 #
 
 SERVICE_ASSIGNMENT_MODELS = Q(
-    Q(app_label='dcim', model='device')
-    | Q(app_label='ipam', model='fhrpgroup')
-    | Q(app_label='virtualization', model='virtualmachine')
+    Q(app_label='dcim', model='device') |
+    Q(app_label='ipam', model='fhrpgroup') |
+    Q(app_label='virtualization', model='virtualmachine')
 )
 
 # 16-bit port number

@@ -7,10 +7,7 @@ from dcim.models import Cable, CablePath, CableTermination
 from netbox.api.fields import ChoiceField, ContentTypeField
 from netbox.api.gfk_fields import GFKSerializerField
 from netbox.api.serializers import (
-    BaseModelSerializer,
-    GenericObjectSerializer,
-    NetBoxModelSerializer,
-    PrimaryModelSerializer,
+    BaseModelSerializer, GenericObjectSerializer, NetBoxModelSerializer, PrimaryModelSerializer,
 )
 from tenancy.api.serializers_.tenants import TenantSerializer
 from utilities.api import get_serializer_for_model
@@ -35,27 +32,9 @@ class CableSerializer(PrimaryModelSerializer):
     class Meta:
         model = Cable
         fields = [
-            'id',
-            'url',
-            'display_url',
-            'display',
-            'type',
-            'a_terminations',
-            'b_terminations',
-            'status',
-            'profile',
-            'tenant',
-            'label',
-            'color',
-            'length',
-            'length_unit',
-            'description',
-            'owner',
-            'comments',
-            'tags',
-            'custom_fields',
-            'created',
-            'last_updated',
+            'id', 'url', 'display_url', 'display', 'type', 'a_terminations', 'b_terminations', 'status', 'profile',
+            'tenant', 'label', 'color', 'length', 'length_unit', 'description', 'owner', 'comments', 'tags',
+            'custom_fields', 'created', 'last_updated',
         ]
         brief_fields = ('id', 'url', 'display', 'label', 'description')
 
@@ -68,16 +47,7 @@ class TracedCableSerializer(BaseModelSerializer):
     class Meta:
         model = Cable
         fields = [
-            'id',
-            'url',
-            'display_url',
-            'type',
-            'status',
-            'label',
-            'color',
-            'length',
-            'length_unit',
-            'description',
+            'id', 'url', 'display_url', 'type', 'status', 'label', 'color', 'length', 'length_unit', 'description',
         ]
 
 
@@ -90,29 +60,12 @@ class CableTerminationSerializer(NetBoxModelSerializer):
     class Meta:
         model = CableTermination
         fields = [
-            'id',
-            'url',
-            'display',
-            'cable',
-            'cable_end',
-            'termination_type',
-            'termination_id',
-            'termination',
-            'connector',
-            'positions',
-            'created',
-            'last_updated',
+            'id', 'url', 'display', 'cable', 'cable_end', 'termination_type', 'termination_id',
+            'termination', 'connector', 'positions', 'created', 'last_updated',
         ]
         read_only_fields = fields
         brief_fields = (
-            'id',
-            'url',
-            'display',
-            'cable',
-            'cable_end',
-            'connector',
-            'positions',
-            'termination_type',
+            'id', 'url', 'display', 'cable', 'cable_end', 'connector', 'positions', 'termination_type',
             'termination_id',
         )
 

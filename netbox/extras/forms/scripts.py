@@ -16,21 +16,23 @@ class ScriptForm(forms.Form):
     _commit = forms.BooleanField(
         required=False,
         initial=True,
-        label=_('Commit changes'),
-        help_text=_('Commit changes to the database (uncheck for a dry-run)'),
+        label=_("Commit changes"),
+        help_text=_("Commit changes to the database (uncheck for a dry-run)")
     )
     _schedule_at = forms.DateTimeField(
         required=False,
         widget=DateTimePicker(),
-        label=_('Schedule at'),
-        help_text=_('Schedule execution of script to a set time'),
+        label=_("Schedule at"),
+        help_text=_("Schedule execution of script to a set time"),
     )
     _interval = forms.IntegerField(
         required=False,
         min_value=1,
-        label=_('Recurs every'),
-        widget=NumberWithOptions(options=JobIntervalChoices),
-        help_text=_('Interval at which this script is re-run (in minutes)'),
+        label=_("Recurs every"),
+        widget=NumberWithOptions(
+            options=JobIntervalChoices
+        ),
+        help_text=_("Interval at which this script is re-run (in minutes)")
     )
 
     def __init__(self, *args, scheduling_enabled=True, **kwargs):
@@ -61,11 +63,10 @@ class ScriptFileForm(ManagedFileForm):
     """
     ManagedFileForm with a custom save method to use django-storages.
     """
-
     def save(self, *args, **kwargs):
         # If a file was uploaded, save it to disk
         if self.cleaned_data['upload_file']:
-            storage = storages.create_storage(storages.backends['scripts'])
+            storage = storages.create_storage(storages.backends["scripts"])
 
             filename = self.cleaned_data['upload_file'].name
             self.instance.file_path = filename

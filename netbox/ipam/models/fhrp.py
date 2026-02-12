@@ -17,19 +17,36 @@ class FHRPGroup(PrimaryModel):
     """
     A grouping of next hope resolution protocol (FHRP) peers. (For instance, VRRP or HSRP.)
     """
-
-    group_id = models.PositiveSmallIntegerField(verbose_name=_('group ID'))
-    name = models.CharField(verbose_name=_('name'), max_length=100, blank=True)
-    protocol = models.CharField(verbose_name=_('protocol'), max_length=50, choices=FHRPGroupProtocolChoices)
-    auth_type = models.CharField(
-        max_length=50, choices=FHRPGroupAuthTypeChoices, blank=True, null=True, verbose_name=_('authentication type')
+    group_id = models.PositiveSmallIntegerField(
+        verbose_name=_('group ID')
     )
-    auth_key = models.CharField(max_length=255, blank=True, verbose_name=_('authentication key'))
+    name = models.CharField(
+        verbose_name=_('name'),
+        max_length=100,
+        blank=True
+    )
+    protocol = models.CharField(
+        verbose_name=_('protocol'),
+        max_length=50,
+        choices=FHRPGroupProtocolChoices
+    )
+    auth_type = models.CharField(
+        max_length=50,
+        choices=FHRPGroupAuthTypeChoices,
+        blank=True,
+        null=True,
+        verbose_name=_('authentication type')
+    )
+    auth_key = models.CharField(
+        max_length=255,
+        blank=True,
+        verbose_name=_('authentication key')
+    )
     ip_addresses = GenericRelation(
         to='ipam.IPAddress',
         content_type_field='assigned_object_type',
         object_id_field='assigned_object_id',
-        related_query_name='fhrpgroup',
+        related_query_name='fhrpgroup'
     )
     services = GenericRelation(
         to='ipam.Service',
@@ -56,33 +73,44 @@ class FHRPGroup(PrimaryModel):
         if self.pk:
             ip_address = self.ip_addresses.first()
             if ip_address:
-                return f'{name} ({ip_address})'
+                return f"{name} ({ip_address})"
 
         return name
 
 
 class FHRPGroupAssignment(ChangeLoggedModel):
-    interface_type = models.ForeignKey(to='contenttypes.ContentType', on_delete=models.CASCADE)
+    interface_type = models.ForeignKey(
+        to='contenttypes.ContentType',
+        on_delete=models.CASCADE
+    )
     interface_id = models.PositiveBigIntegerField()
-    interface = GenericForeignKey(ct_field='interface_type', fk_field='interface_id')
-    group = models.ForeignKey(to='ipam.FHRPGroup', on_delete=models.CASCADE)
+    interface = GenericForeignKey(
+        ct_field='interface_type',
+        fk_field='interface_id'
+    )
+    group = models.ForeignKey(
+        to='ipam.FHRPGroup',
+        on_delete=models.CASCADE
+    )
     priority = models.PositiveSmallIntegerField(
         verbose_name=_('priority'),
         validators=(
             MinValueValidator(FHRPGROUPASSIGNMENT_PRIORITY_MIN),
-            MaxValueValidator(FHRPGROUPASSIGNMENT_PRIORITY_MAX),
-        ),
+            MaxValueValidator(FHRPGROUPASSIGNMENT_PRIORITY_MAX)
+        )
     )
 
     clone_fields = ('interface_type', 'interface_id')
 
     class Meta:
         ordering = ('-priority', 'pk')
-        indexes = (models.Index(fields=('interface_type', 'interface_id')),)
+        indexes = (
+            models.Index(fields=('interface_type', 'interface_id')),
+        )
         constraints = (
             models.UniqueConstraint(
                 fields=('interface_type', 'interface_id', 'group'),
-                name='%(app_label)s_%(class)s_unique_interface_group',
+                name='%(app_label)s_%(class)s_unique_interface_group'
             ),
         )
         verbose_name = _('FHRP group assignment')

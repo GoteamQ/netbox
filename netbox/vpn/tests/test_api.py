@@ -10,6 +10,7 @@ from vpn.models import *
 
 
 class AppTest(APITestCase):
+
     def test_root(self):
         url = reverse('vpn-api:api-root')
         response = self.client.get('{}?format=api'.format(url), **self.header)
@@ -40,6 +41,7 @@ class TunnelGroupTest(APIViewTestCases.APIViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
+
         tunnel_groups = (
             TunnelGroup(name='Tunnel Group 1', slug='tunnel-group-1'),
             TunnelGroup(name='Tunnel Group 2', slug='tunnel-group-2'),
@@ -59,6 +61,7 @@ class TunnelTest(APIViewTestCases.APIViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
+
         tunnel_groups = (
             TunnelGroup(name='Tunnel Group 1', slug='tunnel-group-1'),
             TunnelGroup(name='Tunnel Group 2', slug='tunnel-group-2'),
@@ -70,19 +73,19 @@ class TunnelTest(APIViewTestCases.APIViewTestCase):
                 name='Tunnel 1',
                 status=TunnelStatusChoices.STATUS_ACTIVE,
                 group=tunnel_groups[0],
-                encapsulation=TunnelEncapsulationChoices.ENCAP_IP_IP,
+                encapsulation=TunnelEncapsulationChoices.ENCAP_IP_IP
             ),
             Tunnel(
                 name='Tunnel 2',
                 status=TunnelStatusChoices.STATUS_ACTIVE,
                 group=tunnel_groups[0],
-                encapsulation=TunnelEncapsulationChoices.ENCAP_IP_IP,
+                encapsulation=TunnelEncapsulationChoices.ENCAP_IP_IP
             ),
             Tunnel(
                 name='Tunnel 3',
                 status=TunnelStatusChoices.STATUS_ACTIVE,
                 group=tunnel_groups[0],
-                encapsulation=TunnelEncapsulationChoices.ENCAP_IP_IP,
+                encapsulation=TunnelEncapsulationChoices.ENCAP_IP_IP
             ),
         )
         Tunnel.objects.bulk_create(tunnels)
@@ -114,7 +117,7 @@ class TunnelTerminationTest(APIViewTestCases.APIViewTestCase):
     bulk_update_data = {
         'role': TunnelTerminationRoleChoices.ROLE_PEER,
     }
-    user_permissions = ('vpn.view_tunnel',)
+    user_permissions = ('vpn.view_tunnel', )
 
     @classmethod
     def setUpTestData(cls):
@@ -132,13 +135,25 @@ class TunnelTerminationTest(APIViewTestCases.APIViewTestCase):
         tunnel = Tunnel.objects.create(
             name='Tunnel 1',
             status=TunnelStatusChoices.STATUS_ACTIVE,
-            encapsulation=TunnelEncapsulationChoices.ENCAP_IP_IP,
+            encapsulation=TunnelEncapsulationChoices.ENCAP_IP_IP
         )
 
         tunnel_terminations = (
-            TunnelTermination(tunnel=tunnel, role=TunnelTerminationRoleChoices.ROLE_HUB, termination=interfaces[0]),
-            TunnelTermination(tunnel=tunnel, role=TunnelTerminationRoleChoices.ROLE_HUB, termination=interfaces[1]),
-            TunnelTermination(tunnel=tunnel, role=TunnelTerminationRoleChoices.ROLE_HUB, termination=interfaces[2]),
+            TunnelTermination(
+                tunnel=tunnel,
+                role=TunnelTerminationRoleChoices.ROLE_HUB,
+                termination=interfaces[0]
+            ),
+            TunnelTermination(
+                tunnel=tunnel,
+                role=TunnelTerminationRoleChoices.ROLE_HUB,
+                termination=interfaces[1]
+            ),
+            TunnelTermination(
+                tunnel=tunnel,
+                role=TunnelTerminationRoleChoices.ROLE_HUB,
+                termination=interfaces[2]
+            ),
         )
         TunnelTermination.objects.bulk_create(tunnel_terminations)
 
@@ -177,27 +192,28 @@ class IKEProposalTest(APIViewTestCases.APIViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
+
         ike_proposals = (
             IKEProposal(
                 name='IKE Proposal 1',
                 authentication_method=AuthenticationMethodChoices.PRESHARED_KEYS,
                 encryption_algorithm=EncryptionAlgorithmChoices.ENCRYPTION_AES128_CBC,
                 authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1,
-                group=DHGroupChoices.GROUP_14,
+                group=DHGroupChoices.GROUP_14
             ),
             IKEProposal(
                 name='IKE Proposal 2',
                 authentication_method=AuthenticationMethodChoices.PRESHARED_KEYS,
                 encryption_algorithm=EncryptionAlgorithmChoices.ENCRYPTION_AES128_CBC,
                 authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1,
-                group=DHGroupChoices.GROUP_14,
+                group=DHGroupChoices.GROUP_14
             ),
             IKEProposal(
                 name='IKE Proposal 3',
                 authentication_method=AuthenticationMethodChoices.PRESHARED_KEYS,
                 encryption_algorithm=EncryptionAlgorithmChoices.ENCRYPTION_AES128_CBC,
                 authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1,
-                group=DHGroupChoices.GROUP_14,
+                group=DHGroupChoices.GROUP_14
             ),
         )
         IKEProposal.objects.bulk_create(ike_proposals)
@@ -239,20 +255,21 @@ class IKEPolicyTest(APIViewTestCases.APIViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
+
         ike_proposals = (
             IKEProposal(
                 name='IKE Proposal 1',
                 authentication_method=AuthenticationMethodChoices.PRESHARED_KEYS,
                 encryption_algorithm=EncryptionAlgorithmChoices.ENCRYPTION_AES128_CBC,
                 authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1,
-                group=DHGroupChoices.GROUP_14,
+                group=DHGroupChoices.GROUP_14
             ),
             IKEProposal(
                 name='IKE Proposal 2',
                 authentication_method=AuthenticationMethodChoices.PRESHARED_KEYS,
                 encryption_algorithm=EncryptionAlgorithmChoices.ENCRYPTION_AES128_CBC,
                 authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1,
-                group=DHGroupChoices.GROUP_14,
+                group=DHGroupChoices.GROUP_14
             ),
         )
         IKEProposal.objects.bulk_create(ike_proposals)
@@ -311,21 +328,22 @@ class IPSecProposalTest(APIViewTestCases.APIViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
+
         ipsec_proposals = (
             IPSecProposal(
                 name='IPSec Proposal 1',
                 encryption_algorithm=EncryptionAlgorithmChoices.ENCRYPTION_AES128_CBC,
-                authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1,
+                authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1
             ),
             IPSecProposal(
                 name='IPSec Proposal 2',
                 encryption_algorithm=EncryptionAlgorithmChoices.ENCRYPTION_AES128_CBC,
-                authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1,
+                authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1
             ),
             IPSecProposal(
                 name='IPSec Proposal 3',
                 encryption_algorithm=EncryptionAlgorithmChoices.ENCRYPTION_AES128_CBC,
-                authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1,
+                authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1
             ),
         )
         IPSecProposal.objects.bulk_create(ipsec_proposals)
@@ -359,24 +377,34 @@ class IPSecPolicyTest(APIViewTestCases.APIViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
+
         ipsec_proposals = (
             IPSecProposal(
                 name='IPSec Policy 1',
                 encryption_algorithm=EncryptionAlgorithmChoices.ENCRYPTION_AES128_CBC,
-                authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1,
+                authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1
             ),
             IPSecProposal(
                 name='IPSec Proposal 2',
                 encryption_algorithm=EncryptionAlgorithmChoices.ENCRYPTION_AES128_CBC,
-                authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1,
+                authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1
             ),
         )
         IPSecProposal.objects.bulk_create(ipsec_proposals)
 
         ipsec_policies = (
-            IPSecPolicy(name='IPSec Policy 1', pfs_group=DHGroupChoices.GROUP_14),
-            IPSecPolicy(name='IPSec Policy 2', pfs_group=DHGroupChoices.GROUP_14),
-            IPSecPolicy(name='IPSec Policy 3', pfs_group=DHGroupChoices.GROUP_14),
+            IPSecPolicy(
+                name='IPSec Policy 1',
+                pfs_group=DHGroupChoices.GROUP_14
+            ),
+            IPSecPolicy(
+                name='IPSec Policy 2',
+                pfs_group=DHGroupChoices.GROUP_14
+            ),
+            IPSecPolicy(
+                name='IPSec Policy 3',
+                pfs_group=DHGroupChoices.GROUP_14
+            ),
         )
         IPSecPolicy.objects.bulk_create(ipsec_policies)
         for ipsec_policy in ipsec_policies:
@@ -408,18 +436,19 @@ class IPSecProfileTest(APIViewTestCases.APIViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
+
         ike_proposal = IKEProposal.objects.create(
             name='IKE Proposal 1',
             authentication_method=AuthenticationMethodChoices.PRESHARED_KEYS,
             encryption_algorithm=EncryptionAlgorithmChoices.ENCRYPTION_AES128_CBC,
             authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1,
-            group=DHGroupChoices.GROUP_14,
+            group=DHGroupChoices.GROUP_14
         )
 
         ipsec_proposal = IPSecProposal.objects.create(
             name='IPSec Proposal 1',
             encryption_algorithm=EncryptionAlgorithmChoices.ENCRYPTION_AES128_CBC,
-            authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1,
+            authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1
         )
 
         ike_policies = (
@@ -439,8 +468,14 @@ class IPSecProfileTest(APIViewTestCases.APIViewTestCase):
             ike_policy.proposals.add(ike_proposal)
 
         ipsec_policies = (
-            IPSecPolicy(name='IPSec Policy 1', pfs_group=DHGroupChoices.GROUP_14),
-            IPSecPolicy(name='IPSec Policy 2', pfs_group=DHGroupChoices.GROUP_14),
+            IPSecPolicy(
+                name='IPSec Policy 1',
+                pfs_group=DHGroupChoices.GROUP_14
+            ),
+            IPSecPolicy(
+                name='IPSec Policy 2',
+                pfs_group=DHGroupChoices.GROUP_14
+            ),
         )
         IPSecPolicy.objects.bulk_create(ipsec_policies)
         for ipsec_policy in ipsec_policies:
@@ -451,19 +486,19 @@ class IPSecProfileTest(APIViewTestCases.APIViewTestCase):
                 name='IPSec Profile 1',
                 mode=IPSecModeChoices.ESP,
                 ike_policy=ike_policies[0],
-                ipsec_policy=ipsec_policies[0],
+                ipsec_policy=ipsec_policies[0]
             ),
             IPSecProfile(
                 name='IPSec Profile 2',
                 mode=IPSecModeChoices.ESP,
                 ike_policy=ike_policies[0],
-                ipsec_policy=ipsec_policies[0],
+                ipsec_policy=ipsec_policies[0]
             ),
             IPSecProfile(
                 name='IPSec Profile 3',
                 mode=IPSecModeChoices.ESP,
                 ike_policy=ike_policies[0],
-                ipsec_policy=ipsec_policies[0],
+                ipsec_policy=ipsec_policies[0]
             ),
         )
         IPSecProfile.objects.bulk_create(ipsec_profiles)
@@ -517,25 +552,18 @@ class L2VPNTest(APIViewTestCases.APIViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
+
         l2vpns = (
             L2VPN(
-                name='L2VPN 1',
-                slug='l2vpn-1',
-                type='vxlan',
-                identifier=650001,
+                name='L2VPN 1', slug='l2vpn-1', type='vxlan', identifier=650001,
                 status=L2VPNStatusChoices.STATUS_ACTIVE,
             ),
             L2VPN(
-                name='L2VPN 2',
-                slug='l2vpn-2',
-                type='vpws',
-                identifier=650002,
+                name='L2VPN 2', slug='l2vpn-2', type='vpws', identifier=650002,
                 status=L2VPNStatusChoices.STATUS_PLANNED,
             ),
             L2VPN(
-                name='L2VPN 3',
-                slug='l2vpn-3',
-                type='vpls',
+                name='L2VPN 3', slug='l2vpn-3', type='vpls',
                 status=L2VPNStatusChoices.STATUS_DECOMMISSIONING,
             ),  # No RD
         )
@@ -581,6 +609,7 @@ class L2VPNTerminationTest(APIViewTestCases.APIViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
+
         vlans = (
             VLAN(name='VLAN 1', vid=651),
             VLAN(name='VLAN 2', vid=652),
@@ -588,7 +617,7 @@ class L2VPNTerminationTest(APIViewTestCases.APIViewTestCase):
             VLAN(name='VLAN 4', vid=654),
             VLAN(name='VLAN 5', vid=655),
             VLAN(name='VLAN 6', vid=656),
-            VLAN(name='VLAN 7', vid=657),
+            VLAN(name='VLAN 7', vid=657)
         )
         VLAN.objects.bulk_create(vlans)
 
@@ -602,7 +631,7 @@ class L2VPNTerminationTest(APIViewTestCases.APIViewTestCase):
         l2vpnterminations = (
             L2VPNTermination(l2vpn=l2vpns[0], assigned_object=vlans[0]),
             L2VPNTermination(l2vpn=l2vpns[0], assigned_object=vlans[1]),
-            L2VPNTermination(l2vpn=l2vpns[0], assigned_object=vlans[2]),
+            L2VPNTermination(l2vpn=l2vpns[0], assigned_object=vlans[2])
         )
         L2VPNTermination.objects.bulk_create(l2vpnterminations)
 
@@ -624,4 +653,6 @@ class L2VPNTerminationTest(APIViewTestCases.APIViewTestCase):
             },
         ]
 
-        cls.bulk_update_data = {'l2vpn': l2vpns[2].pk}
+        cls.bulk_update_data = {
+            'l2vpn': l2vpns[2].pk
+        }

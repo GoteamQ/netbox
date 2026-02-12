@@ -15,7 +15,6 @@ class ConnectedEndpointsSerializer(serializers.ModelSerializer):
     """
     Legacy serializer for pre-v3.3 connections
     """
-
     connected_endpoints_type = serializers.SerializerMethodField(read_only=True, allow_null=True)
     connected_endpoints = serializers.SerializerMethodField(read_only=True)
     connected_endpoints_reachable = serializers.SerializerMethodField(read_only=True)
@@ -44,7 +43,6 @@ class PortSerializer(serializers.ModelSerializer):
     """
     Base serializer for front & rear port and port templates.
     """
-
     @property
     def _mapper(self):
         """
@@ -58,7 +56,7 @@ class PortSerializer(serializers.ModelSerializer):
             return PortTemplateMapping, 'front_port'
         if self.Meta.model is RearPortTemplate:
             return PortTemplateMapping, 'rear_port'
-        raise ValueError(f'Could not determine mapping details for {self.__class__}')
+        raise ValueError(f"Could not determine mapping details for {self.__class__}")
 
     def create(self, validated_data):
         mappings = validated_data.pop('mappings', [])
@@ -67,12 +65,10 @@ class PortSerializer(serializers.ModelSerializer):
         # Create port mappings
         mapping_model, fk_name = self._mapper
         for attrs in mappings:
-            mapping_model.objects.create(
-                **{
-                    fk_name: instance,
-                    **attrs,
-                }
-            )
+            mapping_model.objects.create(**{
+                fk_name: instance,
+                **attrs,
+            })
 
         return instance
 
@@ -85,11 +81,9 @@ class PortSerializer(serializers.ModelSerializer):
             mapping_model, fk_name = self._mapper
             mapping_model.objects.filter(**{fk_name: instance}).delete()
             for attrs in mappings:
-                mapping_model.objects.create(
-                    **{
-                        fk_name: instance,
-                        **attrs,
-                    }
-                )
+                mapping_model.objects.create(**{
+                    fk_name: instance,
+                    **attrs,
+                })
 
         return instance

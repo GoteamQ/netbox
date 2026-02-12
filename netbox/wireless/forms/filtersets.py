@@ -27,7 +27,9 @@ class WirelessLANGroupFilterForm(NestedGroupModelFilterSetForm):
         FieldSet('owner_group_id', 'owner_id', name=_('Ownership')),
     )
     parent_id = DynamicModelMultipleChoiceField(
-        queryset=WirelessLANGroup.objects.all(), required=False, label=_('Parent group')
+        queryset=WirelessLANGroup.objects.all(),
+        required=False,
+        label=_('Parent group')
     )
     tag = TagFilterField(model)
 
@@ -42,21 +44,44 @@ class WirelessLANFilterForm(TenancyFilterForm, PrimaryModelFilterSetForm):
         FieldSet('tenant_group_id', 'tenant_id', name=_('Tenant')),
         FieldSet('owner_group_id', 'owner_id', name=_('Ownership')),
     )
-    ssid = forms.CharField(required=False, label=_('SSID'))
-    group_id = DynamicModelMultipleChoiceField(
-        queryset=WirelessLANGroup.objects.all(), required=False, null_option='None', label=_('Group')
+    ssid = forms.CharField(
+        required=False,
+        label=_('SSID')
     )
-    status = forms.ChoiceField(label=_('Status'), required=False, choices=add_blank_choice(WirelessLANStatusChoices))
+    group_id = DynamicModelMultipleChoiceField(
+        queryset=WirelessLANGroup.objects.all(),
+        required=False,
+        null_option='None',
+        label=_('Group')
+    )
+    status = forms.ChoiceField(
+        label=_('Status'),
+        required=False,
+        choices=add_blank_choice(WirelessLANStatusChoices)
+    )
     auth_type = forms.ChoiceField(
-        label=_('Authentication type'), required=False, choices=add_blank_choice(WirelessAuthTypeChoices)
+        label=_('Authentication type'),
+        required=False,
+        choices=add_blank_choice(WirelessAuthTypeChoices)
     )
     auth_cipher = forms.ChoiceField(
-        label=_('Authentication cipher'), required=False, choices=add_blank_choice(WirelessAuthCipherChoices)
+        label=_('Authentication cipher'),
+        required=False,
+        choices=add_blank_choice(WirelessAuthCipherChoices)
     )
-    auth_psk = forms.CharField(label=_('Pre-shared key'), required=False)
-    region_id = DynamicModelMultipleChoiceField(queryset=Region.objects.all(), required=False, label=_('Region'))
+    auth_psk = forms.CharField(
+        label=_('Pre-shared key'),
+        required=False
+    )
+    region_id = DynamicModelMultipleChoiceField(
+        queryset=Region.objects.all(),
+        required=False,
+        label=_('Region')
+    )
     site_group_id = DynamicModelMultipleChoiceField(
-        queryset=SiteGroup.objects.all(), required=False, label=_('Site group')
+        queryset=SiteGroup.objects.all(),
+        required=False,
+        label=_('Site group')
     )
     site_id = DynamicModelMultipleChoiceField(
         queryset=Site.objects.all(),
@@ -66,9 +91,13 @@ class WirelessLANFilterForm(TenancyFilterForm, PrimaryModelFilterSetForm):
             'region_id': '$region_id',
             'site_group_id': '$site_group_id',
         },
-        label=_('Site'),
+        label=_('Site')
     )
-    location_id = DynamicModelMultipleChoiceField(queryset=Location.objects.all(), required=False, label=_('Location'))
+    location_id = DynamicModelMultipleChoiceField(
+        queryset=Location.objects.all(),
+        required=False,
+        label=_('Location')
+    )
     tag = TagFilterField(model)
 
 
@@ -81,20 +110,36 @@ class WirelessLinkFilterForm(TenancyFilterForm, PrimaryModelFilterSetForm):
         FieldSet('tenant_group_id', 'tenant_id', name=_('Tenant')),
         FieldSet('owner_group_id', 'owner_id', name=_('Ownership')),
     )
-    ssid = forms.CharField(required=False, label=_('SSID'))
-    status = forms.ChoiceField(label=_('Status'), required=False, choices=add_blank_choice(LinkStatusChoices))
+    ssid = forms.CharField(
+        required=False,
+        label=_('SSID')
+    )
+    status = forms.ChoiceField(
+        label=_('Status'),
+        required=False,
+        choices=add_blank_choice(LinkStatusChoices)
+    )
     auth_type = forms.ChoiceField(
-        label=_('Authentication type'), required=False, choices=add_blank_choice(WirelessAuthTypeChoices)
+        label=_('Authentication type'),
+        required=False,
+        choices=add_blank_choice(WirelessAuthTypeChoices)
     )
     auth_cipher = forms.ChoiceField(
-        label=_('Authentication cipher'), required=False, choices=add_blank_choice(WirelessAuthCipherChoices)
+        label=_('Authentication cipher'),
+        required=False,
+        choices=add_blank_choice(WirelessAuthCipherChoices)
     )
-    auth_psk = forms.CharField(label=_('Pre-shared key'), required=False)
+    auth_psk = forms.CharField(
+        label=_('Pre-shared key'),
+        required=False
+    )
     distance = forms.DecimalField(
         label=_('Distance'),
         required=False,
     )
     distance_unit = forms.ChoiceField(
-        label=_('Distance unit'), choices=add_blank_choice(DistanceUnitChoices), required=False
+        label=_('Distance unit'),
+        choices=add_blank_choice(DistanceUnitChoices),
+        required=False
     )
     tag = TagFilterField(model)

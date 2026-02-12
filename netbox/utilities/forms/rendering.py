@@ -25,7 +25,6 @@ class FieldSet:
         items: An iterable of items to be rendered (one per row)
         name: The fieldset's name, displayed as a heading (optional)
     """
-
     def __init__(self, *items, name=None):
         self.items = items
         self.name = name
@@ -39,7 +38,6 @@ class InlineFields:
         fields: An iterable of form field names
         label: The label text to render for the row (optional)
     """
-
     def __init__(self, *fields, label=None):
         self.fields = fields
         self.label = label
@@ -53,15 +51,16 @@ class TabbedGroups:
         fieldsets: An iterable of FieldSet instances, one per tab. Each FieldSet *must* have a
             name assigned, which will be employed as the tab's label.
     """
-
     def __init__(self, *fieldsets):
         for fs in fieldsets:
             if not fs.name:
-                raise ValueError(f'Grouped fieldset {fs} must have a name.')
+                raise ValueError(f"Grouped fieldset {fs} must have a name.")
         self.groups = fieldsets
 
         # Initialize a random ID for the group (for tab selection)
-        self.id = ''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(8))
+        self.id = ''.join(
+            random.choice(string.ascii_lowercase + string.digits) for _ in range(8)
+        )
 
     @cached_property
     def tabs(self):
@@ -70,8 +69,7 @@ class TabbedGroups:
                 'id': f'{self.id}_{i}',
                 'title': group.name,
                 'fields': group.items,
-            }
-            for i, group in enumerate(self.groups, start=1)
+            } for i, group in enumerate(self.groups, start=1)
         ]
 
 
@@ -84,6 +82,5 @@ class ObjectAttribute:
     Parameters:
         name: The name of the attribute to be displayed
     """
-
     def __init__(self, name):
         self.name = name

@@ -59,19 +59,15 @@ def oc_circuittermination_termination(objectchange, reverting):
         if data is None:
             continue
         if site_id := data.get('site'):
-            data.update(
-                {
-                    'termination_type': site_ct,
-                    'termination_id': site_id,
-                }
-            )
+            data.update({
+                'termination_type': site_ct,
+                'termination_id': site_id,
+            })
         elif provider_network_id := data.get('provider_network'):
-            data.update(
-                {
-                    'termination_type': provider_network_ct,
-                    'termination_id': provider_network_id,
-                }
-            )
+            data.update({
+                'termination_type': provider_network_ct,
+                'termination_id': provider_network_id,
+            })
 
 
 objectchange_migrators = {

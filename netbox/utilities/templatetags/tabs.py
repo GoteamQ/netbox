@@ -5,7 +5,9 @@ from django.utils.module_loading import import_string
 from netbox.registry import registry
 from utilities.views import get_action_url
 
-__all__ = ('model_view_tabs',)
+__all__ = (
+    'model_view_tabs',
+)
 
 register = template.Library()
 
@@ -13,7 +15,6 @@ register = template.Library()
 #
 # Object detail view tabs
 #
-
 
 @register.inclusion_tag('tabs/model_view_tabs.html', takes_context=True)
 def model_view_tabs(context, instance):
@@ -43,16 +44,14 @@ def model_view_tabs(context, instance):
                 except NoReverseMatch:
                     # No URL has been registered for this view; skip
                     continue
-                tabs.append(
-                    {
-                        'name': config['name'],
-                        'url': url,
-                        'label': attrs['label'],
-                        'badge': attrs['badge'],
-                        'weight': attrs['weight'],
-                        'is_active': active_tab and active_tab == tab,
-                    }
-                )
+                tabs.append({
+                    'name': config['name'],
+                    'url': url,
+                    'label': attrs['label'],
+                    'badge': attrs['badge'],
+                    'weight': attrs['weight'],
+                    'is_active': active_tab and active_tab == tab,
+                })
 
     # Order tabs by weight
     tabs = sorted(tabs, key=lambda x: x['weight'])

@@ -10,11 +10,13 @@ from extras.models import CustomField, CustomFieldChoiceSet
 
 
 class CustomFieldModelFormTest(TestCase):
+
     @classmethod
     def setUpTestData(cls):
         object_type = ObjectType.objects.get_for_model(Site)
         choice_set = CustomFieldChoiceSet.objects.create(
-            name='Choice Set 1', extra_choices=(('a', 'A'), ('b', 'B'), ('c', 'C'))
+            name='Choice Set 1',
+            extra_choices=(('a', 'A'), ('b', 'B'), ('c', 'C'))
         )
 
         cf_text = CustomField.objects.create(name='text', type=CustomFieldTypeChoices.TYPE_TEXT)
@@ -45,26 +47,30 @@ class CustomFieldModelFormTest(TestCase):
         cf_json.object_types.set([object_type])
 
         cf_select = CustomField.objects.create(
-            name='select', type=CustomFieldTypeChoices.TYPE_SELECT, choice_set=choice_set
+            name='select',
+            type=CustomFieldTypeChoices.TYPE_SELECT,
+            choice_set=choice_set
         )
         cf_select.object_types.set([object_type])
 
         cf_multiselect = CustomField.objects.create(
-            name='multiselect', type=CustomFieldTypeChoices.TYPE_MULTISELECT, choice_set=choice_set
+            name='multiselect',
+            type=CustomFieldTypeChoices.TYPE_MULTISELECT,
+            choice_set=choice_set
         )
         cf_multiselect.object_types.set([object_type])
 
         cf_object = CustomField.objects.create(
             name='object',
             type=CustomFieldTypeChoices.TYPE_OBJECT,
-            related_object_type=ObjectType.objects.get_for_model(Site),
+            related_object_type=ObjectType.objects.get_for_model(Site)
         )
         cf_object.object_types.set([object_type])
 
         cf_multiobject = CustomField.objects.create(
             name='multiobject',
             type=CustomFieldTypeChoices.TYPE_MULTIOBJECT,
-            related_object_type=ObjectType.objects.get_for_model(Site),
+            related_object_type=ObjectType.objects.get_for_model(Site)
         )
         cf_multiobject.object_types.set([object_type])
 
@@ -72,13 +78,11 @@ class CustomFieldModelFormTest(TestCase):
         """
         Test that empty custom field values are stored as null
         """
-        form = SiteForm(
-            {
-                'name': 'Site 1',
-                'slug': 'site-1',
-                'status': 'active',
-            }
-        )
+        form = SiteForm({
+            'name': 'Site 1',
+            'slug': 'site-1',
+            'status': 'active',
+        })
         self.assertTrue(form.is_valid())
         instance = form.save()
 
@@ -88,9 +92,11 @@ class CustomFieldModelFormTest(TestCase):
 
 
 class CustomFieldChoiceSetFormTest(TestCase):
+
     def test_escaped_colons_preserved_on_edit(self):
         choice_set = CustomFieldChoiceSet.objects.create(
-            name='Test Choice Set', extra_choices=[['foo:bar', 'label'], ['value', 'label:with:colons']]
+            name='Test Choice Set',
+            extra_choices=[['foo:bar', 'label'], ['value', 'label:with:colons']]
         )
 
         form = CustomFieldChoiceSetForm(instance=choice_set)
@@ -100,7 +106,8 @@ class CustomFieldChoiceSetFormTest(TestCase):
         self.assertEqual(initial_choices, 'foo\\:bar:label\nvalue:label\\:with\\:colons')
 
         form = CustomFieldChoiceSetForm(
-            {'name': choice_set.name, 'extra_choices': initial_choices}, instance=choice_set
+            {'name': choice_set.name, 'extra_choices': initial_choices},
+            instance=choice_set
         )
         self.assertTrue(form.is_valid())
         updated = form.save()
@@ -110,18 +117,21 @@ class CustomFieldChoiceSetFormTest(TestCase):
 
 
 class SavedFilterFormTest(TestCase):
+
     def test_basic_submit(self):
         """
         Test form submission and validation
         """
-        form = SavedFilterForm(
-            {
-                'name': 'test-sf',
-                'slug': 'test-sf',
-                'object_types': [ObjectType.objects.get_for_model(Site).pk],
-                'weight': 100,
-                'parameters': {'status': ['active']},
+        form = SavedFilterForm({
+            'name': 'test-sf',
+            'slug': 'test-sf',
+            'object_types': [ObjectType.objects.get_for_model(Site).pk],
+            'weight': 100,
+            'parameters': {
+                "status": [
+                    "active"
+                ]
             }
-        )
+        })
         self.assertTrue(form.is_valid())
         form.save()

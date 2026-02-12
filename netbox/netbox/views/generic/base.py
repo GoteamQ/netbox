@@ -18,7 +18,6 @@ class BaseObjectView(ObjectPermissionRequiredMixin, View):
         queryset: Django QuerySet from which the object(s) will be fetched
         template_name: The name of the HTML template file to render
     """
-
     queryset = None
     template_name = None
 
@@ -35,8 +34,8 @@ class BaseObjectView(ObjectPermissionRequiredMixin, View):
         """
         if self.queryset is None:
             raise ImproperlyConfigured(
-                f'{self.__class__.__name__} does not define a queryset. Set queryset on the class or '
-                f'override its get_queryset() method.'
+                f"{self.__class__.__name__} does not define a queryset. Set queryset on the class or "
+                f"override its get_queryset() method."
             )
         return self.queryset.all()
 
@@ -69,7 +68,6 @@ class BaseMultiObjectView(ObjectPermissionRequiredMixin, View):
         table: The django-tables2 Table class used to render the objects list
         template_name: The name of the HTML template file to render
     """
-
     queryset = None
     table = None
     template_name = None
@@ -87,8 +85,8 @@ class BaseMultiObjectView(ObjectPermissionRequiredMixin, View):
         """
         if self.queryset is None:
             raise ImproperlyConfigured(
-                f'{self.__class__.__name__} does not define a queryset. Set queryset on the class or '
-                f'override its get_queryset() method.'
+                f"{self.__class__.__name__} does not define a queryset. Set queryset on the class or "
+                f"override its get_queryset() method."
             )
         return self.queryset.all()
 

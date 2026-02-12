@@ -70,8 +70,13 @@ def deserialize_object(model, data, pk=None):
         m2m_data['tags'] = Tag.objects.filter(name__in=data.pop('tags'))
 
     # Separate any non-field attributes for assignment after deserialization of the object
-    model_fields = [field.name for field in model._meta.get_fields()]
-    attrs = {name: data.pop(name) for name in list(data.keys()) if name not in model_fields}
+    model_fields = [
+        field.name for field in model._meta.get_fields()
+    ]
+    attrs = {
+        name: data.pop(name) for name in list(data.keys())
+        if name not in model_fields
+    }
 
     # Employ Django's native Python deserializer to produce the instance
     data = {

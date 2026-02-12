@@ -16,7 +16,6 @@ class CustomFieldsPanel(panels.ObjectPanel):
     """
     A panel showing the value of all custom fields defined on an object.
     """
-
     template_name = 'extras/panels/custom_fields.html'
     title = _('Custom Fields')
 
@@ -39,7 +38,6 @@ class ImageAttachmentsPanel(panels.ObjectsTablePanel):
     """
     A panel showing all images attached to the object.
     """
-
     actions = [
         actions.AddObject(
             'extras.imageattachment',
@@ -67,7 +65,6 @@ class TagsPanel(panels.ObjectPanel):
     """
     A panel showing the tags assigned to the object.
     """
-
     template_name = 'extras/panels/tags.html'
     title = _('Tags')
 

@@ -3,7 +3,9 @@ from django.utils.translation import gettext_lazy as _
 from core.models import ConfigRevision
 from netbox.tables import NetBoxTable, columns
 
-__all__ = ('ConfigRevisionTable',)
+__all__ = (
+    'ConfigRevisionTable',
+)
 
 REVISION_BUTTONS = """
 {% if not record.is_active %}
@@ -15,16 +17,18 @@ REVISION_BUTTONS = """
 
 
 class ConfigRevisionTable(NetBoxTable):
-    is_active = columns.BooleanColumn(verbose_name=_('Is Active'), false_mark=None)
-    actions = columns.ActionsColumn(actions=('delete',), extra_buttons=REVISION_BUTTONS)
+    is_active = columns.BooleanColumn(
+        verbose_name=_('Is Active'),
+        false_mark=None
+    )
+    actions = columns.ActionsColumn(
+        actions=('delete',),
+        extra_buttons=REVISION_BUTTONS
+    )
 
     class Meta(NetBoxTable.Meta):
         model = ConfigRevision
         fields = (
-            'pk',
-            'id',
-            'is_active',
-            'created',
-            'comment',
+            'pk', 'id', 'is_active', 'created', 'comment',
         )
         default_columns = ('pk', 'id', 'is_active', 'created', 'comment')

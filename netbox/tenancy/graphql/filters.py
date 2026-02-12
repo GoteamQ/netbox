@@ -7,10 +7,7 @@ from strawberry_django import BaseFilterLookup, FilterLookup
 
 from extras.graphql.filter_mixins import CustomFieldsFilterMixin, TagsFilterMixin
 from netbox.graphql.filters import (
-    ChangeLoggedModelFilter,
-    NestedGroupModelFilter,
-    OrganizationalModelFilter,
-    PrimaryModelFilter,
+    ChangeLoggedModelFilter, NestedGroupModelFilter, OrganizationalModelFilter, PrimaryModelFilter,
 )
 from tenancy import models
 from .filter_mixins import ContactFilterMixin

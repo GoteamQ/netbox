@@ -32,11 +32,20 @@ class Script(EventRulesMixin, JobsMixin):
         editable=False,
     )
     module = models.ForeignKey(
-        to='extras.ScriptModule', on_delete=models.CASCADE, related_name='scripts', editable=False
+        to='extras.ScriptModule',
+        on_delete=models.CASCADE,
+        related_name='scripts',
+        editable=False
     )
-    is_executable = models.BooleanField(default=True, verbose_name=_('is executable'), editable=False)
+    is_executable = models.BooleanField(
+        default=True,
+        verbose_name=_('is executable'),
+        editable=False
+    )
     events = GenericRelation(
-        'extras.EventRule', content_type_field='action_object_type', object_id_field='action_object_id'
+        'extras.EventRule',
+        content_type_field='action_object_type',
+        object_id_field='action_object_id'
     )
 
     def __str__(self):
@@ -46,7 +55,12 @@ class Script(EventRulesMixin, JobsMixin):
 
     class Meta:
         ordering = ('module', 'name')
-        constraints = (models.UniqueConstraint(fields=('name', 'module'), name='extras_script_unique_name_module'),)
+        constraints = (
+            models.UniqueConstraint(
+                fields=('name', 'module'),
+                name='extras_script_unique_name_module'
+            ),
+        )
         verbose_name = _('script')
         verbose_name_plural = _('scripts')
 
@@ -71,19 +85,16 @@ class Script(EventRulesMixin, JobsMixin):
 
 
 class ScriptModuleManager(models.Manager.from_queryset(RestrictedQuerySet)):
+
     def get_queryset(self):
-        return (
-            super()
-            .get_queryset()
-            .filter(Q(file_root=ManagedFileRootPathChoices.SCRIPTS) | Q(file_root=ManagedFileRootPathChoices.REPORTS))
-        )
+        return super().get_queryset().filter(
+            Q(file_root=ManagedFileRootPathChoices.SCRIPTS) | Q(file_root=ManagedFileRootPathChoices.REPORTS))
 
 
 class ScriptModule(PythonModuleMixin, JobsMixin, ManagedFile):
     """
     Proxy model for script module files.
     """
-
     objects = ScriptModuleManager()
     error = None
 
@@ -91,7 +102,7 @@ class ScriptModule(PythonModuleMixin, JobsMixin, ManagedFile):
         to='extras.EventRule',
         content_type_field='action_object_type',
         object_id_field='action_object_id',
-        for_concrete_model=False,
+        for_concrete_model=False
     )
 
     class Meta:
@@ -109,21 +120,24 @@ class ScriptModule(PythonModuleMixin, JobsMixin, ManagedFile):
     @property
     def ordered_scripts(self):
         script_objects = {s.name: s for s in self.scripts.all()}
-        ordered = [script_objects.pop(sc) for sc in self.module_scripts.keys() if sc in script_objects]
+        ordered = [
+            script_objects.pop(sc) for sc in self.module_scripts.keys() if sc in script_objects
+        ]
         ordered.extend(script_objects.values())
         return ordered
 
     @cached_property
     def module_scripts(self):
+
         def _get_name(cls):
             # For child objects in submodules use the full import path w/o the root module as the name
-            return cls.full_name.split('.', maxsplit=1)[1]
+            return cls.full_name.split(".", maxsplit=1)[1]
 
         try:
             module = self.get_module()
         except Exception as e:
             self.error = e
-            logger.error(f'Failed to load script: {self.python_name} error: {e}')
+            logger.error(f"Failed to load script: {self.python_name} error: {e}")
             module = None
 
         scripts = {}
@@ -143,7 +157,9 @@ class ScriptModule(PythonModuleMixin, JobsMixin, ManagedFile):
         in the database as needed.
         """
         if self.id:
-            db_classes = {script.name: script for script in self.scripts.all()}
+            db_classes = {
+                script.name: script for script in self.scripts.all()
+            }
         else:
             db_classes = {}
 

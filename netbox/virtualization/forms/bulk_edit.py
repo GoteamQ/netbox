@@ -31,23 +31,42 @@ __all__ = (
 
 class ClusterTypeBulkEditForm(OrganizationalModelBulkEditForm):
     model = ClusterType
-    fieldsets = (FieldSet('description'),)
+    fieldsets = (
+        FieldSet('description'),
+    )
     nullable_fields = ('description', 'comments')
 
 
 class ClusterGroupBulkEditForm(OrganizationalModelBulkEditForm):
     model = ClusterGroup
-    fieldsets = (FieldSet('description'),)
+    fieldsets = (
+        FieldSet('description'),
+    )
     nullable_fields = ('description', 'comments')
 
 
 class ClusterBulkEditForm(ScopedBulkEditForm, PrimaryModelBulkEditForm):
-    type = DynamicModelChoiceField(label=_('Type'), queryset=ClusterType.objects.all(), required=False)
-    group = DynamicModelChoiceField(label=_('Group'), queryset=ClusterGroup.objects.all(), required=False)
-    status = forms.ChoiceField(
-        label=_('Status'), choices=add_blank_choice(ClusterStatusChoices), required=False, initial=''
+    type = DynamicModelChoiceField(
+        label=_('Type'),
+        queryset=ClusterType.objects.all(),
+        required=False
     )
-    tenant = DynamicModelChoiceField(label=_('Tenant'), queryset=Tenant.objects.all(), required=False)
+    group = DynamicModelChoiceField(
+        label=_('Group'),
+        queryset=ClusterGroup.objects.all(),
+        required=False
+    )
+    status = forms.ChoiceField(
+        label=_('Status'),
+        choices=add_blank_choice(ClusterStatusChoices),
+        required=False,
+        initial=''
+    )
+    tenant = DynamicModelChoiceField(
+        label=_('Tenant'),
+        queryset=Tenant.objects.all(),
+        required=False
+    )
 
     model = Cluster
     fieldsets = (
@@ -55,11 +74,7 @@ class ClusterBulkEditForm(ScopedBulkEditForm, PrimaryModelBulkEditForm):
         FieldSet('scope_type', 'scope', name=_('Scope')),
     )
     nullable_fields = (
-        'group',
-        'scope',
-        'tenant',
-        'description',
-        'comments',
+        'group', 'scope', 'tenant', 'description', 'comments',
     )
 
 
@@ -76,25 +91,63 @@ class VirtualMachineBulkEditForm(PrimaryModelBulkEditForm):
         required=False,
         initial='',
     )
-    site = DynamicModelChoiceField(label=_('Site'), queryset=Site.objects.all(), required=False)
+    site = DynamicModelChoiceField(
+        label=_('Site'),
+        queryset=Site.objects.all(),
+        required=False
+    )
     cluster = DynamicModelChoiceField(
-        label=_('Cluster'), queryset=Cluster.objects.all(), required=False, query_params={'site_id': '$site'}
+        label=_('Cluster'),
+        queryset=Cluster.objects.all(),
+        required=False,
+        query_params={
+            'site_id': '$site'
+        }
     )
     device = DynamicModelChoiceField(
-        label=_('Device'), queryset=Device.objects.all(), required=False, query_params={'cluster_id': '$cluster'}
+        label=_('Device'),
+        queryset=Device.objects.all(),
+        required=False,
+        query_params={
+            'cluster_id': '$cluster'
+        }
     )
     role = DynamicModelChoiceField(
         label=_('Role'),
-        queryset=DeviceRole.objects.filter(vm_role=True),
+        queryset=DeviceRole.objects.filter(
+            vm_role=True
+        ),
         required=False,
-        query_params={'vm_role': 'True'},
+        query_params={
+            "vm_role": "True"
+        }
     )
-    tenant = DynamicModelChoiceField(label=_('Tenant'), queryset=Tenant.objects.all(), required=False)
-    platform = DynamicModelChoiceField(label=_('Platform'), queryset=Platform.objects.all(), required=False)
-    vcpus = forms.IntegerField(required=False, label=_('vCPUs'))
-    memory = forms.IntegerField(required=False, label=_('Memory (MB)'))
-    disk = forms.IntegerField(required=False, label=_('Disk (MB)'))
-    config_template = DynamicModelChoiceField(queryset=ConfigTemplate.objects.all(), required=False)
+    tenant = DynamicModelChoiceField(
+        label=_('Tenant'),
+        queryset=Tenant.objects.all(),
+        required=False
+    )
+    platform = DynamicModelChoiceField(
+        label=_('Platform'),
+        queryset=Platform.objects.all(),
+        required=False
+    )
+    vcpus = forms.IntegerField(
+        required=False,
+        label=_('vCPUs')
+    )
+    memory = forms.IntegerField(
+        required=False,
+        label=_('Memory (MB)')
+    )
+    disk = forms.IntegerField(
+        required=False,
+        label=_('Disk (MB)')
+    )
+    config_template = DynamicModelChoiceField(
+        queryset=ConfigTemplate.objects.all(),
+        required=False
+    )
 
     model = VirtualMachine
     fieldsets = (
@@ -103,17 +156,7 @@ class VirtualMachineBulkEditForm(PrimaryModelBulkEditForm):
         FieldSet('config_template', name=_('Configuration')),
     )
     nullable_fields = (
-        'site',
-        'cluster',
-        'device',
-        'role',
-        'tenant',
-        'platform',
-        'vcpus',
-        'memory',
-        'disk',
-        'description',
-        'comments',
+        'site', 'cluster', 'device', 'role', 'tenant', 'platform', 'vcpus', 'memory', 'disk', 'description', 'comments',
     )
 
 
@@ -123,22 +166,51 @@ class VMInterfaceBulkEditForm(OwnerMixin, NetBoxModelBulkEditForm):
         queryset=VirtualMachine.objects.all(),
         required=False,
         disabled=True,
-        widget=forms.HiddenInput(),
+        widget=forms.HiddenInput()
     )
-    parent = DynamicModelChoiceField(label=_('Parent'), queryset=VMInterface.objects.all(), required=False)
-    bridge = DynamicModelChoiceField(label=_('Bridge'), queryset=VMInterface.objects.all(), required=False)
-    enabled = forms.NullBooleanField(label=_('Enabled'), required=False, widget=BulkEditNullBooleanSelect())
-    mtu = forms.IntegerField(required=False, min_value=INTERFACE_MTU_MIN, max_value=INTERFACE_MTU_MAX, label=_('MTU'))
-    description = forms.CharField(label=_('Description'), max_length=100, required=False)
-    mode = forms.ChoiceField(label=_('Mode'), choices=add_blank_choice(InterfaceModeChoices), required=False)
-    vlan_group = DynamicModelChoiceField(queryset=VLANGroup.objects.all(), required=False, label=_('VLAN group'))
+    parent = DynamicModelChoiceField(
+        label=_('Parent'),
+        queryset=VMInterface.objects.all(),
+        required=False
+    )
+    bridge = DynamicModelChoiceField(
+        label=_('Bridge'),
+        queryset=VMInterface.objects.all(),
+        required=False
+    )
+    enabled = forms.NullBooleanField(
+        label=_('Enabled'),
+        required=False,
+        widget=BulkEditNullBooleanSelect()
+    )
+    mtu = forms.IntegerField(
+        required=False,
+        min_value=INTERFACE_MTU_MIN,
+        max_value=INTERFACE_MTU_MAX,
+        label=_('MTU')
+    )
+    description = forms.CharField(
+        label=_('Description'),
+        max_length=100,
+        required=False
+    )
+    mode = forms.ChoiceField(
+        label=_('Mode'),
+        choices=add_blank_choice(InterfaceModeChoices),
+        required=False
+    )
+    vlan_group = DynamicModelChoiceField(
+        queryset=VLANGroup.objects.all(),
+        required=False,
+        label=_('VLAN group')
+    )
     untagged_vlan = DynamicModelChoiceField(
         queryset=VLAN.objects.all(),
         required=False,
         query_params={
             'group_id': '$vlan_group',
         },
-        label=_('Untagged VLAN'),
+        label=_('Untagged VLAN')
     )
     tagged_vlans = DynamicModelMultipleChoiceField(
         queryset=VLAN.objects.all(),
@@ -146,11 +218,17 @@ class VMInterfaceBulkEditForm(OwnerMixin, NetBoxModelBulkEditForm):
         query_params={
             'group_id': '$vlan_group',
         },
-        label=_('Tagged VLANs'),
+        label=_('Tagged VLANs')
     )
-    vrf = DynamicModelChoiceField(queryset=VRF.objects.all(), required=False, label=_('VRF'))
+    vrf = DynamicModelChoiceField(
+        queryset=VRF.objects.all(),
+        required=False,
+        label=_('VRF')
+    )
     vlan_translation_policy = DynamicModelChoiceField(
-        queryset=VLANTranslationPolicy.objects.all(), required=False, label=_('VLAN Translation Policy')
+        queryset=VLANTranslationPolicy.objects.all(),
+        required=False,
+        label=_('VLAN Translation Policy')
     )
 
     model = VMInterface
@@ -158,16 +236,12 @@ class VMInterfaceBulkEditForm(OwnerMixin, NetBoxModelBulkEditForm):
         FieldSet('mtu', 'enabled', 'vrf', 'description'),
         FieldSet('parent', 'bridge', name=_('Related Interfaces')),
         FieldSet(
-            'mode', 'vlan_group', 'untagged_vlan', 'tagged_vlans', 'vlan_translation_policy', name=_('802.1Q Switching')
+            'mode', 'vlan_group', 'untagged_vlan', 'tagged_vlans', 'vlan_translation_policy',
+            name=_('802.1Q Switching')
         ),
     )
     nullable_fields = (
-        'parent',
-        'bridge',
-        'mtu',
-        'vrf',
-        'description',
-        'vlan_translation_policy',
+        'parent', 'bridge', 'mtu', 'vrf', 'description', 'vlan_translation_policy',
     )
 
     def __init__(self, *args, **kwargs):
@@ -187,7 +261,9 @@ class VMInterfaceBulkEditForm(OwnerMixin, NetBoxModelBulkEditForm):
             # See 5643
             if 'pk' in self.initial:
                 site = None
-                interfaces = VMInterface.objects.filter(pk__in=self.initial['pk']).prefetch_related(
+                interfaces = VMInterface.objects.filter(
+                    pk__in=self.initial['pk']
+                ).prefetch_related(
                     'virtual_machine__site'
                 )
 
@@ -212,7 +288,10 @@ class VMInterfaceBulkEditForm(OwnerMixin, NetBoxModelBulkEditForm):
 
 
 class VMInterfaceBulkRenameForm(BulkRenameForm):
-    pk = forms.ModelMultipleChoiceField(queryset=VMInterface.objects.all(), widget=forms.MultipleHiddenInput())
+    pk = forms.ModelMultipleChoiceField(
+        queryset=VMInterface.objects.all(),
+        widget=forms.MultipleHiddenInput()
+    )
 
 
 class VirtualDiskBulkEditForm(OwnerMixin, NetBoxModelBulkEditForm):
@@ -221,15 +300,27 @@ class VirtualDiskBulkEditForm(OwnerMixin, NetBoxModelBulkEditForm):
         queryset=VirtualMachine.objects.all(),
         required=False,
         disabled=True,
-        widget=forms.HiddenInput(),
+        widget=forms.HiddenInput()
     )
-    size = forms.IntegerField(required=False, label=_('Size (MB)'))
-    description = forms.CharField(label=_('Description'), max_length=100, required=False)
+    size = forms.IntegerField(
+        required=False,
+        label=_('Size (MB)')
+    )
+    description = forms.CharField(
+        label=_('Description'),
+        max_length=100,
+        required=False
+    )
 
     model = VirtualDisk
-    fieldsets = (FieldSet('size', 'description'),)
+    fieldsets = (
+        FieldSet('size', 'description'),
+    )
     nullable_fields = ('description',)
 
 
 class VirtualDiskBulkRenameForm(BulkRenameForm):
-    pk = forms.ModelMultipleChoiceField(queryset=VirtualDisk.objects.all(), widget=forms.MultipleHiddenInput())
+    pk = forms.ModelMultipleChoiceField(
+        queryset=VirtualDisk.objects.all(),
+        widget=forms.MultipleHiddenInput()
+    )

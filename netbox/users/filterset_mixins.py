@@ -3,14 +3,15 @@ from django.utils.translation import gettext as _
 
 from users.models import OwnerGroup, Owner
 
-__all__ = ('OwnerFilterMixin',)
+__all__ = (
+    'OwnerFilterMixin',
+)
 
 
 class OwnerFilterMixin(django_filters.FilterSet):
     """
     Adds owner & owner_id filters for models which inherit from OwnerMixin.
     """
-
     owner_group_id = django_filters.ModelMultipleChoiceFilter(
         queryset=OwnerGroup.objects.all(),
         field_name='owner__group',

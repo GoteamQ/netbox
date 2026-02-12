@@ -16,7 +16,6 @@ class CustomFieldJSONEncoder(DjangoJSONEncoder):
     """
     Override Django's built-in JSON encoder to save decimal values as JSON numbers.
     """
-
     def default(self, o):
         if isinstance(o, decimal.Decimal):
             return float(o)
@@ -27,7 +26,6 @@ class ConfigJSONEncoder(DjangoJSONEncoder):
     """
     Override Django's built-in JSON encoder to serialize CustomValidator classes as strings.
     """
-
     def default(self, o):
         from extras.validators import CustomValidator
 
@@ -41,7 +39,6 @@ class JobLogDecoder(json.JSONDecoder):
     """
     Deserialize JobLogEntry timestamps.
     """
-
     def __init__(self, *args, **kwargs):
         kwargs['object_hook'] = self._deserialize_entry
         super().__init__(*args, **kwargs)

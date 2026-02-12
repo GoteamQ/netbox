@@ -5,18 +5,32 @@ from django.utils.translation import gettext, gettext_lazy as _
 
 from utilities.querysets import RestrictedQuerySet
 
-__all__ = ('ConfigRevision',)
+__all__ = (
+    'ConfigRevision',
+)
 
 
 class ConfigRevision(models.Model):
     """
     An atomic revision of NetBox's configuration.
     """
-
-    active = models.BooleanField(default=False)
-    created = models.DateTimeField(verbose_name=_('created'), auto_now_add=True)
-    comment = models.CharField(verbose_name=_('comment'), max_length=200, blank=True)
-    data = models.JSONField(blank=True, null=True, verbose_name=_('configuration data'))
+    active = models.BooleanField(
+        default=False
+    )
+    created = models.DateTimeField(
+        verbose_name=_('created'),
+        auto_now_add=True
+    )
+    comment = models.CharField(
+        verbose_name=_('comment'),
+        max_length=200,
+        blank=True
+    )
+    data = models.JSONField(
+        blank=True,
+        null=True,
+        verbose_name=_('configuration data')
+    )
 
     objects = RestrictedQuerySet.as_manager()
 

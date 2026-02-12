@@ -29,7 +29,6 @@ __all__ = (
 # Base classes
 #
 
-
 class Panel:
     """
     A block of content rendered within an HTML template.
@@ -45,7 +44,6 @@ class Panel:
         title (str): The human-friendly title of the panel
         actions (list): An iterable of PanelActions to include in the panel header
     """
-
     template_name = None
     title = None
     actions = None
@@ -84,7 +82,6 @@ class Panel:
 # Object-specific panels
 #
 
-
 class ObjectPanel(Panel):
     """
     Base class for object-specific panels.
@@ -92,7 +89,6 @@ class ObjectPanel(Panel):
     Parameters:
         accessor (str): The dotted path in context data to the object being rendered (default: "object")
     """
-
     accessor = 'object'
 
     def __init__(self, accessor=None, **kwargs):
@@ -111,11 +107,12 @@ class ObjectPanel(Panel):
 
 
 class ObjectAttributesPanelMeta(type):
+
     def __new__(mcls, name, bases, namespace, **kwargs):
         declared = {}
 
         # Walk MRO parents (excluding `object`) for declared attributes
-        for base in reversed([b for b in bases if hasattr(b, '_attrs')]):
+        for base in reversed([b for b in bases if hasattr(b, "_attrs")]):
             for key, attr in getattr(base, '_attrs', {}).items():
                 if key not in declared:
                     declared[key] = attr
@@ -149,7 +146,6 @@ class ObjectAttributesPanel(ObjectPanel, metaclass=ObjectAttributesPanelMeta):
             only (list): If specified, only attributes in this list will be displayed
             exclude (list): If specified, attributes in this list will be excluded from display
     """
-
     template_name = 'ui/panels/object_attributes.html'
 
     def __init__(self, only=None, exclude=None, **kwargs):
@@ -157,7 +153,7 @@ class ObjectAttributesPanel(ObjectPanel, metaclass=ObjectAttributesPanelMeta):
 
         # Set included/excluded attributes
         if only is not None and exclude is not None:
-            raise ValueError('only and exclude cannot both be specified.')
+            raise ValueError("only and exclude cannot both be specified.")
         self.only = only or []
         self.exclude = exclude or []
 
@@ -186,9 +182,7 @@ class ObjectAttributesPanel(ObjectPanel, metaclass=ObjectAttributesPanelMeta):
                 {
                     'label': attr.label or self._name_to_label(name),
                     'value': attr.render(ctx['object'], {'name': name}),
-                }
-                for name, attr in self._attrs.items()
-                if name in attr_names
+                } for name, attr in self._attrs.items() if name in attr_names
             ],
         }
 
@@ -197,7 +191,6 @@ class OrganizationalObjectPanel(ObjectAttributesPanel, metaclass=ObjectAttribute
     """
     An ObjectPanel with attributes common to OrganizationalModels. Includes `name` and `description` attributes.
     """
-
     name = attrs.TextAttr('name', label=_('Name'))
     description = attrs.TextAttr('description', label=_('Description'))
 
@@ -206,7 +199,6 @@ class NestedGroupObjectPanel(ObjectAttributesPanel, metaclass=ObjectAttributesPa
     """
     An ObjectPanel with attributes common to NestedGroupObjects. Includes the `parent` attribute.
     """
-
     parent = attrs.NestedObjectAttr('parent', label=_('Parent'), linkify=True)
     name = attrs.TextAttr('name', label=_('Name'))
     description = attrs.TextAttr('description', label=_('Description'))
@@ -219,7 +211,6 @@ class CommentsPanel(ObjectPanel):
     Parameters:
         field_name (str): The name of the comment field on the object (default: "comments")
     """
-
     template_name = 'ui/panels/comments.html'
     title = _('Comments')
 
@@ -242,7 +233,6 @@ class JSONPanel(ObjectPanel):
         field_name (str): The name of the JSON field on the object
         copy_button (bool): Set to True (default) to include a copy-to-clipboard button
     """
-
     template_name = 'ui/panels/json.html'
 
     def __init__(self, field_name, copy_button=True, **kwargs):
@@ -264,12 +254,10 @@ class JSONPanel(ObjectPanel):
 # Miscellaneous panels
 #
 
-
 class RelatedObjectsPanel(Panel):
     """
     A panel which displays the types and counts of related objects.
     """
-
     template_name = 'ui/panels/related_objects.html'
     title = _('Related Objects')
 
@@ -289,7 +277,6 @@ class ObjectsTablePanel(Panel):
         filters (dict): A dictionary of arbitrary URL parameters to append to the table's URL. If the value of a key is
             a callable, it will be passed the current template context.
     """
-
     template_name = 'ui/panels/objects_table.html'
     title = None
 
@@ -301,7 +288,7 @@ class ObjectsTablePanel(Panel):
             app_label, model_name = model.split('.')
             self.model = apps.get_model(app_label, model_name)
         except (ValueError, LookupError):
-            raise ValueError(f'Invalid model label: {model}')
+            raise ValueError(f"Invalid model label: {model}")
 
         self.filters = filters or {}
 
@@ -310,7 +297,9 @@ class ObjectsTablePanel(Panel):
             self.title = title(self.model._meta.verbose_name_plural)
 
     def get_context(self, context):
-        url_params = {k: v(context) if callable(v) else v for k, v in self.filters.items()}
+        url_params = {
+            k: v(context) if callable(v) else v for k, v in self.filters.items()
+        }
         if 'return_url' not in url_params and 'object' in context:
             url_params['return_url'] = context['object'].get_absolute_url()
         return {
@@ -327,7 +316,6 @@ class TemplatePanel(Panel):
     Parameters:
         template_name (str): The name of the template to render
     """
-
     def __init__(self, template_name, **kwargs):
         super().__init__(**kwargs)
         self.template_name = template_name
@@ -344,7 +332,6 @@ class PluginContentPanel(Panel):
     Parameters:
         method (str): The name of the plugin method to render (e.g. "left_page")
     """
-
     def __init__(self, method, **kwargs):
         super().__init__(**kwargs)
         self.method = method

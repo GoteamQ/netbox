@@ -7,15 +7,18 @@ from netbox.api.fields import ContentTypeField
 from utilities.api import get_serializer_for_model
 from utilities.object_types import object_type_identifier
 
-__all__ = ('GenericObjectSerializer',)
+__all__ = (
+    'GenericObjectSerializer',
+)
 
 
 class GenericObjectSerializer(serializers.Serializer):
     """
     Minimal representation of some generic object identified by ContentType and PK.
     """
-
-    object_type = ContentTypeField(queryset=ContentType.objects.all())
+    object_type = ContentTypeField(
+        queryset=ContentType.objects.all()
+    )
     object_id = serializers.IntegerField()
     object = serializers.SerializerMethodField(read_only=True)
 

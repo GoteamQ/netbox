@@ -36,7 +36,7 @@ REDIS = {
         'PASSWORD': '',
         'DATABASE': 1,
         'SSL': False,
-    },
+    }
 }
 
 SECRET_KEY = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
@@ -47,4 +47,7 @@ API_TOKEN_PEPPERS = {
     1: 'TEST-VALUE-DO-NOT-USE-TEST-VALUE-DO-NOT-USE-TEST-VALUE-DO-NOT-USE',
 }
 
-LOGGING = {'version': 1, 'disable_existing_loggers': True}
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True
+}

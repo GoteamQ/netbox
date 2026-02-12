@@ -44,7 +44,6 @@ from .tables import ReportResultsTable, ScriptResultsTable, ScriptJobTable
 # Custom fields
 #
 
-
 @register_model_view(CustomField, 'list', path='', detail=False)
 class CustomFieldListView(generic.ObjectListView):
     queryset = CustomField.objects.select_related('choice_set')
@@ -62,15 +61,15 @@ class CustomFieldView(generic.ObjectView):
 
         for object_type in instance.object_types.all():
             related_models += (
-                object_type.model_class()
-                .objects.restrict(request.user, 'view')
-                .exclude(
-                    Q(**{f'custom_field_data__{instance.name}': ''})
-                    | Q(**{f'custom_field_data__{instance.name}': None})
+                object_type.model_class().objects.restrict(request.user, 'view').exclude(
+                    Q(**{f'custom_field_data__{instance.name}': ''}) |
+                    Q(**{f'custom_field_data__{instance.name}': None})
                 ),
             )
 
-        return {'related_models': related_models}
+        return {
+            'related_models': related_models
+        }
 
 
 @register_model_view(CustomField, 'add', detail=False)
@@ -116,7 +115,6 @@ class CustomFieldBulkDeleteView(generic.BulkDeleteView):
 # Custom field choices
 #
 
-
 @register_model_view(CustomFieldChoiceSet, 'list', path='', detail=False)
 class CustomFieldChoiceSetListView(generic.ObjectListView):
     queryset = CustomFieldChoiceSet.objects.all()
@@ -130,6 +128,7 @@ class CustomFieldChoiceSetView(generic.ObjectView):
     queryset = CustomFieldChoiceSet.objects.all()
 
     def get_extra_context(self, request, instance):
+
         # Paginate choices list
         per_page = get_paginate_count(request)
         try:
@@ -191,7 +190,6 @@ class CustomFieldChoiceSetBulkDeleteView(generic.BulkDeleteView):
 # Custom links
 #
 
-
 @register_model_view(CustomLink, 'list', path='', detail=False)
 class CustomLinkListView(generic.ObjectListView):
     queryset = CustomLink.objects.all()
@@ -247,7 +245,6 @@ class CustomLinkBulkDeleteView(generic.BulkDeleteView):
 #
 # Export templates
 #
-
 
 @register_model_view(ExportTemplate, 'list', path='', detail=False)
 class ExportTemplateListView(generic.ObjectListView):
@@ -311,7 +308,6 @@ class ExportTemplateBulkSyncDataView(generic.BulkSyncDataView):
 # Saved filters
 #
 
-
 @register_model_view(SavedFilter, 'list', path='', detail=False)
 class SavedFilterListView(SharedObjectViewMixin, generic.ObjectListView):
     queryset = SavedFilter.objects.all()
@@ -372,7 +368,6 @@ class SavedFilterBulkDeleteView(SharedObjectViewMixin, generic.BulkDeleteView):
 #
 # Table configs
 #
-
 
 @register_model_view(TableConfig, 'list', path='', detail=False)
 class TableConfigListView(SharedObjectViewMixin, generic.ObjectListView):
@@ -437,7 +432,6 @@ class TableConfigBulkDeleteView(SharedObjectViewMixin, generic.BulkDeleteView):
 # Bookmarks
 #
 
-
 @register_model_view(Bookmark, 'add', detail=False)
 class BookmarkCreateView(generic.ObjectEditView):
     form = forms.BookmarkForm
@@ -452,6 +446,7 @@ class BookmarkCreateView(generic.ObjectEditView):
 
 @register_model_view(Bookmark, 'delete')
 class BookmarkDeleteView(generic.ObjectDeleteView):
+
     def get_queryset(self, request):
         return Bookmark.objects.filter(user=request.user)
 
@@ -467,7 +462,6 @@ class BookmarkBulkDeleteView(generic.BulkDeleteView):
 #
 # Notification groups
 #
-
 
 @register_model_view(NotificationGroup, 'list', path='', detail=False)
 class NotificationGroupListView(generic.ObjectListView):
@@ -525,22 +519,16 @@ class NotificationGroupBulkDeleteView(generic.BulkDeleteView):
 # Notifications
 #
 
-
 class NotificationsView(LoginRequiredMixin, View):
     """
     HTMX-only user-specific notifications list.
     """
-
     def get(self, request):
-        return render(
-            request,
-            'htmx/notifications.html',
-            {
-                'notifications': request.user.notifications.unread()[:10],
-                'total_count': request.user.notifications.count(),
-                'unread_count': request.user.notifications.unread().count(),
-            },
-        )
+        return render(request, 'htmx/notifications.html', {
+            'notifications': request.user.notifications.unread()[:10],
+            'total_count': request.user.notifications.count(),
+            'unread_count': request.user.notifications.unread().count(),
+        })
 
 
 @register_model_view(Notification, 'read')
@@ -576,15 +564,11 @@ class NotificationDismissAllView(LoginRequiredMixin, View):
             if redirect_resp:
                 return redirect_resp
 
-            return render(
-                request,
-                'htmx/notifications.html',
-                {
-                    'notifications': request.user.notifications.unread()[:10],
-                    'total_count': request.user.notifications.count(),
-                    'unread_count': request.user.notifications.unread().count(),
-                },
-            )
+            return render(request, 'htmx/notifications.html', {
+                'notifications': request.user.notifications.unread()[:10],
+                'total_count': request.user.notifications.count(),
+                'unread_count': request.user.notifications.unread().count(),
+            })
         return redirect('account:notifications')
 
 
@@ -604,21 +588,18 @@ class NotificationDismissView(LoginRequiredMixin, View):
             if redirect_resp:
                 return redirect_resp
 
-            return render(
-                request,
-                'htmx/notifications.html',
-                {
-                    'notifications': request.user.notifications.unread()[:10],
-                    'total_count': request.user.notifications.count(),
-                    'unread_count': request.user.notifications.unread().count(),
-                },
-            )
+            return render(request, 'htmx/notifications.html', {
+                'notifications': request.user.notifications.unread()[:10],
+                'total_count': request.user.notifications.count(),
+                'unread_count': request.user.notifications.unread().count(),
+            })
 
         return redirect('account:notifications')
 
 
 @register_model_view(Notification, 'delete')
 class NotificationDeleteView(generic.ObjectDeleteView):
+
     def get_queryset(self, request):
         return Notification.objects.filter(user=request.user)
 
@@ -635,7 +616,6 @@ class NotificationBulkDeleteView(generic.BulkDeleteView):
 # Subscriptions
 #
 
-
 @register_model_view(Subscription, 'add', detail=False)
 class SubscriptionCreateView(generic.ObjectEditView):
     form = forms.SubscriptionForm
@@ -650,6 +630,7 @@ class SubscriptionCreateView(generic.ObjectEditView):
 
 @register_model_view(Subscription, 'delete')
 class SubscriptionDeleteView(generic.ObjectDeleteView):
+
     def get_queryset(self, request):
         return Subscription.objects.filter(user=request.user)
 
@@ -665,7 +646,6 @@ class SubscriptionBulkDeleteView(generic.BulkDeleteView):
 #
 # Webhooks
 #
-
 
 @register_model_view(Webhook, 'list', path='', detail=False)
 class WebhookListView(generic.ObjectListView):
@@ -723,7 +703,6 @@ class WebhookBulkDeleteView(generic.BulkDeleteView):
 # Event Rules
 #
 
-
 @register_model_view(EventRule, 'list', path='', detail=False)
 class EventRuleListView(generic.ObjectListView):
     queryset = EventRule.objects.all()
@@ -780,10 +759,11 @@ class EventRuleBulkDeleteView(generic.BulkDeleteView):
 # Tags
 #
 
-
 @register_model_view(Tag, 'list', path='', detail=False)
 class TagListView(generic.ObjectListView):
-    queryset = Tag.objects.annotate(items=count_related(TaggedItem, 'tag'))
+    queryset = Tag.objects.annotate(
+        items=count_related(TaggedItem, 'tag')
+    )
     filterset = filtersets.TagFilterSet
     filterset_form = forms.TagFilterForm
     table = tables.TagTable
@@ -795,12 +775,17 @@ class TagView(generic.ObjectView):
 
     def get_extra_context(self, request, instance):
         tagged_items = TaggedItem.objects.filter(tag=instance)
-        taggeditem_table = tables.TaggedItemTable(data=tagged_items, orderable=False)
+        taggeditem_table = tables.TaggedItemTable(
+            data=tagged_items,
+            orderable=False
+        )
         taggeditem_table.configure(request)
 
         object_types = [
-            {'content_type': ContentType.objects.get(pk=ti['content_type']), 'item_count': ti['item_count']}
-            for ti in tagged_items.values('content_type').annotate(item_count=Count('pk'))
+            {
+                'content_type': ContentType.objects.get(pk=ti['content_type']),
+                'item_count': ti['item_count']
+            } for ti in tagged_items.values('content_type').annotate(item_count=Count('pk'))
         ]
 
         return {
@@ -830,7 +815,9 @@ class TagBulkImportView(generic.BulkImportView):
 
 @register_model_view(Tag, 'bulk_edit', path='edit', detail=False)
 class TagBulkEditView(generic.BulkEditView):
-    queryset = Tag.objects.annotate(items=count_related(TaggedItem, 'tag'))
+    queryset = Tag.objects.annotate(
+        items=count_related(TaggedItem, 'tag')
+    )
     table = tables.TagTable
     form = forms.TagBulkEditForm
 
@@ -842,14 +829,15 @@ class TagBulkRenameView(generic.BulkRenameView):
 
 @register_model_view(Tag, 'bulk_delete', path='delete', detail=False)
 class TagBulkDeleteView(generic.BulkDeleteView):
-    queryset = Tag.objects.annotate(items=count_related(TaggedItem, 'tag'))
+    queryset = Tag.objects.annotate(
+        items=count_related(TaggedItem, 'tag')
+    )
     table = tables.TagTable
 
 
 #
 # Config context profiles
 #
-
 
 @register_model_view(ConfigContextProfile, 'list', path='', detail=False)
 class ConfigContextProfileListView(generic.ObjectListView):
@@ -912,7 +900,6 @@ class ConfigContextProfileBulkSyncDataView(generic.BulkSyncDataView):
 #
 # Config contexts
 #
-
 
 @register_model_view(ConfigContext, 'list', path='', detail=False)
 class ConfigContextListView(generic.ObjectListView):
@@ -1028,7 +1015,6 @@ class ObjectConfigContextView(generic.ObjectView):
 # Config templates
 #
 
-
 @register_model_view(ConfigTemplate, 'list', path='', detail=False)
 class ConfigTemplateListView(generic.ObjectListView):
     queryset = ConfigTemplate.objects.annotate(
@@ -1105,7 +1091,7 @@ class ObjectRenderConfigView(generic.ObjectView):
         if request.GET.get('export'):
             content = context['rendered_config'] or context['error_message']
             response = HttpResponse(content, content_type='text')
-            filename = f'{instance.name or "config"}.txt'
+            filename = f"{instance.name or 'config'}.txt"
             response['Content-Disposition'] = f'attachment; filename="{filename}"'
             return response
 
@@ -1136,7 +1122,7 @@ class ObjectRenderConfigView(generic.ObjectView):
             try:
                 rendered_config = config_template.render(context=context_data)
             except TemplateError as e:
-                error_message = _('An error occurred while rendering the template: {error}').format(error=e)
+                error_message = _("An error occurred while rendering the template: {error}").format(error=e)
 
         return {
             'base_template': self.base_template,
@@ -1150,7 +1136,6 @@ class ObjectRenderConfigView(generic.ObjectView):
 #
 # Image attachments
 #
-
 
 @register_model_view(ImageAttachment, 'list', path='', detail=False)
 class ImageAttachmentListView(generic.ObjectListView):
@@ -1215,7 +1200,6 @@ class ImageAttachmentBulkDeleteView(generic.BulkDeleteView):
 #
 # Journal entries
 #
-
 
 @register_model_view(JournalEntry, 'list', path='', detail=False)
 class JournalEntryListView(generic.ObjectListView):
@@ -1283,7 +1267,6 @@ class JournalEntryBulkDeleteView(generic.BulkDeleteView):
 # Dashboard & widgets
 #
 
-
 class DashboardResetView(LoginRequiredMixin, View):
     template_name = 'extras/dashboard/reset.html'
 
@@ -1291,14 +1274,10 @@ class DashboardResetView(LoginRequiredMixin, View):
         get_object_or_404(Dashboard.objects.all(), user=request.user)
         form = ConfirmationForm()
 
-        return render(
-            request,
-            self.template_name,
-            {
-                'form': form,
-                'return_url': reverse('home'),
-            },
-        )
+        return render(request, self.template_name, {
+            'form': form,
+            'return_url': reverse('home'),
+        })
 
     def post(self, request):
         dashboard = get_object_or_404(Dashboard.objects.all(), user=request.user)
@@ -1306,17 +1285,13 @@ class DashboardResetView(LoginRequiredMixin, View):
 
         if form.is_valid():
             dashboard.delete()
-            messages.success(request, _('Your dashboard has been reset.'))
+            messages.success(request, _("Your dashboard has been reset."))
             return redirect(reverse('home'))
 
-        return render(
-            request,
-            self.template_name,
-            {
-                'form': form,
-                'return_url': reverse('home'),
-            },
-        )
+        return render(request, self.template_name, {
+            'form': form,
+            'return_url': reverse('home'),
+        })
 
 
 class DashboardWidgetAddView(LoginRequiredMixin, View):
@@ -1334,15 +1309,11 @@ class DashboardWidgetAddView(LoginRequiredMixin, View):
         widget_class = get_widget_class(widget_name)
         config_form = widget_class.ConfigForm(initial=widget_class.default_config, prefix='config')
 
-        return render(
-            request,
-            self.template_name,
-            {
-                'widget_class': widget_class,
-                'widget_form': widget_form,
-                'config_form': config_form,
-            },
-        )
+        return render(request, self.template_name, {
+            'widget_class': widget_class,
+            'widget_form': widget_form,
+            'config_form': config_form,
+        })
 
     def post(self, request):
         widget_form = DashboardWidgetAddForm(request.POST)
@@ -1362,21 +1333,15 @@ class DashboardWidgetAddView(LoginRequiredMixin, View):
                 request.user.dashboard.save()
                 messages.success(request, _('Added widget: ') + str(widget.id))
 
-                return HttpResponse(
-                    headers={
-                        'HX-Redirect': reverse('home'),
-                    }
-                )
+                return HttpResponse(headers={
+                    'HX-Redirect': reverse('home'),
+                })
 
-        return render(
-            request,
-            self.template_name,
-            {
-                'widget_class': widget_class,
-                'widget_form': widget_form,
-                'config_form': config_form,
-            },
-        )
+        return render(request, self.template_name, {
+            'widget_class': widget_class,
+            'widget_form': widget_form,
+            'config_form': config_form,
+        })
 
 
 class DashboardWidgetConfigView(LoginRequiredMixin, View):
@@ -1390,16 +1355,12 @@ class DashboardWidgetConfigView(LoginRequiredMixin, View):
         widget_form = DashboardWidgetForm(initial=widget.form_data)
         config_form = widget.ConfigForm(initial=widget.form_data.get('config'), prefix='config')
 
-        return render(
-            request,
-            self.template_name,
-            {
-                'widget_class': widget.__class__,
-                'widget_form': widget_form,
-                'config_form': config_form,
-                'form_url': reverse('extras:dashboardwidget_config', kwargs={'id': id}),
-            },
-        )
+        return render(request, self.template_name, {
+            'widget_class': widget.__class__,
+            'widget_form': widget_form,
+            'config_form': config_form,
+            'form_url': reverse('extras:dashboardwidget_config', kwargs={'id': id})
+        })
 
     def post(self, request, id):
         widget = request.user.dashboard.get_widget(id)
@@ -1413,21 +1374,15 @@ class DashboardWidgetConfigView(LoginRequiredMixin, View):
             request.user.dashboard.save()
             messages.success(request, _('Updated widget: ') + str(widget.id))
 
-            return HttpResponse(
-                headers={
-                    'HX-Redirect': reverse('home'),
-                }
-            )
+            return HttpResponse(headers={
+                'HX-Redirect': reverse('home'),
+            })
 
-        return render(
-            request,
-            self.template_name,
-            {
-                'widget_form': widget_form,
-                'config_form': config_form,
-                'form_url': reverse('extras:dashboardwidget_config', kwargs={'id': id}),
-            },
-        )
+        return render(request, self.template_name, {
+            'widget_form': widget_form,
+            'config_form': config_form,
+            'form_url': reverse('extras:dashboardwidget_config', kwargs={'id': id})
+        })
 
 
 class DashboardWidgetDeleteView(LoginRequiredMixin, View):
@@ -1440,16 +1395,12 @@ class DashboardWidgetDeleteView(LoginRequiredMixin, View):
         widget = request.user.dashboard.get_widget(id)
         form = ConfirmationForm(initial=request.GET)
 
-        return render(
-            request,
-            'htmx/delete_form.html',
-            {
-                'object_type': widget.__class__.__name__,
-                'object': widget,
-                'form': form,
-                'form_url': reverse('extras:dashboardwidget_delete', kwargs={'id': id}),
-            },
-        )
+        return render(request, 'htmx/delete_form.html', {
+            'object_type': widget.__class__.__name__,
+            'object': widget,
+            'form': form,
+            'form_url': reverse('extras:dashboardwidget_delete', kwargs={'id': id})
+        })
 
     def post(self, request, id):
         form = ConfirmationForm(request.POST)
@@ -1468,7 +1419,6 @@ class DashboardWidgetDeleteView(LoginRequiredMixin, View):
 # Scripts
 #
 
-
 @register_model_view(ScriptModule, 'edit')
 class ScriptModuleCreateView(generic.ObjectEditView):
     queryset = ScriptModule.objects.all()
@@ -1486,6 +1436,7 @@ class ScriptModuleDeleteView(generic.ObjectDeleteView):
 
 
 class ScriptListView(ContentTypePermissionRequiredMixin, View):
+
     def get_required_permission(self):
         return 'extras.view_script'
 
@@ -1527,32 +1478,25 @@ class BaseScriptView(generic.ObjectView):
 
 
 class ScriptView(BaseScriptView):
+
     def get(self, request, **kwargs):
         script = self.get_object(**kwargs)
         script_class = self._get_script_class(script)
         if not script_class:
-            return render(
-                request,
-                'extras/script.html',
-                {
-                    'object': script,
-                    'script': script,
-                },
-            )
+            return render(request, 'extras/script.html', {
+                'object': script,
+                'script': script,
+            })
 
         form = script_class.as_form(initial=normalize_querydict(request.GET))
 
-        return render(
-            request,
-            'extras/script.html',
-            {
-                'object': script,
-                'script': script,
-                'script_class': script_class,
-                'form': form,
-                'job_count': script.jobs.count(),
-            },
-        )
+        return render(request, 'extras/script.html', {
+            'object': script,
+            'script': script,
+            'script_class': script_class,
+            'form': form,
+            'job_count': script.jobs.count(),
+        })
 
     def post(self, request, **kwargs):
         script = self.get_object(**kwargs)
@@ -1562,14 +1506,10 @@ class ScriptView(BaseScriptView):
 
         script_class = self._get_script_class(script)
         if not script_class:
-            return render(
-                request,
-                'extras/script.html',
-                {
-                    'object': script,
-                    'script': script,
-                },
-            )
+            return render(request, 'extras/script.html', {
+                'object': script,
+                'script': script,
+            })
 
         # Populate missing variables with their default values, if defined
         post_data = request.POST.copy()
@@ -1581,9 +1521,9 @@ class ScriptView(BaseScriptView):
 
         # Allow execution only if RQ worker process is running
         if not get_workers_for_queue('default'):
-            messages.error(request, _('Unable to run script: RQ worker process not running.'))
+            messages.error(request, _("Unable to run script: RQ worker process not running."))
         elif form.is_valid():
-            ScriptJob = import_string('extras.jobs.ScriptJob')
+            ScriptJob = import_string("extras.jobs.ScriptJob")
             job = ScriptJob.enqueue(
                 instance=script,
                 user=request.user,
@@ -1598,22 +1538,21 @@ class ScriptView(BaseScriptView):
             return redirect('extras:script_result', job_pk=job.pk)
         else:
             fieldset_fields = {field for _, fields in script_class.get_fieldsets() for field in fields}
-            hidden_errors = {field: errors for field, errors in form.errors.items() if field not in fieldset_fields}
+            hidden_errors = {
+                field: errors for field, errors in form.errors.items()
+                if field not in fieldset_fields
+            }
             if hidden_errors:
-                error_msg = '; '.join(f'{field}: {", ".join(errors)}' for field, errors in hidden_errors.items())
+                error_msg = '; '.join(f"{field}: {', '.join(errors)}" for field, errors in hidden_errors.items())
                 messages.error(request, error_msg)
 
-        return render(
-            request,
-            'extras/script.html',
-            {
-                'object': script,
-                'script': script,
-                'script_class': script.python_class(),
-                'form': form,
-                'job_count': script.jobs.count(),
-            },
-        )
+        return render(request, 'extras/script.html', {
+            'object': script,
+            'script': script,
+            'script_class': script.python_class(),
+            'form': form,
+            'job_count': script.jobs.count(),
+        })
 
 
 class ScriptSourceView(BaseScriptView):
@@ -1623,16 +1562,12 @@ class ScriptSourceView(BaseScriptView):
         script = self.get_object(**kwargs)
         script_class = self._get_script_class(script)
 
-        return render(
-            request,
-            'extras/script/source.html',
-            {
-                'script': script,
-                'script_class': script_class,
-                'job_count': script.jobs.count(),
-                'tab': 'source',
-            },
-        )
+        return render(request, 'extras/script/source.html', {
+            'script': script,
+            'script_class': script_class,
+            'job_count': script.jobs.count(),
+            'tab': 'source',
+        })
 
 
 class ScriptJobsView(BaseScriptView):
@@ -1641,19 +1576,19 @@ class ScriptJobsView(BaseScriptView):
     def get(self, request, **kwargs):
         script = self.get_object(**kwargs)
 
-        jobs_table = ScriptJobTable(data=script.jobs.all(), orderable=False, user=request.user)
+        jobs_table = ScriptJobTable(
+            data=script.jobs.all(),
+            orderable=False,
+            user=request.user
+        )
         jobs_table.configure(request)
 
-        return render(
-            request,
-            'extras/script/jobs.html',
-            {
-                'script': script,
-                'table': jobs_table,
-                'job_count': script.jobs.count(),
-                'tab': 'jobs',
-            },
-        )
+        return render(request, 'extras/script/jobs.html', {
+            'script': script,
+            'table': jobs_table,
+            'job_count': script.jobs.count(),
+            'tab': 'jobs',
+        })
 
 
 class ScriptResultView(TableMixin, generic.ObjectView):
@@ -1727,9 +1662,9 @@ class ScriptResultView(TableMixin, generic.ObjectView):
         # If a direct export output has been requested, return the job data content as a
         # downloadable file.
         if job.completed and request.GET.get('export') == 'output':
-            content = (job.data.get('output') or '').encode()
+            content = (job.data.get("output") or "").encode()
             response = HttpResponse(content, content_type='text')
-            filename = f'{job.object.name or "script-output"}_{job.completed.strftime("%Y-%m-%d_%H%M%S")}.txt'
+            filename = f"{job.object.name or 'script-output'}_{job.completed.strftime('%Y-%m-%d_%H%M%S')}.txt"
             response['Content-Disposition'] = f'attachment; filename="{filename}"'
             return response
 
@@ -1753,7 +1688,10 @@ class ScriptResultView(TableMixin, generic.ObjectView):
             context['tests'] = job.data.get('tests', {})
         elif job.data:
             # Legacy Report
-            context['tests'] = {name: data for name, data in job.data.items() if name.startswith('test_')}
+            context['tests'] = {
+                name: data for name, data in job.data.items()
+                if name.startswith('test_')
+            }
 
         # If this is an HTMX request, return only the result HTML
         if htmx_partial(request):
@@ -1772,8 +1710,8 @@ class ScriptResultView(TableMixin, generic.ObjectView):
 # Markdown
 #
 
-
 class RenderMarkdownView(LoginRequiredMixin, View):
+
     def post(self, request):
         form = forms.RenderMarkdownForm(request.POST)
         if not form.is_valid():

@@ -26,8 +26,10 @@ class NetBoxModelFilterSetForm(FilterModifierMixin, CustomFieldsMixin, SavedFilt
         selector_fields: An iterable of names of fields to display by default when rendering the form as
             a selector widget
     """
-
-    q = QueryField(required=False, label=_('Search'))
+    q = QueryField(
+        required=False,
+        label=_('Search')
+    )
 
     selector_fields = ('filter_id', 'q')
 
@@ -50,7 +52,6 @@ class PrimaryModelFilterSetForm(OwnerFilterMixin, NetBoxModelFilterSetForm):
     """
     FilterSet form for models which inherit from PrimaryModel.
     """
-
     pass
 
 
@@ -58,7 +59,6 @@ class OrganizationalModelFilterSetForm(OwnerFilterMixin, NetBoxModelFilterSetFor
     """
     FilterSet form for models which inherit from OrganizationalModel.
     """
-
     pass
 
 
@@ -66,5 +66,4 @@ class NestedGroupModelFilterSetForm(OwnerFilterMixin, NetBoxModelFilterSetForm):
     """
     FilterSet form for models which inherit from NestedGroupModel.
     """
-
     pass

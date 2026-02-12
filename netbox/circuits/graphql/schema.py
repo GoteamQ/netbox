@@ -6,7 +6,7 @@ import strawberry_django
 from .types import *
 
 
-@strawberry.type(name='Query')
+@strawberry.type(name="Query")
 class CircuitsQuery:
     circuit: CircuitType = strawberry_django.field()
     circuit_list: List[CircuitType] = strawberry_django.field()

@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 def get_active(apps, schema_editor):
     from django.core.cache import cache
-
     ConfigRevision = apps.get_model('core', 'ConfigRevision')
     version = None
     revision = None
@@ -28,6 +27,7 @@ def get_active(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
+
     dependencies = [
         ('core', '0018_concrete_objecttype'),
     ]

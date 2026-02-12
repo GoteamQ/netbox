@@ -17,7 +17,9 @@ def get_widget_choices():
 
 
 class DashboardWidgetForm(forms.Form):
-    title = forms.CharField(required=False)
+    title = forms.CharField(
+        required=False
+    )
     color = forms.ChoiceField(
         choices=add_blank_choice(DashboardWidgetColorChoices),
         required=False,
@@ -33,6 +35,6 @@ class DashboardWidgetAddForm(DashboardWidgetForm):
                 'hx-target': '#widget_add_form',
             }
         ),
-        label=_('Widget type'),
+        label=_('Widget type')
     )
     field_order = ('widget_class', 'title', 'color')

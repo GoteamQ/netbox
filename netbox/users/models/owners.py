@@ -15,7 +15,6 @@ class OwnerGroup(AdminModel):
     """
     An arbitrary grouping of Owners.
     """
-
     name = models.CharField(
         verbose_name=_('name'),
         max_length=100,

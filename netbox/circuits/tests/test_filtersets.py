@@ -5,16 +5,7 @@ from circuits.filtersets import *
 from circuits.models import *
 from dcim.choices import InterfaceTypeChoices, LocationStatusChoices
 from dcim.models import (
-    Cable,
-    Device,
-    DeviceRole,
-    DeviceType,
-    Interface,
-    Location,
-    Manufacturer,
-    Region,
-    Site,
-    SiteGroup,
+    Cable, Device, DeviceRole, DeviceType, Interface, Location, Manufacturer, Region, Site, SiteGroup
 )
 from ipam.models import ASN, RIR
 from netbox.choices import DistanceUnitChoices
@@ -28,6 +19,7 @@ class ProviderTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
+
         rir = RIR.objects.create(name='RFC 6996', is_private=True)
         asns = (
             ASN(asn=64512, rir=rir),
@@ -139,13 +131,12 @@ class CircuitTypeTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
-        CircuitType.objects.bulk_create(
-            (
-                CircuitType(name='Circuit Type 1', slug='circuit-type-1', description='foobar1'),
-                CircuitType(name='Circuit Type 2', slug='circuit-type-2', description='foobar2'),
-                CircuitType(name='Circuit Type 3', slug='circuit-type-3'),
-            )
-        )
+
+        CircuitType.objects.bulk_create((
+            CircuitType(name='Circuit Type 1', slug='circuit-type-1', description='foobar1'),
+            CircuitType(name='Circuit Type 2', slug='circuit-type-2', description='foobar2'),
+            CircuitType(name='Circuit Type 3', slug='circuit-type-3'),
+        ))
 
     def test_q(self):
         params = {'q': 'foobar1'}
@@ -170,6 +161,7 @@ class CircuitTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
+
         regions = (
             Region(name='Test Region 1', slug='test-region-1'),
             Region(name='Test Region 2', slug='test-region-2'),
@@ -237,15 +229,11 @@ class CircuitTestCase(TestCase, ChangeLoggedFilterSetTests):
 
         locations = (
             Location.objects.create(
-                site=sites[0],
-                name='Test Location 1',
-                slug='test-location-1',
+                site=sites[0], name='Test Location 1', slug='test-location-1',
                 status=LocationStatusChoices.STATUS_ACTIVE,
             ),
             Location.objects.create(
-                site=sites[1],
-                name='Test Location 2',
-                slug='test-location-2',
+                site=sites[1], name='Test Location 2', slug='test-location-2',
                 status=LocationStatusChoices.STATUS_ACTIVE,
             ),
         )
@@ -328,7 +316,7 @@ class CircuitTestCase(TestCase, ChangeLoggedFilterSetTests):
         )
         Circuit.objects.bulk_create(circuits)
 
-        circuit_terminations = (
+        circuit_terminations = ((
             CircuitTermination(circuit=circuits[0], termination=sites[0], term_side='A'),
             CircuitTermination(circuit=circuits[0], termination=locations[0], term_side='Z'),
             CircuitTermination(circuit=circuits[1], termination=sites[1], term_side='A'),
@@ -337,7 +325,7 @@ class CircuitTestCase(TestCase, ChangeLoggedFilterSetTests):
             CircuitTermination(circuit=circuits[3], termination=provider_networks[0], term_side='A'),
             CircuitTermination(circuit=circuits[4], termination=provider_networks[1], term_side='A'),
             CircuitTermination(circuit=circuits[5], termination=provider_networks[2], term_side='A'),
-        )
+        ))
         for ct in circuit_terminations:
             ct.save()
 
@@ -449,6 +437,7 @@ class CircuitTerminationTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
+
         sites = (
             Site(name='Site 1', slug='site-1'),
             Site(name='Site 2', slug='site-2'),
@@ -456,7 +445,9 @@ class CircuitTerminationTestCase(TestCase, ChangeLoggedFilterSetTests):
         )
         Site.objects.bulk_create(sites)
 
-        circuit_types = (CircuitType(name='Circuit Type 1', slug='circuit-type-1'),)
+        circuit_types = (
+            CircuitType(name='Circuit Type 1', slug='circuit-type-1'),
+        )
         CircuitType.objects.bulk_create(circuit_types)
 
         providers = (
@@ -629,13 +620,11 @@ class CircuitGroupTestCase(TestCase, ChangeLoggedFilterSetTests):
         )
         Tenant.objects.bulk_create(tenants)
 
-        CircuitGroup.objects.bulk_create(
-            (
-                CircuitGroup(name='Circuit Group 1', slug='circuit-group-1', description='foobar1', tenant=tenants[0]),
-                CircuitGroup(name='Circuit Group 2', slug='circuit-group-2', description='foobar2', tenant=tenants[1]),
-                CircuitGroup(name='Circuit Group 3', slug='circuit-group-3', tenant=tenants[1]),
-            )
-        )
+        CircuitGroup.objects.bulk_create((
+            CircuitGroup(name='Circuit Group 1', slug='circuit-group-1', description='foobar1', tenant=tenants[0]),
+            CircuitGroup(name='Circuit Group 2', slug='circuit-group-2', description='foobar2', tenant=tenants[1]),
+            CircuitGroup(name='Circuit Group 3', slug='circuit-group-3', tenant=tenants[1]),
+        ))
 
     def test_q(self):
         params = {'q': 'foobar1'}
@@ -674,6 +663,7 @@ class CircuitGroupAssignmentTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
+
         circuit_groups = (
             CircuitGroup(name='Circuit Group 1', slug='circuit-group-1'),
             CircuitGroup(name='Circuit Group 2', slug='circuit-group-2'),
@@ -681,13 +671,11 @@ class CircuitGroupAssignmentTestCase(TestCase, ChangeLoggedFilterSetTests):
         )
         CircuitGroup.objects.bulk_create(circuit_groups)
 
-        providers = Provider.objects.bulk_create(
-            (
-                Provider(name='Provider 1', slug='provider-1'),
-                Provider(name='Provider 2', slug='provider-2'),
-                Provider(name='Provider 3', slug='provider-3'),
-            )
-        )
+        providers = Provider.objects.bulk_create((
+            Provider(name='Provider 1', slug='provider-1'),
+            Provider(name='Provider 2', slug='provider-2'),
+            Provider(name='Provider 3', slug='provider-3'),
+        ))
         circuit_type = CircuitType.objects.create(name='Circuit Type 1', slug='circuit-type-1')
 
         circuits = (
@@ -705,33 +693,58 @@ class CircuitGroupAssignmentTestCase(TestCase, ChangeLoggedFilterSetTests):
         ProviderNetwork.objects.bulk_create(provider_networks)
 
         virtual_circuit_type = VirtualCircuitType.objects.create(
-            name='Virtual Circuit Type 1', slug='virtual-circuit-type-1'
+            name='Virtual Circuit Type 1',
+            slug='virtual-circuit-type-1'
         )
         virtual_circuits = (
-            VirtualCircuit(provider_network=provider_networks[0], cid='Virtual Circuit 1', type=virtual_circuit_type),
-            VirtualCircuit(provider_network=provider_networks[1], cid='Virtual Circuit 2', type=virtual_circuit_type),
-            VirtualCircuit(provider_network=provider_networks[2], cid='Virtual Circuit 3', type=virtual_circuit_type),
+            VirtualCircuit(
+                provider_network=provider_networks[0],
+                cid='Virtual Circuit 1',
+                type=virtual_circuit_type
+            ),
+            VirtualCircuit(
+                provider_network=provider_networks[1],
+                cid='Virtual Circuit 2',
+                type=virtual_circuit_type
+            ),
+            VirtualCircuit(
+                provider_network=provider_networks[2],
+                cid='Virtual Circuit 3',
+                type=virtual_circuit_type
+            ),
         )
         VirtualCircuit.objects.bulk_create(virtual_circuits)
 
         assignments = (
             CircuitGroupAssignment(
-                group=circuit_groups[0], member=circuits[0], priority=CircuitPriorityChoices.PRIORITY_PRIMARY
+                group=circuit_groups[0],
+                member=circuits[0],
+                priority=CircuitPriorityChoices.PRIORITY_PRIMARY
             ),
             CircuitGroupAssignment(
-                group=circuit_groups[1], member=circuits[1], priority=CircuitPriorityChoices.PRIORITY_SECONDARY
+                group=circuit_groups[1],
+                member=circuits[1],
+                priority=CircuitPriorityChoices.PRIORITY_SECONDARY
             ),
             CircuitGroupAssignment(
-                group=circuit_groups[2], member=circuits[2], priority=CircuitPriorityChoices.PRIORITY_TERTIARY
+                group=circuit_groups[2],
+                member=circuits[2],
+                priority=CircuitPriorityChoices.PRIORITY_TERTIARY
             ),
             CircuitGroupAssignment(
-                group=circuit_groups[0], member=virtual_circuits[0], priority=CircuitPriorityChoices.PRIORITY_PRIMARY
+                group=circuit_groups[0],
+                member=virtual_circuits[0],
+                priority=CircuitPriorityChoices.PRIORITY_PRIMARY
             ),
             CircuitGroupAssignment(
-                group=circuit_groups[1], member=virtual_circuits[1], priority=CircuitPriorityChoices.PRIORITY_SECONDARY
+                group=circuit_groups[1],
+                member=virtual_circuits[1],
+                priority=CircuitPriorityChoices.PRIORITY_SECONDARY
             ),
             CircuitGroupAssignment(
-                group=circuit_groups[2], member=virtual_circuits[2], priority=CircuitPriorityChoices.PRIORITY_TERTIARY
+                group=circuit_groups[2],
+                member=virtual_circuits[2],
+                priority=CircuitPriorityChoices.PRIORITY_TERTIARY
             ),
         )
         CircuitGroupAssignment.objects.bulk_create(assignments)
@@ -771,6 +784,7 @@ class ProviderNetworkTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
+
         providers = (
             Provider(name='Provider 1', slug='provider-1'),
             Provider(name='Provider 2', slug='provider-2'),
@@ -811,6 +825,7 @@ class ProviderAccountTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
+
         providers = (
             Provider(name='Provider 1', slug='provider-1'),
             Provider(name='Provider 2', slug='provider-2'),
@@ -855,13 +870,12 @@ class VirtualCircuitTypeTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
-        VirtualCircuitType.objects.bulk_create(
-            (
-                VirtualCircuitType(name='Virtual Circuit Type 1', slug='virtual-circuit-type-1', description='foobar1'),
-                VirtualCircuitType(name='Virtual Circuit Type 2', slug='virtual-circuit-type-2', description='foobar2'),
-                VirtualCircuitType(name='Virtual Circuit Type 3', slug='virtual-circuit-type-3'),
-            )
-        )
+
+        VirtualCircuitType.objects.bulk_create((
+            VirtualCircuitType(name='Virtual Circuit Type 1', slug='virtual-circuit-type-1', description='foobar1'),
+            VirtualCircuitType(name='Virtual Circuit Type 2', slug='virtual-circuit-type-2', description='foobar2'),
+            VirtualCircuitType(name='Virtual Circuit Type 3', slug='virtual-circuit-type-3'),
+        ))
 
     def test_q(self):
         params = {'q': 'foobar1'}
@@ -886,6 +900,7 @@ class VirtualCircuitTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
+
         tenant_groups = (
             TenantGroup(name='Tenant group 1', slug='tenant-group-1'),
             TenantGroup(name='Tenant group 2', slug='tenant-group-2'),
@@ -1035,14 +1050,38 @@ class VirtualCircuitTerminationTestCase(TestCase, ChangeLoggedFilterSetTests):
 
         virtual_interfaces = (
             # Device 1
-            Interface(device=devices[0], name='eth0.1', type=InterfaceTypeChoices.TYPE_VIRTUAL),
-            Interface(device=devices[0], name='eth0.2', type=InterfaceTypeChoices.TYPE_VIRTUAL),
+            Interface(
+                device=devices[0],
+                name='eth0.1',
+                type=InterfaceTypeChoices.TYPE_VIRTUAL
+            ),
+            Interface(
+                device=devices[0],
+                name='eth0.2',
+                type=InterfaceTypeChoices.TYPE_VIRTUAL
+            ),
             # Device 2
-            Interface(device=devices[1], name='eth0.1', type=InterfaceTypeChoices.TYPE_VIRTUAL),
-            Interface(device=devices[1], name='eth0.2', type=InterfaceTypeChoices.TYPE_VIRTUAL),
+            Interface(
+                device=devices[1],
+                name='eth0.1',
+                type=InterfaceTypeChoices.TYPE_VIRTUAL
+            ),
+            Interface(
+                device=devices[1],
+                name='eth0.2',
+                type=InterfaceTypeChoices.TYPE_VIRTUAL
+            ),
             # Device 3
-            Interface(device=devices[2], name='eth0.1', type=InterfaceTypeChoices.TYPE_VIRTUAL),
-            Interface(device=devices[2], name='eth0.2', type=InterfaceTypeChoices.TYPE_VIRTUAL),
+            Interface(
+                device=devices[2],
+                name='eth0.1',
+                type=InterfaceTypeChoices.TYPE_VIRTUAL
+            ),
+            Interface(
+                device=devices[2],
+                name='eth0.2',
+                type=InterfaceTypeChoices.TYPE_VIRTUAL
+            ),
         )
         Interface.objects.bulk_create(virtual_interfaces)
 
@@ -1065,7 +1104,8 @@ class VirtualCircuitTerminationTestCase(TestCase, ChangeLoggedFilterSetTests):
         )
         ProviderAccount.objects.bulk_create(provider_accounts)
         virtual_circuit_type = VirtualCircuitType.objects.create(
-            name='Virtual Circuit Type 1', slug='virtual-circuit-type-1'
+            name='Virtual Circuit Type 1',
+            slug='virtual-circuit-type-1'
         )
 
         virtual_circuits = (
@@ -1073,19 +1113,19 @@ class VirtualCircuitTerminationTestCase(TestCase, ChangeLoggedFilterSetTests):
                 provider_network=provider_networks[0],
                 provider_account=provider_accounts[0],
                 cid='Virtual Circuit 1',
-                type=virtual_circuit_type,
+                type=virtual_circuit_type
             ),
             VirtualCircuit(
                 provider_network=provider_networks[1],
                 provider_account=provider_accounts[1],
                 cid='Virtual Circuit 2',
-                type=virtual_circuit_type,
+                type=virtual_circuit_type
             ),
             VirtualCircuit(
                 provider_network=provider_networks[2],
                 provider_account=provider_accounts[2],
                 cid='Virtual Circuit 3',
-                type=virtual_circuit_type,
+                type=virtual_circuit_type
             ),
         )
         VirtualCircuit.objects.bulk_create(virtual_circuits)
@@ -1095,37 +1135,37 @@ class VirtualCircuitTerminationTestCase(TestCase, ChangeLoggedFilterSetTests):
                 virtual_circuit=virtual_circuits[0],
                 role=VirtualCircuitTerminationRoleChoices.ROLE_HUB,
                 interface=virtual_interfaces[0],
-                description='termination1',
+                description='termination1'
             ),
             VirtualCircuitTermination(
                 virtual_circuit=virtual_circuits[0],
                 role=VirtualCircuitTerminationRoleChoices.ROLE_SPOKE,
                 interface=virtual_interfaces[3],
-                description='termination2',
+                description='termination2'
             ),
             VirtualCircuitTermination(
                 virtual_circuit=virtual_circuits[1],
                 role=VirtualCircuitTerminationRoleChoices.ROLE_PEER,
                 interface=virtual_interfaces[1],
-                description='termination3',
+                description='termination3'
             ),
             VirtualCircuitTermination(
                 virtual_circuit=virtual_circuits[1],
                 role=VirtualCircuitTerminationRoleChoices.ROLE_PEER,
                 interface=virtual_interfaces[4],
-                description='termination4',
+                description='termination4'
             ),
             VirtualCircuitTermination(
                 virtual_circuit=virtual_circuits[2],
                 role=VirtualCircuitTerminationRoleChoices.ROLE_PEER,
                 interface=virtual_interfaces[2],
-                description='termination5',
+                description='termination5'
             ),
             VirtualCircuitTermination(
                 virtual_circuit=virtual_circuits[2],
                 role=VirtualCircuitTerminationRoleChoices.ROLE_PEER,
                 interface=virtual_interfaces[5],
-                description='termination6',
+                description='termination6'
             ),
         )
         VirtualCircuitTermination.objects.bulk_create(virtual_circuit_terminations)

@@ -28,7 +28,6 @@ def multivalue_field_factory(field_class):
     Given a form field class, return a subclass capable of accepting multiple values. This allows us to OR on multiple
     filter values while maintaining the field's built-in validation. Example: GET /api/dcim/devices/?name=foo&name=bar
     """
-
     class NewField(field_class):
         widget = forms.SelectMultiple
 
@@ -38,9 +37,7 @@ def multivalue_field_factory(field_class):
             field = field_class()
             return [
                 # Only append non-empty values (this avoids e.g. trying to cast '' as an integer)
-                field.to_python(v)
-                for v in value
-                if v
+                field.to_python(v) for v in value if v
             ]
 
         def run_validators(self, value):
@@ -57,7 +54,6 @@ def multivalue_field_factory(field_class):
 #
 # Filters
 #
-
 
 @extend_schema_field(OpenApiTypes.STR)
 class MultiValueCharFilter(django_filters.MultipleChoiceFilter):
@@ -125,11 +121,10 @@ class TreeNodeMultipleChoiceFilter(django_filters.ModelMultipleChoiceFilter):
     """
     Filters for a set of Models, including all descendant models within a Tree.  Example: [<Region: R1>,<Region: R2>]
     """
-
     def get_filter_predicate(self, v):
         # Null value filtering
         if v is None:
-            return {f'{self.field_name}__isnull': True}
+            return {f"{self.field_name}__isnull": True}
         return super().get_filter_predicate(v)
 
     def filter(self, qs, value):
@@ -141,7 +136,6 @@ class NullableCharFieldFilter(django_filters.CharFilter):
     """
     Allow matching on null field values by passing a special string used to signify NULL.
     """
-
     def filter(self, qs, value):
         if value != settings.FILTERS_NULL_CHOICE_VALUE:
             return super().filter(qs, value)
@@ -153,7 +147,6 @@ class NumericArrayFilter(django_filters.NumberFilter):
     """
     Filter based on the presence of an integer within an ArrayField.
     """
-
     def filter(self, qs, value):
         if value:
             value = [value]
@@ -164,7 +157,6 @@ class ContentTypeFilter(django_filters.CharFilter):
     """
     Allow specifying a ContentType by <app_label>.<model> (e.g. "dcim.site").
     """
-
     def filter(self, qs, value):
         if value in EMPTY_VALUES:
             return qs
@@ -173,4 +165,9 @@ class ContentTypeFilter(django_filters.CharFilter):
             app_label, model = value.lower().split('.')
         except ValueError:
             return qs.none()
-        return qs.filter(**{f'{self.field_name}__app_label': app_label, f'{self.field_name}__model': model})
+        return qs.filter(
+            **{
+                f'{self.field_name}__app_label': app_label,
+                f'{self.field_name}__model': model
+            }
+        )

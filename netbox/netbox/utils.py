@@ -9,14 +9,18 @@ __all__ = (
 
 
 def get_data_backend_choices():
-    return [(None, '---------'), *[(name, cls.label) for name, cls in registry['data_backends'].items()]]
+    return [
+        (None, '---------'),
+        *[
+            (name, cls.label) for name, cls in registry['data_backends'].items()
+        ]
+    ]
 
 
 def register_data_backend():
     """
     Decorator for registering a DataBackend class.
     """
-
     def _wrapper(cls):
         registry['data_backends'][cls.name] = cls
         return cls
@@ -41,13 +45,12 @@ def register_model_feature(name, func=None):
         def my_func(model):
             ...
     """
-
     def decorator(f):
         registry['model_features'][name] = f
         return f
 
     if name in registry['model_features']:
-        raise ValueError(f'A model feature named {name} is already registered.')
+        raise ValueError(f"A model feature named {name} is already registered.")
 
     if func is None:
         return decorator

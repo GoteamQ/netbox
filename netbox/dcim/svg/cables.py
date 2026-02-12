@@ -8,7 +8,9 @@ from django.conf import settings
 from dcim.constants import CABLE_TRACE_SVG_DEFAULT_WIDTH
 from utilities.html import foreground_color
 
-__all__ = ('CableTraceSVG',)
+__all__ = (
+    'CableTraceSVG',
+)
 
 OFFSET = 0.5
 PADDING = 10
@@ -82,7 +84,7 @@ class Connector(Group):
     """
 
     def __init__(self, start, url, color, wireless, labels=[], description=[], end=None, text_offset=0, **extra):
-        super().__init__(class_='connector', **extra)
+        super().__init__(class_="connector", **extra)
 
         self.start = start
         self.height = PADDING * 2 + LINE_HEIGHT * len(labels) + PADDING * 2
@@ -92,7 +94,7 @@ class Connector(Group):
 
         if wireless:
             # Draw the cable
-            cable = Line(start=self.start, end=self.end, class_='wireless-link')
+            cable = Line(start=self.start, end=self.end, class_="wireless-link")
             self.add(cable)
         else:
             # Draw a "shadow" line to give the cable a border
@@ -116,7 +118,7 @@ class Connector(Group):
             text = Text(label, insert=text_coords, class_='bold' if not i else [])
             link.add(text)
         if len(description) > 0:
-            link.set_desc('\n'.join(description))
+            link.set_desc("\n".join(description))
 
         self.add(link)
 
@@ -129,7 +131,6 @@ class CableTraceSVG:
     :param width: Width of the generated image (in pixels)
     :param base_url: Base URL for links within the SVG document. If none, links will be relative.
     """
-
     def __init__(self, origin, width=CABLE_TRACE_SVG_DEFAULT_WIDTH, base_url=None):
         self.origin = origin
         self.width = width
@@ -209,7 +210,7 @@ class CableTraceSVG:
                 url=f'{self.base_url}{obj.get_absolute_url()}',
                 color=self._get_color(obj),
                 labels=self._get_labels(obj),
-                object=obj,
+                object=obj
             )
             objects.append(node)
             self.parent_objects.append(node)
@@ -232,7 +233,7 @@ class CableTraceSVG:
                 color=self._get_color(term),
                 labels=self._get_labels(term),
                 radius=5,
-                object=term,
+                object=term
             )
             nodes_height = max(nodes_height, node.box['height'])
             nodes.append(node)
@@ -300,12 +301,10 @@ class CableTraceSVG:
                 (term.bottom_center[0], term.bottom_center[1] + FANOUT_LEG_HEIGHT),
                 target,
             )
-            self.connectors.extend(
-                (
-                    Polyline(points=points, class_='cable-shadow'),
-                    Polyline(points=points, style=f'stroke: #{color}'),
-                )
-            )
+            self.connectors.extend((
+                Polyline(points=points, class_='cable-shadow'),
+                Polyline(points=points, style=f'stroke: #{color}'),
+            ))
 
     def draw_fanout(self, start, terminations, color):
         """
@@ -317,12 +316,10 @@ class CableTraceSVG:
                 (term.top_center[0], term.top_center[1] - FANOUT_LEG_HEIGHT),
                 start,
             )
-            self.connectors.extend(
-                (
-                    Polyline(points=points, class_='cable-shadow'),
-                    Polyline(points=points, style=f'stroke: #{color}'),
-                )
-            )
+            self.connectors.extend((
+                Polyline(points=points, class_='cable-shadow'),
+                Polyline(points=points, style=f'stroke: #{color}'),
+            ))
 
     def draw_attachment(self):
         """
@@ -368,18 +365,21 @@ class CableTraceSVG:
                 parent_object_nodes, far_terminations = self.draw_far_objects(obj_list, far_ends)
                 for cable in links:
                     # Fill in labels and description with all available data
-                    description = [f'Link {cable}', cable.get_status_display()]
+                    description = [
+                        f"Link {cable}",
+                        cable.get_status_display()
+                    ]
                     near = []
                     far = []
                     color = '000000'
                     if cable.description:
-                        description.append(f'{cable.description}')
+                        description.append(f"{cable.description}")
                     if isinstance(cable, Cable):
-                        labels = [f'{cable}'] if len(links) > 2 else [f'Cable {cable}', cable.get_status_display()]
+                        labels = [f"{cable}"] if len(links) > 2 else [f"Cable {cable}", cable.get_status_display()]
                         if cable.type:
                             description.append(cable.get_type_display())
                         if cable.length and cable.length_unit:
-                            description.append(f'{cable.length} {cable.get_length_unit_display()}')
+                            description.append(f"{cable.length} {cable.get_length_unit_display()}")
                         color = cable.color or '000000'
 
                         # Collect all connected nodes to this cable
@@ -390,11 +390,11 @@ class CableTraceSVG:
                             near = [term for term in near_terminations if term.object in cable.b_terminations]
                             far = [term for term in far_terminations if term.object in cable.a_terminations]
                     elif isinstance(cable, WirelessLink):
-                        labels = [f'{cable}'] if len(links) > 2 else [f'Wireless {cable}', cable.get_status_display()]
+                        labels = [f"{cable}"] if len(links) > 2 else [f"Wireless {cable}", cable.get_status_display()]
                         if cable.ssid:
-                            description.append(f'{cable.ssid}')
+                            description.append(f"{cable.ssid}")
                         if cable.distance and cable.distance_unit:
-                            description.append(f'{cable.distance} {cable.get_distance_unit_display()}')
+                            description.append(f"{cable.distance} {cable.get_distance_unit_display()}")
                         near = [term for term in near_terminations if term.object == cable.interface_a]
                         far = [term for term in far_terminations if term.object == cable.interface_b]
                         if not (near and far):
@@ -414,7 +414,7 @@ class CableTraceSVG:
 
                         start = (center_x, start[1] + FANOUT_HEIGHT + FANOUT_LEG_HEIGHT)
                         end = (center_x, end[1] - FANOUT_HEIGHT - FANOUT_LEG_HEIGHT)
-                        text_offset -= FANOUT_HEIGHT + FANOUT_LEG_HEIGHT
+                        text_offset -= (FANOUT_HEIGHT + FANOUT_LEG_HEIGHT)
                         self.draw_fanin(start, near, color)
                         self.draw_fanout(end, far, color)
                     elif len(near) > 1:
@@ -437,7 +437,7 @@ class CableTraceSVG:
                         url=f'{self.base_url}{cable.get_absolute_url()}',
                         text_offset=text_offset,
                         labels=labels,
-                        description=description,
+                        description=description
                     )
                     self.connectors.append(connector)
 
@@ -453,7 +453,9 @@ class CableTraceSVG:
                 parent_object_nodes = self.draw_parent_objects(far_ends)
 
         # Determine drawing size
-        self.drawing = svgwrite.Drawing(size=(self.width, self.cursor + 2))
+        self.drawing = svgwrite.Drawing(
+            size=(self.width, self.cursor + 2)
+        )
 
         # Attach CSS stylesheet
         with open(f'{settings.STATIC_ROOT}/cable_trace.css') as css_file:

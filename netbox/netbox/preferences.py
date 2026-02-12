@@ -8,7 +8,9 @@ from utilities.paginator import EnhancedPaginator
 
 
 def get_page_lengths():
-    return [(v, str(v)) for v in EnhancedPaginator.default_page_lengths]
+    return [
+        (v, str(v)) for v in EnhancedPaginator.default_page_lengths
+    ]
 
 
 def get_csv_delimiters():
@@ -22,6 +24,7 @@ def get_csv_delimiters():
 
 
 PREFERENCES = {
+
     # User interface
     'locale.language': UserPreference(
         label=_('Language'),
@@ -30,7 +33,11 @@ PREFERENCES = {
             *settings.LANGUAGES,
         ),
         description=_('Forces UI translation to the specified language'),
-        warning=(_('Support for translation has been disabled locally') if not settings.TRANSLATION_ENABLED else ''),
+        warning=(
+            _("Support for translation has been disabled locally")
+            if not settings.TRANSLATION_ENABLED
+            else ''
+        )
     ),
     'ui.copilot_enabled': UserPreference(
         label=_('NetBox Copilot'),
@@ -45,7 +52,7 @@ PREFERENCES = {
         label=_('Page length'),
         choices=get_page_lengths(),
         description=_('The default number of objects to display per page'),
-        coerce=lambda x: int(x),
+        coerce=lambda x: int(x)
     ),
     'pagination.placement': UserPreference(
         label=_('Paginator placement'),
@@ -55,7 +62,7 @@ PREFERENCES = {
             ('both', _('Both')),
         ),
         default='bottom',
-        description=_('Where the paginator controls will be displayed relative to a table'),
+        description=_('Where the paginator controls will be displayed relative to a table')
     ),
     'ui.tables.striping': UserPreference(
         label=_('Striped table rows'),
@@ -65,6 +72,7 @@ PREFERENCES = {
         ),
         description=_('Render table rows with alternating colors to increase readability'),
     ),
+
     # Miscellaneous
     'data_format': UserPreference(
         label=_('Data format'),
@@ -72,14 +80,15 @@ PREFERENCES = {
             ('json', 'JSON'),
             ('yaml', 'YAML'),
         ),
-        description=_('The preferred syntax for displaying generic data within the UI'),
+        description=_('The preferred syntax for displaying generic data within the UI')
     ),
     'csv_delimiter': UserPreference(
         label=_('CSV delimiter'),
         choices=get_csv_delimiters(),
         default='comma',
-        description=_('The character used to separate fields in CSV data'),
+        description=_('The character used to separate fields in CSV data')
     ),
+
 }
 
 # Register plugin preferences

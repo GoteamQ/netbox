@@ -28,7 +28,6 @@ class SearchBackend:
     """
     Base class for search backends. Subclasses must extend the `cache()`, `remove()`, and `clear()` methods below.
     """
-
     _object_types = None
 
     def get_object_types(self):
@@ -37,6 +36,7 @@ class SearchBackend:
         ChoiceField.
         """
         if not self._object_types:
+
             # Organize choices by category
             categories = defaultdict(dict)
             for label, idx in registry['search'].items():
@@ -45,7 +45,7 @@ class SearchBackend:
             # Compile a nested tuple of choices for form rendering
             results = (
                 ('', 'All Objects'),
-                *[(category, list(choices.items())) for category, choices in categories.items()],
+                *[(category, list(choices.items())) for category, choices in categories.items()]
             )
 
             self._object_types = results
@@ -104,7 +104,9 @@ class SearchBackend:
 
 
 class CachedValueSearchBackend(SearchBackend):
+
     def search(self, value, user=None, object_types=None, lookup=DEFAULT_LOOKUP_TYPE):
+
         # Build the filter used to find relevant CachedValue records
         query_filter = Q(**{f'value__{lookup}': value})
         if object_types:
@@ -150,7 +152,8 @@ class CachedValueSearchBackend(SearchBackend):
         # Hat-tip to https://blog.oyam.dev/django-filter-by-window-function/ for the solution
         sql, params = queryset.query.sql_with_params()
         results = CachedValue.objects.prefetch_related(*prefetch).raw(
-            f'SELECT * FROM ({sql}) t WHERE row_number = 1', params
+            f"SELECT * FROM ({sql}) t WHERE row_number = 1",
+            params
         )
 
         # Iterate through each ObjectType represented in the search results and prefetch any
@@ -193,8 +196,10 @@ class CachedValueSearchBackend(SearchBackend):
         buffer = []
         counter = 0
         for instance in instances:
+
             # First item
             if not counter:
+
                 # Determine the indexer
                 if indexer is None:
                     try:
@@ -222,7 +227,7 @@ class CachedValueSearchBackend(SearchBackend):
                         field=field.name,
                         type=field.type,
                         weight=field.weight,
-                        value=field.value,
+                        value=field.value
                     )
                 )
 
@@ -276,7 +281,7 @@ def get_backend():
     try:
         backend_cls = import_string(settings.SEARCH_BACKEND)
     except AttributeError:
-        raise ImproperlyConfigured(f'Failed to import configured SEARCH_BACKEND: {settings.SEARCH_BACKEND}')
+        raise ImproperlyConfigured(f"Failed to import configured SEARCH_BACKEND: {settings.SEARCH_BACKEND}")
 
     # Initialize and return the backend instance
     return backend_cls()

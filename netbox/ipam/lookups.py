@@ -2,6 +2,7 @@ from django.db.models import IntegerField, Lookup, Transform, lookups
 
 
 class NetFieldDecoratorMixin(object):
+
     def process_lhs(self, qn, connection, lhs=None):
         lhs = lhs or self.lhs
         lhs_string, lhs_params = qn.compile(lhs)
@@ -10,6 +11,7 @@ class NetFieldDecoratorMixin(object):
 
 
 class IExact(NetFieldDecoratorMixin, lookups.IExact):
+
     def get_rhs_op(self, connection, rhs):
         return '= LOWER(%s)' % rhs
 
@@ -143,7 +145,6 @@ class NetHostContained(Lookup):
     Check for the host portion of an IP address without regard to its mask. This allows us to find e.g. 192.0.2.1/24
     when specifying a parent prefix of 192.0.2.0/26.
     """
-
     lookup_name = 'net_host_contained'
 
     def as_sql(self, qn, connection):

@@ -14,7 +14,6 @@ class ClearableFileInput(forms.ClearableFileInput):
     """
     Override Django's stock ClearableFileInput with a custom template.
     """
-
     template_name = 'widgets/clearable_file_input.html'
 
 
@@ -22,13 +21,12 @@ class MarkdownWidget(forms.Textarea):
     """
     Provide a live preview for Markdown-formatted content.
     """
-
     template_name = 'widgets/markdown_input.html'
 
     def __init__(self, attrs=None):
         # Markdown fields should use monospace font
         default_attrs = {
-            'class': 'font-monospace',
+            "class": "font-monospace",
         }
         if attrs:
             default_attrs.update(attrs)
@@ -40,7 +38,6 @@ class NumberWithOptions(forms.NumberInput):
     """
     Number field with a dropdown pre-populated with common values for convenience.
     """
-
     template_name = 'widgets/number_with_options.html'
 
     def __init__(self, options, attrs=None):
@@ -57,13 +54,12 @@ class SlugWidget(forms.TextInput):
     """
     Subclass TextInput and add a slug regeneration button next to the form field.
     """
-
     template_name = 'widgets/sluginput.html'
 
     def __init__(self, attrs=None):
         local_attrs = {} if attrs is None else attrs.copy()
         if 'class' in local_attrs:
-            local_attrs['class'] = f'{local_attrs["class"]} slug-field'
+            local_attrs['class'] = f"{local_attrs['class']} slug-field"
         else:
             local_attrs['class'] = 'slug-field'
         super().__init__(local_attrs)
@@ -73,7 +69,6 @@ class ArrayWidget(forms.Textarea):
     """
     Render each item of an array on a new line within a textarea for easy editing/
     """
-
     def format_value(self, value):
         if value is None or not len(value):
             return None
@@ -84,7 +79,6 @@ class ChoicesWidget(forms.Textarea):
     """
     Render each key-value pair of a dictionary on a new line within a textarea for easy editing.
     """
-
     def format_value(self, value):
         if not value:
             return None

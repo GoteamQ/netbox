@@ -5,17 +5,15 @@ __all__ = (
     'naturalize_interface',
 )
 
-INTERFACE_NAME_REGEX = (
-    r'(^(?P<type>[^\d\.:]+)?)'
-    r'((?P<slot>\d+)/)?'
-    r'((?P<subslot>\d+)/)?'
-    r'((?P<position>\d+)/)?'
-    r'((?P<subposition>\d+)/)?'
-    r'((?P<id>\d+))?'
-    r'(:(?P<channel>\d+))?'
-    r'(\.(?P<vc>\d+))?'
-    r'(?P<remainder>.*)$'
-)
+INTERFACE_NAME_REGEX = r'(^(?P<type>[^\d\.:]+)?)' \
+                       r'((?P<slot>\d+)/)?' \
+                       r'((?P<subslot>\d+)/)?' \
+                       r'((?P<position>\d+)/)?' \
+                       r'((?P<subposition>\d+)/)?' \
+                       r'((?P<id>\d+))?' \
+                       r'(:(?P<channel>\d+))?' \
+                       r'(\.(?P<vc>\d+))?' \
+                       r'(?P<remainder>.*)$'
 
 
 def naturalize(value, max_length, integer_places=8):

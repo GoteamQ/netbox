@@ -49,16 +49,7 @@ class DeviceIndex(SearchIndex):
         ('comments', 5000),
     )
     display_attrs = (
-        'site',
-        'location',
-        'rack',
-        'status',
-        'device_type',
-        'role',
-        'tenant',
-        'platform',
-        'serial',
-        'asset_tag',
+        'site', 'location', 'rack', 'status', 'device_type', 'role', 'tenant', 'platform', 'serial', 'asset_tag',
         'description',
     )
 
@@ -309,15 +300,7 @@ class RackIndex(SearchIndex):
         ('comments', 5000),
     )
     display_attrs = (
-        'site',
-        'location',
-        'facility_id',
-        'tenant',
-        'status',
-        'role',
-        'serial',
-        'asset_tag',
-        'description',
+        'site', 'location', 'facility_id', 'tenant', 'status', 'role', 'serial', 'asset_tag', 'description',
     )
 
 

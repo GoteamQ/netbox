@@ -10,6 +10,7 @@ from utilities.testing import disable_warnings, APITestCase, TestCase
 
 
 class GraphQLTestCase(TestCase):
+
     @override_settings(GRAPHQL_ENABLED=False)
     def test_graphql_enabled(self):
         """
@@ -82,9 +83,10 @@ class GraphQLAPITestCase(APITestCase):
             slug='location-3',
             status=LocationStatusChoices.STATUS_ACTIVE
         ),
+
         # A valid request should return the filtered list
         query = '{location_list(filters: {site_id: "' + str(sites[0].pk) + '"}) {id site {id}}}'
-        response = self.client.post(url, data={'query': query}, format='json', **self.header)
+        response = self.client.post(url, data={'query': query}, format="json", **self.header)
         self.assertHttpStatus(response, status.HTTP_200_OK)
         data = json.loads(response.content)
         self.assertNotIn('errors', data)
@@ -100,7 +102,7 @@ class GraphQLAPITestCase(APITestCase):
                 id site {id}
             }
         }"""
-        response = self.client.post(url, data={'query': query}, format='json', **self.header)
+        response = self.client.post(url, data={'query': query}, format="json", **self.header)
         self.assertHttpStatus(response, status.HTTP_200_OK)
         data = json.loads(response.content)
         self.assertNotIn('errors', data)
@@ -114,7 +116,7 @@ class GraphQLAPITestCase(APITestCase):
                 id site {id}
             }
         }"""
-        response = self.client.post(url, data={'query': query}, format='json', **self.header)
+        response = self.client.post(url, data={'query': query}, format="json", **self.header)
         self.assertHttpStatus(response, status.HTTP_200_OK)
         data = json.loads(response.content)
         self.assertNotIn('errors', data)
@@ -122,7 +124,7 @@ class GraphQLAPITestCase(APITestCase):
 
         # An invalid request should return an empty list
         query = '{location_list(filters: {site_id: "99999"}) {id site {id}}}'  # Invalid site ID
-        response = self.client.post(url, data={'query': query}, format='json', **self.header)
+        response = self.client.post(url, data={'query': query}, format="json", **self.header)
         self.assertHttpStatus(response, status.HTTP_200_OK)
         data = json.loads(response.content)
         self.assertEqual(len(data['data']['location_list']), 0)
@@ -130,7 +132,7 @@ class GraphQLAPITestCase(APITestCase):
         # Removing the permissions from location should result in an empty locations list
         self.remove_permissions('dcim.view_location')
         query = '{site(id: ' + str(sites[0].pk) + ') {id locations {id}}}'
-        response = self.client.post(url, data={'query': query}, format='json', **self.header)
+        response = self.client.post(url, data={'query': query}, format="json", **self.header)
         self.assertHttpStatus(response, status.HTTP_200_OK)
         data = json.loads(response.content)
         self.assertNotIn('errors', data)

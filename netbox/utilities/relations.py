@@ -1,6 +1,8 @@
 from django.db.models import ManyToOneRel
 
-__all__ = ('get_related_models',)
+__all__ = (
+    'get_related_models',
+)
 
 
 def get_related_models(model, ordered=True):

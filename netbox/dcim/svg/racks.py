@@ -20,7 +20,9 @@ from utilities.html import foreground_color
 from dcim.constants import RACK_ELEVATION_BORDER_WIDTH
 
 
-__all__ = ('RackElevationSVG',)
+__all__ = (
+    'RackElevationSVG',
+)
 
 GRADIENT_RESERVED = '#b0b0ff'
 GRADIENT_OCCUPIED = '#d7d7d7'
@@ -94,19 +96,8 @@ class RackElevationSVG:
     :param base_url: Base URL for links within the SVG document. If none, links will be relative.
     :param highlight_params: Iterable of two-tuples which identifies attributes of devices to highlight
     """
-
-    def __init__(
-        self,
-        rack,
-        unit_height=None,
-        unit_width=None,
-        legend_width=None,
-        margin_width=None,
-        user=None,
-        include_images=True,
-        base_url=None,
-        highlight_params=None,
-    ):
+    def __init__(self, rack, unit_height=None, unit_width=None, legend_width=None, margin_width=None, user=None,
+                 include_images=True, base_url=None, highlight_params=None):
         self.rack = rack
         self.include_images = include_images
         self.base_url = base_url.rstrip('/') if base_url is not None else ''
@@ -143,7 +134,7 @@ class RackElevationSVG:
             spreadMethod='repeat',
             id_=id_,
             gradientTransform='rotate(45, 0, 0)',
-            gradientUnits='userSpaceOnUse',
+            gradientUnits='userSpaceOnUse'
         )
         gradient.add_stop_color(offset='0%', color='#f7f7f7')
         gradient.add_stop_color(offset='50%', color='#f7f7f7')
@@ -177,8 +168,9 @@ class RackElevationSVG:
         if self.rack.desc_units:
             y += int((position - self.rack.starting_unit) * self.unit_height)
         else:
-            y += int((self.rack.u_height - position + self.rack.starting_unit) * self.unit_height) - int(
-                height * self.unit_height
+            y += (
+                int((self.rack.u_height - position + self.rack.starting_unit) * self.unit_height) -
+                int(height * self.unit_height)
             )
 
         return x, y
@@ -187,19 +179,22 @@ class RackElevationSVG:
         name = get_device_name(device)
         description = get_device_description(device)
         text_color = f'#{foreground_color(color)}' if color else '#000000'
-        text_coords = (coords[0] + size[0] / 2, coords[1] + size[1] / 2)
+        text_coords = (
+            coords[0] + size[0] / 2,
+            coords[1] + size[1] / 2
+        )
 
         # Determine whether highlighting is in use, and if so, whether to shade this device
         is_shaded = self.highlight_devices and device not in self.highlight_devices
         css_extra = ' shaded' if is_shaded else ''
 
         # Create hyperlink element
-        link = Hyperlink(href=f'{self.base_url}{device.get_absolute_url()}', target='_parent')
+        link = Hyperlink(href=f'{self.base_url}{device.get_absolute_url()}', target="_parent")
         link.set_desc(description)
 
         # Create clipPath element
         # This is necessary as fallback because the truncate_text method is an approximation
-        clip_id = f'clip-{device.id}'
+        clip_id = f"clip-{device.id}"
         clip_path = ClipPath(id=clip_id)
         clip_path.add(Rect(coords, size))
 
@@ -214,32 +209,28 @@ class RackElevationSVG:
         else:
             link.add(Rect(coords, size, class_=f'slot blocked{css_extra}'))
         link.add(
-            Text(
-                display_name,
-                insert=text_coords,
-                fill=text_color,
-                clip_path=f'url(#{clip_id})',
-                class_=f'label{css_extra}',
-            )
+            Text(display_name, insert=text_coords, fill=text_color, clip_path=f"url(#{clip_id})",
+                 class_=f'label{css_extra}')
         )
 
         # Embed device type image if provided
         if self.include_images and image:
             url = f'{self.base_url}{image.url}' if image.url.startswith('/') else image.url
-            image = Image(href=url, insert=coords, size=size, class_=f'device-image{css_extra}')
+            image = Image(
+                href=url,
+                insert=coords,
+                size=size,
+                class_=f'device-image{css_extra}'
+            )
             image.fit(scale='slice')
             link.add(image)
             link.add(
-                Text(
-                    name,
-                    insert=text_coords,
-                    stroke='black',
-                    stroke_width='0.2em',
-                    stroke_linejoin='round',
-                    class_=f'device-image-label{css_extra}',
-                )
+                Text(name, insert=text_coords, stroke='black', stroke_width='0.2em', stroke_linejoin='round',
+                     class_=f'device-image-label{css_extra}')
             )
-            link.add(Text(name, insert=text_coords, fill='white', class_=f'device-image-label{css_extra}'))
+            link.add(
+                Text(name, insert=text_coords, fill='white', class_=f'device-image-label{css_extra}')
+            )
 
         self.drawing.add(link)
 
@@ -267,7 +258,7 @@ class RackElevationSVG:
         frame = Rect(
             insert=(self.legend_width + border_offset, border_offset),
             size=(self.unit_width + border_width, self.rack.u_height * self.unit_height + border_width),
-            class_='rack',
+            class_='rack'
         )
         self.drawing.add(frame)
 
@@ -280,7 +271,9 @@ class RackElevationSVG:
             position_coordinates = (self.legend_width / 2, start_y + self.unit_height / 2 + RACK_ELEVATION_BORDER_WIDTH)
             unit = ru + 1 if self.rack.desc_units else self.rack.u_height - ru
             unit = unit + self.rack.starting_unit - 1
-            self.drawing.add(Text(str(unit), position_coordinates, class_='unit'))
+            self.drawing.add(
+                Text(str(unit), position_coordinates, class_='unit')
+            )
 
     def draw_margin(self):
         """
@@ -291,10 +284,15 @@ class RackElevationSVG:
                 u_height = 1 if len(segment) == 1 else segment[1] + 1 - segment[0]
                 coords = self._get_device_coords(segment[0], u_height)
                 coords = (coords[0] + self.unit_width + RACK_ELEVATION_BORDER_WIDTH * 2, coords[1])
-                size = (self.margin_width - 3, u_height * self.unit_height)
+                size = (
+                    self.margin_width - 3,
+                    u_height * self.unit_height
+                )
                 link = Hyperlink(href=f'{self.base_url}{reservation.get_absolute_url()}', target='_parent')
                 link.set_desc(f'Reservation #{reservation.pk}: {reservation.description}')
-                link.add(Rect(coords, size, class_='reservation', stroke=STROKE_RESERVED, stroke_width=2))
+                link.add(
+                    Rect(coords, size, class_='reservation', stroke=STROKE_RESERVED, stroke_width=2)
+                )
                 self.drawing.add(link)
 
     def draw_background(self, face):
@@ -304,21 +302,22 @@ class RackElevationSVG:
         x_offset = RACK_ELEVATION_BORDER_WIDTH + self.legend_width
         url_string = '{}?{}&position={{}}'.format(
             reverse('dcim:device_add'),
-            urlencode(
-                {
-                    'site': self.rack.site.pk,
-                    'location': self.rack.location.pk if self.rack.location else '',
-                    'rack': self.rack.pk,
-                    'face': face,
-                }
-            ),
+            urlencode({
+                'site': self.rack.site.pk,
+                'location': self.rack.location.pk if self.rack.location else '',
+                'rack': self.rack.pk,
+                'face': face,
+            })
         )
 
         for ru in range(0, self.rack.u_height):
             unit = ru + 1 if self.rack.desc_units else self.rack.u_height - ru
             unit = unit + self.rack.starting_unit - 1
             y_offset = RACK_ELEVATION_BORDER_WIDTH + ru * self.unit_height
-            text_coords = (x_offset + self.unit_width / 2, y_offset + self.unit_height / 2)
+            text_coords = (
+                x_offset + self.unit_width / 2,
+                y_offset + self.unit_height / 2
+            )
 
             link = Hyperlink(href=url_string.format(unit), target='_parent')
             link.add(Rect((x_offset, y_offset), (self.unit_width, self.unit_height), class_='slot'))
@@ -331,12 +330,16 @@ class RackElevationSVG:
         Draw any occupied rack units for the specified rack face.
         """
         for unit in self.rack.get_rack_units(face=face, expand_devices=False):
+
             # Loop through all units in the elevation
             device = unit['device']
             height = unit.get('height', decimal.Decimal(1.0))
 
             device_coords = self._get_device_coords(unit['id'], height)
-            device_size = (self.unit_width, int(self.unit_height * height))
+            device_size = (
+                self.unit_width,
+                int(self.unit_height * height)
+            )
 
             # Draw the device
             if device and device.pk in self.permitted_device_ids:

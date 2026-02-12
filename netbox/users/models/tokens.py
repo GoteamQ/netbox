@@ -20,7 +20,9 @@ from users.constants import TOKEN_CHARSET, TOKEN_DEFAULT_LENGTH, TOKEN_KEY_LENGT
 from users.utils import get_current_pepper
 from utilities.querysets import RestrictedQuerySet
 
-__all__ = ('Token',)
+__all__ = (
+    'Token',
+)
 
 
 class Token(models.Model):
@@ -28,7 +30,6 @@ class Token(models.Model):
     An API token used for user authentication. This extends the stock model to allow each user to have multiple tokens.
     It also supports setting an expiration time and toggling write ability.
     """
-
     _token = None
 
     version = models.PositiveSmallIntegerField(
@@ -36,11 +37,30 @@ class Token(models.Model):
         choices=TokenVersionChoices,
         default=TokenVersionChoices.V2,
     )
-    user = models.ForeignKey(to='users.User', on_delete=models.CASCADE, related_name='tokens')
-    description = models.CharField(verbose_name=_('description'), max_length=200, blank=True)
-    created = models.DateTimeField(verbose_name=_('created'), auto_now_add=True)
-    expires = models.DateTimeField(verbose_name=_('expires'), blank=True, null=True)
-    last_used = models.DateTimeField(verbose_name=_('last used'), blank=True, null=True)
+    user = models.ForeignKey(
+        to='users.User',
+        on_delete=models.CASCADE,
+        related_name='tokens'
+    )
+    description = models.CharField(
+        verbose_name=_('description'),
+        max_length=200,
+        blank=True
+    )
+    created = models.DateTimeField(
+        verbose_name=_('created'),
+        auto_now_add=True
+    )
+    expires = models.DateTimeField(
+        verbose_name=_('expires'),
+        blank=True,
+        null=True
+    )
+    last_used = models.DateTimeField(
+        verbose_name=_('last used'),
+        blank=True,
+        null=True
+    )
     enabled = models.BooleanField(
         verbose_name=_('enabled'),
         default=True,
@@ -49,7 +69,7 @@ class Token(models.Model):
     write_enabled = models.BooleanField(
         verbose_name=_('write enabled'),
         default=True,
-        help_text=_('Permit create/update/delete operations using this token'),
+        help_text=_('Permit create/update/delete operations using this token')
     )
     # For legacy v1 tokens, this field stores the plaintext 40-char token value. Not used for v2.
     plaintext = models.CharField(
@@ -108,14 +128,14 @@ class Token(models.Model):
                         key__isnull=True,
                         pepper_id__isnull=True,
                         hmac_digest__isnull=True,
-                        plaintext__isnull=False,
-                    )
-                    | Q(
+                        plaintext__isnull=False
+                    ) |
+                    Q(
                         version=2,
                         key__isnull=False,
                         pepper_id__isnull=False,
                         hmac_digest__isnull=False,
-                        plaintext__isnull=True,
+                        plaintext__isnull=True
                     )
                 ),
             ),
@@ -156,7 +176,7 @@ class Token(models.Model):
     @token.setter
     def token(self, value):
         if not self._state.adding:
-            raise ValueError('Cannot assign a new plaintext value for an existing token.')
+            raise ValueError("Cannot assign a new plaintext value for an existing token.")
         self._token = value
         if value is not None:
             if self.v1:
@@ -194,13 +214,13 @@ class Token(models.Model):
         super().clean()
 
         if self.version == TokenVersionChoices.V2 and not settings.API_TOKEN_PEPPERS:
-            raise ValidationError(_('Unable to save v2 tokens: API_TOKEN_PEPPERS is not defined.'))
+            raise ValidationError(_("Unable to save v2 tokens: API_TOKEN_PEPPERS is not defined."))
 
         if self._state.adding:
             if self.pepper_id is not None and self.pepper_id not in settings.API_TOKEN_PEPPERS:
-                raise ValidationError(
-                    _('Invalid pepper ID: {id}. Check configured API_TOKEN_PEPPERS.').format(id=self.pepper_id)
-                )
+                raise ValidationError(_(
+                    "Invalid pepper ID: {id}. Check configured API_TOKEN_PEPPERS."
+                ).format(id=self.pepper_id))
 
         # Prevent creating a token with a past expiration date
         # while allowing updates to existing tokens.
@@ -243,7 +263,11 @@ class Token(models.Model):
         Recalculate and save the HMAC digest using the currently defined pepper and token values.
         """
         self.pepper_id, pepper = get_current_pepper()
-        self.hmac_digest = hmac.new(pepper.encode('utf-8'), self.token.encode('utf-8'), hashlib.sha256).hexdigest()
+        self.hmac_digest = hmac.new(
+            pepper.encode('utf-8'),
+            self.token.encode('utf-8'),
+            hashlib.sha256
+        ).hexdigest()
 
     def validate(self, token):
         """

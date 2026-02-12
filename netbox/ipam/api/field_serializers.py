@@ -13,7 +13,6 @@ class IPAddressField(serializers.CharField):
     """
     An IPv4 or IPv6 address with optional mask
     """
-
     default_error_messages = {
         'invalid': _('Enter a valid IPv4 or IPv6 address with optional mask.'),
     }
@@ -22,7 +21,7 @@ class IPAddressField(serializers.CharField):
         try:
             return IPNetwork(data)
         except AddrFormatError:
-            raise serializers.ValidationError(_('Invalid IP address format: {data}').format(data))
+            raise serializers.ValidationError(_("Invalid IP address format: {data}").format(data))
         except (TypeError, ValueError) as e:
             raise serializers.ValidationError(e)
 
@@ -34,7 +33,6 @@ class IPNetworkField(serializers.CharField):
     """
     An IPv4 or IPv6 prefix
     """
-
     default_error_messages = {
         'invalid': _('Enter a valid IPv4 or IPv6 prefix and mask in CIDR notation.'),
     }
@@ -43,7 +41,7 @@ class IPNetworkField(serializers.CharField):
         try:
             return IPNetwork(data)
         except AddrFormatError:
-            raise serializers.ValidationError(_('Invalid IP prefix format: {data}').format(data))
+            raise serializers.ValidationError(_("Invalid IP prefix format: {data}").format(data))
         except (TypeError, ValueError) as e:
             raise serializers.ValidationError(e)
 

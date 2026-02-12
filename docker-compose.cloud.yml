@@ -1,0 +1,71 @@
+services:
+  cloud-sql-proxy:
+    image: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.14.0
+    command:
+      - "--address=0.0.0.0"
+      - "--structured-logs"
+      - "--port=5432"
+      - "cp-netbox:me-central2:pnetboxdb"
+    expose:
+      - "5432"
+
+  web:
+    build: .
+    platform: linux/amd64
+    x-google-cloudrun:ingress-container: true
+    depends_on:
+      - cloud-sql-proxy
+      - redis
+    environment:
+      ALLOWED_HOSTS: "*"
+      SECRET_KEY: "${NETBOX_SECRET_KEY:-change-me-please}"
+      DB_NAME: netbox
+      DB_USER: netbox
+      DB_PASSWORD: "${NETBOX_DB_PASSWORD:-netbox}"
+      DB_HOST: 172.21.48.4
+      DB_PORT: 5432
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ""
+      REDIS_USERNAME: ""
+      REDIS_TASKS_DB: 0
+      REDIS_CACHE_DB: 1
+      DEBUG: "false"
+      DEVELOPER: "false"
+      GCP_CLEANUP_ON_STARTUP: "true"
+    ports:
+      - "8000:8000"
+
+
+  redis:
+    image: redis:7-alpine
+    platform: linux/amd64
+    expose:
+      - "6379"
+
+  worker:
+    build: .
+    platform: linux/amd64
+    depends_on:
+      - cloud-sql-proxy
+      - redis
+    environment:
+      ALLOWED_HOSTS: "localhost,127.0.0.1,0.0.0.0,.run.app"
+      SECRET_KEY: "${NETBOX_SECRET_KEY:-change-me-please}"
+      DB_NAME: netbox
+      DB_USER: netbox
+      DB_PASSWORD: "${NETBOX_DB_PASSWORD:-netbox}"
+      DB_HOST: cloud-sql-proxy
+      DB_PORT: 5432
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ""
+      REDIS_USERNAME: ""
+      REDIS_TASKS_DB: 0
+      REDIS_CACHE_DB: 1
+      DEBUG: "false"
+      DEVELOPER: "false"
+      GCP_CLEANUP_ON_STARTUP: "true"
+      command: ["python", "netbox/manage.py", "rqworker"]
+
+

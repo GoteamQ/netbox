@@ -4,6 +4,7 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
+
     dependencies = [
         ('extras', '0123_journalentry_kind_default'),
     ]

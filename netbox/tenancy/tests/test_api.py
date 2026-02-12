@@ -7,7 +7,9 @@ from utilities.testing import APITestCase, APIViewTestCases
 
 
 class AppTest(APITestCase):
+
     def test_root(self):
+
         url = reverse('tenancy-api:api-root')
         response = self.client.get('{}?format=api'.format(url), **self.header)
 
@@ -24,22 +26,19 @@ class TenantGroupTest(APIViewTestCases.APIViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
+
         parent_tenant_groups = (
             TenantGroup.objects.create(name='Parent Tenant Group 1', slug='parent-tenant-group-1'),
             TenantGroup.objects.create(
-                name='Parent Tenant Group 2',
-                slug='parent-tenant-group-2',
-                comments='Parent Group 2 comment',
+                name='Parent Tenant Group 2', slug='parent-tenant-group-2', comments='Parent Group 2 comment',
             ),
         )
 
         TenantGroup.objects.create(name='Tenant Group 1', slug='tenant-group-1', parent=parent_tenant_groups[0])
         TenantGroup.objects.create(name='Tenant Group 2', slug='tenant-group-2', parent=parent_tenant_groups[0])
         TenantGroup.objects.create(
-            name='Tenant Group 3',
-            slug='tenant-group-3',
-            parent=parent_tenant_groups[0],
-            comments='Tenant Group 3 comment',
+            name='Tenant Group 3', slug='tenant-group-3', parent=parent_tenant_groups[0],
+            comments='Tenant Group 3 comment'
         )
 
         cls.create_data = [
@@ -72,6 +71,7 @@ class TenantTest(APIViewTestCases.APIViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
+
         tenant_groups = (
             TenantGroup.objects.create(name='Tenant Group 1', slug='tenant-group-1'),
             TenantGroup.objects.create(name='Tenant Group 2', slug='tenant-group-2'),
@@ -112,6 +112,7 @@ class ContactGroupTest(APIViewTestCases.APIViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
+
         parent_contact_groups = (
             ContactGroup.objects.create(
                 name='Parent Contact Group 1', slug='parent-contact-group-1', comments='Parent 1 comment'
@@ -122,9 +123,7 @@ class ContactGroupTest(APIViewTestCases.APIViewTestCase):
         ContactGroup.objects.create(name='Contact Group 1', slug='contact-group-1', parent=parent_contact_groups[0])
         ContactGroup.objects.create(name='Contact Group 2', slug='contact-group-2', parent=parent_contact_groups[0])
         ContactGroup.objects.create(
-            name='Contact Group 3',
-            slug='contact-group-3',
-            parent=parent_contact_groups[0],
+            name='Contact Group 3', slug='contact-group-3', parent=parent_contact_groups[0],
             comments='Child Group 3 comment',
         )
 
@@ -172,6 +171,7 @@ class ContactRoleTest(APIViewTestCases.APIViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
+
         contact_roles = (
             ContactRole(name='Contact Role 1', slug='contact-role-1'),
             ContactRole(name='Contact Role 2', slug='contact-role-2'),
@@ -190,6 +190,7 @@ class ContactTest(APIViewTestCases.APIViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
+
         contact_groups = (
             ContactGroup.objects.create(name='Contact Group 1', slug='contact-group-1'),
             ContactGroup.objects.create(name='Contact Group 2', slug='contact-group-2'),
@@ -225,10 +226,11 @@ class ContactAssignmentTest(APIViewTestCases.APIViewTestCase):
     bulk_update_data = {
         'priority': ContactPriorityChoices.PRIORITY_INACTIVE,
     }
-    user_permissions = ('tenancy.view_contact',)
+    user_permissions = ('tenancy.view_contact', )
 
     @classmethod
     def setUpTestData(cls):
+
         sites = (
             Site(name='Site 1', slug='site-1'),
             Site(name='Site 2', slug='site-2'),

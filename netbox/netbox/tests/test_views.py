@@ -10,6 +10,7 @@ from utilities.testing import TestCase
 
 
 class HomeViewTestCase(TestCase):
+
     def test_home(self):
         url = reverse('home')
         response = self.client.get(url)
@@ -17,6 +18,7 @@ class HomeViewTestCase(TestCase):
 
 
 class SearchViewTestCase(TestCase):
+
     @classmethod
     def setUpTestData(cls):
         sites = (
@@ -75,6 +77,7 @@ class SearchViewTestCase(TestCase):
 
 
 class MediaViewTestCase(TestCase):
+
     def test_media_login_required(self):
         url = reverse('media', kwargs={'path': 'foo.txt'})
         response = Client().get(url)

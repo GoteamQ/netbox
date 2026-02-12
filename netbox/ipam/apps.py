@@ -4,8 +4,8 @@ from netbox import denormalized
 
 
 class IPAMConfig(AppConfig):
-    name = 'ipam'
-    verbose_name = 'IPAM'
+    name = "ipam"
+    verbose_name = "IPAM"
 
     def ready(self):
         from netbox.models.features import register_models
@@ -16,18 +16,10 @@ class IPAMConfig(AppConfig):
         register_models(*self.get_models())
 
         # Register denormalized fields
-        denormalized.register(
-            Prefix,
-            '_site',
-            {
-                '_region': 'region',
-                '_site_group': 'group',
-            },
-        )
-        denormalized.register(
-            Prefix,
-            '_location',
-            {
-                '_site': 'site',
-            },
-        )
+        denormalized.register(Prefix, '_site', {
+            '_region': 'region',
+            '_site_group': 'group',
+        })
+        denormalized.register(Prefix, '_location', {
+            '_site': 'site',
+        })

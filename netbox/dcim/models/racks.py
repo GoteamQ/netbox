@@ -38,17 +38,15 @@ __all__ = (
 # Rack Types
 #
 
-
 class RackBase(WeightMixin, PrimaryModel):
     """
     Base class for RackType & Rack. Holds
     """
-
     width = models.PositiveSmallIntegerField(
         choices=RackWidthChoices,
         default=RackWidthChoices.WIDTH_19IN,
         verbose_name=_('width'),
-        help_text=_('Rail-to-rail width'),
+        help_text=_('Rail-to-rail width')
     )
 
     # Numbering
@@ -56,50 +54,69 @@ class RackBase(WeightMixin, PrimaryModel):
         default=RACK_U_HEIGHT_DEFAULT,
         verbose_name=_('height (U)'),
         validators=[MinValueValidator(1), MaxValueValidator(RACK_U_HEIGHT_MAX)],
-        help_text=_('Height in rack units'),
+        help_text=_('Height in rack units')
     )
     starting_unit = models.PositiveSmallIntegerField(
         default=RACK_STARTING_UNIT_DEFAULT,
         verbose_name=_('starting unit'),
         validators=[MinValueValidator(1)],
-        help_text=_('Starting unit for rack'),
+        help_text=_('Starting unit for rack')
     )
     desc_units = models.BooleanField(
-        default=False, verbose_name=_('descending units'), help_text=_('Units are numbered top-to-bottom')
+        default=False,
+        verbose_name=_('descending units'),
+        help_text=_('Units are numbered top-to-bottom')
     )
 
     # Dimensions
     outer_width = models.PositiveSmallIntegerField(
-        verbose_name=_('outer width'), blank=True, null=True, help_text=_('Outer dimension of rack (width)')
+        verbose_name=_('outer width'),
+        blank=True,
+        null=True,
+        help_text=_('Outer dimension of rack (width)')
     )
     outer_height = models.PositiveSmallIntegerField(
-        verbose_name=_('outer height'), blank=True, null=True, help_text=_('Outer dimension of rack (height)')
+        verbose_name=_('outer height'),
+        blank=True,
+        null=True,
+        help_text=_('Outer dimension of rack (height)')
     )
     outer_depth = models.PositiveSmallIntegerField(
-        verbose_name=_('outer depth'), blank=True, null=True, help_text=_('Outer dimension of rack (depth)')
+        verbose_name=_('outer depth'),
+        blank=True,
+        null=True,
+        help_text=_('Outer dimension of rack (depth)')
     )
     outer_unit = models.CharField(
-        verbose_name=_('outer unit'), max_length=50, choices=RackDimensionUnitChoices, blank=True, null=True
+        verbose_name=_('outer unit'),
+        max_length=50,
+        choices=RackDimensionUnitChoices,
+        blank=True,
+        null=True
     )
     mounting_depth = models.PositiveSmallIntegerField(
         verbose_name=_('mounting depth'),
         blank=True,
         null=True,
-        help_text=(
-            _(
-                'Maximum depth of a mounted device, in millimeters. For four-post racks, this is the distance between '
-                'the front and rear rails.'
-            )
-        ),
+        help_text=(_(
+            'Maximum depth of a mounted device, in millimeters. For four-post racks, this is the distance between the '
+            'front and rear rails.'
+        ))
     )
 
     # Weight
     # WeightMixin provides weight, weight_unit, and _abs_weight
     max_weight = models.PositiveIntegerField(
-        verbose_name=_('max weight'), blank=True, null=True, help_text=_('Maximum load capacity for the rack')
+        verbose_name=_('max weight'),
+        blank=True,
+        null=True,
+        help_text=_('Maximum load capacity for the rack')
     )
     # Stores the normalized max weight (in grams) for database ordering
-    _abs_max_weight = models.PositiveBigIntegerField(blank=True, null=True)
+    _abs_max_weight = models.PositiveBigIntegerField(
+        blank=True,
+        null=True
+    )
 
     class Meta:
         abstract = True
@@ -110,38 +127,48 @@ class RackType(ImageAttachmentsMixin, RackBase):
     Devices are housed within Racks. Each rack has a defined height measured in rack units, and a front and rear face.
     Each Rack is assigned to a Site and (optionally) a Location.
     """
-
-    form_factor = models.CharField(choices=RackFormFactorChoices, max_length=50, verbose_name=_('form factor'))
-    manufacturer = models.ForeignKey(to='dcim.Manufacturer', on_delete=models.PROTECT, related_name='rack_types')
-    model = models.CharField(verbose_name=_('model'), max_length=100)
-    slug = models.SlugField(verbose_name=_('slug'), max_length=100, unique=True)
-    rack_count = CounterCacheField(to_model='dcim.Rack', to_field='rack_type')
+    form_factor = models.CharField(
+        choices=RackFormFactorChoices,
+        max_length=50,
+        verbose_name=_('form factor')
+    )
+    manufacturer = models.ForeignKey(
+        to='dcim.Manufacturer',
+        on_delete=models.PROTECT,
+        related_name='rack_types'
+    )
+    model = models.CharField(
+        verbose_name=_('model'),
+        max_length=100
+    )
+    slug = models.SlugField(
+        verbose_name=_('slug'),
+        max_length=100,
+        unique=True
+    )
+    rack_count = CounterCacheField(
+        to_model='dcim.Rack',
+        to_field='rack_type'
+    )
 
     clone_fields = (
-        'manufacturer',
-        'form_factor',
-        'width',
-        'u_height',
-        'desc_units',
-        'outer_width',
-        'outer_height',
-        'outer_depth',
-        'outer_unit',
-        'mounting_depth',
-        'weight',
-        'max_weight',
-        'weight_unit',
+        'manufacturer', 'form_factor', 'width', 'u_height', 'desc_units', 'outer_width', 'outer_height', 'outer_depth',
+        'outer_unit', 'mounting_depth', 'weight', 'max_weight', 'weight_unit',
     )
-    prerequisite_models = ('dcim.Manufacturer',)
+    prerequisite_models = (
+        'dcim.Manufacturer',
+    )
 
     class Meta:
         ordering = ('manufacturer', 'model')
         constraints = (
             models.UniqueConstraint(
-                fields=('manufacturer', 'model'), name='%(app_label)s_%(class)s_unique_manufacturer_model'
+                fields=('manufacturer', 'model'),
+                name='%(app_label)s_%(class)s_unique_manufacturer_model'
             ),
             models.UniqueConstraint(
-                fields=('manufacturer', 'slug'), name='%(app_label)s_%(class)s_unique_manufacturer_slug'
+                fields=('manufacturer', 'slug'),
+                name='%(app_label)s_%(class)s_unique_manufacturer_slug'
             ),
         )
         verbose_name = _('rack type')
@@ -152,18 +179,18 @@ class RackType(ImageAttachmentsMixin, RackBase):
 
     @property
     def full_name(self):
-        return f'{self.manufacturer} {self.model}'
+        return f"{self.manufacturer} {self.model}"
 
     def clean(self):
         super().clean()
 
         # Validate outer dimensions and unit
         if any([self.outer_width, self.outer_depth, self.outer_height]) and not self.outer_unit:
-            raise ValidationError(_('Must specify a unit when setting an outer dimension'))
+            raise ValidationError(_("Must specify a unit when setting an outer dimension"))
 
         # Validate max_weight and weight_unit
         if self.max_weight and not self.weight_unit:
-            raise ValidationError(_('Must specify a unit when setting a maximum weight'))
+            raise ValidationError(_("Must specify a unit when setting a maximum weight"))
 
     def save(self, *args, **kwargs):
         # Store the given max weight (if any) in grams for use in database ordering
@@ -198,13 +225,14 @@ class RackType(ImageAttachmentsMixin, RackBase):
 # Racks
 #
 
-
 class RackRole(OrganizationalModel):
     """
     Racks can be organized by functional role, similar to Devices.
     """
-
-    color = ColorField(verbose_name=_('color'), default=ColorChoices.COLOR_GREY)
+    color = ColorField(
+        verbose_name=_('color'),
+        default=ColorChoices.COLOR_GREY
+    )
 
     class Meta:
         ordering = ('name',)
@@ -217,26 +245,18 @@ class Rack(ContactsMixin, ImageAttachmentsMixin, TrackingModelMixin, RackBase):
     Devices are housed within Racks. Each rack has a defined height measured in rack units, and a front and rear face.
     Each Rack is assigned to a Site and (optionally) a Location.
     """
-
     # Fields which cannot be set locally if a RackType is assigned
     RACKTYPE_FIELDS = (
-        'form_factor',
-        'width',
-        'u_height',
-        'starting_unit',
-        'desc_units',
-        'outer_width',
-        'outer_height',
-        'outer_depth',
-        'outer_unit',
-        'mounting_depth',
-        'weight',
-        'weight_unit',
-        'max_weight',
+        'form_factor', 'width', 'u_height', 'starting_unit', 'desc_units', 'outer_width', 'outer_height',
+        'outer_depth', 'outer_unit', 'mounting_depth', 'weight', 'weight_unit', 'max_weight',
     )
 
     form_factor = models.CharField(
-        choices=RackFormFactorChoices, max_length=50, blank=True, null=True, verbose_name=_('form factor')
+        choices=RackFormFactorChoices,
+        max_length=50,
+        blank=True,
+        null=True,
+        verbose_name=_('form factor')
     )
     rack_type = models.ForeignKey(
         to='dcim.RackType',
@@ -245,19 +265,42 @@ class Rack(ContactsMixin, ImageAttachmentsMixin, TrackingModelMixin, RackBase):
         blank=True,
         null=True,
     )
-    name = models.CharField(verbose_name=_('name'), max_length=100, db_collation='natural_sort')
-    facility_id = models.CharField(
-        max_length=50, blank=True, null=True, verbose_name=_('facility ID'), help_text=_('Locally-assigned identifier')
+    name = models.CharField(
+        verbose_name=_('name'),
+        max_length=100,
+        db_collation="natural_sort"
     )
-    site = models.ForeignKey(to='dcim.Site', on_delete=models.PROTECT, related_name='racks')
+    facility_id = models.CharField(
+        max_length=50,
+        blank=True,
+        null=True,
+        verbose_name=_('facility ID'),
+        help_text=_("Locally-assigned identifier")
+    )
+    site = models.ForeignKey(
+        to='dcim.Site',
+        on_delete=models.PROTECT,
+        related_name='racks'
+    )
     location = models.ForeignKey(
-        to='dcim.Location', on_delete=models.SET_NULL, related_name='racks', blank=True, null=True
+        to='dcim.Location',
+        on_delete=models.SET_NULL,
+        related_name='racks',
+        blank=True,
+        null=True
     )
     tenant = models.ForeignKey(
-        to='tenancy.Tenant', on_delete=models.PROTECT, related_name='racks', blank=True, null=True
+        to='tenancy.Tenant',
+        on_delete=models.PROTECT,
+        related_name='racks',
+        blank=True,
+        null=True
     )
     status = models.CharField(
-        verbose_name=_('status'), max_length=50, choices=RackStatusChoices, default=RackStatusChoices.STATUS_ACTIVE
+        verbose_name=_('status'),
+        max_length=50,
+        choices=RackStatusChoices,
+        default=RackStatusChoices.STATUS_ACTIVE
     )
     role = models.ForeignKey(
         to='dcim.RackRole',
@@ -265,55 +308,57 @@ class Rack(ContactsMixin, ImageAttachmentsMixin, TrackingModelMixin, RackBase):
         related_name='racks',
         blank=True,
         null=True,
-        help_text=_('Functional role'),
+        help_text=_('Functional role')
     )
-    serial = models.CharField(max_length=50, blank=True, verbose_name=_('serial number'))
+    serial = models.CharField(
+        max_length=50,
+        blank=True,
+        verbose_name=_('serial number')
+    )
     asset_tag = models.CharField(
         max_length=50,
         blank=True,
         null=True,
         unique=True,
         verbose_name=_('asset tag'),
-        help_text=_('A unique tag used to identify this rack'),
+        help_text=_('A unique tag used to identify this rack')
     )
     airflow = models.CharField(
-        verbose_name=_('airflow'), max_length=50, choices=RackAirflowChoices, blank=True, null=True
+        verbose_name=_('airflow'),
+        max_length=50,
+        choices=RackAirflowChoices,
+        blank=True,
+        null=True
     )
 
     # Generic relations
     vlan_groups = GenericRelation(
-        to='ipam.VLANGroup', content_type_field='scope_type', object_id_field='scope_id', related_query_name='rack'
+        to='ipam.VLANGroup',
+        content_type_field='scope_type',
+        object_id_field='scope_id',
+        related_query_name='rack'
     )
 
     clone_fields = (
-        'site',
-        'location',
-        'tenant',
-        'status',
-        'role',
-        'form_factor',
-        'width',
-        'airflow',
-        'u_height',
-        'desc_units',
-        'outer_width',
-        'outer_height',
-        'outer_depth',
-        'outer_unit',
-        'mounting_depth',
-        'weight',
-        'max_weight',
+        'site', 'location', 'tenant', 'status', 'role', 'form_factor', 'width', 'airflow', 'u_height', 'desc_units',
+        'outer_width', 'outer_height', 'outer_depth', 'outer_unit', 'mounting_depth', 'weight', 'max_weight',
         'weight_unit',
     )
-    prerequisite_models = ('dcim.Site',)
+    prerequisite_models = (
+        'dcim.Site',
+    )
 
     class Meta:
         ordering = ('site', 'location', 'name', 'pk')  # (site, location, name) may be non-unique
         constraints = (
             # Name and facility_id must be unique *only* within a Location
-            models.UniqueConstraint(fields=('location', 'name'), name='%(app_label)s_%(class)s_unique_location_name'),
             models.UniqueConstraint(
-                fields=('location', 'facility_id'), name='%(app_label)s_%(class)s_unique_location_facility_id'
+                fields=('location', 'name'),
+                name='%(app_label)s_%(class)s_unique_location_name'
+            ),
+            models.UniqueConstraint(
+                fields=('location', 'facility_id'),
+                name='%(app_label)s_%(class)s_unique_location_facility_id'
             ),
         )
         verbose_name = _('rack')
@@ -333,11 +378,11 @@ class Rack(ContactsMixin, ImageAttachmentsMixin, TrackingModelMixin, RackBase):
 
         # Validate outer dimensions and unit
         if any([self.outer_width, self.outer_depth, self.outer_height]) and not self.outer_unit:
-            raise ValidationError(_('Must specify a unit when setting an outer dimension'))
+            raise ValidationError(_("Must specify a unit when setting an outer dimension"))
 
         # Validate max_weight and weight_unit
         if self.max_weight and not self.weight_unit:
-            raise ValidationError(_('Must specify a unit when setting a maximum weight'))
+            raise ValidationError(_("Must specify a unit when setting a maximum weight"))
 
         if not self._state.adding:
             mounted_devices = Device.objects.filter(rack=self).exclude(position__isnull=True).order_by('position')
@@ -350,33 +395,27 @@ class Rack(ContactsMixin, ImageAttachmentsMixin, TrackingModelMixin, RackBase):
                 min_height = top_device.position + top_device.device_type.u_height - effective_starting_unit
                 if effective_u_height < min_height:
                     field = 'rack_type' if self.rack_type else 'u_height'
-                    raise ValidationError(
-                        {
-                            field: _(
-                                'Rack must be at least {min_height}U tall to house currently installed devices.'
-                            ).format(min_height=min_height)
-                        }
-                    )
+                    raise ValidationError({
+                        field: _(
+                            "Rack must be at least {min_height}U tall to house currently installed devices."
+                        ).format(min_height=min_height)
+                    })
 
             # Validate that the Rack's starting unit is less than or equal to the position of the lowest mounted Device
             if last_device := mounted_devices.first():
                 if effective_starting_unit > last_device.position:
                     field = 'rack_type' if self.rack_type else 'starting_unit'
-                    raise ValidationError(
-                        {
-                            field: _(
-                                'Rack unit numbering must begin at {position} or less to house '
-                                'currently installed devices.'
-                            ).format(position=last_device.position)
-                        }
-                    )
+                    raise ValidationError({
+                        field: _("Rack unit numbering must begin at {position} or less to house "
+                                 "currently installed devices.").format(position=last_device.position)
+                    })
 
             # Validate that Rack was assigned a Location of its same site, if applicable
             if self.location:
                 if self.location.site != self.site:
-                    raise ValidationError(
-                        {'location': _('Location must be from the same site, {site}.').format(site=self.site)}
-                    )
+                    raise ValidationError({
+                        'location': _("Location must be from the same site, {site}.").format(site=self.site)
+                    })
 
     def save(self, *args, **kwargs):
         self.copy_racktype_attrs()
@@ -429,17 +468,32 @@ class Rack(ContactsMixin, ImageAttachmentsMixin, TrackingModelMixin, RackBase):
         elevation = {}
         for u in self.units:
             u_name = f'U{u}'.split('.')[0] if not u % 1 else f'U{u}'
-            elevation[u] = {'id': u, 'name': u_name, 'face': face, 'device': None, 'occupied': False}
+            elevation[u] = {
+                'id': u,
+                'name': u_name,
+                'face': face,
+                'device': None,
+                'occupied': False
+            }
 
         # Add devices to rack units list
         if not self._state.adding:
+
             # Retrieve all devices installed within the rack
-            devices = (
-                Device.objects.prefetch_related('device_type', 'device_type__manufacturer', 'role')
-                .annotate(devicebay_count=Count('devicebays'))
-                .exclude(pk=exclude)
-                .filter(rack=self, position__gt=0, device_type__u_height__gt=0)
-                .filter(Q(face=face) | Q(device_type__is_full_depth=True))
+            devices = Device.objects.prefetch_related(
+                'device_type',
+                'device_type__manufacturer',
+                'role'
+            ).annotate(
+                devicebay_count=Count('devicebays')
+            ).exclude(
+                pk=exclude
+            ).filter(
+                rack=self,
+                position__gt=0,
+                device_type__u_height__gt=0
+            ).filter(
+                Q(face=face) | Q(device_type__is_full_depth=True)
             )
 
             # Determine which devices the user has permission to view
@@ -512,16 +566,16 @@ class Rack(ContactsMixin, ImageAttachmentsMixin, TrackingModelMixin, RackBase):
         return reserved_units
 
     def get_elevation_svg(
-        self,
-        face=DeviceFaceChoices.FACE_FRONT,
-        user=None,
-        unit_width=None,
-        unit_height=None,
-        legend_width=RACK_ELEVATION_DEFAULT_LEGEND_WIDTH,
-        margin_width=RACK_ELEVATION_DEFAULT_MARGIN_WIDTH,
-        include_images=True,
-        base_url=None,
-        highlight_params=None,
+            self,
+            face=DeviceFaceChoices.FACE_FRONT,
+            user=None,
+            unit_width=None,
+            unit_height=None,
+            legend_width=RACK_ELEVATION_DEFAULT_LEGEND_WIDTH,
+            margin_width=RACK_ELEVATION_DEFAULT_MARGIN_WIDTH,
+            include_images=True,
+            base_url=None,
+            highlight_params=None
     ):
         """
         Return an SVG of the rack elevation
@@ -547,7 +601,7 @@ class Rack(ContactsMixin, ImageAttachmentsMixin, TrackingModelMixin, RackBase):
             user=user,
             include_images=include_images,
             base_url=base_url,
-            highlight_params=highlight_params,
+            highlight_params=highlight_params
         )
 
         return elevation.render(face)
@@ -586,9 +640,13 @@ class Rack(ContactsMixin, ImageAttachmentsMixin, TrackingModelMixin, RackBase):
 
         powerports = []
         for powerfeed in powerfeeds:
-            powerports.extend([peer for peer in powerfeed.link_peers if isinstance(peer, PowerPort)])
+            powerports.extend([
+                peer for peer in powerfeed.link_peers if isinstance(peer, PowerPort)
+            ])
 
-        allocated_draw = sum([powerport.get_power_draw()['allocated'] for powerport in powerports])
+        allocated_draw = sum([
+            powerport.get_power_draw()['allocated'] for powerport in powerports
+        ])
 
         return round(allocated_draw / available_power_total * 100, 1)
 
@@ -613,23 +671,41 @@ class RackReservation(PrimaryModel):
     """
     One or more reserved units within a Rack.
     """
-
-    rack = models.ForeignKey(to='dcim.Rack', on_delete=models.CASCADE, related_name='reservations')
-    units = ArrayField(verbose_name=_('units'), base_field=models.PositiveSmallIntegerField())
+    rack = models.ForeignKey(
+        to='dcim.Rack',
+        on_delete=models.CASCADE,
+        related_name='reservations'
+    )
+    units = ArrayField(
+        verbose_name=_('units'),
+        base_field=models.PositiveSmallIntegerField()
+    )
     status = models.CharField(
         verbose_name=_('status'),
         max_length=50,
         choices=RackReservationStatusChoices,
-        default=RackReservationStatusChoices.STATUS_ACTIVE,
+        default=RackReservationStatusChoices.STATUS_ACTIVE
     )
     tenant = models.ForeignKey(
-        to='tenancy.Tenant', on_delete=models.PROTECT, related_name='rackreservations', blank=True, null=True
+        to='tenancy.Tenant',
+        on_delete=models.PROTECT,
+        related_name='rackreservations',
+        blank=True,
+        null=True
     )
-    user = models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
-    description = models.CharField(verbose_name=_('description'), max_length=200)
+    user = models.ForeignKey(
+        to=settings.AUTH_USER_MODEL,
+        on_delete=models.PROTECT
+    )
+    description = models.CharField(
+        verbose_name=_('description'),
+        max_length=200
+    )
 
     clone_fields = ('rack', 'user', 'tenant')
-    prerequisite_models = ('dcim.Rack',)
+    prerequisite_models = (
+        'dcim.Rack',
+    )
 
     class Meta:
         ordering = ['created', 'pk']
@@ -637,22 +713,22 @@ class RackReservation(PrimaryModel):
         verbose_name_plural = _('rack reservations')
 
     def __str__(self):
-        return 'Reservation for rack {}'.format(self.rack)
+        return "Reservation for rack {}".format(self.rack)
 
     def clean(self):
         super().clean()
 
         if hasattr(self, 'rack') and self.units:
+
             # Validate that all specified units exist in the Rack.
             invalid_units = [u for u in self.units if u not in self.rack.units]
             if invalid_units:
-                raise ValidationError(
-                    {
-                        'units': _('Invalid unit(s) for {height}U rack: {unit_list}').format(
-                            height=self.rack.u_height, unit_list=', '.join([str(u) for u in invalid_units])
-                        ),
-                    }
-                )
+                raise ValidationError({
+                    'units': _("Invalid unit(s) for {height}U rack: {unit_list}").format(
+                        height=self.rack.u_height,
+                        unit_list=', '.join([str(u) for u in invalid_units])
+                    ),
+                })
 
             # Check that none of the units has already been reserved for this Rack.
             reserved_units = []
@@ -660,13 +736,11 @@ class RackReservation(PrimaryModel):
                 reserved_units += resv.units
             conflicting_units = [u for u in self.units if u in reserved_units]
             if conflicting_units:
-                raise ValidationError(
-                    {
-                        'units': _('The following units have already been reserved: {unit_list}').format(
-                            unit_list=', '.join([str(u) for u in conflicting_units])
-                        )
-                    }
-                )
+                raise ValidationError({
+                    'units': _('The following units have already been reserved: {unit_list}').format(
+                        unit_list=', '.join([str(u) for u in conflicting_units])
+                    )
+                })
 
     @property
     def unit_list(self):

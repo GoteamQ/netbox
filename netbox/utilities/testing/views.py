@@ -26,18 +26,19 @@ __all__ = (
 # UI Tests
 #
 
-
 class ModelViewTestCase(ModelTestCase):
     """
     Base TestCase for model views. Subclass to test individual views.
     """
-
     def _get_base_url(self):
         """
         Return the base format for a URL for the test's model. Override this to test for a model which belongs
         to a different app (e.g. testing Interfaces within the virtualization app).
         """
-        return '{}:{}_{{}}'.format(self.model._meta.app_label, self.model._meta.model_name)
+        return '{}:{}_{{}}'.format(
+            self.model._meta.app_label,
+            self.model._meta.model_name
+        )
 
     def _get_url(self, action, instance=None):
         """
@@ -56,12 +57,10 @@ class ViewTestCases:
     """
     We keep any TestCases with test_* methods inside a class to prevent unittest from trying to run them.
     """
-
     class GetObjectViewTestCase(ModelViewTestCase):
         """
         Retrieve a single instance.
         """
-
         @override_settings(EXEMPT_VIEW_PERMISSIONS=['*'], LOGIN_REQUIRED=False)
         def test_get_object_anonymous(self):
             # Make the request as an unauthenticated user
@@ -87,7 +86,10 @@ class ViewTestCases:
             instance = self._get_queryset().first()
 
             # Add model-level permission
-            obj_perm = ObjectPermission(name='Test permission', actions=['view'])
+            obj_perm = ObjectPermission(
+                name='Test permission',
+                actions=['view']
+            )
             obj_perm.save()
             obj_perm.users.add(self.user)
             obj_perm.object_types.add(ObjectType.objects.get_for_model(self.model))
@@ -99,7 +101,11 @@ class ViewTestCases:
             instance1, instance2 = self._get_queryset().all()[:2]
 
             # Add object-level permission
-            obj_perm = ObjectPermission(name='Test permission', constraints={'pk': instance1.pk}, actions=['view'])
+            obj_perm = ObjectPermission(
+                name='Test permission',
+                constraints={'pk': instance1.pk},
+                actions=['view']
+            )
             obj_perm.save()
             obj_perm.users.add(self.user)
             obj_perm.object_types.add(ObjectType.objects.get_for_model(self.model))
@@ -114,7 +120,6 @@ class ViewTestCases:
         """
         View the changelog for an instance.
         """
-
         @override_settings(EXEMPT_VIEW_PERMISSIONS=['*'])
         def test_get_object_changelog(self):
             url = self._get_url('changelog', self._get_queryset().first())
@@ -127,11 +132,11 @@ class ViewTestCases:
 
         :form_data: Data to be used when creating a new object.
         """
-
         form_data = {}
         validation_excluded_fields = []
 
         def test_create_object_without_permission(self):
+
             # Try GET without permission
             with disable_warnings('django.request'):
                 self.assertHttpStatus(self.client.get(self._get_url('add')), 403)
@@ -148,7 +153,10 @@ class ViewTestCases:
         @override_settings(EXEMPT_VIEW_PERMISSIONS=['*'], EXEMPT_EXCLUDE_MODELS=[])
         def test_create_object_with_permission(self):
             # Assign unconstrained permission
-            obj_perm = ObjectPermission(name='Test permission', actions=['add'])
+            obj_perm = ObjectPermission(
+                name='Test permission',
+                actions=['add']
+            )
             obj_perm.save()
             obj_perm.users.add(self.user)
             obj_perm.object_types.add(ObjectType.objects.get_for_model(self.model))
@@ -179,7 +187,8 @@ class ViewTestCases:
             # Verify ObjectChange creation
             if issubclass(self.model, ChangeLoggingMixin):
                 objectchanges = ObjectChange.objects.filter(
-                    changed_object_type=ContentType.objects.get_for_model(instance), changed_object_id=instance.pk
+                    changed_object_type=ContentType.objects.get_for_model(instance),
+                    changed_object_id=instance.pk
                 )
                 self.assertEqual(len(objectchanges), 1)
                 self.assertEqual(objectchanges[0].action, ObjectChangeActionChoices.ACTION_CREATE)
@@ -187,11 +196,12 @@ class ViewTestCases:
 
         @override_settings(EXEMPT_VIEW_PERMISSIONS=['*'], EXEMPT_EXCLUDE_MODELS=[])
         def test_create_object_with_constrained_permission(self):
+
             # Assign constrained permission
             obj_perm = ObjectPermission(
                 name='Test permission',
                 constraints={'pk': 0},  # Dummy permission to deny all
-                actions=['add'],
+                actions=['add']
             )
             obj_perm.save()
             obj_perm.users.add(self.user)
@@ -229,7 +239,6 @@ class ViewTestCases:
 
         :form_data: Data to be used when updating the first existing object.
         """
-
         form_data = {}
         validation_excluded_fields = []
 
@@ -253,7 +262,10 @@ class ViewTestCases:
             instance = self._get_queryset().first()
 
             # Assign model-level permission
-            obj_perm = ObjectPermission(name='Test permission', actions=['change'])
+            obj_perm = ObjectPermission(
+                name='Test permission',
+                actions=['change']
+            )
             obj_perm.save()
             obj_perm.users.add(self.user)
             obj_perm.object_types.add(ObjectType.objects.get_for_model(self.model))
@@ -282,7 +294,8 @@ class ViewTestCases:
             # Verify ObjectChange creation
             if issubclass(self.model, ChangeLoggingMixin):
                 objectchanges = ObjectChange.objects.filter(
-                    changed_object_type=ContentType.objects.get_for_model(instance), changed_object_id=instance.pk
+                    changed_object_type=ContentType.objects.get_for_model(instance),
+                    changed_object_id=instance.pk
                 )
                 self.assertEqual(len(objectchanges), 1)
                 self.assertEqual(objectchanges[0].action, ObjectChangeActionChoices.ACTION_UPDATE)
@@ -293,7 +306,11 @@ class ViewTestCases:
             instance1, instance2 = self._get_queryset().all()[:2]
 
             # Assign constrained permission
-            obj_perm = ObjectPermission(name='Test permission', constraints={'pk': instance1.pk}, actions=['change'])
+            obj_perm = ObjectPermission(
+                name='Test permission',
+                constraints={'pk': instance1.pk},
+                actions=['change']
+            )
             obj_perm.save()
             obj_perm.users.add(self.user)
             obj_perm.object_types.add(ObjectType.objects.get_for_model(self.model))
@@ -324,7 +341,6 @@ class ViewTestCases:
         """
         Delete a single instance.
         """
-
         def test_delete_object_without_permission(self):
             instance = self._get_queryset().first()
 
@@ -346,7 +362,10 @@ class ViewTestCases:
             form_data = {'confirm': True}
 
             # Assign model-level permission
-            obj_perm = ObjectPermission(name='Test permission', actions=['delete'])
+            obj_perm = ObjectPermission(
+                name='Test permission',
+                actions=['delete']
+            )
             obj_perm.save()
             obj_perm.users.add(self.user)
             obj_perm.object_types.add(ObjectType.objects.get_for_model(self.model))
@@ -370,7 +389,8 @@ class ViewTestCases:
             # Verify ObjectChange creation
             if issubclass(self.model, ChangeLoggingMixin):
                 objectchanges = ObjectChange.objects.filter(
-                    changed_object_type=ContentType.objects.get_for_model(instance), changed_object_id=instance.pk
+                    changed_object_type=ContentType.objects.get_for_model(instance),
+                    changed_object_id=instance.pk
                 )
                 self.assertEqual(len(objectchanges), 1)
                 self.assertEqual(objectchanges[0].action, ObjectChangeActionChoices.ACTION_DELETE)
@@ -381,7 +401,11 @@ class ViewTestCases:
             instance1, instance2 = self._get_queryset().all()[:2]
 
             # Assign object-level permission
-            obj_perm = ObjectPermission(name='Test permission', constraints={'pk': instance1.pk}, actions=['delete'])
+            obj_perm = ObjectPermission(
+                name='Test permission',
+                constraints={'pk': instance1.pk},
+                actions=['delete']
+            )
             obj_perm.save()
             obj_perm.users.add(self.user)
             obj_perm.object_types.add(ObjectType.objects.get_for_model(self.model))
@@ -413,7 +437,6 @@ class ViewTestCases:
         """
         Retrieve multiple instances.
         """
-
         @override_settings(EXEMPT_VIEW_PERMISSIONS=['*'], LOGIN_REQUIRED=False)
         def test_list_objects_anonymous(self):
             # Make the request as an unauthenticated user
@@ -429,13 +452,18 @@ class ViewTestCases:
                 self.assertHttpStatus(response, 200)
 
         def test_list_objects_without_permission(self):
+
             # Try GET without permission
             with disable_warnings('django.request'):
                 self.assertHttpStatus(self.client.get(self._get_url('list')), 403)
 
         def test_list_objects_with_permission(self):
+
             # Add model-level permission
-            obj_perm = ObjectPermission(name='Test permission', actions=['view'])
+            obj_perm = ObjectPermission(
+                name='Test permission',
+                actions=['view']
+            )
             obj_perm.save()
             obj_perm.users.add(self.user)
             obj_perm.object_types.add(ObjectType.objects.get_for_model(self.model))
@@ -447,7 +475,11 @@ class ViewTestCases:
             instance1, instance2 = self._get_queryset().all()[:2]
 
             # Add object-level permission
-            obj_perm = ObjectPermission(name='Test permission', constraints={'pk': instance1.pk}, actions=['view'])
+            obj_perm = ObjectPermission(
+                name='Test permission',
+                constraints={'pk': instance1.pk},
+                actions=['view']
+            )
             obj_perm.save()
             obj_perm.users.add(self.user)
             obj_perm.object_types.add(ObjectType.objects.get_for_model(self.model))
@@ -463,7 +495,10 @@ class ViewTestCases:
             url = self._get_url('list')
 
             # Add model-level permission
-            obj_perm = ObjectPermission(name='Test permission', actions=['view'])
+            obj_perm = ObjectPermission(
+                name='Test permission',
+                actions=['view']
+            )
             obj_perm.save()
             obj_perm.users.add(self.user)
             obj_perm.object_types.add(ObjectType.objects.get_for_model(self.model))
@@ -485,7 +520,6 @@ class ViewTestCases:
         :bulk_create_count: The number of objects expected to be created (default: 3).
         :bulk_create_data: A dictionary of data to be used for bulk object creation.
         """
-
         bulk_create_count = 3
         bulk_create_data = {}
         validation_excluded_fields = []
@@ -520,7 +554,7 @@ class ViewTestCases:
             response = self.client.post(**request)
             self.assertHttpStatus(response, 302)
             self.assertEqual(initial_count + self.bulk_create_count, self._get_queryset().count())
-            for instance in self._get_queryset().order_by('-pk')[: self.bulk_create_count]:
+            for instance in self._get_queryset().order_by('-pk')[:self.bulk_create_count]:
                 self.assertInstanceEqual(instance, self.bulk_create_data, exclude=self.validation_excluded_fields)
 
         def test_create_multiple_objects_with_constrained_permission(self):
@@ -534,7 +568,7 @@ class ViewTestCases:
             obj_perm = ObjectPermission(
                 name='Test permission',
                 actions=['add'],
-                constraints={'pk': 0},  # Dummy constraint to deny all
+                constraints={'pk': 0}  # Dummy constraint to deny all
             )
             obj_perm.save()
             obj_perm.users.add(self.user)
@@ -687,7 +721,7 @@ class ViewTestCases:
         @override_settings(EXEMPT_VIEW_PERMISSIONS=['*'])
         def test_bulk_update_objects_with_permission(self):
             if not hasattr(self, 'csv_update_data'):
-                raise NotImplementedError(_('The test must define csv_update_data.'))
+                raise NotImplementedError(_("The test must define csv_update_data."))
 
             initial_count = self._get_queryset().count()
             array, csv_data = self._get_update_csv_data()
@@ -698,7 +732,10 @@ class ViewTestCases:
             }
 
             # Assign model-level permission
-            obj_perm = ObjectPermission(name='Test permission', actions=['add'])
+            obj_perm = ObjectPermission(
+                name='Test permission',
+                actions=['add']
+            )
             obj_perm.save()
             obj_perm.users.add(self.user)
             obj_perm.object_types.add(ObjectType.objects.get_for_model(self.model))
@@ -710,9 +747,9 @@ class ViewTestCases:
             reader = csv.DictReader(array, delimiter=',')
             check_data = list(reader)
             for line in check_data:
-                obj = self.model.objects.get(id=line['id'])
+                obj = self.model.objects.get(id=line["id"])
                 for attr, value in line.items():
-                    if attr != 'id':
+                    if attr != "id":
                         field = self.model._meta.get_field(attr)
                         value = getattr(obj, attr)
                         # cannot verify FK fields as don't know what name the CSV maps to
@@ -774,7 +811,6 @@ class ViewTestCases:
         :bulk_edit_data: A dictionary of data to be used when bulk editing a set of objects. This data should differ
                          from that used for initial object creation within setUpTestData().
         """
-
         bulk_edit_data = {}
 
         def test_bulk_edit_objects_without_permission(self):
@@ -808,7 +844,10 @@ class ViewTestCases:
             data.update(post_data(self.bulk_edit_data))
 
             # Assign model-level permission
-            obj_perm = ObjectPermission(name='Test permission', actions=['view', 'change'])
+            obj_perm = ObjectPermission(
+                name='Test permission',
+                actions=['view', 'change']
+            )
             obj_perm.save()
             obj_perm.users.add(self.user)
             obj_perm.object_types.add(ObjectType.objects.get_for_model(self.model))
@@ -822,9 +861,10 @@ class ViewTestCases:
             # Verify ObjectChange creation
             if issubclass(self.model, ChangeLoggingMixin):
                 request_id = response.headers.get('X-Request-ID')
-                self.assertIsNotNone(request_id, 'Unable to determine request ID from response')
+                self.assertIsNotNone(request_id, "Unable to determine request ID from response")
                 objectchanges = ObjectChange.objects.filter(
-                    changed_object_type=ContentType.objects.get_for_model(self.model), changed_object_id__in=pk_list
+                    changed_object_type=ContentType.objects.get_for_model(self.model),
+                    changed_object_id__in=pk_list
                 )
                 self.assertEqual(len(objectchanges), len(pk_list))
                 for oc in objectchanges:
@@ -849,7 +889,9 @@ class ViewTestCases:
 
             # Assign constrained permission
             obj_perm = ObjectPermission(
-                name='Test permission', constraints={attr_name: value}, actions=['view', 'change']
+                name='Test permission',
+                constraints={attr_name: value},
+                actions=['view', 'change']
             )
             obj_perm.save()
             obj_perm.users.add(self.user)
@@ -872,7 +914,6 @@ class ViewTestCases:
         """
         Delete multiple instances.
         """
-
         def test_bulk_delete_objects_without_permission(self):
             pk_list = self._get_queryset().values_list('pk', flat=True)[:3]
             data = {
@@ -902,7 +943,10 @@ class ViewTestCases:
                 data['changelog_message'] = get_random_string(10)
 
             # Assign unconstrained permission
-            obj_perm = ObjectPermission(name='Test permission', actions=['delete'])
+            obj_perm = ObjectPermission(
+                name='Test permission',
+                actions=['delete']
+            )
             obj_perm.save()
             obj_perm.users.add(self.user)
             obj_perm.object_types.add(ObjectType.objects.get_for_model(self.model))
@@ -915,7 +959,8 @@ class ViewTestCases:
             # Verify ObjectChange creation
             if issubclass(self.model, ChangeLoggingMixin):
                 objectchanges = ObjectChange.objects.filter(
-                    changed_object_type=ContentType.objects.get_for_model(self.model), changed_object_id__in=pk_list
+                    changed_object_type=ContentType.objects.get_for_model(self.model),
+                    changed_object_id__in=pk_list
                 )
                 self.assertEqual(len(objectchanges), len(pk_list))
                 for oc in objectchanges:
@@ -934,7 +979,7 @@ class ViewTestCases:
             obj_perm = ObjectPermission(
                 name='Test permission',
                 constraints={'pk': 0},  # Dummy permission to deny all
-                actions=['delete'],
+                actions=['delete']
             )
             obj_perm.save()
             obj_perm.users.add(self.user)
@@ -957,7 +1002,6 @@ class ViewTestCases:
         """
         Rename multiple instances.
         """
-
         rename_data = {
             'find': '^(.*)$',
             'replace': '\\1X',  # Append an X to the original value
@@ -991,7 +1035,10 @@ class ViewTestCases:
             data.update(self.rename_data)
 
             # Assign model-level permission
-            obj_perm = ObjectPermission(name='Test permission', actions=['change'])
+            obj_perm = ObjectPermission(
+                name='Test permission',
+                actions=['change']
+            )
             obj_perm.save()
             obj_perm.users.add(self.user)
             obj_perm.object_types.add(ObjectType.objects.get_for_model(self.model))
@@ -1013,7 +1060,9 @@ class ViewTestCases:
 
             # Assign constrained permission
             obj_perm = ObjectPermission(
-                name='Test permission', constraints={'name__regex': '[^X]$'}, actions=['change']
+                name='Test permission',
+                constraints={'name__regex': '[^X]$'},
+                actions=['change']
             )
             obj_perm.save()
             obj_perm.users.add(self.user)
@@ -1046,7 +1095,6 @@ class ViewTestCases:
         """
         TestCase suitable for testing all standard View functions for primary objects
         """
-
         maxDiff = None
 
     class OrganizationalObjectViewTestCase(
@@ -1063,7 +1111,6 @@ class ViewTestCases:
         """
         TestCase suitable for all organizational objects
         """
-
         maxDiff = None
 
     class AdminModelViewTestCase(
@@ -1079,7 +1126,6 @@ class ViewTestCases:
         """
         TestCase suitable for testing all standard View functions for objects which inherit from AdminModel.
         """
-
         maxDiff = None
 
     class DeviceComponentTemplateViewTestCase(
@@ -1093,7 +1139,6 @@ class ViewTestCases:
         """
         TestCase suitable for testing device component template models (ConsolePortTemplates, InterfaceTemplates, etc.)
         """
-
         maxDiff = None
 
     class DeviceComponentViewTestCase(
@@ -1111,5 +1156,4 @@ class ViewTestCases:
         """
         TestCase suitable for testing device component models (ConsolePorts, Interfaces, etc.)
         """
-
         maxDiff = None

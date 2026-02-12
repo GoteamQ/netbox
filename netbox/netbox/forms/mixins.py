@@ -21,7 +21,6 @@ class ChangelogMessageMixin(forms.Form):
     """
     Adds an optional field for recording a message on the resulting changelog record(s).
     """
-
     changelog_message = forms.CharField(
         required=False,
         max_length=200,
@@ -60,9 +59,9 @@ class CustomFieldsMixin:
         Return the ObjectType of the form's model.
         """
         if not getattr(self, 'model', None):
-            raise NotImplementedError(
-                _('{class_name} must specify a model class.').format(class_name=self.__class__.__name__)
-            )
+            raise NotImplementedError(_("{class_name} must specify a model class.").format(
+                class_name=self.__class__.__name__
+            ))
         return ObjectType.objects.get_for_model(self.model)
 
     def _get_custom_fields(self, content_type):
@@ -113,11 +112,9 @@ class SavedFiltersMixin(forms.Form):
         # Limit saved filters to those applicable to the form's model
         if hasattr(self, 'model'):
             object_type = ObjectType.objects.get_for_model(self.model)
-            self.fields['filter_id'].widget.add_query_params(
-                {
-                    'object_type_id': object_type.pk,
-                }
-            )
+            self.fields['filter_id'].widget.add_query_params({
+                'object_type_id': object_type.pk,
+            })
 
 
 class TagsMixin(forms.Form):
@@ -184,6 +181,8 @@ class OwnerFilterMixin(forms.Form):
         queryset=Owner.objects.all(),
         required=False,
         null_option='None',
-        query_params={'group_id': '$owner_group_id'},
+        query_params={
+            'group_id': '$owner_group_id'
+        },
         label=_('Owner'),
     )

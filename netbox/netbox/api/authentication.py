@@ -20,7 +20,6 @@ class TokenAuthentication(BaseAuthentication):
     """
     A custom authentication scheme which enforces Token expiration times and source IP restrictions.
     """
-
     model = Token
 
     def authenticate(self, request):
@@ -69,7 +68,7 @@ class TokenAuthentication(BaseAuthentication):
                     # Key is valid but plaintext is not. Raise DoesNotExist to guard against key enumeration.
                     raise Token.DoesNotExist()
         except Token.DoesNotExist:
-            raise exceptions.AuthenticationFailed(f'Invalid v{version} token')
+            raise exceptions.AuthenticationFailed(f"Invalid v{version} token")
 
         # Enforce source IP restrictions (if any) set on the token
         if token.allowed_ips:
@@ -81,7 +80,7 @@ class TokenAuthentication(BaseAuthentication):
                 )
             if not token.validate_client_ip(client_ip):
                 raise exceptions.AuthenticationFailed(
-                    f'Source IP {client_ip} is not permitted to authenticate using this token.'
+                    f"Source IP {client_ip} is not permitted to authenticate using this token."
                 )
 
         # Enforce the Token is enabled
@@ -107,7 +106,6 @@ class TokenAuthentication(BaseAuthentication):
         # When LDAP authentication is active try to load user data from LDAP directory
         if 'netbox.authentication.LDAPBackend' in settings.REMOTE_AUTH_BACKEND:
             from netbox.authentication import LDAPBackend
-
             ldap_backend = LDAPBackend()
 
             # Load from LDAP if FIND_GROUP_PERMS is active
@@ -119,7 +117,7 @@ class TokenAuthentication(BaseAuthentication):
                     user = ldap_user
 
         if not user.is_active:
-            raise exceptions.AuthenticationFailed('User inactive')
+            raise exceptions.AuthenticationFailed("User inactive")
 
         return user, token
 
@@ -129,7 +127,6 @@ class TokenPermissions(DjangoObjectPermissions):
     Custom permissions handler which extends the built-in DjangoModelPermissions to validate a Token's write ability
     for unsafe requests (POST/PUT/PATCH/DELETE).
     """
-
     # Override the stock perm_map to enforce view permissions
     perms_map = {
         'GET': ['%(app_label)s.view_%(model_name)s'],
@@ -142,17 +139,20 @@ class TokenPermissions(DjangoObjectPermissions):
     }
 
     def __init__(self):
+
         # LOGIN_REQUIRED determines whether read-only access is provided to anonymous users.
         self.authenticated_users_only = settings.LOGIN_REQUIRED
 
         super().__init__()
 
     def _verify_write_permission(self, request):
+
         # If token authentication is in use, verify that the token allows write operations (for unsafe methods).
         if request.method in SAFE_METHODS or request.auth.write_enabled:
             return True
 
     def has_permission(self, request, view):
+
         # Enforce Token write ability
         if isinstance(request.auth, Token) and not self._verify_write_permission(request):
             return False
@@ -160,6 +160,7 @@ class TokenPermissions(DjangoObjectPermissions):
         return super().has_permission(request, view)
 
     def has_object_permission(self, request, view, obj):
+
         # Enforce Token write ability
         if isinstance(request.auth, Token) and not self._verify_write_permission(request):
             return False
@@ -175,7 +176,9 @@ class TokenWritePermission(BasePermission):
 
     def has_permission(self, request, view):
         if not isinstance(request.auth, Token):
-            raise exceptions.PermissionDenied('TokenWritePermission requires token authentication.')
+            raise exceptions.PermissionDenied(
+                "TokenWritePermission requires token authentication."
+            )
         return bool(request.method in SAFE_METHODS or request.auth.write_enabled)
 
 
@@ -183,7 +186,6 @@ class IsAuthenticatedOrLoginNotRequired(BasePermission):
     """
     Returns True if the user is authenticated or LOGIN_REQUIRED is False.
     """
-
     def has_permission(self, request, view):
         if not settings.LOGIN_REQUIRED:
             return True

@@ -9,7 +9,9 @@ from strawberry_django import DatetimeFilterLookup
 if TYPE_CHECKING:
     from .filters import *
 
-__all__ = ('ChangeLoggingMixin',)
+__all__ = (
+    'ChangeLoggingMixin',
+)
 
 
 @dataclass

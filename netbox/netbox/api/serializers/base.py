@@ -43,6 +43,7 @@ class BaseModelSerializer(serializers.ModelSerializer):
         super().__init__(*args, **kwargs)
 
     def to_internal_value(self, data):
+
         # If initialized as a nested serializer, we should expect to receive the attrs or PK
         # identifying a related object.
         if self.nested:
@@ -86,6 +87,7 @@ class ValidatedModelSerializer(BaseModelSerializer):
         return []
 
     def validate(self, data):
+
         # Skip validation if we're being used to represent a nested object
         if self.nested:
             return data

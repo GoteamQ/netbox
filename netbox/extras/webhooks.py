@@ -32,7 +32,11 @@ def generate_signature(request_body, secret):
     """
     Return a cryptographic signature that can be used to verify the authenticity of webhook data.
     """
-    hmac_prep = hmac.new(key=secret.encode('utf8'), msg=request_body, digestmod=hashlib.sha512)
+    hmac_prep = hmac.new(
+        key=secret.encode('utf8'),
+        msg=request_body,
+        digestmod=hashlib.sha512
+    )
     return hmac_prep.hexdigest()
 
 
@@ -53,7 +57,9 @@ def send_webhook(event_rule, object_type, event_type, data, timestamp, username,
         'data': data,
     }
     if snapshots:
-        context.update({'snapshots': snapshots})
+        context.update({
+            'snapshots': snapshots
+        })
 
     # Add any additional context from plugins
     callback_data = {}
@@ -62,7 +68,7 @@ def send_webhook(event_rule, object_type, event_type, data, timestamp, username,
             if ret := callback(object_type, event_type, data, request):
                 callback_data.update(**ret)
         except Exception as e:
-            logger.warning(f'Caught exception when processing callback {callback}: {e}')
+            logger.warning(f"Caught exception when processing callback {callback}: {e}")
             pass
     if callback_data:
         context['context'] = callback_data
@@ -74,14 +80,14 @@ def send_webhook(event_rule, object_type, event_type, data, timestamp, username,
     try:
         headers.update(webhook.render_headers(context))
     except (TemplateError, ValueError) as e:
-        logger.error(f'Error parsing HTTP headers for webhook {webhook}: {e}')
+        logger.error(f"Error parsing HTTP headers for webhook {webhook}: {e}")
         raise e
 
     # Render the request body
     try:
         body = webhook.render_body(context)
     except TemplateError as e:
-        logger.error(f'Error rendering request body for webhook {webhook}: {e}')
+        logger.error(f"Error rendering request body for webhook {webhook}: {e}")
         raise e
 
     # Prepare the HTTP request
@@ -92,12 +98,14 @@ def send_webhook(event_rule, object_type, event_type, data, timestamp, username,
         'headers': headers,
         'data': body.encode('utf8'),
     }
-    logger.info(f'Sending {params["method"]} request to {params["url"]} ({context["object_type"]} {context["event"]})')
+    logger.info(
+        f"Sending {params['method']} request to {params['url']} ({context['object_type']} {context['event']})"
+    )
     logger.debug(params)
     try:
         prepared_request = requests.Request(**params).prepare()
     except requests.exceptions.RequestException as e:
-        logger.error(f'Error forming HTTP request: {e}')
+        logger.error(f"Error forming HTTP request: {e}")
         raise e
 
     # If a secret key is defined, sign the request with a hash of the key and its content
@@ -113,10 +121,10 @@ def send_webhook(event_rule, object_type, event_type, data, timestamp, username,
         response = session.send(prepared_request, proxies=proxies)
 
     if 200 <= response.status_code <= 299:
-        logger.info(f'Request succeeded; response status {response.status_code}')
-        return f'Status {response.status_code} returned, webhook successfully processed.'
+        logger.info(f"Request succeeded; response status {response.status_code}")
+        return f"Status {response.status_code} returned, webhook successfully processed."
     else:
-        logger.warning(f'Request failed; response status {response.status_code}: {response.content}')
+        logger.warning(f"Request failed; response status {response.status_code}: {response.content}")
         raise requests.exceptions.RequestException(
             f"Status {response.status_code} returned with content '{response.content}', webhook FAILED to process."
         )

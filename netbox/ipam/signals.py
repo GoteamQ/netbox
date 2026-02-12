@@ -28,8 +28,10 @@ def update_children_depth(prefix):
 
 @receiver(post_save, sender=Prefix)
 def handle_prefix_saved(instance, created, **kwargs):
+
     # Prefix has changed (or new instance has been created)
     if created or instance.vrf_id != instance._vrf_id or instance.prefix != instance._prefix:
+
         update_parents_children(instance)
         update_children_depth(instance)
 
@@ -42,6 +44,7 @@ def handle_prefix_saved(instance, created, **kwargs):
 
 @receiver(post_delete, sender=Prefix)
 def handle_prefix_deleted(instance, **kwargs):
+
     update_parents_children(instance)
     update_children_depth(instance)
 

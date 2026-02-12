@@ -29,8 +29,11 @@ class ModuleTypeProfile(PrimaryModel):
     """
     A profile which defines the attributes which can be set on one or more ModuleTypes.
     """
-
-    name = models.CharField(verbose_name=_('name'), max_length=100, unique=True)
+    name = models.CharField(
+        verbose_name=_('name'),
+        max_length=100,
+        unique=True
+    )
     schema = models.JSONField(
         blank=True,
         null=True,
@@ -56,29 +59,56 @@ class ModuleType(ImageAttachmentsMixin, PrimaryModel, WeightMixin):
     DeviceType, each ModuleType can have console, power, interface, and pass-through port templates assigned to it. It
     cannot, however house device bays or module bays.
     """
-
     profile = models.ForeignKey(
-        to='dcim.ModuleTypeProfile', on_delete=models.PROTECT, related_name='module_types', blank=True, null=True
+        to='dcim.ModuleTypeProfile',
+        on_delete=models.PROTECT,
+        related_name='module_types',
+        blank=True,
+        null=True
     )
-    manufacturer = models.ForeignKey(to='dcim.Manufacturer', on_delete=models.PROTECT, related_name='module_types')
-    model = models.CharField(verbose_name=_('model'), max_length=100)
+    manufacturer = models.ForeignKey(
+        to='dcim.Manufacturer',
+        on_delete=models.PROTECT,
+        related_name='module_types'
+    )
+    model = models.CharField(
+        verbose_name=_('model'),
+        max_length=100
+    )
     part_number = models.CharField(
-        verbose_name=_('part number'), max_length=50, blank=True, help_text=_('Discrete part number (optional)')
+        verbose_name=_('part number'),
+        max_length=50,
+        blank=True,
+        help_text=_('Discrete part number (optional)')
     )
     airflow = models.CharField(
-        verbose_name=_('airflow'), max_length=50, choices=ModuleAirflowChoices, blank=True, null=True
+        verbose_name=_('airflow'),
+        max_length=50,
+        choices=ModuleAirflowChoices,
+        blank=True,
+        null=True
     )
-    attribute_data = models.JSONField(blank=True, null=True, verbose_name=_('attributes'))
-    module_count = CounterCacheField(to_model='dcim.Module', to_field='module_type')
+    attribute_data = models.JSONField(
+        blank=True,
+        null=True,
+        verbose_name=_('attributes')
+    )
+    module_count = CounterCacheField(
+        to_model='dcim.Module',
+        to_field='module_type'
+    )
 
     clone_fields = ('profile', 'manufacturer', 'weight', 'weight_unit', 'airflow')
-    prerequisite_models = ('dcim.Manufacturer',)
+    prerequisite_models = (
+        'dcim.Manufacturer',
+    )
 
     class Meta:
         ordering = ('profile', 'manufacturer', 'model')
         constraints = (
             models.UniqueConstraint(
-                fields=('manufacturer', 'model'), name='%(app_label)s_%(class)s_unique_manufacturer_model'
+                fields=('manufacturer', 'model'),
+                name='%(app_label)s_%(class)s_unique_manufacturer_model'
             ),
         )
         verbose_name = _('module type')
@@ -89,7 +119,7 @@ class ModuleType(ImageAttachmentsMixin, PrimaryModel, WeightMixin):
 
     @property
     def full_name(self):
-        return f'{self.manufacturer} {self.model}'
+        return f"{self.manufacturer} {self.model}"
 
     @property
     def attributes(self):
@@ -112,7 +142,7 @@ class ModuleType(ImageAttachmentsMixin, PrimaryModel, WeightMixin):
             try:
                 jsonschema.validate(self.attribute_data, schema=self.profile.schema)
             except JSONValidationError as e:
-                raise ValidationError(_('Invalid schema: {error}').format(error=e))
+                raise ValidationError(_("Invalid schema: {error}").format(error=e))
         else:
             self.attribute_data = None
 
@@ -132,19 +162,33 @@ class ModuleType(ImageAttachmentsMixin, PrimaryModel, WeightMixin):
 
         # Component templates
         if self.consoleporttemplates.exists():
-            data['console-ports'] = [c.to_yaml() for c in self.consoleporttemplates.all()]
+            data['console-ports'] = [
+                c.to_yaml() for c in self.consoleporttemplates.all()
+            ]
         if self.consoleserverporttemplates.exists():
-            data['console-server-ports'] = [c.to_yaml() for c in self.consoleserverporttemplates.all()]
+            data['console-server-ports'] = [
+                c.to_yaml() for c in self.consoleserverporttemplates.all()
+            ]
         if self.powerporttemplates.exists():
-            data['power-ports'] = [c.to_yaml() for c in self.powerporttemplates.all()]
+            data['power-ports'] = [
+                c.to_yaml() for c in self.powerporttemplates.all()
+            ]
         if self.poweroutlettemplates.exists():
-            data['power-outlets'] = [c.to_yaml() for c in self.poweroutlettemplates.all()]
+            data['power-outlets'] = [
+                c.to_yaml() for c in self.poweroutlettemplates.all()
+            ]
         if self.interfacetemplates.exists():
-            data['interfaces'] = [c.to_yaml() for c in self.interfacetemplates.all()]
+            data['interfaces'] = [
+                c.to_yaml() for c in self.interfacetemplates.all()
+            ]
         if self.frontporttemplates.exists():
-            data['front-ports'] = [c.to_yaml() for c in self.frontporttemplates.all()]
+            data['front-ports'] = [
+                c.to_yaml() for c in self.frontporttemplates.all()
+            ]
         if self.rearporttemplates.exists():
-            data['rear-ports'] = [c.to_yaml() for c in self.rearporttemplates.all()]
+            data['rear-ports'] = [
+                c.to_yaml() for c in self.rearporttemplates.all()
+            ]
 
         return yaml.dump(dict(data), sort_keys=False)
 
@@ -154,21 +198,39 @@ class Module(TrackingModelMixin, PrimaryModel, ConfigContextModel):
     A Module represents a field-installable component within a Device which may itself hold multiple device components
     (for example, a line card within a chassis switch). Modules are instantiated from ModuleTypes.
     """
-
-    device = models.ForeignKey(to='dcim.Device', on_delete=models.CASCADE, related_name='modules')
-    module_bay = models.OneToOneField(to='dcim.ModuleBay', on_delete=models.CASCADE, related_name='installed_module')
-    module_type = models.ForeignKey(to='dcim.ModuleType', on_delete=models.PROTECT, related_name='instances')
-    status = models.CharField(
-        verbose_name=_('status'), max_length=50, choices=ModuleStatusChoices, default=ModuleStatusChoices.STATUS_ACTIVE
+    device = models.ForeignKey(
+        to='dcim.Device',
+        on_delete=models.CASCADE,
+        related_name='modules'
     )
-    serial = models.CharField(max_length=50, blank=True, verbose_name=_('serial number'))
+    module_bay = models.OneToOneField(
+        to='dcim.ModuleBay',
+        on_delete=models.CASCADE,
+        related_name='installed_module'
+    )
+    module_type = models.ForeignKey(
+        to='dcim.ModuleType',
+        on_delete=models.PROTECT,
+        related_name='instances'
+    )
+    status = models.CharField(
+        verbose_name=_('status'),
+        max_length=50,
+        choices=ModuleStatusChoices,
+        default=ModuleStatusChoices.STATUS_ACTIVE
+    )
+    serial = models.CharField(
+        max_length=50,
+        blank=True,
+        verbose_name=_('serial number')
+    )
     asset_tag = models.CharField(
         max_length=50,
         blank=True,
         null=True,
         unique=True,
         verbose_name=_('asset tag'),
-        help_text=_('A unique tag used to identify this device'),
+        help_text=_('A unique tag used to identify this device')
     )
 
     clone_fields = ('device', 'module_type', 'status')
@@ -187,9 +249,9 @@ class Module(TrackingModelMixin, PrimaryModel, ConfigContextModel):
     def clean(self):
         super().clean()
 
-        if hasattr(self, 'module_bay') and (self.module_bay.device != self.device):
+        if hasattr(self, "module_bay") and (self.module_bay.device != self.device):
             raise ValidationError(
-                _('Module must be installed within a module bay belonging to the assigned device ({device}).').format(
+                _("Module must be installed within a module bay belonging to the assigned device ({device}).").format(
                     device=self.device
                 )
             )
@@ -199,9 +261,9 @@ class Module(TrackingModelMixin, PrimaryModel, ConfigContextModel):
         module_bays = []
         modules = []
         while module:
-            module_module_bay = getattr(module, 'module_bay', None)
+            module_module_bay = getattr(module, "module_bay", None)
             if module.pk in modules or (module_module_bay and module_module_bay.pk in module_bays):
-                raise ValidationError(_('A module bay cannot belong to a module installed within it.'))
+                raise ValidationError(_("A module bay cannot belong to a module installed within it."))
             modules.append(module.pk)
             if module_module_bay:
                 module_bays.append(module_module_bay.pk)
@@ -222,14 +284,14 @@ class Module(TrackingModelMixin, PrimaryModel, ConfigContextModel):
 
         # Iterate all component types
         for templates, component_attribute, component_model in [
-            ('consoleporttemplates', 'consoleports', ConsolePort),
-            ('consoleserverporttemplates', 'consoleserverports', ConsoleServerPort),
-            ('interfacetemplates', 'interfaces', Interface),
-            ('powerporttemplates', 'powerports', PowerPort),
-            ('poweroutlettemplates', 'poweroutlets', PowerOutlet),
-            ('rearporttemplates', 'rearports', RearPort),
-            ('frontporttemplates', 'frontports', FrontPort),
-            ('modulebaytemplates', 'modulebays', ModuleBay),
+            ("consoleporttemplates", "consoleports", ConsolePort),
+            ("consoleserverporttemplates", "consoleserverports", ConsoleServerPort),
+            ("interfacetemplates", "interfaces", Interface),
+            ("powerporttemplates", "powerports", PowerPort),
+            ("poweroutlettemplates", "poweroutlets", PowerOutlet),
+            ("rearporttemplates", "rearports", RearPort),
+            ("frontporttemplates", "frontports", FrontPort),
+            ("modulebaytemplates", "modulebays", ModuleBay),
         ]:
             create_instances = []
             update_instances = []
@@ -279,7 +341,7 @@ class Module(TrackingModelMixin, PrimaryModel, ConfigContextModel):
                         created=True,
                         raw=False,
                         using='default',
-                        update_fields=None,
+                        update_fields=None
                     )
             else:
                 # ModuleBays must be saved individually for MPTT
@@ -296,7 +358,7 @@ class Module(TrackingModelMixin, PrimaryModel, ConfigContextModel):
                     created=False,
                     raw=False,
                     using='default',
-                    update_fields=update_fields,
+                    update_fields=update_fields
                 )
 
         # Replicate any front/rear port mappings from the ModuleType

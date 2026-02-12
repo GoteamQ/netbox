@@ -5,10 +5,13 @@ from rest_framework.response import Response
 
 from utilities.permissions import get_permission_for_model
 
-__all__ = ('SyncedDataMixin',)
+__all__ = (
+    'SyncedDataMixin',
+)
 
 
 class SyncedDataMixin:
+
     @action(detail=True, methods=['post'])
     def sync(self, request, pk):
         """
@@ -16,7 +19,7 @@ class SyncedDataMixin:
         """
         permission = get_permission_for_model(self.queryset.model, 'sync')
         if not request.user.has_perm(permission):
-            raise PermissionDenied(f'Missing permission: {permission}')
+            raise PermissionDenied(f"Missing permission: {permission}")
 
         obj = get_object_or_404(self.queryset, pk=pk)
         if obj.data_file:

@@ -23,13 +23,13 @@ def register_template_extensions(class_list):
         # Validation
         if not inspect.isclass(template_extension):
             raise TypeError(
-                _('PluginTemplateExtension class {template_extension} was passed as an instance!').format(
+                _("PluginTemplateExtension class {template_extension} was passed as an instance!").format(
                     template_extension=template_extension
                 )
             )
         if not issubclass(template_extension, PluginTemplateExtension):
             raise TypeError(
-                _('{template_extension} is not a subclass of netbox.plugins.PluginTemplateExtension!').format(
+                _("{template_extension} is not a subclass of netbox.plugins.PluginTemplateExtension!").format(
                     template_extension=template_extension
                 )
             )
@@ -46,7 +46,7 @@ def register_template_extensions(class_list):
 
 def register_menu(menu):
     if not isinstance(menu, PluginMenu):
-        raise TypeError(_('{item} must be an instance of netbox.plugins.PluginMenuItem').format(item=menu))
+        raise TypeError(_("{item} must be an instance of netbox.plugins.PluginMenuItem").format(item=menu))
     registry['plugins']['menus'].append(menu)
 
 
@@ -57,14 +57,14 @@ def register_menu_items(section_name, class_list):
     # Validation
     for menu_link in class_list:
         if not isinstance(menu_link, PluginMenuItem):
-            raise TypeError(
-                _('{menu_link} must be an instance of netbox.plugins.PluginMenuItem').format(menu_link=menu_link)
-            )
+            raise TypeError(_("{menu_link} must be an instance of netbox.plugins.PluginMenuItem").format(
+                menu_link=menu_link
+            ))
         for button in menu_link.buttons:
             if not isinstance(button, PluginMenuButton):
-                raise TypeError(
-                    _('{button} must be an instance of netbox.plugins.PluginMenuButton').format(button=button)
-                )
+                raise TypeError(_("{button} must be an instance of netbox.plugins.PluginMenuButton").format(
+                    button=button
+                ))
 
     registry['plugins']['menu_items'][section_name] = class_list
 

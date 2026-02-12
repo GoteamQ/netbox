@@ -37,12 +37,10 @@ __all__ = (
 # View Mixins
 #
 
-
 class ConditionalLoginRequiredMixin(AccessMixin):
     """
     Similar to Django's LoginRequiredMixin, but enforces authentication only if LOGIN_REQUIRED is True.
     """
-
     def dispatch(self, request, *args, **kwargs):
         if settings.LOGIN_REQUIRED and not request.user.is_authenticated:
             return self.handle_no_permission()
@@ -59,7 +57,7 @@ class TokenConditionalLoginRequiredMixin(ConditionalLoginRequiredMixin):
                     request.user = auth_info[0]  # User object
                     request.auth = auth_info[1]
             except AuthenticationFailed:
-                return HttpResponseForbidden('Invalid token')
+                return HttpResponseForbidden("Invalid token")
 
         return super().dispatch(request, *args, **kwargs)
 
@@ -73,18 +71,15 @@ class ContentTypePermissionRequiredMixin(ConditionalLoginRequiredMixin):
     additional_permissions: An optional iterable of statically declared permissions to evaluate in addition to those
                             derived from the object type
     """
-
     additional_permissions = list()
 
     def get_required_permission(self):
         """
         Return the specific permission necessary to perform the requested action on an object.
         """
-        raise NotImplementedError(
-            _('{self.__class__.__name__} must implement get_required_permission()').format(
-                class_name=self.__class__.__name__
-            )
-        )
+        raise NotImplementedError(_("{self.__class__.__name__} must implement get_required_permission()").format(
+            class_name=self.__class__.__name__
+        ))
 
     def has_permission(self):
         user = self.request.user
@@ -112,16 +107,15 @@ class ObjectPermissionRequiredMixin(ConditionalLoginRequiredMixin):
     additional_permissions: An optional iterable of statically declared permissions to evaluate in addition to those
                             derived from the object type
     """
-
     additional_permissions = list()
 
     def get_required_permission(self):
         """
         Return the specific permission necessary to perform the requested action on an object.
         """
-        raise NotImplementedError(
-            _('{class_name} must implement get_required_permission()').format(class_name=self.__class__.__name__)
-        )
+        raise NotImplementedError(_("{class_name} must implement get_required_permission()").format(
+            class_name=self.__class__.__name__
+        ))
 
     def has_permission(self):
         user = self.request.user
@@ -129,6 +123,7 @@ class ObjectPermissionRequiredMixin(ConditionalLoginRequiredMixin):
 
         # Check that the user has been granted the required permission(s).
         if user.has_perms((permission_required, *self.additional_permissions)):
+
             # Update the view's QuerySet to filter only the permitted objects
             action = resolve_permission(permission_required)[1]
             self.queryset = self.queryset.restrict(user, action)
@@ -138,6 +133,7 @@ class ObjectPermissionRequiredMixin(ConditionalLoginRequiredMixin):
         return False
 
     def dispatch(self, request, *args, **kwargs):
+
         if not hasattr(self, 'queryset'):
             raise ImproperlyConfigured(
                 _(
@@ -156,10 +152,10 @@ class GetReturnURLMixin:
     """
     Provides logic for determining where a user should be redirected after processing a form.
     """
-
     default_return_url = None
 
     def get_return_url(self, request, obj=None):
+
         # First, see if `return_url` was specified as a query parameter or form data. Use this URL only if it's
         # considered safe.
         return_url = request.GET.get('return_url') or request.POST.get('return_url')
@@ -189,7 +185,6 @@ class GetRelatedModelsMixin:
     """
     Provides logic for collecting all related models for the currently viewed model.
     """
-
     @dataclass
     class RelatedObjectCount:
         queryset: QuerySet
@@ -215,19 +210,26 @@ class GetRelatedModelsMixin:
         """
         omit = omit or []
         model = self.queryset.model
-        related = filter(lambda m: m[0] is not model and m[0] not in omit, get_related_models(model, False))
+        related = filter(
+            lambda m: m[0] is not model and m[0] not in omit,
+            get_related_models(model, False)
+        )
 
         related_models = [
             self.RelatedObjectCount(
-                model.objects.restrict(request.user, 'view').filter(
-                    **({f'{field}__in': instance} if isinstance(instance, Iterable) else {field: instance})
-                ),
-                f'{field}_id',
+                model.objects.restrict(request.user, 'view').filter(**(
+                    {f'{field}__in': instance}
+                    if isinstance(instance, Iterable)
+                    else {field: instance}
+                )),
+                f'{field}_id'
             )
             for model, field in related
         ]
         if extra is not None:
-            related_models.extend([self.RelatedObjectCount(*attrs) for attrs in extra])
+            related_models.extend([
+                self.RelatedObjectCount(*attrs) for attrs in extra
+            ])
 
         return sorted(
             filter(lambda roc: roc.queryset.exists(), related_models),
@@ -252,7 +254,6 @@ class ViewTab:
         hide_if_empty: If true, the tab will be displayed only if its badge has a meaningful value. (This parameter is
             evaluated only if the tab is permitted to be displayed according to the `visible` parameter.)
     """
-
     def __init__(self, label, visible=None, badge=None, weight=1000, permission=None, hide_if_empty=False):
         self.label = label
         self.visible = visible
@@ -287,7 +288,6 @@ class ViewTab:
 #
 # Utility functions
 #
-
 
 def get_viewname(model, action=None, rest_api=False):
     """
@@ -354,7 +354,6 @@ def register_model_view(model, name='', path=None, detail=True, kwargs=None):
         detail: True if the path applied to an individual object; False if it attaches to the base (list) path.
         kwargs: A dictionary of keyword arguments for the view to include when registering its URL path (optional).
     """
-
     def _wrapper(cls):
         app_label = model._meta.app_label
         model_name = model._meta.model_name
@@ -362,15 +361,13 @@ def register_model_view(model, name='', path=None, detail=True, kwargs=None):
         if model_name not in registry['views'][app_label]:
             registry['views'][app_label][model_name] = []
 
-        registry['views'][app_label][model_name].append(
-            {
-                'name': name,
-                'view': cls,
-                'path': path if path is not None else name,
-                'detail': detail,
-                'kwargs': kwargs or {},
-            }
-        )
+        registry['views'][app_label][model_name].append({
+            'name': name,
+            'view': cls,
+            'path': path if path is not None else name,
+            'detail': detail,
+            'kwargs': kwargs or {},
+        })
 
         return cls
 

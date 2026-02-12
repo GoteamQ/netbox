@@ -5,6 +5,7 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
+
     dependencies = [
         ('contenttypes', '0002_remove_content_type_name'),
         ('core', '0017_objectchange_message'),
@@ -27,15 +28,22 @@ class Migration(migrations.Migration):
                         primary_key=True,
                         serialize=False,
                         to='contenttypes.contenttype',
-                        related_name='object_type',
-                    ),
+                        related_name='object_type'
+                    )
                 ),
-                ('public', models.BooleanField(default=False)),
+                (
+                    'public',
+                    models.BooleanField(
+                        default=False
+                    )
+                ),
                 (
                     'features',
                     django.contrib.postgres.fields.ArrayField(
-                        base_field=models.CharField(max_length=50), default=list, size=None
-                    ),
+                        base_field=models.CharField(max_length=50),
+                        default=list,
+                        size=None
+                    )
                 ),
             ],
             options={
@@ -44,9 +52,10 @@ class Migration(migrations.Migration):
                 'ordering': ('app_label', 'model'),
                 'indexes': [
                     django.contrib.postgres.indexes.GinIndex(
-                        fields=['features'], name='core_object_feature_aec4de_gin'
+                        fields=['features'],
+                        name='core_object_feature_aec4de_gin'
                     ),
-                ],
+                ]
             },
             bases=('contenttypes.contenttype',),
             managers=[],

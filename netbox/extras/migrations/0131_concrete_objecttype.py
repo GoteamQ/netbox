@@ -2,6 +2,7 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
+
     dependencies = [
         ('contenttypes', '0002_remove_content_type_name'),
         ('extras', '0130_imageattachment_description'),

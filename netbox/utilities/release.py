@@ -17,7 +17,6 @@ class FeatureSet:
     """
     A map of all available NetBox features.
     """
-
     # Commercial support is provided by NetBox Labs
     commercial: bool = False
 
@@ -38,14 +37,14 @@ class ReleaseInfo:
     def full_version(self):
         output = self.version
         if self.designation:
-            output = f'{output}-{self.designation}'
+            output = f"{output}-{self.designation}"
         if self.build:
-            output = f'{output}-{self.build}'
+            output = f"{output}-{self.build}"
         return output
 
     @property
     def name(self):
-        return f'NetBox {self.edition} v{self.full_version}'
+        return f"NetBox {self.edition} v{self.full_version}"
 
     def asdict(self):
         return asdict(self)
@@ -69,7 +68,9 @@ def load_release_data():
         local_data = {}
     if local_data is not None:
         if type(local_data) is not dict:
-            raise ImproperlyConfigured(f'{LOCAL_RELEASE_PATH}: Local release data must be defined as a dictionary.')
+            raise ImproperlyConfigured(
+                f"{LOCAL_RELEASE_PATH}: Local release data must be defined as a dictionary."
+            )
         data.update(local_data)
 
     # Convert the published date to a date object

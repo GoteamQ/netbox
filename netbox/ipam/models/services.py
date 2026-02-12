@@ -17,12 +17,19 @@ __all__ = (
 
 
 class ServiceBase(models.Model):
-    protocol = models.CharField(verbose_name=_('protocol'), max_length=50, choices=ServiceProtocolChoices)
+    protocol = models.CharField(
+        verbose_name=_('protocol'),
+        max_length=50,
+        choices=ServiceProtocolChoices
+    )
     ports = ArrayField(
         base_field=models.PositiveIntegerField(
-            validators=[MinValueValidator(SERVICE_PORT_MIN), MaxValueValidator(SERVICE_PORT_MAX)]
+            validators=[
+                MinValueValidator(SERVICE_PORT_MIN),
+                MaxValueValidator(SERVICE_PORT_MAX)
+            ]
         ),
-        verbose_name=_('port numbers'),
+        verbose_name=_('port numbers')
     )
 
     class Meta:
@@ -40,8 +47,11 @@ class ServiceTemplate(ServiceBase, PrimaryModel):
     """
     A template for a Service to be applied to a device or virtual machine.
     """
-
-    name = models.CharField(verbose_name=_('name'), max_length=100, unique=True)
+    name = models.CharField(
+        verbose_name=_('name'),
+        max_length=100,
+        unique=True
+    )
 
     class Meta:
         ordering = ('name',)
@@ -54,22 +64,27 @@ class Service(ContactsMixin, ServiceBase, PrimaryModel):
     A Service represents a layer-four service (e.g. HTTP or SSH) running on a Device or VirtualMachine. A Service may
     optionally be tied to one or more specific IPAddresses belonging to its parent.
     """
-
     parent_object_type = models.ForeignKey(
         to='contenttypes.ContentType',
         on_delete=models.PROTECT,
         related_name='+',
     )
     parent_object_id = models.PositiveBigIntegerField()
-    parent = GenericForeignKey(ct_field='parent_object_type', fk_field='parent_object_id')
+    parent = GenericForeignKey(
+        ct_field='parent_object_type',
+        fk_field='parent_object_id'
+    )
 
-    name = models.CharField(max_length=100, verbose_name=_('name'))
+    name = models.CharField(
+        max_length=100,
+        verbose_name=_('name')
+    )
     ipaddresses = models.ManyToManyField(
         to='ipam.IPAddress',
         related_name='services',
         blank=True,
         verbose_name=_('IP addresses'),
-        help_text=_('The specific IP addresses (if any) to which this application service is bound'),
+        help_text=_("The specific IP addresses (if any) to which this application service is bound")
     )
 
     clone_fields = (
@@ -77,7 +92,9 @@ class Service(ContactsMixin, ServiceBase, PrimaryModel):
     )
 
     class Meta:
-        indexes = (models.Index(fields=('parent_object_type', 'parent_object_id')),)
+        indexes = (
+            models.Index(fields=('parent_object_type', 'parent_object_id')),
+        )
         ordering = ('protocol', 'ports', 'pk')  # (protocol, port) may be non-unique
         verbose_name = _('application service')
         verbose_name_plural = _('application services')

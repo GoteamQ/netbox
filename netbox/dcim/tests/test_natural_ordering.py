@@ -4,15 +4,21 @@ from dcim.models import Device, DeviceRole, DeviceType, Interface, Manufacturer,
 
 
 class NaturalOrderingTestCase(TestCase):
+
     @classmethod
     def setUpTestData(cls):
+
         site = Site.objects.create(name='Test Site 1', slug='test-site-1')
         manufacturer = Manufacturer.objects.create(name='Test Manufacturer 1', slug='test-manufacturer-1')
         devicetype = DeviceType.objects.create(
             manufacturer=manufacturer, model='Test Device Type 1', slug='test-device-type-1'
         )
-        role = DeviceRole.objects.create(name='Test Device Role 1', slug='test-device-role-1', color='ff0000')
-        Device.objects.create(device_type=devicetype, role=role, name='Test Device 1', site=site)
+        role = DeviceRole.objects.create(
+            name='Test Device Role 1', slug='test-device-role-1', color='ff0000'
+        )
+        Device.objects.create(
+            device_type=devicetype, role=role, name='Test Device 1', site=site
+        )
 
     def test_interface_ordering_numeric(self):
         device = Device.objects.first()
@@ -55,7 +61,10 @@ class NaturalOrderingTestCase(TestCase):
             iface = Interface(device=device, name=name)
             iface.save()
 
-        self.assertListEqual(list(Interface.objects.filter(device=device).values_list('name', flat=True)), INTERFACES)
+        self.assertListEqual(
+            list(Interface.objects.filter(device=device).values_list('name', flat=True)),
+            INTERFACES
+        )
 
     def test_interface_ordering_linux(self):
         device = Device.objects.first()
@@ -76,7 +85,10 @@ class NaturalOrderingTestCase(TestCase):
             iface = Interface(device=device, name=name)
             iface.save()
 
-        self.assertListEqual(list(Interface.objects.filter(device=device).values_list('name', flat=True)), INTERFACES)
+        self.assertListEqual(
+            list(Interface.objects.filter(device=device).values_list('name', flat=True)),
+            INTERFACES
+        )
 
     def test_interface_ordering_junos(self):
         device = Device.objects.first()
@@ -126,7 +138,10 @@ class NaturalOrderingTestCase(TestCase):
             iface = Interface(device=device, name=name)
             iface.save()
 
-        self.assertListEqual(list(Interface.objects.filter(device=device).values_list('name', flat=True)), INTERFACES)
+        self.assertListEqual(
+            list(Interface.objects.filter(device=device).values_list('name', flat=True)),
+            INTERFACES
+        )
 
     def test_interface_ordering_ios(self):
         device = Device.objects.first()
@@ -150,4 +165,7 @@ class NaturalOrderingTestCase(TestCase):
             iface = Interface(device=device, name=name)
             iface.save()
 
-        self.assertListEqual(list(Interface.objects.filter(device=device).values_list('name', flat=True)), INTERFACES)
+        self.assertListEqual(
+            list(Interface.objects.filter(device=device).values_list('name', flat=True)),
+            INTERFACES
+        )

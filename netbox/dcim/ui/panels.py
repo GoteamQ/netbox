@@ -162,7 +162,6 @@ class VirtualChassisMembersPanel(panels.ObjectPanel):
     """
     A panel which lists all members of a virtual chassis.
     """
-
     template_name = 'dcim/panels/virtual_chassis_members.html'
     title = _('Virtual Chassis Members')
 
@@ -182,7 +181,6 @@ class PowerUtilizationPanel(panels.ObjectPanel):
     """
     A panel which displays the power utilization statistics for a device.
     """
-
     template_name = 'dcim/panels/power_utilization.html'
     title = _('Power Utilization')
 

@@ -26,23 +26,8 @@ class RegionSerializer(NestedGroupModelSerializer):
     class Meta:
         model = Region
         fields = [
-            'id',
-            'url',
-            'display_url',
-            'display',
-            'name',
-            'slug',
-            'parent',
-            'description',
-            'tags',
-            'custom_fields',
-            'created',
-            'last_updated',
-            'site_count',
-            'prefix_count',
-            'owner',
-            'comments',
-            '_depth',
+            'id', 'url', 'display_url', 'display', 'name', 'slug', 'parent', 'description', 'tags', 'custom_fields',
+            'created', 'last_updated', 'site_count', 'prefix_count', 'owner', 'comments', '_depth',
         ]
         brief_fields = ('id', 'url', 'display', 'name', 'slug', 'description', 'site_count', '_depth')
 
@@ -55,23 +40,8 @@ class SiteGroupSerializer(NestedGroupModelSerializer):
     class Meta:
         model = SiteGroup
         fields = [
-            'id',
-            'url',
-            'display_url',
-            'display',
-            'name',
-            'slug',
-            'parent',
-            'description',
-            'tags',
-            'custom_fields',
-            'created',
-            'last_updated',
-            'site_count',
-            'prefix_count',
-            'owner',
-            'comments',
-            '_depth',
+            'id', 'url', 'display_url', 'display', 'name', 'slug', 'parent', 'description', 'tags', 'custom_fields',
+            'created', 'last_updated', 'site_count', 'prefix_count', 'owner', 'comments', '_depth',
         ]
         brief_fields = ('id', 'url', 'display', 'name', 'slug', 'description', 'site_count', '_depth')
 
@@ -83,7 +53,11 @@ class SiteSerializer(PrimaryModelSerializer):
     tenant = TenantSerializer(nested=True, required=False, allow_null=True)
     time_zone = TimeZoneSerializerField(required=False, allow_null=True)
     asns = SerializedPKRelatedField(
-        queryset=ASN.objects.all(), serializer=ASNSerializer, nested=True, required=False, many=True
+        queryset=ASN.objects.all(),
+        serializer=ASNSerializer,
+        nested=True,
+        required=False,
+        many=True
     )
 
     # Related object counts
@@ -97,36 +71,10 @@ class SiteSerializer(PrimaryModelSerializer):
     class Meta:
         model = Site
         fields = [
-            'id',
-            'url',
-            'display_url',
-            'display',
-            'name',
-            'slug',
-            'status',
-            'region',
-            'group',
-            'tenant',
-            'facility',
-            'time_zone',
-            'description',
-            'physical_address',
-            'shipping_address',
-            'latitude',
-            'longitude',
-            'owner',
-            'comments',
-            'asns',
-            'tags',
-            'custom_fields',
-            'created',
-            'last_updated',
-            'circuit_count',
-            'device_count',
-            'prefix_count',
-            'rack_count',
-            'virtualmachine_count',
-            'vlan_count',
+            'id', 'url', 'display_url', 'display', 'name', 'slug', 'status', 'region', 'group', 'tenant', 'facility',
+            'time_zone', 'description', 'physical_address', 'shipping_address', 'latitude', 'longitude', 'owner',
+            'comments', 'asns', 'tags', 'custom_fields', 'created', 'last_updated', 'circuit_count', 'device_count',
+            'prefix_count', 'rack_count', 'virtualmachine_count', 'vlan_count',
         ]
         brief_fields = ('id', 'url', 'display', 'name', 'description', 'slug')
 
@@ -143,27 +91,8 @@ class LocationSerializer(NestedGroupModelSerializer):
     class Meta:
         model = Location
         fields = [
-            'id',
-            'url',
-            'display_url',
-            'display',
-            'name',
-            'slug',
-            'site',
-            'parent',
-            'status',
-            'tenant',
-            'facility',
-            'description',
-            'tags',
-            'custom_fields',
-            'created',
-            'last_updated',
-            'rack_count',
-            'device_count',
-            'prefix_count',
-            'owner',
-            'comments',
-            '_depth',
+            'id', 'url', 'display_url', 'display', 'name', 'slug', 'site', 'parent', 'status', 'tenant', 'facility',
+            'description', 'tags', 'custom_fields', 'created', 'last_updated', 'rack_count', 'device_count',
+            'prefix_count', 'owner', 'comments', '_depth',
         ]
         brief_fields = ('id', 'url', 'display', 'name', 'slug', 'description', 'rack_count', '_depth')

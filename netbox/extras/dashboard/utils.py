@@ -33,7 +33,7 @@ def get_widget_class(name):
     try:
         return registry['widgets'][name]
     except KeyError:
-        raise ValueError(_('Unregistered widget class: {name}').format(name=name))
+        raise ValueError(_("Unregistered widget class: {name}").format(name=name))
 
 
 def get_dashboard(user):
@@ -62,15 +62,13 @@ def get_default_dashboard(config=None):
 
     for widget in config:
         id = str(uuid.uuid4())
-        dashboard.layout.append(
-            {
-                'id': id,
-                'w': widget['width'],
-                'h': widget['height'],
-                'x': widget.get('x'),
-                'y': widget.get('y'),
-            }
-        )
+        dashboard.layout.append({
+            'id': id,
+            'w': widget['width'],
+            'h': widget['height'],
+            'x': widget.get('x'),
+            'y': widget.get('y'),
+        })
         dashboard.config[id] = {
             'class': widget['widget'],
             'title': widget.get('title'),

@@ -9,7 +9,9 @@ from core.models import ObjectType
 from netbox.api.serializers import BaseModelSerializer
 from utilities.views import get_action_url
 
-__all__ = ('ObjectTypeSerializer',)
+__all__ = (
+    'ObjectTypeSerializer',
+)
 
 
 class ObjectTypeSerializer(BaseModelSerializer):
@@ -24,19 +26,8 @@ class ObjectTypeSerializer(BaseModelSerializer):
     class Meta:
         model = ObjectType
         fields = [
-            'id',
-            'url',
-            'display',
-            'app_label',
-            'app_name',
-            'model',
-            'model_name',
-            'model_name_plural',
-            'public',
-            'features',
-            'is_plugin_model',
-            'rest_api_endpoint',
-            'description',
+            'id', 'url', 'display', 'app_label', 'app_name', 'model', 'model_name', 'model_name_plural', 'public',
+            'features', 'is_plugin_model', 'rest_api_endpoint', 'description',
         ]
         read_only_fields = ['public', 'features']
 

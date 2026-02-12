@@ -7,7 +7,9 @@ from tenancy.api.serializers_.tenants import TenantSerializer
 from wireless.choices import *
 from wireless.models import WirelessLink
 
-__all__ = ('WirelessLinkSerializer',)
+__all__ = (
+    'WirelessLinkSerializer',
+)
 
 
 class WirelessLinkSerializer(PrimaryModelSerializer):
@@ -22,26 +24,8 @@ class WirelessLinkSerializer(PrimaryModelSerializer):
     class Meta:
         model = WirelessLink
         fields = [
-            'id',
-            'url',
-            'display_url',
-            'display',
-            'interface_a',
-            'interface_b',
-            'ssid',
-            'status',
-            'tenant',
-            'auth_type',
-            'auth_cipher',
-            'auth_psk',
-            'distance',
-            'distance_unit',
-            'description',
-            'owner',
-            'comments',
-            'tags',
-            'custom_fields',
-            'created',
-            'last_updated',
+            'id', 'url', 'display_url', 'display', 'interface_a', 'interface_b', 'ssid', 'status', 'tenant',
+            'auth_type', 'auth_cipher', 'auth_psk', 'distance', 'distance_unit', 'description', 'owner', 'comments',
+            'tags', 'custom_fields', 'created', 'last_updated',
         ]
         brief_fields = ('id', 'url', 'display', 'ssid', 'description')

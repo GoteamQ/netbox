@@ -91,6 +91,7 @@ class ImageAttachmentTests(TestCase):
 
 
 class TagTest(TestCase):
+
     def test_default_ordering_weight_then_name_is_set(self):
         Tag.objects.create(name='Tag 1', slug='tag-1', weight=3000)
         Tag.objects.create(name='Tag 2', slug='tag-2')  # Default: 1000
@@ -154,9 +155,9 @@ class ConfigContextTest(TestCase):
 
     It also ensures the various config context querysets are consistent.
     """
-
     @classmethod
     def setUpTestData(cls):
+
         manufacturer = Manufacturer.objects.create(name='Manufacturer 1', slug='manufacturer-1')
         devicetype = DeviceType.objects.create(manufacturer=manufacturer, model='Device Type 1', slug='device-type-1')
         role = DeviceRole.objects.create(name='Device Role 1', slug='device-role-1')
@@ -170,24 +171,70 @@ class ConfigContextTest(TestCase):
         Tag.objects.create(name='Tag', slug='tag')
         Tag.objects.create(name='Tag2', slug='tag2')
 
-        Device.objects.create(name='Device 1', device_type=devicetype, role=role, site=site, location=location)
+        Device.objects.create(
+            name='Device 1',
+            device_type=devicetype,
+            role=role,
+            site=site,
+            location=location
+        )
 
     def test_higher_weight_wins(self):
         device = Device.objects.first()
-        context1 = ConfigContext(name='context 1', weight=101, data={'a': 123, 'b': 456, 'c': 777})
-        context2 = ConfigContext(name='context 2', weight=100, data={'a': 123, 'b': 456, 'c': 789})
+        context1 = ConfigContext(
+            name="context 1",
+            weight=101,
+            data={
+                "a": 123,
+                "b": 456,
+                "c": 777
+            }
+        )
+        context2 = ConfigContext(
+            name="context 2",
+            weight=100,
+            data={
+                "a": 123,
+                "b": 456,
+                "c": 789
+            }
+        )
         ConfigContext.objects.bulk_create([context1, context2])
 
-        expected_data = {'a': 123, 'b': 456, 'c': 777}
+        expected_data = {
+            "a": 123,
+            "b": 456,
+            "c": 777
+        }
         self.assertEqual(device.get_config_context(), expected_data)
 
     def test_name_ordering_after_weight(self):
         device = Device.objects.first()
-        context1 = ConfigContext(name='context 1', weight=100, data={'a': 123, 'b': 456, 'c': 777})
-        context2 = ConfigContext(name='context 2', weight=100, data={'a': 123, 'b': 456, 'c': 789})
+        context1 = ConfigContext(
+            name="context 1",
+            weight=100,
+            data={
+                "a": 123,
+                "b": 456,
+                "c": 777
+            }
+        )
+        context2 = ConfigContext(
+            name="context 2",
+            weight=100,
+            data={
+                "a": 123,
+                "b": 456,
+                "c": 789
+            }
+        )
         ConfigContext.objects.bulk_create([context1, context2])
 
-        expected_data = {'a': 123, 'b': 456, 'c': 789}
+        expected_data = {
+            "a": 123,
+            "b": 456,
+            "c": 789
+        }
         self.assertEqual(device.get_config_context(), expected_data)
 
     def test_schema_validation(self):
@@ -195,16 +242,26 @@ class ConfigContextTest(TestCase):
         Check that the JSON schema defined by the assigned profile is enforced.
         """
         profile = ConfigContextProfile.objects.create(
-            name='Config context profile 1', schema={'properties': {'foo': {'type': 'string'}}, 'required': ['foo']}
+            name="Config context profile 1",
+            schema={
+                "properties": {
+                    "foo": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "foo"
+                ]
+            }
         )
 
         with self.assertRaises(ValidationError):
             # Missing required attribute
-            ConfigContext(name='CC1', profile=profile, data={}).clean()
+            ConfigContext(name="CC1", profile=profile, data={}).clean()
         with self.assertRaises(ValidationError):
             # Invalid attribute type
-            ConfigContext(name='CC1', profile=profile, data={'foo': 123}).clean()
-        ConfigContext(name='CC1', profile=profile, data={'foo': 'bar'}).clean()
+            ConfigContext(name="CC1", profile=profile, data={"foo": 123}).clean()
+        ConfigContext(name="CC1", profile=profile, data={"foo": "bar"}).clean()
 
     def test_annotation_same_as_get_for_object(self):
         """
@@ -212,10 +269,38 @@ class ConfigContextTest(TestCase):
         the annotate_config_context_data() and get_for_object() queryset methods are the same.
         """
         device = Device.objects.first()
-        context1 = ConfigContext(name='context 1', weight=101, data={'a': 123, 'b': 456, 'c': 777})
-        context2 = ConfigContext(name='context 2', weight=100, data={'a': 123, 'b': 456, 'c': 789})
-        context3 = ConfigContext(name='context 3', weight=99, data={'d': 1})
-        context4 = ConfigContext(name='context 4', weight=99, data={'d': 2})
+        context1 = ConfigContext(
+            name="context 1",
+            weight=101,
+            data={
+                "a": 123,
+                "b": 456,
+                "c": 777
+            }
+        )
+        context2 = ConfigContext(
+            name="context 2",
+            weight=100,
+            data={
+                "a": 123,
+                "b": 456,
+                "c": 789
+            }
+        )
+        context3 = ConfigContext(
+            name="context 3",
+            weight=99,
+            data={
+                "d": 1
+            }
+        )
+        context4 = ConfigContext(
+            name="context 4",
+            weight=99,
+            data={
+                "d": 2
+            }
+        )
         ConfigContext.objects.bulk_create([context1, context2, context3, context4])
 
         annotated_queryset = Device.objects.filter(name=device.name).annotate_config_context_data()
@@ -231,38 +316,86 @@ class ConfigContextTest(TestCase):
         tenant = Tenant.objects.first()
         tag = Tag.objects.first()
 
-        region_context = ConfigContext.objects.create(name='region', weight=100, data={'region': 1})
+        region_context = ConfigContext.objects.create(
+            name="region",
+            weight=100,
+            data={
+                "region": 1
+            }
+        )
         region_context.regions.add(region)
 
-        sitegroup_context = ConfigContext.objects.create(name='sitegroup', weight=100, data={'sitegroup': 1})
+        sitegroup_context = ConfigContext.objects.create(
+            name="sitegroup",
+            weight=100,
+            data={
+                "sitegroup": 1
+            }
+        )
         sitegroup_context.site_groups.add(sitegroup)
 
-        site_context = ConfigContext.objects.create(name='site', weight=100, data={'site': 1})
+        site_context = ConfigContext.objects.create(
+            name="site",
+            weight=100,
+            data={
+                "site": 1
+            }
+        )
         site_context.sites.add(site)
 
-        location_context = ConfigContext.objects.create(name='location', weight=100, data={'location': 1})
+        location_context = ConfigContext.objects.create(
+            name="location",
+            weight=100,
+            data={
+                "location": 1
+            }
+        )
         location_context.locations.add(location)
 
-        platform_context = ConfigContext.objects.create(name='platform', weight=100, data={'platform': 1})
+        platform_context = ConfigContext.objects.create(
+            name="platform",
+            weight=100,
+            data={
+                "platform": 1
+            }
+        )
         platform_context.platforms.add(platform)
 
-        tenant_group_context = ConfigContext.objects.create(name='tenant group', weight=100, data={'tenant_group': 1})
+        tenant_group_context = ConfigContext.objects.create(
+            name="tenant group",
+            weight=100,
+            data={
+                "tenant_group": 1
+            }
+        )
         tenant_group_context.tenant_groups.add(tenantgroup)
 
-        tenant_context = ConfigContext.objects.create(name='tenant', weight=100, data={'tenant': 1})
+        tenant_context = ConfigContext.objects.create(
+            name="tenant",
+            weight=100,
+            data={
+                "tenant": 1
+            }
+        )
         tenant_context.tenants.add(tenant)
 
-        tag_context = ConfigContext.objects.create(name='tag', weight=100, data={'tag': 1})
+        tag_context = ConfigContext.objects.create(
+            name="tag",
+            weight=100,
+            data={
+                "tag": 1
+            }
+        )
         tag_context.tags.add(tag)
 
         device = Device.objects.create(
-            name='Device 2',
+            name="Device 2",
             site=site,
             location=location,
             tenant=tenant,
             platform=platform,
             role=DeviceRole.objects.first(),
-            device_type=DeviceType.objects.first(),
+            device_type=DeviceType.objects.first()
         )
         device.tags.add(tag)
 
@@ -277,49 +410,91 @@ class ConfigContextTest(TestCase):
         tenantgroup = TenantGroup.objects.first()
         tenant = Tenant.objects.first()
         tag = Tag.objects.first()
-        cluster_type = ClusterType.objects.create(name='Cluster Type')
-        cluster_group = ClusterGroup.objects.create(name='Cluster Group')
+        cluster_type = ClusterType.objects.create(name="Cluster Type")
+        cluster_group = ClusterGroup.objects.create(name="Cluster Group")
         cluster = Cluster.objects.create(
-            name='Cluster',
+            name="Cluster",
             group=cluster_group,
             type=cluster_type,
             scope=site,
         )
 
-        region_context = ConfigContext.objects.create(name='region', weight=100, data={'region': 1})
+        region_context = ConfigContext.objects.create(
+            name="region",
+            weight=100,
+            data={"region": 1}
+        )
         region_context.regions.add(region)
 
-        sitegroup_context = ConfigContext.objects.create(name='sitegroup', weight=100, data={'sitegroup': 1})
+        sitegroup_context = ConfigContext.objects.create(
+            name="sitegroup",
+            weight=100,
+            data={"sitegroup": 1}
+        )
         sitegroup_context.site_groups.add(sitegroup)
 
-        site_context = ConfigContext.objects.create(name='site', weight=100, data={'site': 1})
+        site_context = ConfigContext.objects.create(
+            name="site",
+            weight=100,
+            data={"site": 1}
+        )
         site_context.sites.add(site)
 
-        platform_context = ConfigContext.objects.create(name='platform', weight=100, data={'platform': 1})
+        platform_context = ConfigContext.objects.create(
+            name="platform",
+            weight=100,
+            data={"platform": 1}
+        )
         platform_context.platforms.add(platform)
 
-        tenant_group_context = ConfigContext.objects.create(name='tenant group', weight=100, data={'tenant_group': 1})
+        tenant_group_context = ConfigContext.objects.create(
+            name="tenant group",
+            weight=100,
+            data={"tenant_group": 1}
+        )
         tenant_group_context.tenant_groups.add(tenantgroup)
 
-        tenant_context = ConfigContext.objects.create(name='tenant', weight=100, data={'tenant': 1})
+        tenant_context = ConfigContext.objects.create(
+            name="tenant",
+            weight=100,
+            data={"tenant": 1}
+        )
         tenant_context.tenants.add(tenant)
 
-        tag_context = ConfigContext.objects.create(name='tag', weight=100, data={'tag': 1})
+        tag_context = ConfigContext.objects.create(
+            name="tag",
+            weight=100,
+            data={"tag": 1}
+        )
         tag_context.tags.add(tag)
 
-        cluster_type_context = ConfigContext.objects.create(name='cluster type', weight=100, data={'cluster_type': 1})
+        cluster_type_context = ConfigContext.objects.create(
+            name="cluster type",
+            weight=100,
+            data={"cluster_type": 1}
+        )
         cluster_type_context.cluster_types.add(cluster_type)
 
         cluster_group_context = ConfigContext.objects.create(
-            name='cluster group', weight=100, data={'cluster_group': 1}
+            name="cluster group",
+            weight=100,
+            data={"cluster_group": 1}
         )
         cluster_group_context.cluster_groups.add(cluster_group)
 
-        cluster_context = ConfigContext.objects.create(name='cluster', weight=100, data={'cluster': 1})
+        cluster_context = ConfigContext.objects.create(
+            name="cluster",
+            weight=100,
+            data={"cluster": 1}
+        )
         cluster_context.clusters.add(cluster)
 
         virtual_machine = VirtualMachine.objects.create(
-            name='VM 1', cluster=cluster, tenant=tenant, platform=platform, role=DeviceRole.objects.first()
+            name="VM 1",
+            cluster=cluster,
+            tenant=tenant,
+            platform=platform,
+            role=DeviceRole.objects.first()
         )
         virtual_machine.tags.add(tag)
 
@@ -332,37 +507,47 @@ class ConfigContextTest(TestCase):
         directly to that site or via its cluster.
         """
         site = Site.objects.first()
-        cluster_type = ClusterType.objects.create(name='Cluster Type')
-        cluster = Cluster.objects.create(name='Cluster', type=cluster_type, scope=site)
+        cluster_type = ClusterType.objects.create(name="Cluster Type")
+        cluster = Cluster.objects.create(name="Cluster", type=cluster_type, scope=site)
         vm_role = DeviceRole.objects.first()
 
         # Create a ConfigContext associated with the site
-        context = ConfigContext.objects.create(name='context1', weight=100, data={'foo': True})
+        context = ConfigContext.objects.create(
+            name="context1",
+            weight=100,
+            data={"foo": True}
+        )
         context.sites.add(site)
 
         # Create one VM assigned directly to the site, and one assigned via the cluster
-        vm1 = VirtualMachine.objects.create(name='VM 1', site=site, role=vm_role)
-        vm2 = VirtualMachine.objects.create(name='VM 2', cluster=cluster, role=vm_role)
+        vm1 = VirtualMachine.objects.create(name="VM 1", site=site, role=vm_role)
+        vm2 = VirtualMachine.objects.create(name="VM 2", cluster=cluster, role=vm_role)
 
         # Check that their individually rendered config contexts are identical
-        self.assertEqual(vm1.get_config_context(), vm2.get_config_context())
+        self.assertEqual(
+            vm1.get_config_context(),
+            vm2.get_config_context()
+        )
 
         # Check that their annotated config contexts are identical
         vms = VirtualMachine.objects.filter(pk__in=(vm1.pk, vm2.pk)).annotate_config_context_data()
-        self.assertEqual(vms[0].get_config_context(), vms[1].get_config_context())
+        self.assertEqual(
+            vms[0].get_config_context(),
+            vms[1].get_config_context()
+        )
 
     def test_valid_local_context_data(self):
         device = Device.objects.first()
         device.local_context_data = None
         device.clean()
 
-        device.local_context_data = {'foo': 'bar'}
+        device.local_context_data = {"foo": "bar"}
         device.clean()
 
     def test_invalid_local_context_data(self):
         device = Device.objects.first()
 
-        device.local_context_data = ''
+        device.local_context_data = ""
         with self.assertRaises(ValidationError):
             device.clean()
 
@@ -393,16 +578,22 @@ class ConfigContextTest(TestCase):
         tenant = Tenant.objects.first()
         tags = Tag.objects.all()
 
-        tag_context = ConfigContext.objects.create(name='tag', weight=100, data={'tag': 1})
+        tag_context = ConfigContext.objects.create(
+            name="tag",
+            weight=100,
+            data={
+                "tag": 1
+            }
+        )
         tag_context.tags.set(tags)
 
         device = Device.objects.create(
-            name='Device 3',
+            name="Device 3",
             site=site,
             tenant=tenant,
             platform=platform,
             role=DeviceRole.objects.first(),
-            device_type=DeviceType.objects.first(),
+            device_type=DeviceType.objects.first()
         )
         device.tags.set(tags)
 
@@ -427,19 +618,31 @@ class ConfigContextTest(TestCase):
         tenant = Tenant.objects.first()
         tag1, tag2 = list(Tag.objects.all())
 
-        tag_context_1 = ConfigContext.objects.create(name='tag-1', weight=100, data={'tag': 1})
+        tag_context_1 = ConfigContext.objects.create(
+            name="tag-1",
+            weight=100,
+            data={
+                "tag": 1
+            }
+        )
         tag_context_1.tags.add(tag1)
 
-        tag_context_2 = ConfigContext.objects.create(name='tag-2', weight=100, data={'tag': 1})
+        tag_context_2 = ConfigContext.objects.create(
+            name="tag-2",
+            weight=100,
+            data={
+                "tag": 1
+            }
+        )
         tag_context_2.tags.add(tag2)
 
         device = Device.objects.create(
-            name='Device 3',
+            name="Device 3",
             site=site,
             tenant=tenant,
             platform=platform,
             role=DeviceRole.objects.first(),
-            device_type=DeviceType.objects.first(),
+            device_type=DeviceType.objects.first()
         )
         device.tags.set([tag1, tag2])
 
@@ -478,7 +681,6 @@ class ConfigContextTest(TestCase):
                                 subqueries.append(child.rhs.query)
                         except AttributeError:
                             traverse(child)
-
             traverse(where_node)
             return subqueries
 
@@ -495,7 +697,6 @@ class ConfigTemplateTest(TestCase):
     """
     TODO: These test cases deal with the weighting, ordering, and deep merge logic of config context data.
     """
-
     MAIN_TEMPLATE = """
     {%- include 'base.j2' %}
     """.strip()
@@ -516,29 +717,31 @@ class ConfigTemplateTest(TestCase):
     @classmethod
     def setUpTestData(cls):
         temp_dir = tempfile.TemporaryDirectory()
-        templates_dir = Path(temp_dir.name) / 'templates'
+        templates_dir = Path(temp_dir.name) / "templates"
         templates_dir.mkdir(parents=True, exist_ok=True)
 
         cls._create_template_file(templates_dir, 'base.j2', cls.BASE_TEMPLATE)
         cls._create_template_file(templates_dir, 'main.j2', cls.MAIN_TEMPLATE)
 
         data_source = DataSource(
-            name='Test DataSource',
-            type='local',
+            name="Test DataSource",
+            type="local",
             source_url=str(templates_dir),
         )
         data_source.save()
         data_source.sync()
 
         base_config_template = ConfigTemplate(
-            name='BaseTemplate', data_file=data_source.datafiles.filter(path__endswith='base.j2').first()
+            name="BaseTemplate",
+            data_file=data_source.datafiles.filter(path__endswith='base.j2').first()
         )
         base_config_template.clean()
         base_config_template.save()
         cls.base_config_template = base_config_template
 
         main_config_template = ConfigTemplate(
-            name='MainTemplate', data_file=data_source.datafiles.filter(path__endswith='main.j2').first()
+            name="MainTemplate",
+            data_file=data_source.datafiles.filter(path__endswith='main.j2').first()
         )
         main_config_template.clean()
         main_config_template.save()
@@ -556,14 +759,14 @@ class ConfigTemplateTest(TestCase):
     def test_autosyncrecord_cleanup_on_detach(self):
         """Test that AutoSyncRecord is deleted when detaching from DataSource."""
         with tempfile.TemporaryDirectory() as temp_dir:
-            templates_dir = Path(temp_dir) / 'templates'
+            templates_dir = Path(temp_dir) / "templates"
             templates_dir.mkdir(parents=True, exist_ok=True)
 
             self._create_template_file(templates_dir, 'test.j2', 'Test content')
 
             data_source = DataSource(
-                name='Test DataSource for Detach',
-                type='local',
+                name="Test DataSource for Detach",
+                type="local",
                 source_url=str(templates_dir),
             )
             data_source.save()
@@ -572,14 +775,21 @@ class ConfigTemplateTest(TestCase):
             data_file = data_source.datafiles.filter(path__endswith='test.j2').first()
 
             # Create a ConfigTemplate with data_file and auto_sync_enabled
-            config_template = ConfigTemplate(name='TestTemplateForDetach', data_file=data_file, auto_sync_enabled=True)
+            config_template = ConfigTemplate(
+                name="TestTemplateForDetach",
+                data_file=data_file,
+                auto_sync_enabled=True
+            )
             config_template.clean()
             config_template.save()
 
             # Verify AutoSyncRecord was created
             object_type = ObjectType.objects.get_for_model(ConfigTemplate)
-            autosync_records = AutoSyncRecord.objects.filter(object_type=object_type, object_id=config_template.pk)
-            self.assertEqual(autosync_records.count(), 1, 'AutoSyncRecord should be created')
+            autosync_records = AutoSyncRecord.objects.filter(
+                object_type=object_type,
+                object_id=config_template.pk
+            )
+            self.assertEqual(autosync_records.count(), 1, "AutoSyncRecord should be created")
 
             # Detach from DataSource
             config_template.data_file = None
@@ -589,5 +799,8 @@ class ConfigTemplateTest(TestCase):
             config_template.save()
 
             # Verify AutoSyncRecord was deleted
-            autosync_records = AutoSyncRecord.objects.filter(object_type=object_type, object_id=config_template.pk)
-            self.assertEqual(autosync_records.count(), 0, 'AutoSyncRecord should be deleted after detaching')
+            autosync_records = AutoSyncRecord.objects.filter(
+                object_type=object_type,
+                object_id=config_template.pk
+            )
+            self.assertEqual(autosync_records.count(), 0, "AutoSyncRecord should be deleted after detaching")

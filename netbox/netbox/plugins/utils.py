@@ -39,4 +39,4 @@ def get_plugin_config(plugin_name, parameter, default=None):
         plugin_config = settings.PLUGINS_CONFIG[plugin_name]
         return plugin_config.get(parameter, default)
     except KeyError:
-        raise ImproperlyConfigured(f'Plugin {plugin_name} is not registered.')
+        raise ImproperlyConfigured(f"Plugin {plugin_name} is not registered.")

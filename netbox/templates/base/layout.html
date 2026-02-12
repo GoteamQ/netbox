@@ -234,25 +234,3 @@ Blocks:
 
   </div>
 {% endblock layout %}
-
-{% block javascript %}
-{{ block.super }}
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Restore sidebar scroll position
-        const sidebar = document.getElementById('sidebar-menu');
-        // Also check if the parent aside is the scrollable one, just in case
-        const sidebarContainer = document.querySelector('aside.navbar-vertical') || sidebar;
-
-        if (sidebarContainer) {
-            const savedPos = localStorage.getItem('netbox-sidebar-scroll');
-            if (savedPos) {
-                sidebarContainer.scrollTop = parseInt(savedPos, 10);
-            }
-            sidebarContainer.addEventListener('scroll', function() {
-                localStorage.setItem('netbox-sidebar-scroll', sidebarContainer.scrollTop);
-            });
-        }
-    });
-</script>
-{% endblock %}

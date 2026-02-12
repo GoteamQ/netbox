@@ -30,7 +30,9 @@ def get_event_text(name):
 
 
 def get_event_type_choices():
-    return [(event.name, event.text) for event in registry['event_types'].values()]
+    return [
+        (event.name, event.text) for event in registry['event_types'].values()
+    ]
 
 
 @dataclass
@@ -45,7 +47,6 @@ class EventType:
         kind: The event's classification (info, success, warning, or danger). The default type is info.
         destructive: Indicates that the associated object was destroyed as a result of the event (default: False).
     """
-
     name: str
     text: str
     kind: str = EVENT_TYPE_KIND_INFO
@@ -56,7 +57,7 @@ class EventType:
 
     def register(self):
         if self.name in registry['event_types']:
-            raise Exception(f'An event type named {self.name} has already been registered!')
+            raise Exception(f"An event type named {self.name} has already been registered!")
         registry['event_types'][self.name] = self
 
     @property

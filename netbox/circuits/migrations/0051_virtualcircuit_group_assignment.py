@@ -12,10 +12,13 @@ def set_member_type(apps, schema_editor):
     CircuitGroupAssignment = apps.get_model('circuits', 'CircuitGroupAssignment')
     db_alias = schema_editor.connection.alias
 
-    CircuitGroupAssignment.objects.using(db_alias).update(member_type=ContentType.objects.get_for_model(Circuit))
+    CircuitGroupAssignment.objects.using(db_alias).update(
+        member_type=ContentType.objects.get_for_model(Circuit)
+    )
 
 
 class Migration(migrations.Migration):
+
     dependencies = [
         ('circuits', '0050_virtual_circuits'),
         ('contenttypes', '0002_remove_content_type_name'),
@@ -31,6 +34,7 @@ class Migration(migrations.Migration):
             name='circuitgroupassignment',
             options={'ordering': ('group', 'member_type', 'member_id', 'priority', 'pk')},
         ),
+
         # Change member_id to an integer field for the member GFK
         migrations.RenameField(
             model_name='circuitgroupassignment',
@@ -42,6 +46,7 @@ class Migration(migrations.Migration):
             name='member_id',
             field=models.PositiveBigIntegerField(),
         ),
+
         # Add content type pointer for the member GFK
         migrations.AddField(
             model_name='circuitgroupassignment',
@@ -51,24 +56,30 @@ class Migration(migrations.Migration):
                 related_name='+',
                 to='contenttypes.contenttype',
                 blank=True,
-                null=True,
+                null=True
             ),
             preserve_default=False,
         ),
+
         # Populate member_type for any existing assignments
         migrations.RunPython(code=set_member_type, reverse_code=migrations.RunPython.noop),
+
         # Disallow null values for member_type
         migrations.AlterField(
             model_name='circuitgroupassignment',
             name='member_type',
             field=models.ForeignKey(
-                on_delete=django.db.models.deletion.PROTECT, related_name='+', to='contenttypes.contenttype'
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name='+',
+                to='contenttypes.contenttype'
             ),
         ),
+
         migrations.AddConstraint(
             model_name='circuitgroupassignment',
             constraint=models.UniqueConstraint(
-                fields=('member_type', 'member_id', 'group'), name='circuits_circuitgroupassignment_unique_member_group'
+                fields=('member_type', 'member_id', 'group'),
+                name='circuits_circuitgroupassignment_unique_member_group'
             ),
         ),
     ]
@@ -80,12 +91,10 @@ def oc_circuitgroupassignment_member(objectchange, reverting):
         if data is None:
             continue
         if circuit_id := data.get('circuit'):
-            data.update(
-                {
-                    'member_type': circuit_ct,
-                    'member_id': circuit_id,
-                }
-            )
+            data.update({
+                'member_type': circuit_ct,
+                'member_id': circuit_id,
+            })
         data.pop('circuit', None)
 
 

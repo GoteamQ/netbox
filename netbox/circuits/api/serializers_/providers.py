@@ -16,10 +16,17 @@ __all__ = (
 
 class ProviderSerializer(PrimaryModelSerializer):
     accounts = SerializedPKRelatedField(
-        queryset=ProviderAccount.objects.all(), serializer=NestedProviderAccountSerializer, required=False, many=True
+        queryset=ProviderAccount.objects.all(),
+        serializer=NestedProviderAccountSerializer,
+        required=False,
+        many=True
     )
     asns = SerializedPKRelatedField(
-        queryset=ASN.objects.all(), serializer=ASNSerializer, nested=True, required=False, many=True
+        queryset=ASN.objects.all(),
+        serializer=ASNSerializer,
+        nested=True,
+        required=False,
+        many=True
     )
 
     # Related object counts
@@ -28,22 +35,8 @@ class ProviderSerializer(PrimaryModelSerializer):
     class Meta:
         model = Provider
         fields = [
-            'id',
-            'url',
-            'display_url',
-            'display',
-            'name',
-            'slug',
-            'accounts',
-            'description',
-            'owner',
-            'comments',
-            'asns',
-            'tags',
-            'custom_fields',
-            'created',
-            'last_updated',
-            'circuit_count',
+            'id', 'url', 'display_url', 'display', 'name', 'slug', 'accounts', 'description', 'owner', 'comments',
+            'asns', 'tags', 'custom_fields', 'created', 'last_updated', 'circuit_count',
         ]
         brief_fields = ('id', 'url', 'display', 'name', 'slug', 'description', 'circuit_count')
 
@@ -55,20 +48,8 @@ class ProviderAccountSerializer(PrimaryModelSerializer):
     class Meta:
         model = ProviderAccount
         fields = [
-            'id',
-            'url',
-            'display_url',
-            'display',
-            'provider',
-            'name',
-            'account',
-            'description',
-            'owner',
-            'comments',
-            'tags',
-            'custom_fields',
-            'created',
-            'last_updated',
+            'id', 'url', 'display_url', 'display', 'provider', 'name', 'account', 'description', 'owner', 'comments',
+            'tags', 'custom_fields', 'created', 'last_updated',
         ]
         brief_fields = ('id', 'url', 'display', 'name', 'account', 'description')
 
@@ -79,19 +60,7 @@ class ProviderNetworkSerializer(PrimaryModelSerializer):
     class Meta:
         model = ProviderNetwork
         fields = [
-            'id',
-            'url',
-            'display_url',
-            'display',
-            'provider',
-            'name',
-            'service_id',
-            'description',
-            'owner',
-            'comments',
-            'tags',
-            'custom_fields',
-            'created',
-            'last_updated',
+            'id', 'url', 'display_url', 'display', 'provider', 'name', 'service_id', 'description', 'owner', 'comments',
+            'tags', 'custom_fields', 'created', 'last_updated',
         ]
         brief_fields = ('id', 'url', 'display', 'name', 'description')

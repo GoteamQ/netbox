@@ -45,7 +45,6 @@ class BaseTable(tables.Table):
 
     :param user: Personalize table display for the given user (optional). Has no effect if AnonymousUser is passed.
     """
-
     exempt_columns = ()
 
     class Meta:
@@ -54,14 +53,16 @@ class BaseTable(tables.Table):
         }
 
     def __init__(self, *args, user=None, **kwargs):
+
         super().__init__(*args, **kwargs)
 
         # Set default empty_text if none was provided
         if self.empty_text is None:
-            self.empty_text = _('No {model_name} found').format(model_name=self._meta.model._meta.verbose_name_plural)
+            self.empty_text = _("No {model_name} found").format(model_name=self._meta.model._meta.verbose_name_plural)
 
         # Dynamically update the table's QuerySet to ensure related fields are pre-fetched
         if isinstance(self.data, TableQuerysetData):
+
             prefetch_fields = []
             for column in self.columns:
                 if column.visible:
@@ -130,7 +131,7 @@ class BaseTable(tables.Table):
         # TODO: There's probably a more clever way to accomplish this
         self.sequence = [
             *[c for c in selected_columns if c in self.columns.names()],
-            *[c for c in self.columns.names() if c not in selected_columns],
+            *[c for c in self.columns.names() if c not in selected_columns]
         ]
 
         # PK column should always come first
@@ -164,10 +165,10 @@ class BaseTable(tables.Table):
         # If the user has a saved preference, apply it
         if request.user.is_authenticated and (userconfig := request.user.config):
             if columns is None:
-                columns = userconfig.get(f'tables.{self.name}.columns')
+                columns = userconfig.get(f"tables.{self.name}.columns")
             if ordering is None:
-                ordering = userconfig.get(f'tables.{self.name}.ordering')
-            if userconfig.get('ui.tables.striping'):
+                ordering = userconfig.get(f"tables.{self.name}.ordering")
+            if userconfig.get("ui.tables.striping"):
                 self.attrs['class'] += ' table-striped'
 
         # Fall back to the default columns & ordering
@@ -181,7 +182,10 @@ class BaseTable(tables.Table):
             self.order_by = ordering
 
         # Paginate the table results
-        paginate = {'paginator_class': EnhancedPaginator, 'per_page': get_paginate_count(request)}
+        paginate = {
+            'paginator_class': EnhancedPaginator,
+            'per_page': get_paginate_count(request)
+        }
         tables.RequestConfig(request, paginate).configure(self)
 
     @property
@@ -197,13 +201,11 @@ class BaseTable(tables.Table):
     def config_params(self):
         if not (model := getattr(self.Meta, 'model', None)):
             return None
-        return urlencode(
-            {
-                'object_type': ObjectType.objects.get_for_model(model).pk,
-                'table': self.name,
-                **self.configuration,
-            }
-        )
+        return urlencode({
+            'object_type': ObjectType.objects.get_for_model(model).pk,
+            'table': self.name,
+            **self.configuration,
+        })
 
 
 class NetBoxTable(BaseTable):
@@ -215,9 +217,13 @@ class NetBoxTable(BaseTable):
         * ID
         * Actions
     """
-
-    pk = columns.ToggleColumn(visible=False)
-    id = tables.Column(linkify=True, verbose_name=_('ID'))
+    pk = columns.ToggleColumn(
+        visible=False
+    )
+    id = tables.Column(
+        linkify=True,
+        verbose_name=_('ID')
+    )
     actions = columns.ActionsColumn()
 
     exempt_columns = ('pk', 'actions')
@@ -231,13 +237,10 @@ class NetBoxTable(BaseTable):
             extra_columns = []
 
         if registered_columns := registry['tables'].get(self.__class__):
-            extra_columns.extend(
-                [
-                    # Create a copy to avoid modifying the original Column
-                    (name, deepcopy(column))
-                    for name, column in registered_columns.items()
-                ]
-            )
+            extra_columns.extend([
+                # Create a copy to avoid modifying the original Column
+                (name, deepcopy(column)) for name, column in registered_columns.items()
+            ])
 
         # Add columns for custom fields
         custom_fields = [
@@ -251,7 +254,9 @@ class NetBoxTable(BaseTable):
         # Add columns for custom links
         object_type = ObjectType.objects.get_for_model(self._meta.model)
         custom_links = CustomLink.objects.filter(object_types=object_type, enabled=True)
-        extra_columns.extend([(f'cl_{cl.name}', columns.CustomLinkColumn(cl)) for cl in custom_links])
+        extra_columns.extend([
+            (f'cl_{cl.name}', columns.CustomLinkColumn(cl)) for cl in custom_links
+        ])
 
         super().__init__(*args, extra_columns=extra_columns, **kwargs)
 
@@ -308,7 +313,10 @@ class NestedGroupModelTable(NetBoxTable):
         linkify=True,
         verbose_name=_('Owner'),
     )
-    name = columns.MPTTColumn(verbose_name=_('Name'), linkify=True)
+    name = columns.MPTTColumn(
+        verbose_name=_('Name'),
+        linkify=True
+    )
     parent = tables.Column(
         verbose_name=_('Parent'),
         linkify=True,
@@ -321,16 +329,23 @@ class NestedGroupModelTable(NetBoxTable):
 class SearchTable(tables.Table):
     object_type = columns.ContentTypeColumn(
         verbose_name=_('Type'),
-        order_by='object___meta__verbose_name',
+        order_by="object___meta__verbose_name",
     )
-    object = tables.Column(verbose_name=_('Object'), linkify=True, order_by=('name',))
+    object = tables.Column(
+        verbose_name=_('Object'),
+        linkify=True,
+        order_by=('name', )
+    )
     field = tables.Column(
         verbose_name=_('Field'),
     )
     value = tables.Column(
         verbose_name=_('Value'),
     )
-    attrs = columns.TemplateColumn(template_code=SEARCH_RESULT_ATTRS, verbose_name=_('Attributes'))
+    attrs = columns.TemplateColumn(
+        template_code=SEARCH_RESULT_ATTRS,
+        verbose_name=_('Attributes')
+    )
 
     trim_length = 30
 

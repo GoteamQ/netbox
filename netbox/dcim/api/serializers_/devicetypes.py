@@ -22,7 +22,11 @@ class DeviceTypeSerializer(PrimaryModelSerializer):
     manufacturer = ManufacturerSerializer(nested=True)
     default_platform = PlatformSerializer(nested=True, required=False, allow_null=True)
     u_height = serializers.DecimalField(
-        max_digits=4, decimal_places=1, label=_('Position (U)'), min_value=decimal.Decimal(0), default=1.0
+        max_digits=4,
+        decimal_places=1,
+        label=_('Position (U)'),
+        min_value=decimal.Decimal(0),
+        default=1.0
     )
     subdevice_role = ChoiceField(choices=SubdeviceRoleChoices, allow_blank=True, required=False, allow_null=True)
     airflow = ChoiceField(choices=DeviceAirflowChoices, allow_blank=True, required=False, allow_null=True)
@@ -46,97 +50,61 @@ class DeviceTypeSerializer(PrimaryModelSerializer):
     class Meta:
         model = DeviceType
         fields = [
-            'id',
-            'url',
-            'display_url',
-            'display',
-            'manufacturer',
-            'default_platform',
-            'model',
-            'slug',
-            'part_number',
-            'u_height',
-            'exclude_from_utilization',
-            'is_full_depth',
-            'subdevice_role',
-            'airflow',
-            'weight',
-            'weight_unit',
-            'front_image',
-            'rear_image',
-            'description',
-            'owner',
-            'comments',
-            'tags',
-            'custom_fields',
-            'created',
-            'last_updated',
-            'device_count',
-            'console_port_template_count',
-            'console_server_port_template_count',
-            'power_port_template_count',
-            'power_outlet_template_count',
-            'interface_template_count',
-            'front_port_template_count',
-            'rear_port_template_count',
-            'device_bay_template_count',
-            'module_bay_template_count',
-            'inventory_item_template_count',
+            'id', 'url', 'display_url', 'display', 'manufacturer', 'default_platform', 'model', 'slug', 'part_number',
+            'u_height', 'exclude_from_utilization', 'is_full_depth', 'subdevice_role', 'airflow', 'weight',
+            'weight_unit', 'front_image', 'rear_image', 'description', 'owner', 'comments', 'tags', 'custom_fields',
+            'created', 'last_updated', 'device_count', 'console_port_template_count',
+            'console_server_port_template_count', 'power_port_template_count', 'power_outlet_template_count',
+            'interface_template_count', 'front_port_template_count', 'rear_port_template_count',
+            'device_bay_template_count', 'module_bay_template_count', 'inventory_item_template_count',
         ]
         brief_fields = ('id', 'url', 'display', 'manufacturer', 'model', 'slug', 'description', 'device_count')
 
 
 class ModuleTypeProfileSerializer(PrimaryModelSerializer):
+
     class Meta:
         model = ModuleTypeProfile
         fields = [
-            'id',
-            'url',
-            'display_url',
-            'display',
-            'name',
-            'description',
-            'schema',
-            'owner',
-            'comments',
-            'tags',
-            'custom_fields',
-            'created',
-            'last_updated',
+            'id', 'url', 'display_url', 'display', 'name', 'description', 'schema', 'owner', 'comments', 'tags',
+            'custom_fields', 'created', 'last_updated',
         ]
         brief_fields = ('id', 'url', 'display', 'name', 'description')
 
 
 class ModuleTypeSerializer(PrimaryModelSerializer):
-    profile = ModuleTypeProfileSerializer(nested=True, required=False, allow_null=True)
-    manufacturer = ManufacturerSerializer(nested=True)
-    weight_unit = ChoiceField(choices=WeightUnitChoices, allow_blank=True, required=False, allow_null=True)
-    airflow = ChoiceField(choices=ModuleAirflowChoices, allow_blank=True, required=False, allow_null=True)
-    attributes = AttributesField(source='attribute_data', required=False, allow_null=True)
+    profile = ModuleTypeProfileSerializer(
+        nested=True,
+        required=False,
+        allow_null=True
+    )
+    manufacturer = ManufacturerSerializer(
+        nested=True
+    )
+    weight_unit = ChoiceField(
+        choices=WeightUnitChoices,
+        allow_blank=True,
+        required=False,
+        allow_null=True
+    )
+    airflow = ChoiceField(
+        choices=ModuleAirflowChoices,
+        allow_blank=True,
+        required=False,
+        allow_null=True
+    )
+    attributes = AttributesField(
+        source='attribute_data',
+        required=False,
+        allow_null=True
+    )
     module_count = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = ModuleType
         fields = [
-            'id',
-            'url',
-            'display_url',
-            'display',
-            'profile',
-            'manufacturer',
-            'model',
-            'part_number',
-            'airflow',
-            'weight',
-            'weight_unit',
-            'description',
-            'attributes',
-            'owner',
-            'comments',
-            'tags',
-            'custom_fields',
-            'created',
-            'last_updated',
-            'module_count',
+            'id', 'url', 'display_url', 'display', 'profile', 'manufacturer', 'model', 'part_number', 'airflow',
+            'weight', 'weight_unit', 'description', 'attributes', 'owner', 'comments', 'tags', 'custom_fields',
+            'created', 'last_updated', 'module_count',
         ]
         brief_fields = ('id', 'url', 'display', 'profile', 'manufacturer', 'model', 'description', 'module_count')

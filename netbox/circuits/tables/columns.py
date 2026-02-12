@@ -1,13 +1,14 @@
 import django_tables2 as tables
 
-__all__ = ('CommitRateColumn',)
+__all__ = (
+    'CommitRateColumn',
+)
 
 
 class CommitRateColumn(tables.TemplateColumn):
     """
     Humanize the commit rate in the column view
     """
-
     template_code = """
         {% load helpers %}
         {{ record.commit_rate|humanize_speed }}

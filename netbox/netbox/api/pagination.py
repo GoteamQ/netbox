@@ -11,15 +11,15 @@ class OptionalLimitOffsetPagination(LimitOffsetPagination):
     matching a query, but retains the same format as a paginated request. The limit can only be disabled if
     MAX_PAGE_SIZE has been set to 0 or None.
     """
-
     def __init__(self):
         self.default_limit = get_config().PAGINATE_COUNT
 
     def paginate_queryset(self, queryset, request, view=None):
+
         if isinstance(queryset, QuerySet) and not queryset.ordered:
             raise QuerySetNotOrdered(
-                'Paginating over an unordered queryset is unreliable. Ensure that a minimal '
-                'ordering has been applied to the queryset for this API endpoint.'
+                "Paginating over an unordered queryset is unreliable. Ensure that a minimal "
+                "ordering has been applied to the queryset for this API endpoint."
             )
 
         if isinstance(queryset, QuerySet):
@@ -39,9 +39,9 @@ class OptionalLimitOffsetPagination(LimitOffsetPagination):
             return list()
 
         if self.limit:
-            return list(queryset[self.offset : self.offset + self.limit])
+            return list(queryset[self.offset:self.offset + self.limit])
         else:
-            return list(queryset[self.offset :])
+            return list(queryset[self.offset:])
 
     def get_limit(self, request):
         max_limit = self.default_limit
@@ -71,6 +71,7 @@ class OptionalLimitOffsetPagination(LimitOffsetPagination):
         return queryset.count()
 
     def get_next_link(self):
+
         # Pagination has been disabled
         if not self.limit:
             return None
@@ -78,6 +79,7 @@ class OptionalLimitOffsetPagination(LimitOffsetPagination):
         return super().get_next_link()
 
     def get_previous_link(self):
+
         # Pagination has been disabled
         if not self.limit:
             return None
@@ -90,7 +92,6 @@ class StripCountAnnotationsPaginator(OptionalLimitOffsetPagination):
     Strips the annotations on the queryset before getting the count
     to optimize pagination of complex queries.
     """
-
     def get_queryset_count(self, queryset):
         # Clone the queryset to avoid messing up the actual query
         cloned_queryset = queryset.all()
@@ -103,7 +104,6 @@ class LimitOffsetListPagination(LimitOffsetPagination):
     """
     DRF LimitOffset Paginator but for list instead of queryset
     """
-
     count = 0
     offset = 0
 
@@ -122,4 +122,4 @@ class LimitOffsetListPagination(LimitOffsetPagination):
         if self.count > self.limit and self.template is not None:
             self.display_page_controls = True
 
-        return data[self.offset : self.offset + self.limit]
+        return data[self.offset:self.offset + self.limit]

@@ -1,7 +1,9 @@
 from contextlib import contextmanager
 from urllib.parse import urlparse
 
-__all__ = ('DataBackend',)
+__all__ = (
+    'DataBackend',
+)
 
 
 class DataBackend:
@@ -15,7 +17,6 @@ class DataBackend:
         parameters: A dictionary mapping configuration form field names to their classes
         sensitive_parameters: An iterable of field names for which the values should not be displayed to the user
     """
-
     is_local = False
     parameters = {}
     sensitive_parameters = []

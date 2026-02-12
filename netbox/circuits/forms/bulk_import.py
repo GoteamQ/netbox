@@ -34,41 +34,38 @@ class ProviderImportForm(PrimaryModelImportForm):
     class Meta:
         model = Provider
         fields = (
-            'name',
-            'slug',
-            'description',
-            'owner',
-            'comments',
-            'tags',
+            'name', 'slug', 'description', 'owner', 'comments', 'tags',
         )
 
 
 class ProviderAccountImportForm(PrimaryModelImportForm):
     provider = CSVModelChoiceField(
-        label=_('Provider'), queryset=Provider.objects.all(), to_field_name='name', help_text=_('Assigned provider')
+        label=_('Provider'),
+        queryset=Provider.objects.all(),
+        to_field_name='name',
+        help_text=_('Assigned provider')
     )
 
     class Meta:
         model = ProviderAccount
         fields = (
-            'provider',
-            'name',
-            'account',
-            'description',
-            'owner',
-            'comments',
-            'tags',
+            'provider', 'name', 'account', 'description', 'owner', 'comments', 'tags',
         )
 
 
 class ProviderNetworkImportForm(PrimaryModelImportForm):
     provider = CSVModelChoiceField(
-        label=_('Provider'), queryset=Provider.objects.all(), to_field_name='name', help_text=_('Assigned provider')
+        label=_('Provider'),
+        queryset=Provider.objects.all(),
+        to_field_name='name',
+        help_text=_('Assigned provider')
     )
 
     class Meta:
         model = ProviderNetwork
-        fields = ['provider', 'name', 'service_id', 'description', 'owner', 'comments', 'tags']
+        fields = [
+            'provider', 'name', 'service_id', 'description', 'owner', 'comments', 'tags'
+        ]
 
 
 class CircuitTypeImportForm(OrganizationalModelImportForm):
@@ -81,48 +78,48 @@ class CircuitTypeImportForm(OrganizationalModelImportForm):
 
 class CircuitImportForm(PrimaryModelImportForm):
     provider = CSVModelChoiceField(
-        label=_('Provider'), queryset=Provider.objects.all(), to_field_name='name', help_text=_('Assigned provider')
+        label=_('Provider'),
+        queryset=Provider.objects.all(),
+        to_field_name='name',
+        help_text=_('Assigned provider')
     )
     provider_account = CSVModelChoiceField(
         label=_('Provider account'),
         queryset=ProviderAccount.objects.all(),
         to_field_name='name',
         help_text=_('Assigned provider account'),
-        required=False,
+        required=False
     )
     type = CSVModelChoiceField(
-        label=_('Type'), queryset=CircuitType.objects.all(), to_field_name='name', help_text=_('Type of circuit')
+        label=_('Type'),
+        queryset=CircuitType.objects.all(),
+        to_field_name='name',
+        help_text=_('Type of circuit')
     )
-    status = CSVChoiceField(label=_('Status'), choices=CircuitStatusChoices, help_text=_('Operational status'))
+    status = CSVChoiceField(
+        label=_('Status'),
+        choices=CircuitStatusChoices,
+        help_text=_('Operational status')
+    )
     distance_unit = CSVChoiceField(
-        label=_('Distance unit'), choices=DistanceUnitChoices, required=False, help_text=_('Distance unit')
+        label=_('Distance unit'),
+        choices=DistanceUnitChoices,
+        required=False,
+        help_text=_('Distance unit')
     )
     tenant = CSVModelChoiceField(
         label=_('Tenant'),
         queryset=Tenant.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_('Assigned tenant'),
+        help_text=_('Assigned tenant')
     )
 
     class Meta:
         model = Circuit
         fields = [
-            'cid',
-            'provider',
-            'provider_account',
-            'type',
-            'status',
-            'tenant',
-            'install_date',
-            'termination_date',
-            'commit_rate',
-            'distance',
-            'distance_unit',
-            'description',
-            'owner',
-            'comments',
-            'tags',
+            'cid', 'provider', 'provider_account', 'type', 'status', 'tenant', 'install_date', 'termination_date',
+            'commit_rate', 'distance', 'distance_unit', 'description', 'owner', 'comments', 'tags'
         ]
 
 
@@ -139,7 +136,7 @@ class BaseCircuitTerminationImportForm(forms.ModelForm):
     termination_type = CSVContentTypeField(
         queryset=ContentType.objects.filter(model__in=CIRCUIT_TERMINATION_TERMINATION_TYPES),
         required=False,
-        label=_('Termination type (app & model)'),
+        label=_('Termination type (app & model)')
     )
 
 
@@ -147,15 +144,8 @@ class CircuitTerminationImportRelatedForm(BaseCircuitTerminationImportForm):
     class Meta:
         model = CircuitTermination
         fields = [
-            'circuit',
-            'term_side',
-            'termination_type',
-            'termination_id',
-            'port_speed',
-            'upstream_speed',
-            'xconnect_id',
-            'pp_info',
-            'description',
+            'circuit', 'term_side', 'termination_type', 'termination_id', 'port_speed', 'upstream_speed', 'xconnect_id',
+            'pp_info', 'description'
         ]
         labels = {
             'termination_id': _('Termination ID'),
@@ -163,19 +153,12 @@ class CircuitTerminationImportRelatedForm(BaseCircuitTerminationImportForm):
 
 
 class CircuitTerminationImportForm(NetBoxModelImportForm, BaseCircuitTerminationImportForm):
+
     class Meta:
         model = CircuitTermination
         fields = [
-            'circuit',
-            'term_side',
-            'termination_type',
-            'termination_id',
-            'port_speed',
-            'upstream_speed',
-            'xconnect_id',
-            'pp_info',
-            'description',
-            'tags',
+            'circuit', 'term_side', 'termination_type', 'termination_id', 'port_speed', 'upstream_speed', 'xconnect_id',
+            'pp_info', 'description', 'tags'
         ]
         labels = {
             'termination_id': _('Termination ID'),
@@ -188,7 +171,7 @@ class CircuitGroupImportForm(OrganizationalModelImportForm):
         queryset=Tenant.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_('Assigned tenant'),
+        help_text=_('Assigned tenant')
     )
 
     class Meta:
@@ -199,9 +182,13 @@ class CircuitGroupImportForm(OrganizationalModelImportForm):
 class CircuitGroupAssignmentImportForm(NetBoxModelImportForm):
     member_type = CSVContentTypeField(
         queryset=ContentType.objects.filter(CIRCUIT_GROUP_ASSIGNMENT_MEMBER_MODELS),
-        label=_('Circuit type (app & model)'),
+        label=_('Circuit type (app & model)')
     )
-    priority = CSVChoiceField(label=_('Priority'), choices=CircuitPriorityChoices, required=False)
+    priority = CSVChoiceField(
+        label=_('Priority'),
+        choices=CircuitPriorityChoices,
+        required=False
+    )
 
     class Meta:
         model = CircuitGroupAssignment
@@ -209,6 +196,7 @@ class CircuitGroupAssignmentImportForm(NetBoxModelImportForm):
 
 
 class VirtualCircuitTypeImportForm(OrganizationalModelImportForm):
+
     class Meta:
         model = VirtualCircuitType
         fields = ('name', 'slug', 'color', 'description', 'owner', 'comments', 'tags')
@@ -219,43 +207,39 @@ class VirtualCircuitImportForm(PrimaryModelImportForm):
         label=_('Provider network'),
         queryset=ProviderNetwork.objects.all(),
         to_field_name='name',
-        help_text=_('The network to which this virtual circuit belongs'),
+        help_text=_('The network to which this virtual circuit belongs')
     )
     provider_account = CSVModelChoiceField(
         label=_('Provider account'),
         queryset=ProviderAccount.objects.all(),
         to_field_name='account',
         help_text=_('Assigned provider account (if any)'),
-        required=False,
+        required=False
     )
     type = CSVModelChoiceField(
         label=_('Type'),
         queryset=VirtualCircuitType.objects.all(),
         to_field_name='name',
-        help_text=_('Type of virtual circuit'),
+        help_text=_('Type of virtual circuit')
     )
-    status = CSVChoiceField(label=_('Status'), choices=CircuitStatusChoices, help_text=_('Operational status'))
+    status = CSVChoiceField(
+        label=_('Status'),
+        choices=CircuitStatusChoices,
+        help_text=_('Operational status')
+    )
     tenant = CSVModelChoiceField(
         label=_('Tenant'),
         queryset=Tenant.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_('Assigned tenant'),
+        help_text=_('Assigned tenant')
     )
 
     class Meta:
         model = VirtualCircuit
         fields = [
-            'cid',
-            'provider_network',
-            'provider_account',
-            'type',
-            'status',
-            'tenant',
-            'description',
-            'owner',
-            'comments',
-            'tags',
+            'cid', 'provider_network', 'provider_account', 'type', 'status', 'tenant', 'description', 'owner',
+            'comments', 'tags',
         ]
 
 
@@ -266,7 +250,9 @@ class BaseVirtualCircuitTerminationImportForm(forms.ModelForm):
         to_field_name='cid',
     )
     role = CSVChoiceField(
-        label=_('Role'), choices=VirtualCircuitTerminationRoleChoices, help_text=_('Operational role')
+        label=_('Role'),
+        choices=VirtualCircuitTerminationRoleChoices,
+        help_text=_('Operational role')
     )
     interface = CSVModelChoiceField(
         label=_('Interface'),
@@ -276,23 +262,18 @@ class BaseVirtualCircuitTerminationImportForm(forms.ModelForm):
 
 
 class VirtualCircuitTerminationImportRelatedForm(BaseVirtualCircuitTerminationImportForm):
+
     class Meta:
         model = VirtualCircuitTermination
         fields = [
-            'virtual_circuit',
-            'role',
-            'interface',
-            'description',
+            'virtual_circuit', 'role', 'interface', 'description',
         ]
 
 
 class VirtualCircuitTerminationImportForm(NetBoxModelImportForm, BaseVirtualCircuitTerminationImportForm):
+
     class Meta:
         model = VirtualCircuitTermination
         fields = [
-            'virtual_circuit',
-            'role',
-            'interface',
-            'description',
-            'tags',
+            'virtual_circuit', 'role', 'interface', 'description', 'tags',
         ]

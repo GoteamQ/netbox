@@ -19,6 +19,7 @@ class CustomFieldTestCase(ViewTestCases.PrimaryObjectViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
+
         site_type = ObjectType.objects.get_for_model(Site)
         CustomFieldChoiceSet.objects.create(
             name='Choice Set 1',
@@ -26,7 +27,7 @@ class CustomFieldTestCase(ViewTestCases.PrimaryObjectViewTestCase):
                 ('A', 'A'),
                 ('B', 'B'),
                 ('C', 'C'),
-            ),
+            )
         )
 
         custom_fields = (
@@ -78,25 +79,30 @@ class CustomFieldChoiceSetTestCase(ViewTestCases.PrimaryObjectViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
+
         choice_sets = (
             CustomFieldChoiceSet(
-                name='Choice Set 1', extra_choices=(('A1', 'Choice 1'), ('A2', 'Choice 2'), ('A3', 'Choice 3'))
+                name='Choice Set 1',
+                extra_choices=(('A1', 'Choice 1'), ('A2', 'Choice 2'), ('A3', 'Choice 3'))
             ),
             CustomFieldChoiceSet(
-                name='Choice Set 2', extra_choices=(('B1', 'Choice 1'), ('B2', 'Choice 2'), ('B3', 'Choice 3'))
+                name='Choice Set 2',
+                extra_choices=(('B1', 'Choice 1'), ('B2', 'Choice 2'), ('B3', 'Choice 3'))
             ),
             CustomFieldChoiceSet(
-                name='Choice Set 3', extra_choices=(('C1', 'Choice 1'), ('C2', 'Choice 2'), ('C3', 'Choice 3'))
+                name='Choice Set 3',
+                extra_choices=(('C1', 'Choice 1'), ('C2', 'Choice 2'), ('C3', 'Choice 3'))
             ),
             CustomFieldChoiceSet(
-                name='Choice Set 4', extra_choices=(('D1', 'Choice 1'), ('D2', 'Choice 2'), ('D3', 'Choice 3'))
+                name='Choice Set 4',
+                extra_choices=(('D1', 'Choice 1'), ('D2', 'Choice 2'), ('D3', 'Choice 3'))
             ),
         )
         CustomFieldChoiceSet.objects.bulk_create(choice_sets)
 
         cls.form_data = {
             'name': 'Choice Set X',
-            'extra_choices': '\n'.join(['X1:Choice 1', 'X2:Choice 2', 'X3:Choice 3']),
+            'extra_choices': '\n'.join(['X1:Choice 1', 'X2:Choice 2', 'X3:Choice 3'])
         }
 
         cls.csv_data = (
@@ -149,21 +155,21 @@ class CustomLinkTestCase(ViewTestCases.PrimaryObjectViewTestCase):
             'weight': 100,
             'button_class': CustomLinkButtonClassChoices.DEFAULT,
             'link_text': 'Link X',
-            'link_url': 'http://example.com/?x',
+            'link_url': 'http://example.com/?x'
         }
 
         cls.csv_data = (
-            'name,object_types,enabled,weight,button_class,link_text,link_url',
-            'Custom Link 4,dcim.site,True,100,blue,Link 4,http://exmaple.com/?4',
-            'Custom Link 5,dcim.site,True,100,blue,Link 5,http://exmaple.com/?5',
-            'Custom Link 6,dcim.site,False,100,blue,Link 6,http://exmaple.com/?6',
+            "name,object_types,enabled,weight,button_class,link_text,link_url",
+            "Custom Link 4,dcim.site,True,100,blue,Link 4,http://exmaple.com/?4",
+            "Custom Link 5,dcim.site,True,100,blue,Link 5,http://exmaple.com/?5",
+            "Custom Link 6,dcim.site,False,100,blue,Link 6,http://exmaple.com/?6",
         )
 
         cls.csv_update_data = (
-            'id,name',
-            f'{custom_links[0].pk},Custom Link 7',
-            f'{custom_links[1].pk},Custom Link 8',
-            f'{custom_links[2].pk},Custom Link 9',
+            "id,name",
+            f"{custom_links[0].pk},Custom Link 7",
+            f"{custom_links[1].pk},Custom Link 8",
+            f"{custom_links[2].pk},Custom Link 9",
         )
 
         cls.bulk_edit_data = {
@@ -193,21 +199,21 @@ class SavedFilterTestCase(ViewTestCases.PrimaryObjectViewTestCase):
                 slug='saved-filter-1',
                 user=users[0],
                 weight=100,
-                parameters={'status': ['active']},
+                parameters={'status': ['active']}
             ),
             SavedFilter(
                 name='Saved Filter 2',
                 slug='saved-filter-2',
                 user=users[1],
                 weight=200,
-                parameters={'status': ['planned']},
+                parameters={'status': ['planned']}
             ),
             SavedFilter(
                 name='Saved Filter 3',
                 slug='saved-filter-3',
                 user=users[2],
                 weight=300,
-                parameters={'status': ['retired']},
+                parameters={'status': ['retired']}
             ),
         )
         SavedFilter.objects.bulk_create(saved_filters)
@@ -233,10 +239,10 @@ class SavedFilterTestCase(ViewTestCases.PrimaryObjectViewTestCase):
         )
 
         cls.csv_update_data = (
-            'id,name',
-            f'{saved_filters[0].pk},Saved Filter 7',
-            f'{saved_filters[1].pk},Saved Filter 8',
-            f'{saved_filters[2].pk},Saved Filter 9',
+            "id,name",
+            f"{saved_filters[0].pk},Saved Filter 7",
+            f"{saved_filters[1].pk},Saved Filter 8",
+            f"{saved_filters[2].pk},Saved Filter 9",
         )
 
         cls.bulk_edit_data = {
@@ -247,7 +253,7 @@ class SavedFilterTestCase(ViewTestCases.PrimaryObjectViewTestCase):
 class BookmarkTestCase(
     ViewTestCases.DeleteObjectViewTestCase,
     ViewTestCases.ListObjectsViewTestCase,
-    ViewTestCases.BulkDeleteObjectsViewTestCase,
+    ViewTestCases.BulkDeleteObjectsViewTestCase
 ):
     model = Bookmark
 
@@ -304,9 +310,9 @@ class ExportTemplateTestCase(ViewTestCases.PrimaryObjectViewTestCase):
         export_templates = (
             ExportTemplate(name='Export Template 1', template_code=TEMPLATE_CODE),
             ExportTemplate(
-                name='Export Template 2', template_code=TEMPLATE_CODE, environment_params={'trim_blocks': True}
+                name='Export Template 2', template_code=TEMPLATE_CODE, environment_params={"trim_blocks": True}
             ),
-            ExportTemplate(name='Export Template 3', template_code=TEMPLATE_CODE, file_name='export_template_3'),
+            ExportTemplate(name='Export Template 3', template_code=TEMPLATE_CODE, file_name='export_template_3')
         )
         ExportTemplate.objects.bulk_create(export_templates)
         for et in export_templates:
@@ -321,17 +327,17 @@ class ExportTemplateTestCase(ViewTestCases.PrimaryObjectViewTestCase):
         }
 
         cls.csv_data = (
-            'name,object_types,template_code,file_name',
-            f'Export Template 4,dcim.site,{TEMPLATE_CODE},',
-            f'Export Template 5,dcim.site,{TEMPLATE_CODE},template_5',
-            f'Export Template 6,dcim.site,{TEMPLATE_CODE},',
+            "name,object_types,template_code,file_name",
+            f"Export Template 4,dcim.site,{TEMPLATE_CODE},",
+            f"Export Template 5,dcim.site,{TEMPLATE_CODE},template_5",
+            f"Export Template 6,dcim.site,{TEMPLATE_CODE},",
         )
 
         cls.csv_update_data = (
-            'id,name',
-            f'{export_templates[0].pk},Export Template 7',
-            f'{export_templates[1].pk},Export Template 8',
-            f'{export_templates[2].pk},Export Template 9',
+            "id,name",
+            f"{export_templates[0].pk},Export Template 7",
+            f"{export_templates[1].pk},Export Template 8",
+            f"{export_templates[2].pk},Export Template 9",
         )
 
         cls.bulk_edit_data = {
@@ -346,6 +352,7 @@ class WebhookTestCase(ViewTestCases.PrimaryObjectViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
+
         webhooks = (
             Webhook(name='Webhook 1', payload_url='http://example.com/?1', http_method='POST'),
             Webhook(name='Webhook 2', payload_url='http://example.com/?2', http_method='POST'),
@@ -363,17 +370,17 @@ class WebhookTestCase(ViewTestCases.PrimaryObjectViewTestCase):
         }
 
         cls.csv_data = (
-            'name,payload_url,http_method,http_content_type,description',
-            'Webhook 4,http://example.com/?4,GET,application/json,Foo',
-            'Webhook 5,http://example.com/?5,GET,application/json,Bar',
-            'Webhook 6,http://example.com/?6,GET,application/json,Baz',
+            "name,payload_url,http_method,http_content_type,description",
+            "Webhook 4,http://example.com/?4,GET,application/json,Foo",
+            "Webhook 5,http://example.com/?5,GET,application/json,Bar",
+            "Webhook 6,http://example.com/?6,GET,application/json,Baz",
         )
 
         cls.csv_update_data = (
-            'id,name,description',
-            f'{webhooks[0].pk},Webhook 7,Foo',
-            f'{webhooks[1].pk},Webhook 8,Bar',
-            f'{webhooks[2].pk},Webhook 9,Baz',
+            "id,name,description",
+            f"{webhooks[0].pk},Webhook 7,Foo",
+            f"{webhooks[1].pk},Webhook 8,Bar",
+            f"{webhooks[2].pk},Webhook 9,Baz",
         )
 
         cls.bulk_edit_data = {
@@ -386,6 +393,7 @@ class EventRulesTestCase(ViewTestCases.PrimaryObjectViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
+
         webhooks = (
             Webhook(name='Webhook 1', payload_url='http://example.com/?1', http_method='POST'),
             Webhook(name='Webhook 2', payload_url='http://example.com/?2', http_method='POST'),
@@ -423,10 +431,10 @@ class EventRulesTestCase(ViewTestCases.PrimaryObjectViewTestCase):
         )
 
         cls.csv_update_data = (
-            'id,name',
-            f'{event_rules[0].pk},Event 7',
-            f'{event_rules[1].pk},Event 8',
-            f'{event_rules[2].pk},Event 9',
+            "id,name",
+            f"{event_rules[0].pk},Event 7",
+            f"{event_rules[1].pk},Event 8",
+            f"{event_rules[2].pk},Event 9",
         )
 
         cls.bulk_edit_data = {
@@ -439,6 +447,7 @@ class TagTestCase(ViewTestCases.OrganizationalObjectViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
+
         site_ct = ContentType.objects.get_for_model(Site)
 
         tags = (
@@ -458,17 +467,17 @@ class TagTestCase(ViewTestCases.OrganizationalObjectViewTestCase):
         }
 
         cls.csv_data = (
-            'name,slug,color,description,object_types,weight',
-            'Tag 4,tag-4,ff0000,Fourth tag,dcim.interface,0',
+            "name,slug,color,description,object_types,weight",
+            "Tag 4,tag-4,ff0000,Fourth tag,dcim.interface,0",
             "Tag 5,tag-5,00ff00,Fifth tag,'dcim.device,dcim.site',1111",
-            'Tag 6,tag-6,0000ff,Sixth tag,dcim.site,0',
+            "Tag 6,tag-6,0000ff,Sixth tag,dcim.site,0",
         )
 
         cls.csv_update_data = (
-            'id,name,description',
-            f'{tags[0].pk},Tag 7,Fourth tag7',
-            f'{tags[1].pk},Tag 8,Fifth tag8',
-            f'{tags[2].pk},Tag 9,Sixth tag9',
+            "id,name,description",
+            f"{tags[0].pk},Tag 7,Fourth tag7",
+            f"{tags[1].pk},Tag 8,Fifth tag8",
+            f"{tags[2].pk},Tag 9,Sixth tag9",
         )
 
         cls.bulk_edit_data = {
@@ -483,13 +492,43 @@ class ConfigContextProfileTestCase(ViewTestCases.PrimaryObjectViewTestCase):
     def setUpTestData(cls):
         profiles = (
             ConfigContextProfile(
-                name='Config Context Profile 1', schema={'properties': {'foo': {'type': 'string'}}, 'required': ['foo']}
+                name='Config Context Profile 1',
+                schema={
+                    "properties": {
+                        "foo": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "foo"
+                    ]
+                }
             ),
             ConfigContextProfile(
-                name='Config Context Profile 2', schema={'properties': {'bar': {'type': 'string'}}, 'required': ['bar']}
+                name='Config Context Profile 2',
+                schema={
+                    "properties": {
+                        "bar": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "bar"
+                    ]
+                }
             ),
             ConfigContextProfile(
-                name='Config Context Profile 3', schema={'properties': {'baz': {'type': 'string'}}, 'required': ['baz']}
+                name='Config Context Profile 3',
+                schema={
+                    "properties": {
+                        "baz": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "baz"
+                    ]
+                }
             ),
         )
         ConfigContextProfile.objects.bulk_create(profiles)
@@ -511,10 +550,10 @@ class ConfigContextProfileTestCase(ViewTestCases.PrimaryObjectViewTestCase):
         )
 
         cls.csv_update_data = (
-            'id,description',
-            f'{profiles[0].pk},New description',
-            f'{profiles[1].pk},New description',
-            f'{profiles[2].pk},New description',
+            "id,description",
+            f"{profiles[0].pk},New description",
+            f"{profiles[1].pk},New description",
+            f"{profiles[2].pk},New description",
         )
 
 
@@ -526,18 +565,22 @@ class ConfigContextTestCase(
     ViewTestCases.DeleteObjectViewTestCase,
     ViewTestCases.ListObjectsViewTestCase,
     ViewTestCases.BulkEditObjectsViewTestCase,
-    ViewTestCases.BulkDeleteObjectsViewTestCase,
+    ViewTestCases.BulkDeleteObjectsViewTestCase
 ):
     model = ConfigContext
 
     @classmethod
     def setUpTestData(cls):
+
         manufacturer = Manufacturer.objects.create(name='Manufacturer 1', slug='manufacturer-1')
         devicetype = DeviceType.objects.create(manufacturer=manufacturer, model='Device Type 1', slug='device-type-1')
 
         # Create three ConfigContexts
         for i in range(1, 4):
-            configcontext = ConfigContext(name='Config Context {}'.format(i), data={'foo': i})
+            configcontext = ConfigContext(
+                name='Config Context {}'.format(i),
+                data={'foo': i}
+            )
             configcontext.save()
             configcontext.device_types.add(devicetype)
 
@@ -570,7 +613,7 @@ class ConfigTemplateTestCase(
     ViewTestCases.DeleteObjectViewTestCase,
     ViewTestCases.ListObjectsViewTestCase,
     ViewTestCases.BulkEditObjectsViewTestCase,
-    ViewTestCases.BulkDeleteObjectsViewTestCase,
+    ViewTestCases.BulkDeleteObjectsViewTestCase
 ):
     model = ConfigTemplate
 
@@ -580,11 +623,14 @@ class ConfigTemplateTestCase(
         ENVIRONMENT_PARAMS = """{"trim_blocks": true}"""
 
         config_templates = (
-            ConfigTemplate(name='Config Template 1', template_code=TEMPLATE_CODE),
+            ConfigTemplate(
+                name='Config Template 1',
+                template_code=TEMPLATE_CODE)
+            ,
             ConfigTemplate(
                 name='Config Template 2',
                 template_code=TEMPLATE_CODE,
-                environment_params={'trim_blocks': True},
+                environment_params={"trim_blocks": True},
             ),
             ConfigTemplate(
                 name='Config Template 3',
@@ -603,10 +649,10 @@ class ConfigTemplateTestCase(
         }
 
         cls.csv_update_data = (
-            'id,name',
-            f'{config_templates[0].pk},Config Template 7',
-            f'{config_templates[1].pk},Config Template 8',
-            f'{config_templates[2].pk},Config Template 9',
+            "id,name",
+            f"{config_templates[0].pk},Config Template 7",
+            f"{config_templates[1].pk},Config Template 8",
+            f"{config_templates[2].pk},Config Template 9",
         )
 
         cls.bulk_edit_data = {
@@ -625,7 +671,7 @@ class JournalEntryTestCase(
     ViewTestCases.DeleteObjectViewTestCase,
     ViewTestCases.ListObjectsViewTestCase,
     ViewTestCases.BulkEditObjectsViewTestCase,
-    ViewTestCases.BulkDeleteObjectsViewTestCase,
+    ViewTestCases.BulkDeleteObjectsViewTestCase
 ):
     model = JournalEntry
 
@@ -636,13 +682,11 @@ class JournalEntryTestCase(
         site = Site.objects.create(name='Site 1', slug='site-1')
         user = User.objects.create(username='User 1')
 
-        JournalEntry.objects.bulk_create(
-            (
-                JournalEntry(assigned_object=site, created_by=user, comments='First entry'),
-                JournalEntry(assigned_object=site, created_by=user, comments='Second entry'),
-                JournalEntry(assigned_object=site, created_by=user, comments='Third entry'),
-            )
-        )
+        JournalEntry.objects.bulk_create((
+            JournalEntry(assigned_object=site, created_by=user, comments='First entry'),
+            JournalEntry(assigned_object=site, created_by=user, comments='Second entry'),
+            JournalEntry(assigned_object=site, created_by=user, comments='Third entry'),
+        ))
 
         cls.form_data = {
             'assigned_object_type': site_ct.pk,
@@ -665,7 +709,7 @@ class CustomLinkTest(TestCase):
             name='Test',
             link_text='FOO {{ object.name }} BAR',
             link_url='http://example.com/?site={{ object.slug }}',
-            new_window=False,
+            new_window=False
         )
         customlink.save()
         customlink.object_types.set([ObjectType.objects.get_for_model(Site)])
@@ -682,7 +726,7 @@ class SubscriptionTestCase(
     ViewTestCases.CreateObjectViewTestCase,
     ViewTestCases.DeleteObjectViewTestCase,
     ViewTestCases.ListObjectsViewTestCase,
-    ViewTestCases.BulkDeleteObjectsViewTestCase,
+    ViewTestCases.BulkDeleteObjectsViewTestCase
 ):
     model = Subscription
 
@@ -776,10 +820,10 @@ class NotificationGroupTestCase(ViewTestCases.PrimaryObjectViewTestCase):
         )
 
         cls.csv_update_data = (
-            'id,name',
-            f'{notification_groups[0].pk},Notification Group 7',
-            f'{notification_groups[1].pk},Notification Group 8',
-            f'{notification_groups[2].pk},Notification Group 9',
+            "id,name",
+            f"{notification_groups[0].pk},Notification Group 7",
+            f"{notification_groups[1].pk},Notification Group 8",
+            f"{notification_groups[2].pk},Notification Group 9",
         )
 
         cls.bulk_edit_data = {
@@ -790,7 +834,7 @@ class NotificationGroupTestCase(ViewTestCases.PrimaryObjectViewTestCase):
 class NotificationTestCase(
     ViewTestCases.DeleteObjectViewTestCase,
     ViewTestCases.ListObjectsViewTestCase,
-    ViewTestCases.BulkDeleteObjectsViewTestCase,
+    ViewTestCases.BulkDeleteObjectsViewTestCase
 ):
     model = Notification
 
@@ -869,12 +913,12 @@ class ScriptValidationErrorTest(TestCase):
         class Meta:
             name = 'Test script'
             commit_default = False
-            fieldsets = (('Logging', ('debug_mode',)),)
+            fieldsets = (("Logging", ("debug_mode",)),)
 
         debug_mode = BooleanVar(default=False)
 
         def run(self, data, commit):
-            return 'Complete'
+            return "Complete"
 
     @classmethod
     def setUpTestData(cls):
@@ -895,7 +939,7 @@ class ScriptValidationErrorTest(TestCase):
         self.assertEqual(response.status_code, 200)
         messages = list(response.context['messages'])
         self.assertEqual(len(messages), 1)
-        self.assertEqual(str(messages[0]), 'bar: This field is required.')
+        self.assertEqual(str(messages[0]), "bar: This field is required.")
 
     @tag('regression')
     def test_script_validation_error_no_toast_for_fieldset_fields(self):
@@ -903,12 +947,12 @@ class ScriptValidationErrorTest(TestCase):
             class Meta:
                 name = 'Fieldset test'
                 commit_default = False
-                fieldsets = (('Fields', ('required_field',)),)
+                fieldsets = (("Fields", ("required_field",)),)
 
             required_field = IntegerVar(min_value=10)
 
             def run(self, data, commit):
-                return 'Complete'
+                return "Complete"
 
         url = reverse('extras:script', kwargs={'pk': self.script.pk})
 
@@ -936,7 +980,7 @@ class ScriptDefaultValuesTest(TestCase):
         int_without_default = IntegerVar(required=False)
 
         def run(self, data, commit):
-            return 'Complete'
+            return "Complete"
 
     @classmethod
     def setUpTestData(cls):

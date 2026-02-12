@@ -9,16 +9,7 @@ from dcim.choices import *
 from dcim.fields import MACAddressField
 from dcim.filtersets import DeviceFilterSet, SiteFilterSet, InterfaceFilterSet
 from dcim.models import (
-    Device,
-    DeviceRole,
-    DeviceType,
-    Interface,
-    MACAddress,
-    Manufacturer,
-    Platform,
-    Rack,
-    Region,
-    Site,
+    Device, DeviceRole, DeviceType, Interface, MACAddress, Manufacturer, Platform, Rack, Region, Site
 )
 from extras.filters import TagFilter
 from extras.models import TaggedItem
@@ -27,17 +18,13 @@ from ipam.models import RIR, ASN
 from netbox.filtersets import BaseFilterSet
 from wireless.choices import WirelessRoleChoices
 from utilities.filters import (
-    MultiValueCharFilter,
-    MultiValueDateFilter,
-    MultiValueDateTimeFilter,
-    MultiValueMACAddressFilter,
-    MultiValueNumberFilter,
-    MultiValueTimeFilter,
-    TreeNodeMultipleChoiceFilter,
+    MultiValueCharFilter, MultiValueDateFilter, MultiValueDateTimeFilter, MultiValueMACAddressFilter,
+    MultiValueNumberFilter, MultiValueTimeFilter, TreeNodeMultipleChoiceFilter,
 )
 
 
 class TreeNodeMultipleChoiceFilterTest(TestCase):
+
     class SiteFilterSet(django_filters.FilterSet):
         region = TreeNodeMultipleChoiceFilter(
             queryset=Region.objects.all(),
@@ -47,6 +34,7 @@ class TreeNodeMultipleChoiceFilterTest(TestCase):
         )
 
     def setUp(self):
+
         super().setUp()
 
         self.region1 = Region.objects.create(name='Test Region 1', slug='test-region-1')
@@ -58,6 +46,7 @@ class TreeNodeMultipleChoiceFilterTest(TestCase):
         self.queryset = Site.objects.all()
 
     def test_filter_single(self):
+
         kwargs = {'region': ['test-region-1']}
         qs = self.SiteFilterSet(kwargs, self.queryset).qs
 
@@ -65,6 +54,7 @@ class TreeNodeMultipleChoiceFilterTest(TestCase):
         self.assertEqual(qs[0], self.site1)
 
     def test_filter_multiple(self):
+
         kwargs = {'region': ['test-region-1', 'test-region-2']}
         qs = self.SiteFilterSet(kwargs, self.queryset).qs
 
@@ -73,6 +63,7 @@ class TreeNodeMultipleChoiceFilterTest(TestCase):
         self.assertEqual(qs[1], self.site2)
 
     def test_filter_null(self):
+
         kwargs = {'region': [settings.FILTERS_NULL_CHOICE_VALUE]}
         qs = self.SiteFilterSet(kwargs, self.queryset).qs
 
@@ -80,6 +71,7 @@ class TreeNodeMultipleChoiceFilterTest(TestCase):
         self.assertEqual(qs[0], self.site3)
 
     def test_filter_combined(self):
+
         kwargs = {'region': ['test-region-1', settings.FILTERS_NULL_CHOICE_VALUE]}
         qs = self.SiteFilterSet(kwargs, self.queryset).qs
 
@@ -92,16 +84,25 @@ class DummyModel(models.Model):
     """
     Dummy model used by BaseFilterSetTest for filter validation. Should never appear in a schema migration.
     """
-
-    charfield = models.CharField(max_length=10)
-    numberfield = models.IntegerField(blank=True, null=True)
-    choicefield = models.IntegerField(choices=(('A', 1), ('B', 2), ('C', 3)))
+    charfield = models.CharField(
+        max_length=10
+    )
+    numberfield = models.IntegerField(
+        blank=True,
+        null=True
+    )
+    choicefield = models.IntegerField(
+        choices=(('A', 1), ('B', 2), ('C', 3))
+    )
     datefield = models.DateField()
     datetimefield = models.DateTimeField()
     integerfield = models.IntegerField()
     macaddressfield = MACAddressField()
     timefield = models.TimeField()
-    treeforeignkeyfield = TreeForeignKey(to='self', on_delete=models.CASCADE)
+    treeforeignkeyfield = TreeForeignKey(
+        to='self',
+        on_delete=models.CASCADE
+    )
 
     tags = TaggableManager(through=TaggedItem)
 
@@ -110,23 +111,28 @@ class BaseFilterSetTest(TestCase):
     """
     Ensure that a BaseFilterSet automatically creates the expected set of filters for each filter type.
     """
-
     class DummyFilterSet(BaseFilterSet):
         charfield = django_filters.CharFilter()
         numberfield = django_filters.NumberFilter()
         macaddressfield = MultiValueMACAddressFilter()
         modelchoicefield = django_filters.ModelChoiceFilter(
             field_name='integerfield',  # We're pretending this is a ForeignKey field
-            queryset=Site.objects.all(),
+            queryset=Site.objects.all()
         )
         modelmultiplechoicefield = django_filters.ModelMultipleChoiceFilter(
             field_name='integerfield',  # We're pretending this is a ForeignKey field
-            queryset=Site.objects.all(),
+            queryset=Site.objects.all()
         )
-        multiplechoicefield = django_filters.MultipleChoiceFilter(field_name='choicefield')
-        multivaluecharfield = MultiValueCharFilter(field_name='charfield')
+        multiplechoicefield = django_filters.MultipleChoiceFilter(
+            field_name='choicefield'
+        )
+        multivaluecharfield = MultiValueCharFilter(
+            field_name='charfield'
+        )
         tagfield = TagFilter()
-        treeforeignkeyfield = TreeNodeMultipleChoiceFilter(queryset=DummyModel.objects.all())
+        treeforeignkeyfield = TreeNodeMultipleChoiceFilter(
+            queryset=DummyModel.objects.all()
+        )
 
         class Meta:
             model = DummyModel
@@ -371,7 +377,6 @@ class DynamicFilterLookupExpressionTest(TestCase):
     """
     Validate function of automatically generated filters using the Device model as an example.
     """
-
     @classmethod
     def setUpTestData(cls):
         rir = RIR.objects.create(name='RIR 1', slug='rir-1')

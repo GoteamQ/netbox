@@ -10,7 +10,6 @@ class Serializer(Serializer_):
     Custom extension of Django's JSON serializer to support ArrayFields (see
     https://code.djangoproject.com/ticket/33974).
     """
-
     def _value_from_field(self, obj, field):
         value = field.value_from_object(obj)
 

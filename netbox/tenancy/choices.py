@@ -7,7 +7,6 @@ from utilities.choices import ChoiceSet
 # Contacts
 #
 
-
 class ContactPriorityChoices(ChoiceSet):
     PRIORITY_PRIMARY = 'primary'
     PRIORITY_SECONDARY = 'secondary'

@@ -20,20 +20,8 @@ class ServiceTemplateSerializer(PrimaryModelSerializer):
     class Meta:
         model = ServiceTemplate
         fields = [
-            'id',
-            'url',
-            'display_url',
-            'display',
-            'name',
-            'protocol',
-            'ports',
-            'description',
-            'owner',
-            'comments',
-            'tags',
-            'custom_fields',
-            'created',
-            'last_updated',
+            'id', 'url', 'display_url', 'display', 'name', 'protocol', 'ports', 'description', 'owner', 'comments',
+            'tags', 'custom_fields', 'created', 'last_updated',
         ]
         brief_fields = ('id', 'url', 'display', 'name', 'protocol', 'ports', 'description')
 
@@ -41,31 +29,22 @@ class ServiceTemplateSerializer(PrimaryModelSerializer):
 class ServiceSerializer(PrimaryModelSerializer):
     protocol = ChoiceField(choices=ServiceProtocolChoices, required=False)
     ipaddresses = SerializedPKRelatedField(
-        queryset=IPAddress.objects.all(), serializer=IPAddressSerializer, nested=True, required=False, many=True
+        queryset=IPAddress.objects.all(),
+        serializer=IPAddressSerializer,
+        nested=True,
+        required=False,
+        many=True
     )
-    parent_object_type = ContentTypeField(queryset=ContentType.objects.filter(SERVICE_ASSIGNMENT_MODELS))
+    parent_object_type = ContentTypeField(
+        queryset=ContentType.objects.filter(SERVICE_ASSIGNMENT_MODELS)
+    )
     parent = GFKSerializerField(read_only=True)
 
     class Meta:
         model = Service
         fields = [
-            'id',
-            'url',
-            'display_url',
-            'display',
-            'parent_object_type',
-            'parent_object_id',
-            'parent',
-            'name',
-            'protocol',
-            'ports',
-            'ipaddresses',
-            'description',
-            'owner',
-            'comments',
-            'tags',
-            'custom_fields',
-            'created',
-            'last_updated',
+            'id', 'url', 'display_url', 'display', 'parent_object_type', 'parent_object_id', 'parent', 'name',
+            'protocol', 'ports', 'ipaddresses', 'description', 'owner', 'comments', 'tags', 'custom_fields',
+            'created', 'last_updated',
         ]
         brief_fields = ('id', 'url', 'display', 'name', 'protocol', 'ports', 'description')

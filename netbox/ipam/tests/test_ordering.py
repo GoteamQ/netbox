@@ -37,6 +37,7 @@ class OrderingTestBase(TestCase):
 
 
 class PrefixOrderingTestCase(OrderingTestBase):
+
     def test_prefix_vrf_ordering(self):
         """
         This is a very basic test, which tests both prefixes without VRFs and prefixes with VRFs
@@ -50,6 +51,7 @@ class PrefixOrderingTestCase(OrderingTestBase):
             Prefix(status=PrefixStatusChoices.STATUS_ACTIVE, vrf=None, prefix=netaddr.IPNetwork('192.168.3.0/24')),
             Prefix(status=PrefixStatusChoices.STATUS_ACTIVE, vrf=None, prefix=netaddr.IPNetwork('192.168.4.0/24')),
             Prefix(status=PrefixStatusChoices.STATUS_ACTIVE, vrf=None, prefix=netaddr.IPNetwork('192.168.5.0/24')),
+
             Prefix(status=PrefixStatusChoices.STATUS_ACTIVE, vrf=vrf1, prefix=netaddr.IPNetwork('10.0.0.0/8')),
             Prefix(status=PrefixStatusChoices.STATUS_ACTIVE, vrf=vrf1, prefix=netaddr.IPNetwork('10.0.0.0/16')),
             Prefix(status=PrefixStatusChoices.STATUS_ACTIVE, vrf=vrf1, prefix=netaddr.IPNetwork('10.0.0.0/24')),
@@ -67,6 +69,7 @@ class PrefixOrderingTestCase(OrderingTestBase):
             Prefix(status=PrefixStatusChoices.STATUS_ACTIVE, vrf=vrf1, prefix=netaddr.IPNetwork('10.2.2.0/24')),
             Prefix(status=PrefixStatusChoices.STATUS_ACTIVE, vrf=vrf1, prefix=netaddr.IPNetwork('10.2.3.0/24')),
             Prefix(status=PrefixStatusChoices.STATUS_ACTIVE, vrf=vrf1, prefix=netaddr.IPNetwork('10.2.4.0/24')),
+
             Prefix(status=PrefixStatusChoices.STATUS_CONTAINER, vrf=vrf2, prefix=netaddr.IPNetwork('172.16.0.0/12')),
             Prefix(status=PrefixStatusChoices.STATUS_CONTAINER, vrf=vrf2, prefix=netaddr.IPNetwork('172.16.0.0/16')),
             Prefix(status=PrefixStatusChoices.STATUS_ACTIVE, vrf=vrf2, prefix=netaddr.IPNetwork('172.16.0.0/24')),

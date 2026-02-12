@@ -9,7 +9,9 @@ from utilities.testing import APIViewTestCases, APITestCase, create_test_user
 
 
 class AppTest(APITestCase):
+
     def test_root(self):
+
         url = reverse('users-api:api-root')
         response = self.client.get(f'{url}?format=api', **self.header)
         self.assertEqual(response.status_code, 200)
@@ -25,6 +27,7 @@ class UserTest(APIViewTestCases.APIViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
+
         permissions = (
             ObjectPermission(name='Permission 1', actions=['view']),
             ObjectPermission(name='Permission 2', actions=['view']),
@@ -65,7 +68,10 @@ class UserTest(APIViewTestCases.APIViewTestCase):
         Test that password is changed
         """
 
-        obj_perm = ObjectPermission(name='Test permission', actions=['change'])
+        obj_perm = ObjectPermission(
+            name='Test permission',
+            actions=['change']
+        )
         obj_perm.save()
         obj_perm.users.add(self.user)
         obj_perm.object_types.add(ObjectType.objects.get_for_model(self.model))
@@ -76,18 +82,19 @@ class UserTest(APIViewTestCases.APIViewTestCase):
         }
         user = User.objects.create_user(**user_credentials)
 
-        data = {'password': 'FooBarFooBar1'}
+        data = {
+            'password': 'FooBarFooBar1'
+        }
         url = reverse('users-api:user-detail', kwargs={'pk': user.id})
         response = self.client.patch(url, data, format='json', **self.header)
         self.assertEqual(response.status_code, 200)
         user.refresh_from_db()
         self.assertTrue(user.check_password(data['password']))
 
-    @override_settings(
-        AUTH_PASSWORD_VALIDATORS=[
-            {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator', 'OPTIONS': {'min_length': 8}}
-        ]
-    )
+    @override_settings(AUTH_PASSWORD_VALIDATORS=[{
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'OPTIONS': {'min_length': 8}
+    }])
     def test_password_validation_enforced(self):
         """
         Test that any configured password validation rules (AUTH_PASSWORD_VALIDATORS) are enforced.
@@ -136,6 +143,7 @@ class GroupTest(APIViewTestCases.APIViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
+
         permissions = (
             ObjectPermission(name='Permission 1', actions=['view']),
             ObjectPermission(name='Permission 2', actions=['view']),
@@ -328,13 +336,14 @@ class ObjectPermissionTest(
     APIViewTestCases.ListObjectsViewTestCase,
     APIViewTestCases.CreateObjectViewTestCase,
     APIViewTestCases.UpdateObjectViewTestCase,
-    APIViewTestCases.DeleteObjectViewTestCase,
+    APIViewTestCases.DeleteObjectViewTestCase
 ):
     model = ObjectPermission
     brief_fields = ['actions', 'description', 'display', 'enabled', 'id', 'name', 'object_types', 'url']
 
     @classmethod
     def setUpTestData(cls):
+
         groups = (
             Group(name='Group 1'),
             Group(name='Group 2'),
@@ -355,7 +364,7 @@ class ObjectPermissionTest(
             objectpermission = ObjectPermission(
                 name=f'Permission {i + 1}',
                 actions=['view', 'add', 'change', 'delete'],
-                constraints={'name': f'TEST{i + 1}'},
+                constraints={'name': f'TEST{i + 1}'}
             )
             objectpermission.save()
             objectpermission.object_types.add(object_type)
@@ -395,6 +404,7 @@ class ObjectPermissionTest(
 
 
 class UserConfigTest(APITestCase):
+
     def test_get(self):
         """
         Retrieve user configuration via GET request.
@@ -406,9 +416,9 @@ class UserConfigTest(APITestCase):
         self.assertEqual(response.data, {})
 
         data = {
-            'a': 123,
-            'b': 456,
-            'c': 789,
+            "a": 123,
+            "b": 456,
+            "c": 789,
         }
         userconfig.data = data
         userconfig.save()
@@ -423,20 +433,22 @@ class UserConfigTest(APITestCase):
         url = reverse('users-api:userconfig-list')
 
         data = {
-            'a': {
-                'a1': 'X',
-                'a2': 'Y',
+            "a": {
+                "a1": "X",
+                "a2": "Y",
             },
-            'b': {
-                'b1': 'Z',
-            },
+            "b": {
+                "b1": "Z",
+            }
         }
         response = self.client.patch(url, data=data, format='json', **self.header)
         self.assertDictEqual(response.data, data)
         userconfig.refresh_from_db()
         self.assertDictEqual(userconfig.data, data)
 
-        update_data = {'c': 123}
+        update_data = {
+            "c": 123
+        }
         response = self.client.patch(url, data=update_data, format='json', **self.header)
         new_data = deepmerge(data, update_data)
         self.assertDictEqual(response.data, new_data)

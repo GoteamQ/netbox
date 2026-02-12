@@ -6,7 +6,7 @@ import strawberry_django
 from .types import *
 
 
-@strawberry.type(name='Query')
+@strawberry.type(name="Query")
 class VPNQuery:
     ike_policy: IKEPolicyType = strawberry_django.field()
     ike_policy_list: List[IKEPolicyType] = strawberry_django.field()

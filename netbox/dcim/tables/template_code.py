@@ -10,8 +10,7 @@ LINKTERMINATION = """
 {% endfor %}
 """
 
-INTERFACE_LINKTERMINATION = (
-    """
+INTERFACE_LINKTERMINATION = """
 {% load i18n %}
 {% if record.is_virtual and record.virtual_circuit_termination %}
   {% for termination in record.connected_endpoints %}
@@ -22,11 +21,8 @@ INTERFACE_LINKTERMINATION = (
     <a href="{{ termination.parent_object.get_absolute_url }}">{{ termination.parent_object }}</a>
     {% if not forloop.last %}<br />{% endif %}
   {% endfor %}
-{% else %}"""
-    + LINKTERMINATION
-    + """{% endif %}
+{% else %}""" + LINKTERMINATION + """{% endif %}
 """
-)
 
 INTERFACE_LAG_MEMBERS_LINKTERMINATION = """
 {% for termination in value %}

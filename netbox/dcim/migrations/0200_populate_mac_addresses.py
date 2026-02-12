@@ -13,7 +13,9 @@ def populate_mac_addresses(apps, schema_editor):
 
     mac_addresses = [
         MACAddress(
-            mac_address=interface.mac_address, assigned_object_type=interface_ct, assigned_object_id=interface.pk
+            mac_address=interface.mac_address,
+            assigned_object_type=interface_ct,
+            assigned_object_id=interface.pk
         )
         for interface in Interface.objects.using(db_alias).filter(mac_address__isnull=False)
     ]
@@ -21,7 +23,9 @@ def populate_mac_addresses(apps, schema_editor):
 
     # TODO: Optimize interface updates
     for mac_address in mac_addresses:
-        Interface.objects.using(db_alias).filter(pk=mac_address.assigned_object_id).update(
+        Interface.objects.using(db_alias).filter(
+            pk=mac_address.assigned_object_id
+        ).update(
             primary_mac_address=mac_address
         )
 

@@ -10,7 +10,6 @@ class TenancyRootView(APIRootView):
     """
     Tenancy API root view
     """
-
     def get_view_name(self):
         return 'Tenancy'
 
@@ -19,10 +18,13 @@ class TenancyRootView(APIRootView):
 # Tenants
 #
 
-
 class TenantGroupViewSet(MPTTLockedMixin, NetBoxModelViewSet):
     queryset = TenantGroup.objects.add_related_count(
-        TenantGroup.objects.all(), Tenant, 'group', 'tenant_count', cumulative=True
+        TenantGroup.objects.all(),
+        Tenant,
+        'group',
+        'tenant_count',
+        cumulative=True
     )
     serializer_class = serializers.TenantGroupSerializer
     filterset_class = filtersets.TenantGroupFilterSet
@@ -38,10 +40,13 @@ class TenantViewSet(NetBoxModelViewSet):
 # Contacts
 #
 
-
 class ContactGroupViewSet(MPTTLockedMixin, NetBoxModelViewSet):
     queryset = ContactGroup.objects.add_related_count(
-        ContactGroup.objects.all(), Contact, 'groups', 'contact_count', cumulative=True
+        ContactGroup.objects.all(),
+        Contact,
+        'groups',
+        'contact_count',
+        cumulative=True
     )
     serializer_class = serializers.ContactGroupSerializer
     filterset_class = filtersets.ContactGroupFilterSet

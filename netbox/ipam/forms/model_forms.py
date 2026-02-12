@@ -14,10 +14,7 @@ from tenancy.forms import TenancyForm
 from utilities.exceptions import PermissionsViolation
 from utilities.forms import add_blank_choice
 from utilities.forms.fields import (
-    ContentTypeChoiceField,
-    DynamicModelChoiceField,
-    DynamicModelMultipleChoiceField,
-    NumericArrayField,
+    ContentTypeChoiceField, DynamicModelChoiceField, DynamicModelMultipleChoiceField, NumericArrayField,
     NumericRangeArrayField,
 )
 from utilities.forms.rendering import FieldSet, InlineFields, ObjectAttribute, TabbedGroups
@@ -54,10 +51,14 @@ __all__ = (
 
 class VRFForm(TenancyForm, PrimaryModelForm):
     import_targets = DynamicModelMultipleChoiceField(
-        label=_('Import targets'), queryset=RouteTarget.objects.all(), required=False
+        label=_('Import targets'),
+        queryset=RouteTarget.objects.all(),
+        required=False
     )
     export_targets = DynamicModelMultipleChoiceField(
-        label=_('Export targets'), queryset=RouteTarget.objects.all(), required=False
+        label=_('Export targets'),
+        queryset=RouteTarget.objects.all(),
+        required=False
     )
 
     fieldsets = (
@@ -69,20 +70,11 @@ class VRFForm(TenancyForm, PrimaryModelForm):
     class Meta:
         model = VRF
         fields = [
-            'name',
-            'rd',
-            'enforce_unique',
-            'import_targets',
-            'export_targets',
-            'tenant_group',
-            'tenant',
-            'description',
-            'owner',
-            'comments',
-            'tags',
+            'name', 'rd', 'enforce_unique', 'import_targets', 'export_targets', 'tenant_group', 'tenant', 'description',
+            'owner', 'comments', 'tags',
         ]
         labels = {
-            'rd': 'RD',
+            'rd': "RD",
         }
 
 
@@ -95,34 +87,28 @@ class RouteTargetForm(TenancyForm, PrimaryModelForm):
     class Meta:
         model = RouteTarget
         fields = [
-            'name',
-            'tenant_group',
-            'tenant',
-            'description',
-            'owner',
-            'comments',
-            'tags',
+            'name', 'tenant_group', 'tenant', 'description', 'owner', 'comments', 'tags',
         ]
 
 
 class RIRForm(OrganizationalModelForm):
-    fieldsets = (FieldSet('name', 'slug', 'is_private', 'description', 'tags', name=_('RIR')),)
+    fieldsets = (
+        FieldSet('name', 'slug', 'is_private', 'description', 'tags', name=_('RIR')),
+    )
 
     class Meta:
         model = RIR
         fields = [
-            'name',
-            'slug',
-            'is_private',
-            'description',
-            'owner',
-            'comments',
-            'tags',
+            'name', 'slug', 'is_private', 'description', 'owner', 'comments', 'tags',
         ]
 
 
 class AggregateForm(TenancyForm, PrimaryModelForm):
-    rir = DynamicModelChoiceField(queryset=RIR.objects.all(), label=_('RIR'), quick_add=True)
+    rir = DynamicModelChoiceField(
+        queryset=RIR.objects.all(),
+        label=_('RIR'),
+        quick_add=True
+    )
 
     fieldsets = (
         FieldSet('prefix', 'rir', 'date_added', 'description', 'tags', name=_('Aggregate')),
@@ -132,15 +118,7 @@ class AggregateForm(TenancyForm, PrimaryModelForm):
     class Meta:
         model = Aggregate
         fields = [
-            'prefix',
-            'rir',
-            'date_added',
-            'tenant_group',
-            'tenant',
-            'description',
-            'owner',
-            'comments',
-            'tags',
+            'prefix', 'rir', 'date_added', 'tenant_group', 'tenant', 'description', 'owner', 'comments', 'tags',
         ]
         widgets = {
             'date_added': DatePicker(),
@@ -148,7 +126,11 @@ class AggregateForm(TenancyForm, PrimaryModelForm):
 
 
 class ASNRangeForm(TenancyForm, OrganizationalModelForm):
-    rir = DynamicModelChoiceField(queryset=RIR.objects.all(), label=_('RIR'), quick_add=True)
+    rir = DynamicModelChoiceField(
+        queryset=RIR.objects.all(),
+        label=_('RIR'),
+        quick_add=True
+    )
     fieldsets = (
         FieldSet('name', 'slug', 'rir', 'start', 'end', 'description', 'tags', name=_('ASN Range')),
         FieldSet('tenant_group', 'tenant', name=_('Tenancy')),
@@ -157,23 +139,21 @@ class ASNRangeForm(TenancyForm, OrganizationalModelForm):
     class Meta:
         model = ASNRange
         fields = [
-            'name',
-            'slug',
-            'rir',
-            'start',
-            'end',
-            'tenant_group',
-            'tenant',
-            'owner',
-            'description',
-            'comments',
-            'tags',
+            'name', 'slug', 'rir', 'start', 'end', 'tenant_group', 'tenant', 'owner', 'description', 'comments', 'tags'
         ]
 
 
 class ASNForm(TenancyForm, PrimaryModelForm):
-    rir = DynamicModelChoiceField(queryset=RIR.objects.all(), label=_('RIR'), quick_add=True)
-    sites = DynamicModelMultipleChoiceField(queryset=Site.objects.all(), label=_('Sites'), required=False)
+    rir = DynamicModelChoiceField(
+        queryset=RIR.objects.all(),
+        label=_('RIR'),
+        quick_add=True
+    )
+    sites = DynamicModelMultipleChoiceField(
+        queryset=Site.objects.all(),
+        label=_('Sites'),
+        required=False
+    )
 
     fieldsets = (
         FieldSet('asn', 'rir', 'sites', 'description', 'tags', name=_('ASN')),
@@ -182,7 +162,9 @@ class ASNForm(TenancyForm, PrimaryModelForm):
 
     class Meta:
         model = ASN
-        fields = ['asn', 'rir', 'sites', 'tenant_group', 'tenant', 'description', 'owner', 'comments', 'tags']
+        fields = [
+            'asn', 'rir', 'sites', 'tenant_group', 'tenant', 'description', 'owner', 'comments', 'tags'
+        ]
         widgets = {
             'date_added': DatePicker(),
         }
@@ -200,23 +182,23 @@ class ASNForm(TenancyForm, PrimaryModelForm):
 
 
 class RoleForm(OrganizationalModelForm):
-    fieldsets = (FieldSet('name', 'slug', 'weight', 'description', 'tags', name=_('Role')),)
+    fieldsets = (
+        FieldSet('name', 'slug', 'weight', 'description', 'tags', name=_('Role')),
+    )
 
     class Meta:
         model = Role
         fields = [
-            'name',
-            'slug',
-            'weight',
-            'description',
-            'owner',
-            'comments',
-            'tags',
+            'name', 'slug', 'weight', 'description', 'owner', 'comments', 'tags',
         ]
 
 
 class PrefixForm(TenancyForm, ScopedForm, PrimaryModelForm):
-    vrf = DynamicModelChoiceField(queryset=VRF.objects.all(), required=False, label=_('VRF'))
+    vrf = DynamicModelChoiceField(
+        queryset=VRF.objects.all(),
+        required=False,
+        label=_('VRF')
+    )
     vlan = DynamicModelChoiceField(
         queryset=VLAN.objects.all(),
         required=False,
@@ -226,7 +208,12 @@ class PrefixForm(TenancyForm, ScopedForm, PrimaryModelForm):
         },
         label=_('VLAN'),
     )
-    role = DynamicModelChoiceField(label=_('Role'), queryset=Role.objects.all(), required=False, quick_add=True)
+    role = DynamicModelChoiceField(
+        label=_('Role'),
+        queryset=Role.objects.all(),
+        required=False,
+        quick_add=True
+    )
 
     fieldsets = (
         FieldSet(
@@ -240,20 +227,8 @@ class PrefixForm(TenancyForm, ScopedForm, PrimaryModelForm):
     class Meta:
         model = Prefix
         fields = [
-            'prefix',
-            'vrf',
-            'vlan',
-            'status',
-            'role',
-            'is_pool',
-            'mark_utilized',
-            'scope_type',
-            'tenant_group',
-            'tenant',
-            'description',
-            'owner',
-            'comments',
-            'tags',
+            'prefix', 'vrf', 'vlan', 'status', 'role', 'is_pool', 'mark_utilized', 'scope_type', 'tenant_group',
+            'tenant', 'description', 'owner', 'comments', 'tags',
         ]
 
     def __init__(self, *args, **kwargs):
@@ -266,21 +241,22 @@ class PrefixForm(TenancyForm, ScopedForm, PrimaryModelForm):
 
 
 class IPRangeForm(TenancyForm, PrimaryModelForm):
-    vrf = DynamicModelChoiceField(queryset=VRF.objects.all(), required=False, label=_('VRF'))
-    role = DynamicModelChoiceField(label=_('Role'), queryset=Role.objects.all(), required=False, quick_add=True)
+    vrf = DynamicModelChoiceField(
+        queryset=VRF.objects.all(),
+        required=False,
+        label=_('VRF')
+    )
+    role = DynamicModelChoiceField(
+        label=_('Role'),
+        queryset=Role.objects.all(),
+        required=False,
+        quick_add=True
+    )
 
     fieldsets = (
         FieldSet(
-            'vrf',
-            'start_address',
-            'end_address',
-            'role',
-            'status',
-            'mark_populated',
-            'mark_utilized',
-            'description',
-            'tags',
-            name=_('IP Range'),
+            'vrf', 'start_address', 'end_address', 'role', 'status', 'mark_populated', 'mark_utilized', 'description',
+            'tags', name=_('IP Range')
         ),
         FieldSet('tenant_group', 'tenant', name=_('Tenancy')),
     )
@@ -288,19 +264,8 @@ class IPRangeForm(TenancyForm, PrimaryModelForm):
     class Meta:
         model = IPRange
         fields = [
-            'vrf',
-            'start_address',
-            'end_address',
-            'status',
-            'role',
-            'tenant_group',
-            'tenant',
-            'mark_populated',
-            'mark_utilized',
-            'description',
-            'owner',
-            'comments',
-            'tags',
+            'vrf', 'start_address', 'end_address', 'status', 'role', 'tenant_group', 'tenant', 'mark_populated',
+            'mark_utilized', 'description', 'owner', 'comments', 'tags',
         ]
 
 
@@ -324,17 +289,30 @@ class IPAddressForm(TenancyForm, PrimaryModelForm):
         label=_('Interface'),
     )
     fhrpgroup = DynamicModelChoiceField(
-        queryset=FHRPGroup.objects.all(), required=False, selector=True, label=_('FHRP Group')
+        queryset=FHRPGroup.objects.all(),
+        required=False,
+        selector=True,
+        label=_('FHRP Group')
     )
-    vrf = DynamicModelChoiceField(queryset=VRF.objects.all(), required=False, label=_('VRF'))
+    vrf = DynamicModelChoiceField(
+        queryset=VRF.objects.all(),
+        required=False,
+        label=_('VRF')
+    )
     nat_inside = DynamicModelChoiceField(
         queryset=IPAddress.objects.all(),
         required=False,
         selector=True,
         label=_('IP Address'),
     )
-    primary_for_parent = forms.BooleanField(required=False, label=_('Make this the primary IP for the device/VM'))
-    oob_for_parent = forms.BooleanField(required=False, label=_('Make this the out-of-band IP for the device'))
+    primary_for_parent = forms.BooleanField(
+        required=False,
+        label=_('Make this the primary IP for the device/VM')
+    )
+    oob_for_parent = forms.BooleanField(
+        required=False,
+        label=_('Make this the out-of-band IP for the device')
+    )
 
     fieldsets = (
         FieldSet('address', 'status', 'role', 'vrf', 'dns_name', 'description', 'tags', name=_('IP Address')),
@@ -345,9 +323,7 @@ class IPAddressForm(TenancyForm, PrimaryModelForm):
                 FieldSet('vminterface', name=_('Virtual Machine')),
                 FieldSet('fhrpgroup', name=_('FHRP Group')),
             ),
-            'primary_for_parent',
-            'oob_for_parent',
-            name=_('Assignment'),
+            'primary_for_parent', 'oob_for_parent', name=_('Assignment')
         ),
         FieldSet('nat_inside', name=_('NAT IP (Inside)')),
     )
@@ -355,23 +331,12 @@ class IPAddressForm(TenancyForm, PrimaryModelForm):
     class Meta:
         model = IPAddress
         fields = [
-            'address',
-            'vrf',
-            'status',
-            'role',
-            'dns_name',
-            'primary_for_parent',
-            'oob_for_parent',
-            'nat_inside',
-            'tenant_group',
-            'tenant',
-            'description',
-            'owner',
-            'comments',
-            'tags',
+            'address', 'vrf', 'status', 'role', 'dns_name', 'primary_for_parent', 'oob_for_parent', 'nat_inside',
+            'tenant_group', 'tenant', 'description', 'owner', 'comments', 'tags',
         ]
 
     def __init__(self, *args, **kwargs):
+
         # Initialize helper selectors
         instance = kwargs.get('instance')
         initial = kwargs.get('initial', {}).copy()
@@ -390,10 +355,8 @@ class IPAddressForm(TenancyForm, PrimaryModelForm):
         if self.instance.pk and self.instance.assigned_object:
             parent = getattr(self.instance.assigned_object, 'parent_object', None)
             if parent and (
-                self.instance.address.version == 4
-                and parent.primary_ip4_id == self.instance.pk
-                or self.instance.address.version == 6
-                and parent.primary_ip6_id == self.instance.pk
+                self.instance.address.version == 4 and parent.primary_ip4_id == self.instance.pk or
+                self.instance.address.version == 6 and parent.primary_ip6_id == self.instance.pk
             ):
                 self.initial['primary_for_parent'] = True
 
@@ -401,17 +364,13 @@ class IPAddressForm(TenancyForm, PrimaryModelForm):
                 self.initial['oob_for_parent'] = True
 
             if type(instance.assigned_object) is Interface:
-                self.fields['interface'].widget.add_query_params(
-                    {
-                        'device_id': instance.assigned_object.device.pk,
-                    }
-                )
+                self.fields['interface'].widget.add_query_params({
+                    'device_id': instance.assigned_object.device.pk,
+                })
             elif type(instance.assigned_object) is VMInterface:
-                self.fields['vminterface'].widget.add_query_params(
-                    {
-                        'virtual_machine_id': instance.assigned_object.virtual_machine.pk,
-                    }
-                )
+                self.fields['vminterface'].widget.add_query_params({
+                    'virtual_machine_id': instance.assigned_object.virtual_machine.pk,
+                })
 
         # Disable object assignment fields if the IP address is designated as primary or OOB
         if self.initial.get('primary_for_parent') or self.initial.get('oob_for_parent'):
@@ -423,18 +382,24 @@ class IPAddressForm(TenancyForm, PrimaryModelForm):
         super().clean()
 
         # Handle object assignment
-        selected_objects = [field for field in ('interface', 'vminterface', 'fhrpgroup') if self.cleaned_data[field]]
+        selected_objects = [
+            field for field in ('interface', 'vminterface', 'fhrpgroup') if self.cleaned_data[field]
+        ]
         if len(selected_objects) > 1:
-            raise forms.ValidationError(
-                {selected_objects[1]: _('An IP address can only be assigned to a single object.')}
-            )
+            raise forms.ValidationError({
+                selected_objects[1]: _("An IP address can only be assigned to a single object.")
+            })
         elif selected_objects:
             assigned_object = self.cleaned_data[selected_objects[0]]
             if self.instance.pk and self.instance.assigned_object and assigned_object != self.instance.assigned_object:
                 if self.cleaned_data['primary_for_parent']:
-                    raise ValidationError(_('Cannot reassign primary IP address for the parent device/VM'))
+                    raise ValidationError(
+                        _("Cannot reassign primary IP address for the parent device/VM")
+                    )
                 if self.cleaned_data['oob_for_parent']:
-                    raise ValidationError(_('Cannot reassign out-of-Band IP address for the parent device'))
+                    raise ValidationError(
+                        _("Cannot reassign out-of-Band IP address for the parent device")
+                    )
             self.instance.assigned_object = assigned_object
         else:
             self.instance.assigned_object = None
@@ -443,18 +408,17 @@ class IPAddressForm(TenancyForm, PrimaryModelForm):
         interface = self.cleaned_data.get('interface') or self.cleaned_data.get('vminterface')
         if self.cleaned_data.get('primary_for_parent') and not interface:
             self.add_error(
-                'primary_for_parent', _('Only IP addresses assigned to an interface can be designated as primary IPs.')
+                'primary_for_parent', _("Only IP addresses assigned to an interface can be designated as primary IPs.")
             )
 
         # OOB IP assignment is only available if device interface has been assigned.
         interface = self.cleaned_data.get('interface')
         if self.cleaned_data.get('oob_for_parent') and not interface:
             self.add_error(
-                'oob_for_parent',
-                _(
-                    'Only IP addresses assigned to a device interface can be designated as the out-of-band IP for a '
-                    'device.'
-                ),
+                'oob_for_parent', _(
+                    "Only IP addresses assigned to a device interface can be designated as the out-of-band IP for a "
+                    "device."
+                )
             )
 
     def save(self, *args, **kwargs):
@@ -493,25 +457,25 @@ class IPAddressForm(TenancyForm, PrimaryModelForm):
 
 
 class IPAddressBulkAddForm(TenancyForm, NetBoxModelForm):
-    vrf = DynamicModelChoiceField(queryset=VRF.objects.all(), required=False, label=_('VRF'))
+    vrf = DynamicModelChoiceField(
+        queryset=VRF.objects.all(),
+        required=False,
+        label=_('VRF')
+    )
 
     class Meta:
         model = IPAddress
         fields = [
-            'address',
-            'vrf',
-            'status',
-            'role',
-            'dns_name',
-            'description',
-            'tenant_group',
-            'tenant',
-            'tags',
+            'address', 'vrf', 'status', 'role', 'dns_name', 'description', 'tenant_group', 'tenant', 'tags',
         ]
 
 
 class IPAddressAssignForm(forms.Form):
-    vrf_id = DynamicModelChoiceField(queryset=VRF.objects.all(), required=False, label=_('VRF'))
+    vrf_id = DynamicModelChoiceField(
+        queryset=VRF.objects.all(),
+        required=False,
+        label=_('VRF')
+    )
     q = forms.CharField(
         required=False,
         label=_('Search'),
@@ -519,32 +483,34 @@ class IPAddressAssignForm(forms.Form):
 
 
 class FHRPGroupForm(PrimaryModelForm):
+
     # Optionally create a new IPAddress along with the FHRPGroup
-    ip_vrf = DynamicModelChoiceField(queryset=VRF.objects.all(), required=False, label=_('VRF'))
-    ip_address = IPNetworkFormField(required=False, label=_('Address'))
-    ip_status = forms.ChoiceField(choices=add_blank_choice(IPAddressStatusChoices), required=False, label=_('Status'))
+    ip_vrf = DynamicModelChoiceField(
+        queryset=VRF.objects.all(),
+        required=False,
+        label=_('VRF')
+    )
+    ip_address = IPNetworkFormField(
+        required=False,
+        label=_('Address')
+    )
+    ip_status = forms.ChoiceField(
+        choices=add_blank_choice(IPAddressStatusChoices),
+        required=False,
+        label=_('Status')
+    )
 
     fieldsets = (
         FieldSet('protocol', 'group_id', 'name', 'description', 'tags', name=_('FHRP Group')),
         FieldSet('auth_type', 'auth_key', name=_('Authentication')),
-        FieldSet('ip_vrf', 'ip_address', 'ip_status', name=_('Virtual IP Address')),
+        FieldSet('ip_vrf', 'ip_address', 'ip_status', name=_('Virtual IP Address'))
     )
 
     class Meta:
         model = FHRPGroup
         fields = (
-            'protocol',
-            'group_id',
-            'auth_type',
-            'auth_key',
-            'name',
-            'ip_vrf',
-            'ip_address',
-            'ip_status',
-            'description',
-            'owner',
-            'comments',
-            'tags',
+            'protocol', 'group_id', 'auth_type', 'auth_key', 'name', 'ip_vrf', 'ip_address', 'ip_status', 'description',
+            'owner', 'comments', 'tags',
         )
 
     def save(self, *args, **kwargs):
@@ -558,7 +524,7 @@ class FHRPGroupForm(PrimaryModelForm):
                 address=self.cleaned_data['ip_address'],
                 status=self.cleaned_data['ip_status'],
                 role=FHRP_PROTOCOL_ROLE_MAPPINGS.get(self.cleaned_data['protocol'], IPAddressRoleChoices.ROLE_VIP),
-                assigned_object=instance,
+                assigned_object=instance
             )
             ipaddress.save()
 
@@ -576,21 +542,26 @@ class FHRPGroupForm(PrimaryModelForm):
         ip_status = self.cleaned_data.get('ip_status')
 
         if ip_address:
-            ip_form = IPAddressForm(
-                {
-                    'address': ip_address,
-                    'vrf': ip_vrf,
-                    'status': ip_status,
-                }
-            )
+            ip_form = IPAddressForm({
+                'address': ip_address,
+                'vrf': ip_vrf,
+                'status': ip_status,
+            })
             if not ip_form.is_valid():
-                self.errors.update({f'ip_{field}': error for field, error in ip_form.errors.items()})
+                self.errors.update({
+                    f'ip_{field}': error for field, error in ip_form.errors.items()
+                })
 
 
 class FHRPGroupAssignmentForm(forms.ModelForm):
-    group = DynamicModelChoiceField(label=_('Group'), queryset=FHRPGroup.objects.all())
+    group = DynamicModelChoiceField(
+        label=_('Group'),
+        queryset=FHRPGroup.objects.all()
+    )
 
-    fieldsets = (FieldSet(ObjectAttribute('interface'), 'group', 'priority'),)
+    fieldsets = (
+        FieldSet(ObjectAttribute('interface'), 'group', 'priority'),
+    )
 
     class Meta:
         model = FHRPGroupAssignment
@@ -600,31 +571,37 @@ class FHRPGroupAssignmentForm(forms.ModelForm):
         group = self.cleaned_data['group']
 
         conflicting_assignments = FHRPGroupAssignment.objects.filter(
-            interface_type=self.instance.interface_type, interface_id=self.instance.interface_id, group=group
+            interface_type=self.instance.interface_type,
+            interface_id=self.instance.interface_id,
+            group=group
         )
         if self.instance.id:
             conflicting_assignments = conflicting_assignments.exclude(id=self.instance.id)
 
         if conflicting_assignments.exists():
-            raise forms.ValidationError(_('Assignment already exists'))
+            raise forms.ValidationError(
+                _('Assignment already exists')
+            )
 
         return group
 
 
 class VLANGroupForm(TenancyForm, OrganizationalModelForm):
-    vid_ranges = NumericRangeArrayField(label=_('VLAN IDs'))
+    vid_ranges = NumericRangeArrayField(
+        label=_('VLAN IDs')
+    )
     scope_type = ContentTypeChoiceField(
         queryset=ContentType.objects.filter(model__in=VLANGROUP_SCOPE_TYPES),
         widget=HTMXSelect(),
         required=False,
-        label=_('Scope type'),
+        label=_('Scope type')
     )
     scope = DynamicModelChoiceField(
         label=_('Scope'),
         queryset=Site.objects.none(),  # Initial queryset
         required=False,
         disabled=True,
-        selector=True,
+        selector=True
     )
 
     fieldsets = (
@@ -637,15 +614,7 @@ class VLANGroupForm(TenancyForm, OrganizationalModelForm):
     class Meta:
         model = VLANGroup
         fields = [
-            'name',
-            'slug',
-            'description',
-            'vid_ranges',
-            'scope_type',
-            'tenant_group',
-            'tenant',
-            'owner',
-            'comments',
+            'name', 'slug', 'description', 'vid_ranges', 'scope_type', 'tenant_group', 'tenant', 'owner', 'comments',
             'tags',
         ]
 
@@ -682,7 +651,10 @@ class VLANGroupForm(TenancyForm, OrganizationalModelForm):
 
 class VLANForm(TenancyForm, PrimaryModelForm):
     group = DynamicModelChoiceField(
-        queryset=VLANGroup.objects.all(), required=False, selector=True, label=_('VLAN Group')
+        queryset=VLANGroup.objects.all(),
+        required=False,
+        selector=True,
+        label=_('VLAN Group')
     )
     site = DynamicModelChoiceField(
         label=_('Site'),
@@ -697,75 +669,75 @@ class VLANForm(TenancyForm, PrimaryModelForm):
                     'Users are encouraged to utilize VLAN groups for this purpose.'
                 )
             )
-        ),
+        )
     )
-    role = DynamicModelChoiceField(label=_('Role'), queryset=Role.objects.all(), required=False, quick_add=True)
+    role = DynamicModelChoiceField(
+        label=_('Role'),
+        queryset=Role.objects.all(),
+        required=False,
+        quick_add=True
+    )
     qinq_svlan = DynamicModelChoiceField(
         label=_('Q-in-Q SVLAN'),
         queryset=VLAN.objects.all(),
         required=False,
         query_params={
             'qinq_role': VLANQinQRoleChoices.ROLE_SERVICE,
-        },
+        }
     )
 
     class Meta:
         model = VLAN
         fields = [
-            'site',
-            'group',
-            'vid',
-            'name',
-            'status',
-            'role',
-            'tenant_group',
-            'tenant',
-            'qinq_role',
-            'qinq_svlan',
-            'description',
-            'owner',
-            'comments',
-            'tags',
+            'site', 'group', 'vid', 'name', 'status', 'role', 'tenant_group', 'tenant', 'qinq_role', 'qinq_svlan',
+            'description', 'owner', 'comments', 'tags',
         ]
 
 
 class VLANTranslationPolicyForm(PrimaryModelForm):
-    fieldsets = (FieldSet('name', 'description', 'tags', name=_('VLAN Translation Policy')),)
+
+    fieldsets = (
+        FieldSet('name', 'description', 'tags', name=_('VLAN Translation Policy')),
+    )
 
     class Meta:
         model = VLANTranslationPolicy
         fields = [
-            'name',
-            'description',
-            'owner',
-            'tags',
+            'name', 'description', 'owner', 'tags',
         ]
 
 
 class VLANTranslationRuleForm(NetBoxModelForm):
-    policy = DynamicModelChoiceField(label=_('Policy'), queryset=VLANTranslationPolicy.objects.all(), selector=True)
+    policy = DynamicModelChoiceField(
+        label=_('Policy'),
+        queryset=VLANTranslationPolicy.objects.all(),
+        selector=True
+    )
 
-    fieldsets = (FieldSet('policy', 'local_vid', 'remote_vid', 'description', 'tags', name=_('VLAN Translation Rule')),)
+    fieldsets = (
+        FieldSet('policy', 'local_vid', 'remote_vid', 'description', 'tags', name=_('VLAN Translation Rule')),
+    )
 
     class Meta:
         model = VLANTranslationRule
         fields = [
-            'policy',
-            'local_vid',
-            'remote_vid',
-            'description',
-            'tags',
+            'policy', 'local_vid', 'remote_vid', 'description', 'tags',
         ]
 
 
 class ServiceTemplateForm(PrimaryModelForm):
     ports = NumericArrayField(
         label=_('Ports'),
-        base_field=forms.IntegerField(min_value=SERVICE_PORT_MIN, max_value=SERVICE_PORT_MAX),
-        help_text=_('Comma-separated list of one or more port numbers. A range may be specified using a hyphen.'),
+        base_field=forms.IntegerField(
+            min_value=SERVICE_PORT_MIN,
+            max_value=SERVICE_PORT_MAX
+        ),
+        help_text=_("Comma-separated list of one or more port numbers. A range may be specified using a hyphen.")
     )
 
-    fieldsets = (FieldSet('name', 'protocol', 'ports', 'description', 'tags', name=_('Application Service Template')),)
+    fieldsets = (
+        FieldSet('name', 'protocol', 'ports', 'description', 'tags', name=_('Application Service Template')),
+    )
 
     class Meta:
         model = ServiceTemplate
@@ -777,19 +749,22 @@ class ServiceForm(PrimaryModelForm):
         queryset=ContentType.objects.filter(SERVICE_ASSIGNMENT_MODELS),
         widget=HTMXSelect(),
         required=True,
-        label=_('Parent type'),
+        label=_('Parent type')
     )
     parent = DynamicModelChoiceField(
         label=_('Parent'),
         queryset=Device.objects.none(),  # Initial queryset
         required=True,
         disabled=True,
-        selector=True,
+        selector=True
     )
     ports = NumericArrayField(
         label=_('Ports'),
-        base_field=forms.IntegerField(min_value=SERVICE_PORT_MIN, max_value=SERVICE_PORT_MAX),
-        help_text=_('Comma-separated list of one or more port numbers. A range may be specified using a hyphen.'),
+        base_field=forms.IntegerField(
+            min_value=SERVICE_PORT_MIN,
+            max_value=SERVICE_PORT_MAX
+        ),
+        help_text=_("Comma-separated list of one or more port numbers. A range may be specified using a hyphen.")
     )
     ipaddresses = DynamicModelMultipleChoiceField(
         queryset=IPAddress.objects.all(),
@@ -799,28 +774,16 @@ class ServiceForm(PrimaryModelForm):
 
     fieldsets = (
         FieldSet(
-            'parent_object_type',
-            'parent',
-            'name',
+            'parent_object_type', 'parent', 'name',
             InlineFields('protocol', 'ports', label=_('Port(s)')),
-            'ipaddresses',
-            'description',
-            'tags',
-            name=_('Application Service'),
+            'ipaddresses', 'description', 'tags', name=_('Application Service')
         ),
     )
 
     class Meta:
         model = Service
         fields = [
-            'name',
-            'protocol',
-            'ports',
-            'ipaddresses',
-            'description',
-            'owner',
-            'comments',
-            'tags',
+            'name', 'protocol', 'ports', 'ipaddresses', 'description', 'owner', 'comments', 'tags',
             'parent_object_type',
         ]
 
@@ -839,23 +802,17 @@ class ServiceForm(PrimaryModelForm):
                 parent_type = ContentType.objects.get(pk=parent_object_type_id)
                 model = parent_type.model_class()
                 if model == Device:
-                    self.fields['ipaddresses'].widget.add_query_params(
-                        {
-                            'device_id': '$parent',
-                        }
-                    )
+                    self.fields['ipaddresses'].widget.add_query_params({
+                        'device_id': '$parent',
+                    })
                 elif model == VirtualMachine:
-                    self.fields['ipaddresses'].widget.add_query_params(
-                        {
-                            'virtual_machine_id': '$parent',
-                        }
-                    )
+                    self.fields['ipaddresses'].widget.add_query_params({
+                        'virtual_machine_id': '$parent',
+                    })
                 elif model == FHRPGroup:
-                    self.fields['ipaddresses'].widget.add_query_params(
-                        {
-                            'fhrpgroup_id': '$parent',
-                        }
-                    )
+                    self.fields['ipaddresses'].widget.add_query_params({
+                        'fhrpgroup_id': '$parent',
+                    })
                 self.fields['parent'].queryset = model.objects.all()
                 self.fields['parent'].widget.attrs['selector'] = model._meta.label_lower
                 self.fields['parent'].disabled = False
@@ -873,35 +830,26 @@ class ServiceForm(PrimaryModelForm):
 
 class ServiceCreateForm(ServiceForm):
     service_template = DynamicModelChoiceField(
-        label=_('Application Service template'), queryset=ServiceTemplate.objects.all(), required=False
+        label=_('Application Service template'),
+        queryset=ServiceTemplate.objects.all(),
+        required=False
     )
 
     fieldsets = (
         FieldSet(
-            'parent_object_type',
-            'parent',
+            'parent_object_type', 'parent',
             TabbedGroups(
                 FieldSet('service_template', name=_('From Template')),
                 FieldSet('name', 'protocol', 'ports', name=_('Custom')),
             ),
-            'ipaddresses',
-            'description',
-            'tags',
-            name=_('Application Service'),
+            'ipaddresses', 'description', 'tags', name=_('Application Service')
         ),
     )
 
     class Meta(ServiceForm.Meta):
         fields = [
-            'service_template',
-            'name',
-            'protocol',
-            'ports',
-            'ipaddresses',
-            'description',
-            'comments',
-            'tags',
-            'parent_object_type',
+            'service_template', 'name', 'protocol', 'ports', 'ipaddresses', 'description',
+            'comments', 'tags', 'parent_object_type',
         ]
 
     def __init__(self, *args, **kwargs):
@@ -924,5 +872,5 @@ class ServiceCreateForm(ServiceForm):
                 self.cleaned_data['description'] = service_template.description
         elif not all(self.cleaned_data[f] for f in ('name', 'protocol', 'ports')):
             raise forms.ValidationError(
-                _('Must specify name, protocol, and port(s) if not using an application service template.')
+                _("Must specify name, protocol, and port(s) if not using an application service template.")
             )

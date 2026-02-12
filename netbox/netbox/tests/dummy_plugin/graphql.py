@@ -13,7 +13,7 @@ class DummyModelType:
     pass
 
 
-@strawberry.type(name='Query')
+@strawberry.type(name="Query")
 class DummyQuery:
     dummymodel: DummyModelType = strawberry_django.field()
     dummymodel_list: List[DummyModelType] = strawberry_django.field()

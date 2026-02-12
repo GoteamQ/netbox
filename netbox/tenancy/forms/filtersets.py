@@ -3,18 +3,14 @@ from django.utils.translation import gettext_lazy as _
 
 from core.models import ObjectType
 from netbox.forms import (
-    NestedGroupModelFilterSetForm,
-    NetBoxModelFilterSetForm,
-    OrganizationalModelFilterSetForm,
+    NestedGroupModelFilterSetForm, NetBoxModelFilterSetForm, OrganizationalModelFilterSetForm,
     PrimaryModelFilterSetForm,
 )
 from tenancy.choices import *
 from tenancy.models import *
 from tenancy.forms import ContactModelFilterForm
 from utilities.forms.fields import (
-    ContentTypeMultipleChoiceField,
-    DynamicModelMultipleChoiceField,
-    TagFilterField,
+    ContentTypeMultipleChoiceField, DynamicModelMultipleChoiceField, TagFilterField,
 )
 from utilities.forms.rendering import FieldSet
 
@@ -32,7 +28,6 @@ __all__ = (
 # Tenants
 #
 
-
 class TenantGroupFilterForm(NestedGroupModelFilterSetForm):
     model = TenantGroup
     fieldsets = (
@@ -41,7 +36,9 @@ class TenantGroupFilterForm(NestedGroupModelFilterSetForm):
         FieldSet('owner_group_id', 'owner_id', name=_('Ownership')),
     )
     parent_id = DynamicModelMultipleChoiceField(
-        queryset=TenantGroup.objects.all(), required=False, label=_('Parent group')
+        queryset=TenantGroup.objects.all(),
+        required=False,
+        label=_('Parent group')
     )
     tag = TagFilterField(model)
 
@@ -52,10 +49,13 @@ class TenantFilterForm(ContactModelFilterForm, PrimaryModelFilterSetForm):
         FieldSet('q', 'filter_id', 'tag'),
         FieldSet('group_id', name=_('Tenant')),
         FieldSet('owner_group_id', 'owner_id', name=_('Ownership')),
-        FieldSet('contact', 'contact_role', 'contact_group', name=_('Contacts')),
+        FieldSet('contact', 'contact_role', 'contact_group', name=_('Contacts'))
     )
     group_id = DynamicModelMultipleChoiceField(
-        queryset=TenantGroup.objects.all(), required=False, null_option='None', label=_('Group')
+        queryset=TenantGroup.objects.all(),
+        required=False,
+        null_option='None',
+        label=_('Group')
     )
     tag = TagFilterField(model)
 
@@ -63,7 +63,6 @@ class TenantFilterForm(ContactModelFilterForm, PrimaryModelFilterSetForm):
 #
 # Contacts
 #
-
 
 class ContactGroupFilterForm(NestedGroupModelFilterSetForm):
     model = ContactGroup
@@ -73,7 +72,9 @@ class ContactGroupFilterForm(NestedGroupModelFilterSetForm):
         FieldSet('owner_group_id', 'owner_id', name=_('Ownership')),
     )
     parent_id = DynamicModelMultipleChoiceField(
-        queryset=ContactGroup.objects.all(), required=False, label=_('Parent group')
+        queryset=ContactGroup.objects.all(),
+        required=False,
+        label=_('Parent group')
     )
     tag = TagFilterField(model)
 
@@ -95,7 +96,10 @@ class ContactFilterForm(PrimaryModelFilterSetForm):
         FieldSet('owner_group_id', 'owner_id', name=_('Ownership')),
     )
     group_id = DynamicModelMultipleChoiceField(
-        queryset=ContactGroup.objects.all(), required=False, null_option='None', label=_('Groups')
+        queryset=ContactGroup.objects.all(),
+        required=False,
+        null_option='None',
+        label=_('Groups')
     )
     tag = TagFilterField(model)
 
@@ -107,10 +111,28 @@ class ContactAssignmentFilterForm(NetBoxModelFilterSetForm):
         FieldSet('object_type_id', 'group_id', 'contact_id', 'role_id', 'priority', name=_('Assignment')),
     )
     object_type_id = ContentTypeMultipleChoiceField(
-        queryset=ObjectType.objects.with_feature('contacts'), required=False, label=_('Object type')
+        queryset=ObjectType.objects.with_feature('contacts'),
+        required=False,
+        label=_('Object type')
     )
-    group_id = DynamicModelMultipleChoiceField(queryset=ContactGroup.objects.all(), required=False, label=_('Group'))
-    contact_id = DynamicModelMultipleChoiceField(queryset=Contact.objects.all(), required=False, label=_('Contact'))
-    role_id = DynamicModelMultipleChoiceField(queryset=ContactRole.objects.all(), required=False, label=_('Role'))
-    priority = forms.MultipleChoiceField(label=_('Priority'), choices=ContactPriorityChoices, required=False)
+    group_id = DynamicModelMultipleChoiceField(
+        queryset=ContactGroup.objects.all(),
+        required=False,
+        label=_('Group')
+    )
+    contact_id = DynamicModelMultipleChoiceField(
+        queryset=Contact.objects.all(),
+        required=False,
+        label=_('Contact')
+    )
+    role_id = DynamicModelMultipleChoiceField(
+        queryset=ContactRole.objects.all(),
+        required=False,
+        label=_('Role')
+    )
+    priority = forms.MultipleChoiceField(
+        label=_('Priority'),
+        choices=ContactPriorityChoices,
+        required=False
+    )
     tag = TagFilterField(model)

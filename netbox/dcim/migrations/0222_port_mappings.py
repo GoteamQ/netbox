@@ -74,9 +74,9 @@ class Migration(migrations.Migration):
                         default=1,
                         validators=[
                             django.core.validators.MinValueValidator(1),
-                            django.core.validators.MaxValueValidator(1024),
-                        ],
-                    ),
+                            django.core.validators.MaxValueValidator(1024)
+                        ]
+                    )
                 ),
                 (
                     'rear_port_position',
@@ -84,9 +84,9 @@ class Migration(migrations.Migration):
                         default=1,
                         validators=[
                             django.core.validators.MinValueValidator(1),
-                            django.core.validators.MaxValueValidator(1024),
-                        ],
-                    ),
+                            django.core.validators.MaxValueValidator(1024)
+                        ]
+                    )
                 ),
                 (
                     'device_type',
@@ -95,8 +95,8 @@ class Migration(migrations.Migration):
                         to='dcim.devicetype',
                         related_name='port_mappings',
                         blank=True,
-                        null=True,
-                    ),
+                        null=True
+                    )
                 ),
                 (
                     'module_type',
@@ -105,37 +105,42 @@ class Migration(migrations.Migration):
                         to='dcim.moduletype',
                         related_name='port_mappings',
                         blank=True,
-                        null=True,
-                    ),
+                        null=True
+                    )
                 ),
                 (
                     'front_port',
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
                         to='dcim.frontporttemplate',
-                        related_name='mappings',
-                    ),
+                        related_name='mappings'
+                    )
                 ),
                 (
                     'rear_port',
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to='dcim.rearporttemplate', related_name='mappings'
-                    ),
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to='dcim.rearporttemplate',
+                        related_name='mappings'
+                    )
                 ),
             ],
         ),
         migrations.AddConstraint(
             model_name='porttemplatemapping',
             constraint=models.UniqueConstraint(
-                fields=('front_port', 'front_port_position'), name='dcim_porttemplatemapping_unique_front_port_position'
+                fields=('front_port', 'front_port_position'),
+                name='dcim_porttemplatemapping_unique_front_port_position'
             ),
         ),
         migrations.AddConstraint(
             model_name='porttemplatemapping',
             constraint=models.UniqueConstraint(
-                fields=('rear_port', 'rear_port_position'), name='dcim_porttemplatemapping_unique_rear_port_position'
+                fields=('rear_port', 'rear_port_position'),
+                name='dcim_porttemplatemapping_unique_rear_port_position'
             ),
         ),
+
         # Create PortMapping model (for Devices)
         migrations.CreateModel(
             name='PortMapping',
@@ -147,8 +152,8 @@ class Migration(migrations.Migration):
                         default=1,
                         validators=[
                             django.core.validators.MinValueValidator(1),
-                            django.core.validators.MaxValueValidator(1024),
-                        ],
+                            django.core.validators.MaxValueValidator(1024)
+                        ]
                     ),
                 ),
                 (
@@ -158,42 +163,57 @@ class Migration(migrations.Migration):
                         validators=[
                             django.core.validators.MinValueValidator(1),
                             django.core.validators.MaxValueValidator(1024),
-                        ],
+                        ]
                     ),
                 ),
                 (
                     'device',
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to='dcim.device', related_name='port_mappings'
-                    ),
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to='dcim.device',
+                        related_name='port_mappings'
+                    )
                 ),
                 (
                     'front_port',
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to='dcim.frontport', related_name='mappings'
-                    ),
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to='dcim.frontport',
+                        related_name='mappings'
+                    )
                 ),
                 (
                     'rear_port',
                     models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to='dcim.rearport', related_name='mappings'
-                    ),
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to='dcim.rearport',
+                        related_name='mappings'
+                    )
                 ),
             ],
         ),
         migrations.AddConstraint(
             model_name='portmapping',
             constraint=models.UniqueConstraint(
-                fields=('front_port', 'front_port_position'), name='dcim_portmapping_unique_front_port_position'
+                fields=('front_port', 'front_port_position'),
+                name='dcim_portmapping_unique_front_port_position'
             ),
         ),
         migrations.AddConstraint(
             model_name='portmapping',
             constraint=models.UniqueConstraint(
-                fields=('rear_port', 'rear_port_position'), name='dcim_portmapping_unique_rear_port_position'
+                fields=('rear_port', 'rear_port_position'),
+                name='dcim_portmapping_unique_rear_port_position'
             ),
         ),
+
         # Data migration
-        migrations.RunPython(code=populate_port_template_mappings, reverse_code=migrations.RunPython.noop),
-        migrations.RunPython(code=populate_port_mappings, reverse_code=migrations.RunPython.noop),
+        migrations.RunPython(
+            code=populate_port_template_mappings,
+            reverse_code=migrations.RunPython.noop
+        ),
+        migrations.RunPython(
+            code=populate_port_mappings,
+            reverse_code=migrations.RunPython.noop
+        ),
     ]

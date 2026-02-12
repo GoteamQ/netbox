@@ -2,7 +2,9 @@ from django.db.models import UniqueConstraint
 from rest_framework.utils.field_mapping import get_unique_error_message
 from rest_framework.validators import UniqueValidator
 
-__all__ = ('get_unique_validators',)
+__all__ = (
+    'get_unique_validators',
+)
 
 
 def get_unique_validators(field_name, model_field):
@@ -18,7 +20,10 @@ def get_unique_validators(field_name, model_field):
     }
 
     # START custom logic
-    conditions = {cond for cond in conditions if cond is None or cond.referenced_base_fields == field_set}
+    conditions = {
+        cond for cond in conditions
+        if cond is None or cond.referenced_base_fields == field_set
+    }
     # END custom logic
 
     if getattr(model_field, 'unique', False):
@@ -29,5 +34,6 @@ def get_unique_validators(field_name, model_field):
     queryset = model_field.model._default_manager
     for condition in conditions:
         yield UniqueValidator(
-            queryset=queryset if condition is None else queryset.filter(condition), message=unique_error_message
+            queryset=queryset if condition is None else queryset.filter(condition),
+            message=unique_error_message
         )

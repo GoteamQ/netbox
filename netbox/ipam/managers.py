@@ -5,6 +5,7 @@ from utilities.querysets import RestrictedQuerySet
 
 
 class IPAddressManager(Manager.from_queryset(RestrictedQuerySet)):
+
     def get_queryset(self):
         """
         By default, PostgreSQL will order INETs with shorter (larger) prefix lengths ahead of those with longer

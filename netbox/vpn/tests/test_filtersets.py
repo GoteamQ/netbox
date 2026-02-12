@@ -16,13 +16,12 @@ class TunnelGroupTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
-        TunnelGroup.objects.bulk_create(
-            (
-                TunnelGroup(name='Tunnel Group 1', slug='tunnel-group-1', description='foobar1'),
-                TunnelGroup(name='Tunnel Group 2', slug='tunnel-group-2', description='foobar2'),
-                TunnelGroup(name='Tunnel Group 3', slug='tunnel-group-3'),
-            )
-        )
+
+        TunnelGroup.objects.bulk_create((
+            TunnelGroup(name='Tunnel Group 1', slug='tunnel-group-1', description='foobar1'),
+            TunnelGroup(name='Tunnel Group 2', slug='tunnel-group-2', description='foobar2'),
+            TunnelGroup(name='Tunnel Group 3', slug='tunnel-group-3'),
+        ))
 
     def test_q(self):
         params = {'q': 'foobar1'}
@@ -52,7 +51,7 @@ class TunnelTestCase(TestCase, ChangeLoggedFilterSetTests):
             authentication_method=AuthenticationMethodChoices.PRESHARED_KEYS,
             encryption_algorithm=EncryptionAlgorithmChoices.ENCRYPTION_AES128_CBC,
             authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1,
-            group=DHGroupChoices.GROUP_14,
+            group=DHGroupChoices.GROUP_14
         )
         ike_policy = IKEPolicy.objects.create(
             name='IKE Policy 1',
@@ -63,16 +62,25 @@ class TunnelTestCase(TestCase, ChangeLoggedFilterSetTests):
         ipsec_proposal = IPSecProposal.objects.create(
             name='IPSec Proposal 1',
             encryption_algorithm=EncryptionAlgorithmChoices.ENCRYPTION_AES128_CBC,
-            authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1,
+            authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1
         )
-        ipsec_policy = IPSecPolicy.objects.create(name='IPSec Policy 1', pfs_group=DHGroupChoices.GROUP_14)
+        ipsec_policy = IPSecPolicy.objects.create(
+            name='IPSec Policy 1',
+            pfs_group=DHGroupChoices.GROUP_14
+        )
         ipsec_policy.proposals.add(ipsec_proposal)
         ipsec_profiles = (
             IPSecProfile(
-                name='IPSec Profile 1', mode=IPSecModeChoices.ESP, ike_policy=ike_policy, ipsec_policy=ipsec_policy
+                name='IPSec Profile 1',
+                mode=IPSecModeChoices.ESP,
+                ike_policy=ike_policy,
+                ipsec_policy=ipsec_policy
             ),
             IPSecProfile(
-                name='IPSec Profile 2', mode=IPSecModeChoices.ESP, ike_policy=ike_policy, ipsec_policy=ipsec_policy
+                name='IPSec Profile 2',
+                mode=IPSecModeChoices.ESP,
+                ike_policy=ike_policy,
+                ipsec_policy=ipsec_policy
             ),
         )
         IPSecProfile.objects.bulk_create(ipsec_profiles)
@@ -92,7 +100,7 @@ class TunnelTestCase(TestCase, ChangeLoggedFilterSetTests):
                 encapsulation=TunnelEncapsulationChoices.ENCAP_GRE,
                 ipsec_profile=ipsec_profiles[0],
                 tunnel_id=100,
-                description='foobar1',
+                description='foobar1'
             ),
             Tunnel(
                 name='Tunnel 2',
@@ -101,7 +109,7 @@ class TunnelTestCase(TestCase, ChangeLoggedFilterSetTests):
                 encapsulation=TunnelEncapsulationChoices.ENCAP_IP_IP,
                 ipsec_profile=ipsec_profiles[0],
                 tunnel_id=200,
-                description='foobar2',
+                description='foobar2'
             ),
             Tunnel(
                 name='Tunnel 3',
@@ -110,7 +118,7 @@ class TunnelTestCase(TestCase, ChangeLoggedFilterSetTests):
                 encapsulation=TunnelEncapsulationChoices.ENCAP_IPSEC_TUNNEL,
                 ipsec_profile=None,
                 tunnel_id=300,
-                description='foobar3',
+                description='foobar3'
             ),
         )
         Tunnel.objects.bulk_create(tunnels)
@@ -190,17 +198,17 @@ class TunnelTerminationTestCase(TestCase, ChangeLoggedFilterSetTests):
             Tunnel(
                 name='Tunnel 1',
                 status=TunnelStatusChoices.STATUS_ACTIVE,
-                encapsulation=TunnelEncapsulationChoices.ENCAP_IP_IP,
+                encapsulation=TunnelEncapsulationChoices.ENCAP_IP_IP
             ),
             Tunnel(
                 name='Tunnel 2',
                 status=TunnelStatusChoices.STATUS_ACTIVE,
-                encapsulation=TunnelEncapsulationChoices.ENCAP_IP_IP,
+                encapsulation=TunnelEncapsulationChoices.ENCAP_IP_IP
             ),
             Tunnel(
                 name='Tunnel 3',
                 status=TunnelStatusChoices.STATUS_ACTIVE,
-                encapsulation=TunnelEncapsulationChoices.ENCAP_IP_IP,
+                encapsulation=TunnelEncapsulationChoices.ENCAP_IP_IP
             ),
         )
         Tunnel.objects.bulk_create(tunnels)
@@ -211,39 +219,39 @@ class TunnelTerminationTestCase(TestCase, ChangeLoggedFilterSetTests):
                 tunnel=tunnels[0],
                 role=TunnelTerminationRoleChoices.ROLE_HUB,
                 termination=interfaces[0],
-                outside_ip=ip_addresses[0],
+                outside_ip=ip_addresses[0]
             ),
             TunnelTermination(
                 tunnel=tunnels[0],
                 role=TunnelTerminationRoleChoices.ROLE_SPOKE,
                 termination=vm_interfaces[0],
-                outside_ip=ip_addresses[1],
+                outside_ip=ip_addresses[1]
             ),
             # Tunnel 2
             TunnelTermination(
                 tunnel=tunnels[1],
                 role=TunnelTerminationRoleChoices.ROLE_HUB,
                 termination=interfaces[1],
-                outside_ip=ip_addresses[2],
+                outside_ip=ip_addresses[2]
             ),
             TunnelTermination(
                 tunnel=tunnels[1],
                 role=TunnelTerminationRoleChoices.ROLE_SPOKE,
                 termination=vm_interfaces[1],
-                outside_ip=ip_addresses[3],
+                outside_ip=ip_addresses[3]
             ),
             # Tunnel 3
             TunnelTermination(
                 tunnel=tunnels[2],
                 role=TunnelTerminationRoleChoices.ROLE_PEER,
                 termination=interfaces[2],
-                outside_ip=ip_addresses[4],
+                outside_ip=ip_addresses[4]
             ),
             TunnelTermination(
                 tunnel=tunnels[2],
                 role=TunnelTerminationRoleChoices.ROLE_PEER,
                 termination=vm_interfaces[2],
-                outside_ip=ip_addresses[5],
+                outside_ip=ip_addresses[5]
             ),
         )
         TunnelTermination.objects.bulk_create(tunnel_terminations)
@@ -299,7 +307,7 @@ class IKEProposalTestCase(TestCase, ChangeLoggedFilterSetTests):
                 authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1,
                 group=DHGroupChoices.GROUP_1,
                 sa_lifetime=1000,
-                description='foobar1',
+                description='foobar1'
             ),
             IKEProposal(
                 name='IKE Proposal 2',
@@ -308,7 +316,7 @@ class IKEProposalTestCase(TestCase, ChangeLoggedFilterSetTests):
                 authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA256,
                 group=DHGroupChoices.GROUP_2,
                 sa_lifetime=2000,
-                description='foobar2',
+                description='foobar2'
             ),
             IKEProposal(
                 name='IKE Proposal 3',
@@ -317,7 +325,7 @@ class IKEProposalTestCase(TestCase, ChangeLoggedFilterSetTests):
                 authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA512,
                 group=DHGroupChoices.GROUP_5,
                 sa_lifetime=3000,
-                description='foobar3',
+                description='foobar3'
             ),
         )
         IKEProposal.objects.bulk_create(ike_proposals)
@@ -352,30 +360,21 @@ class IKEProposalTestCase(TestCase, ChangeLoggedFilterSetTests):
         self.assertEqual(self.filterset(params, self.queryset).qs.count(), 2)
 
     def test_authentication_method(self):
-        params = {
-            'authentication_method': [
-                AuthenticationMethodChoices.PRESHARED_KEYS,
-                AuthenticationMethodChoices.CERTIFICATES,
-            ]
-        }
+        params = {'authentication_method': [
+            AuthenticationMethodChoices.PRESHARED_KEYS, AuthenticationMethodChoices.CERTIFICATES
+        ]}
         self.assertEqual(self.filterset(params, self.queryset).qs.count(), 2)
 
     def test_encryption_algorithm(self):
-        params = {
-            'encryption_algorithm': [
-                EncryptionAlgorithmChoices.ENCRYPTION_AES128_CBC,
-                EncryptionAlgorithmChoices.ENCRYPTION_AES192_CBC,
-            ]
-        }
+        params = {'encryption_algorithm': [
+            EncryptionAlgorithmChoices.ENCRYPTION_AES128_CBC, EncryptionAlgorithmChoices.ENCRYPTION_AES192_CBC
+        ]}
         self.assertEqual(self.filterset(params, self.queryset).qs.count(), 2)
 
     def test_authentication_algorithm(self):
-        params = {
-            'authentication_algorithm': [
-                AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1,
-                AuthenticationAlgorithmChoices.AUTH_HMAC_SHA256,
-            ]
-        }
+        params = {'authentication_algorithm': [
+            AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1, AuthenticationAlgorithmChoices.AUTH_HMAC_SHA256
+        ]}
         self.assertEqual(self.filterset(params, self.queryset).qs.count(), 2)
 
     def test_group(self):
@@ -399,21 +398,21 @@ class IKEPolicyTestCase(TestCase, ChangeLoggedFilterSetTests):
                 authentication_method=AuthenticationMethodChoices.PRESHARED_KEYS,
                 encryption_algorithm=EncryptionAlgorithmChoices.ENCRYPTION_AES128_CBC,
                 authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1,
-                group=DHGroupChoices.GROUP_14,
+                group=DHGroupChoices.GROUP_14
             ),
             IKEProposal(
                 name='IKE Proposal 2',
                 authentication_method=AuthenticationMethodChoices.PRESHARED_KEYS,
                 encryption_algorithm=EncryptionAlgorithmChoices.ENCRYPTION_AES128_CBC,
                 authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1,
-                group=DHGroupChoices.GROUP_14,
+                group=DHGroupChoices.GROUP_14
             ),
             IKEProposal(
                 name='IKE Proposal 3',
                 authentication_method=AuthenticationMethodChoices.PRESHARED_KEYS,
                 encryption_algorithm=EncryptionAlgorithmChoices.ENCRYPTION_AES128_CBC,
                 authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1,
-                group=DHGroupChoices.GROUP_14,
+                group=DHGroupChoices.GROUP_14
             ),
         )
         IKEProposal.objects.bulk_create(ike_proposals)
@@ -423,19 +422,19 @@ class IKEPolicyTestCase(TestCase, ChangeLoggedFilterSetTests):
                 name='IKE Policy 1',
                 version=IKEVersionChoices.VERSION_1,
                 mode=IKEModeChoices.MAIN,
-                description='foobar1',
+                description='foobar1'
             ),
             IKEPolicy(
                 name='IKE Policy 2',
                 version=IKEVersionChoices.VERSION_1,
                 mode=IKEModeChoices.MAIN,
-                description='foobar2',
+                description='foobar2'
             ),
             IKEPolicy(
                 name='IKE Policy 3',
                 version=IKEVersionChoices.VERSION_2,
                 mode=IKEModeChoices.AGGRESSIVE,
-                description='foobar3',
+                description='foobar3'
             ),
         )
         IKEPolicy.objects.bulk_create(ike_policies)
@@ -484,7 +483,7 @@ class IPSecProposalTestCase(TestCase, ChangeLoggedFilterSetTests):
                 authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1,
                 sa_lifetime_seconds=1000,
                 sa_lifetime_data=1000,
-                description='foobar1',
+                description='foobar1'
             ),
             IPSecProposal(
                 name='IPSec Proposal 2',
@@ -492,7 +491,7 @@ class IPSecProposalTestCase(TestCase, ChangeLoggedFilterSetTests):
                 authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA256,
                 sa_lifetime_seconds=2000,
                 sa_lifetime_data=2000,
-                description='foobar2',
+                description='foobar2'
             ),
             IPSecProposal(
                 name='IPSec Proposal 3',
@@ -500,7 +499,7 @@ class IPSecProposalTestCase(TestCase, ChangeLoggedFilterSetTests):
                 authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA512,
                 sa_lifetime_seconds=3000,
                 sa_lifetime_data=3000,
-                description='foobar3',
+                description='foobar3'
             ),
         )
         IPSecProposal.objects.bulk_create(ipsec_proposals)
@@ -535,21 +534,15 @@ class IPSecProposalTestCase(TestCase, ChangeLoggedFilterSetTests):
         self.assertEqual(self.filterset(params, self.queryset).qs.count(), 2)
 
     def test_encryption_algorithm(self):
-        params = {
-            'encryption_algorithm': [
-                EncryptionAlgorithmChoices.ENCRYPTION_AES128_CBC,
-                EncryptionAlgorithmChoices.ENCRYPTION_AES192_CBC,
-            ]
-        }
+        params = {'encryption_algorithm': [
+            EncryptionAlgorithmChoices.ENCRYPTION_AES128_CBC, EncryptionAlgorithmChoices.ENCRYPTION_AES192_CBC
+        ]}
         self.assertEqual(self.filterset(params, self.queryset).qs.count(), 2)
 
     def test_authentication_algorithm(self):
-        params = {
-            'authentication_algorithm': [
-                AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1,
-                AuthenticationAlgorithmChoices.AUTH_HMAC_SHA256,
-            ]
-        }
+        params = {'authentication_algorithm': [
+            AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1, AuthenticationAlgorithmChoices.AUTH_HMAC_SHA256
+        ]}
         self.assertEqual(self.filterset(params, self.queryset).qs.count(), 2)
 
     def test_sa_lifetime_seconds(self):
@@ -571,25 +564,37 @@ class IPSecPolicyTestCase(TestCase, ChangeLoggedFilterSetTests):
             IPSecProposal(
                 name='IPSec Policy 1',
                 encryption_algorithm=EncryptionAlgorithmChoices.ENCRYPTION_AES128_CBC,
-                authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1,
+                authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1
             ),
             IPSecProposal(
                 name='IPSec Proposal 2',
                 encryption_algorithm=EncryptionAlgorithmChoices.ENCRYPTION_AES128_CBC,
-                authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1,
+                authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1
             ),
             IPSecProposal(
                 name='IPSec Proposal 3',
                 encryption_algorithm=EncryptionAlgorithmChoices.ENCRYPTION_AES128_CBC,
-                authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1,
+                authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1
             ),
         )
         IPSecProposal.objects.bulk_create(ipsec_proposals)
 
         ipsec_policies = (
-            IPSecPolicy(name='IPSec Policy 1', pfs_group=DHGroupChoices.GROUP_1, description='foobar1'),
-            IPSecPolicy(name='IPSec Policy 2', pfs_group=DHGroupChoices.GROUP_2, description='foobar2'),
-            IPSecPolicy(name='IPSec Policy 3', pfs_group=DHGroupChoices.GROUP_5, description='foobar3'),
+            IPSecPolicy(
+                name='IPSec Policy 1',
+                pfs_group=DHGroupChoices.GROUP_1,
+                description='foobar1'
+            ),
+            IPSecPolicy(
+                name='IPSec Policy 2',
+                pfs_group=DHGroupChoices.GROUP_2,
+                description='foobar2'
+            ),
+            IPSecPolicy(
+                name='IPSec Policy 3',
+                pfs_group=DHGroupChoices.GROUP_5,
+                description='foobar3'
+            ),
         )
         IPSecPolicy.objects.bulk_create(ipsec_policies)
         ipsec_policies[0].proposals.add(ipsec_proposals[0])
@@ -631,12 +636,12 @@ class IPSecProfileTestCase(TestCase, ChangeLoggedFilterSetTests):
             authentication_method=AuthenticationMethodChoices.PRESHARED_KEYS,
             encryption_algorithm=EncryptionAlgorithmChoices.ENCRYPTION_AES128_CBC,
             authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1,
-            group=DHGroupChoices.GROUP_14,
+            group=DHGroupChoices.GROUP_14
         )
         ipsec_proposal = IPSecProposal.objects.create(
             name='IPSec Proposal 1',
             encryption_algorithm=EncryptionAlgorithmChoices.ENCRYPTION_AES128_CBC,
-            authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1,
+            authentication_algorithm=AuthenticationAlgorithmChoices.AUTH_HMAC_SHA1
         )
 
         ike_policies = (
@@ -661,9 +666,18 @@ class IPSecProfileTestCase(TestCase, ChangeLoggedFilterSetTests):
             ike_policy.proposals.add(ike_proposal)
 
         ipsec_policies = (
-            IPSecPolicy(name='IPSec Policy 1', pfs_group=DHGroupChoices.GROUP_14),
-            IPSecPolicy(name='IPSec Policy 2', pfs_group=DHGroupChoices.GROUP_14),
-            IPSecPolicy(name='IPSec Policy 3', pfs_group=DHGroupChoices.GROUP_14),
+            IPSecPolicy(
+                name='IPSec Policy 1',
+                pfs_group=DHGroupChoices.GROUP_14
+            ),
+            IPSecPolicy(
+                name='IPSec Policy 2',
+                pfs_group=DHGroupChoices.GROUP_14
+            ),
+            IPSecPolicy(
+                name='IPSec Policy 3',
+                pfs_group=DHGroupChoices.GROUP_14
+            ),
         )
         IPSecPolicy.objects.bulk_create(ipsec_policies)
         for ipsec_policy in ipsec_policies:
@@ -675,21 +689,21 @@ class IPSecProfileTestCase(TestCase, ChangeLoggedFilterSetTests):
                 mode=IPSecModeChoices.ESP,
                 ike_policy=ike_policies[0],
                 ipsec_policy=ipsec_policies[0],
-                description='foobar1',
+                description='foobar1'
             ),
             IPSecProfile(
                 name='IPSec Profile 2',
                 mode=IPSecModeChoices.ESP,
                 ike_policy=ike_policies[1],
                 ipsec_policy=ipsec_policies[1],
-                description='foobar2',
+                description='foobar2'
             ),
             IPSecProfile(
                 name='IPSec Profile 3',
                 mode=IPSecModeChoices.AH,
                 ike_policy=ike_policies[2],
                 ipsec_policy=ipsec_policies[2],
-                description='foobar3',
+                description='foobar3'
             ),
         )
         IPSecProfile.objects.bulk_create(ipsec_profiles)
@@ -739,6 +753,7 @@ class L2VPNTestCase(TestCase, ChangeLoggedFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
+
         route_targets = (
             RouteTarget(name='1:1'),
             RouteTarget(name='1:2'),
@@ -756,7 +771,7 @@ class L2VPNTestCase(TestCase, ChangeLoggedFilterSetTests):
                 type=L2VPNTypeChoices.TYPE_VXLAN,
                 status=L2VPNStatusChoices.STATUS_ACTIVE,
                 identifier=65001,
-                description='foobar1',
+                description='foobar1'
             ),
             L2VPN(
                 name='L2VPN 2',
@@ -764,14 +779,14 @@ class L2VPNTestCase(TestCase, ChangeLoggedFilterSetTests):
                 type=L2VPNTypeChoices.TYPE_VPWS,
                 status=L2VPNStatusChoices.STATUS_PLANNED,
                 identifier=65002,
-                description='foobar2',
+                description='foobar2'
             ),
             L2VPN(
                 name='L2VPN 3',
                 slug='l2vpn-3',
                 type=L2VPNTypeChoices.TYPE_VPLS,
                 status=L2VPNStatusChoices.STATUS_DECOMMISSIONING,
-                description='foobar3',
+                description='foobar3'
             ),
         )
         L2VPN.objects.bulk_create(l2vpns)

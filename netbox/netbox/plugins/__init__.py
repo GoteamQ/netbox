@@ -16,16 +16,14 @@ from .templates import *
 from .utils import *
 
 # Initialize plugin registry
-registry['plugins'].update(
-    {
-        'installed': [],
-        'graphql_schemas': [],
-        'menus': [],
-        'menu_items': {},
-        'preferences': {},
-        'template_extensions': collections.defaultdict(list),
-    }
-)
+registry['plugins'].update({
+    'installed': [],
+    'graphql_schemas': [],
+    'menus': [],
+    'menu_items': {},
+    'preferences': {},
+    'template_extensions': collections.defaultdict(list),
+})
 
 DEFAULT_RESOURCE_PATHS = {
     'search_indexes': 'search.indexes',
@@ -42,12 +40,10 @@ DEFAULT_RESOURCE_PATHS = {
 # Plugin AppConfig class
 #
 
-
 class PluginConfig(AppConfig):
     """
     Subclass of Django's built-in AppConfig class, to be used for NetBox plugins.
     """
-
     # Plugin metadata
     author = ''
     author_email = ''
@@ -90,7 +86,7 @@ class PluginConfig(AppConfig):
     def _load_resource(self, name):
         # Import from the configured path, if defined.
         if path := getattr(self, name, None):
-            return import_string(f'{self.__module__}.{path}')
+            return import_string(f"{self.__module__}.{path}")
 
         # Fall back to the resource's default path. Return None if the module has not been provided.
         default_path = f'{self.__module__}.{DEFAULT_RESOURCE_PATHS[name]}'
@@ -139,21 +135,22 @@ class PluginConfig(AppConfig):
 
     @classmethod
     def validate(cls, user_config, netbox_version):
+
         # Enforce version constraints
         current_version = version.parse(netbox_version)
         if cls.min_version is not None:
             min_version = version.parse(cls.min_version)
             if current_version < min_version:
                 raise IncompatiblePluginError(
-                    f'Plugin {cls.__module__} requires NetBox minimum version {cls.min_version} (current: '
-                    f'{netbox_version}).'
+                    f"Plugin {cls.__module__} requires NetBox minimum version {cls.min_version} (current: "
+                    f"{netbox_version})."
                 )
         if cls.max_version is not None:
             max_version = version.parse(cls.max_version)
             if current_version > max_version:
                 raise IncompatiblePluginError(
-                    f'Plugin {cls.__module__} requires NetBox maximum version {cls.max_version} (current: '
-                    f'{netbox_version}).'
+                    f"Plugin {cls.__module__} requires NetBox maximum version {cls.max_version} (current: "
+                    f"{netbox_version})."
                 )
 
         # Verify required configuration settings
@@ -161,7 +158,7 @@ class PluginConfig(AppConfig):
             if setting not in user_config:
                 raise ImproperlyConfigured(
                     f"Plugin {cls.__module__} requires '{setting}' to be present in the PLUGINS_CONFIG section of "
-                    f'configuration.py.'
+                    f"configuration.py."
                 )
 
         # Apply default configuration values

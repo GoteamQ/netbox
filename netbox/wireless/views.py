@@ -10,11 +10,14 @@ from .models import *
 # Wireless LAN groups
 #
 
-
 @register_model_view(WirelessLANGroup, 'list', path='', detail=False)
 class WirelessLANGroupListView(generic.ObjectListView):
     queryset = WirelessLANGroup.objects.add_related_count(
-        WirelessLANGroup.objects.all(), WirelessLAN, 'group', 'wirelesslan_count', cumulative=True
+        WirelessLANGroup.objects.all(),
+        WirelessLAN,
+        'group',
+        'wirelesslan_count',
+        cumulative=True
     ).prefetch_related('tags')
     filterset = filtersets.WirelessLANGroupFilterSet
     filterset_form = forms.WirelessLANGroupFilterForm
@@ -54,7 +57,11 @@ class WirelessLANGroupBulkImportView(generic.BulkImportView):
 @register_model_view(WirelessLANGroup, 'bulk_edit', path='edit', detail=False)
 class WirelessLANGroupBulkEditView(generic.BulkEditView):
     queryset = WirelessLANGroup.objects.add_related_count(
-        WirelessLANGroup.objects.all(), WirelessLAN, 'group', 'wirelesslan_count', cumulative=True
+        WirelessLANGroup.objects.all(),
+        WirelessLAN,
+        'group',
+        'wirelesslan_count',
+        cumulative=True
     )
     filterset = filtersets.WirelessLANGroupFilterSet
     table = tables.WirelessLANGroupTable
@@ -70,7 +77,11 @@ class WirelessLANGroupBulkRenameView(generic.BulkRenameView):
 @register_model_view(WirelessLANGroup, 'bulk_delete', path='delete', detail=False)
 class WirelessLANGroupBulkDeleteView(generic.BulkDeleteView):
     queryset = WirelessLANGroup.objects.add_related_count(
-        WirelessLANGroup.objects.all(), WirelessLAN, 'group', 'wirelesslan_count', cumulative=True
+        WirelessLANGroup.objects.all(),
+        WirelessLAN,
+        'group',
+        'wirelesslan_count',
+        cumulative=True
     )
     filterset = filtersets.WirelessLANGroupFilterSet
     table = tables.WirelessLANGroupTable
@@ -80,10 +91,11 @@ class WirelessLANGroupBulkDeleteView(generic.BulkDeleteView):
 # Wireless LANs
 #
 
-
 @register_model_view(WirelessLAN, 'list', path='', detail=False)
 class WirelessLANListView(generic.ObjectListView):
-    queryset = WirelessLAN.objects.annotate(interface_count=count_related(Interface, 'wireless_lans'))
+    queryset = WirelessLAN.objects.annotate(
+        interface_count=count_related(Interface, 'wireless_lans')
+    )
     filterset = filtersets.WirelessLANFilterSet
     filterset_form = forms.WirelessLANFilterForm
     table = tables.WirelessLANTable
@@ -94,7 +106,9 @@ class WirelessLANView(generic.ObjectView):
     queryset = WirelessLAN.objects.all()
 
     def get_extra_context(self, request, instance):
-        attached_interfaces = Interface.objects.restrict(request.user, 'view').filter(wireless_lans=instance)
+        attached_interfaces = Interface.objects.restrict(request.user, 'view').filter(
+            wireless_lans=instance
+        )
         interfaces_table = tables.WirelessLANInterfacesTable(attached_interfaces, user=request.user)
         interfaces_table.configure(request)
 
@@ -146,7 +160,6 @@ class WirelessLANBulkDeleteView(generic.BulkDeleteView):
 #
 # Wireless Links
 #
-
 
 @register_model_view(WirelessLink, 'list', path='', detail=False)
 class WirelessLinkListView(generic.ObjectListView):

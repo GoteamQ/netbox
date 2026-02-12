@@ -14,9 +14,23 @@ __all__ = (
 
 
 class ASNRange(OrganizationalModel):
-    name = models.CharField(verbose_name=_('name'), max_length=100, unique=True, db_collation='natural_sort')
-    slug = models.SlugField(verbose_name=_('slug'), max_length=100, unique=True)
-    rir = models.ForeignKey(to='ipam.RIR', on_delete=models.PROTECT, related_name='asn_ranges', verbose_name=_('RIR'))
+    name = models.CharField(
+        verbose_name=_('name'),
+        max_length=100,
+        unique=True,
+        db_collation="natural_sort"
+    )
+    slug = models.SlugField(
+        verbose_name=_('slug'),
+        max_length=100,
+        unique=True
+    )
+    rir = models.ForeignKey(
+        to='ipam.RIR',
+        on_delete=models.PROTECT,
+        related_name='asn_ranges',
+        verbose_name=_('RIR')
+    )
     start = ASNField(
         verbose_name=_('start'),
     )
@@ -24,7 +38,11 @@ class ASNRange(OrganizationalModel):
         verbose_name=_('end'),
     )
     tenant = models.ForeignKey(
-        to='tenancy.Tenant', on_delete=models.PROTECT, related_name='asn_ranges', blank=True, null=True
+        to='tenancy.Tenant',
+        on_delete=models.PROTECT,
+        related_name='asn_ranges',
+        blank=True,
+        null=True
     )
 
     objects = ASNRangeQuerySet.as_manager()
@@ -42,7 +60,7 @@ class ASNRange(OrganizationalModel):
 
         if self.end <= self.start:
             raise ValidationError(
-                _('Starting ASN ({start}) must be lower than ending ASN ({end}).').format(
+                _("Starting ASN ({start}) must be lower than ending ASN ({end}).").format(
                     start=self.start, end=self.end
                 )
             )
@@ -86,7 +104,10 @@ class ASNRange(OrganizationalModel):
         """
         Return all child ASNs (ASNs within the range).
         """
-        return ASN.objects.filter(asn__gte=self.start, asn__lte=self.end)
+        return ASN.objects.filter(
+            asn__gte=self.start,
+            asn__lte=self.end
+        )
 
     def get_available_asns(self):
         """
@@ -104,20 +125,29 @@ class ASN(ContactsMixin, PrimaryModel):
     An autonomous system (AS) number is typically used to represent an independent routing domain. A site can have
     one or more ASNs assigned to it.
     """
-
     rir = models.ForeignKey(
         to='ipam.RIR',
         on_delete=models.PROTECT,
         related_name='asns',
         verbose_name=_('RIR'),
-        help_text=_('Regional Internet Registry responsible for this AS number space'),
+        help_text=_("Regional Internet Registry responsible for this AS number space")
     )
-    asn = ASNField(unique=True, verbose_name=_('ASN'), help_text=_('16- or 32-bit autonomous system number'))
+    asn = ASNField(
+        unique=True,
+        verbose_name=_('ASN'),
+        help_text=_('16- or 32-bit autonomous system number')
+    )
     tenant = models.ForeignKey(
-        to='tenancy.Tenant', on_delete=models.PROTECT, related_name='asns', blank=True, null=True
+        to='tenancy.Tenant',
+        on_delete=models.PROTECT,
+        related_name='asns',
+        blank=True,
+        null=True
     )
 
-    prerequisite_models = ('ipam.RIR',)
+    prerequisite_models = (
+        'ipam.RIR',
+    )
 
     class Meta:
         ordering = ['asn']

@@ -14,7 +14,6 @@ from .models import WirelessLink
 # Wireless links
 #
 
-
 @receiver(post_save, sender=WirelessLink)
 def update_connected_interfaces(instance, created, raw=False, **kwargs):
     """
@@ -22,15 +21,15 @@ def update_connected_interfaces(instance, created, raw=False, **kwargs):
     """
     logger = logging.getLogger('netbox.wireless.wirelesslink')
     if raw:
-        logger.debug(f'Skipping endpoint updates for imported wireless link {instance}')
+        logger.debug(f"Skipping endpoint updates for imported wireless link {instance}")
         return
 
     if instance.interface_a.wireless_link != instance:
-        logger.debug(f'Updating interface A for wireless link {instance}')
+        logger.debug(f"Updating interface A for wireless link {instance}")
         instance.interface_a.wireless_link = instance
         instance.interface_a.save()
     if instance.interface_b.cable != instance:
-        logger.debug(f'Updating interface B for wireless link {instance}')
+        logger.debug(f"Updating interface B for wireless link {instance}")
         instance.interface_b.wireless_link = instance
         instance.interface_b.save()
 
@@ -51,10 +50,10 @@ def nullify_connected_interfaces(instance, **kwargs):
     logger = logging.getLogger('netbox.wireless.wirelesslink')
 
     if instance.interface_a is not None:
-        logger.debug(f'Nullifying interface A for wireless link {instance}')
+        logger.debug(f"Nullifying interface A for wireless link {instance}")
         Interface.objects.filter(pk=instance.interface_a.pk).update(wireless_link=None)
     if instance.interface_b is not None:
-        logger.debug(f'Nullifying interface B for wireless link {instance}')
+        logger.debug(f"Nullifying interface B for wireless link {instance}")
         Interface.objects.filter(pk=instance.interface_b.pk).update(wireless_link=None)
 
     # Delete and retrace any dependent cable paths

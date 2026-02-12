@@ -19,7 +19,9 @@ from utilities.testing import APITestCase, APIViewTestCases
 
 
 class AppTest(APITestCase):
+
     def test_root(self):
+
         url = reverse('extras-api:api-root')
         response = self.client.get('{}?format=api'.format(url), **self.header)
 
@@ -50,6 +52,7 @@ class WebhookTest(APIViewTestCases.APIViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
+
         webhooks = (
             Webhook(
                 name='Webhook 1',
@@ -179,9 +182,18 @@ class CustomFieldTest(APIViewTestCases.APIViewTestCase):
         site_ct = ObjectType.objects.get_for_model(Site)
 
         custom_fields = (
-            CustomField(name='cf1', type='text'),
-            CustomField(name='cf2', type='integer'),
-            CustomField(name='cf3', type='boolean'),
+            CustomField(
+                name='cf1',
+                type='text'
+            ),
+            CustomField(
+                name='cf2',
+                type='integer'
+            ),
+            CustomField(
+                name='cf3',
+                type='boolean'
+            ),
         )
         CustomField.objects.bulk_create(custom_fields)
         for cf in custom_fields:
@@ -254,12 +266,12 @@ class CustomFieldChoiceSetTest(APIViewTestCases.APIViewTestCase):
         """
         self.add_permissions('extras.add_customfieldchoiceset')
         data = {
-            'name': 'test',
-            'extra_choices': [
-                ['choice1'],
-                ['choice2'],
-                ['choice3'],
-            ],
+            "name": "test",
+            "extra_choices": [
+                ["choice1"],
+                ["choice2"],
+                ["choice3"],
+            ]
         }
 
         response = self.client.post(self._get_list_url(), data, format='json', **self.header)
@@ -375,7 +387,7 @@ class SavedFilterTest(APIViewTestCases.APIViewTestCase):
                 weight=100,
                 enabled=True,
                 shared=True,
-                parameters={'status': ['active']},
+                parameters={'status': ['active']}
             ),
             SavedFilter(
                 name='Saved Filter 2',
@@ -383,7 +395,7 @@ class SavedFilterTest(APIViewTestCases.APIViewTestCase):
                 weight=200,
                 enabled=True,
                 shared=True,
-                parameters={'status': ['planned']},
+                parameters={'status': ['planned']}
             ),
             SavedFilter(
                 name='Saved Filter 3',
@@ -391,7 +403,7 @@ class SavedFilterTest(APIViewTestCases.APIViewTestCase):
                 weight=300,
                 enabled=True,
                 shared=True,
-                parameters={'status': ['retired']},
+                parameters={'status': ['retired']}
             ),
         )
         SavedFilter.objects.bulk_create(saved_filters)
@@ -403,7 +415,7 @@ class BookmarkTest(
     APIViewTestCases.GetObjectViewTestCase,
     APIViewTestCases.ListObjectsViewTestCase,
     APIViewTestCases.CreateObjectViewTestCase,
-    APIViewTestCases.DeleteObjectViewTestCase,
+    APIViewTestCases.DeleteObjectViewTestCase
 ):
     model = Bookmark
     brief_fields = ['display', 'id', 'object_id', 'object_type', 'url']
@@ -480,7 +492,8 @@ class ExportTemplateTest(APIViewTestCases.APIViewTestCase):
     def setUpTestData(cls):
         export_templates = (
             ExportTemplate(
-                name='Export Template 1', template_code='{% for obj in queryset %}{{ obj.name }}\n{% endfor %}'
+                name='Export Template 1',
+                template_code='{% for obj in queryset %}{{ obj.name }}\n{% endfor %}'
             ),
             ExportTemplate(
                 name='Export Template 2',
@@ -489,7 +502,8 @@ class ExportTemplateTest(APIViewTestCases.APIViewTestCase):
                 file_extension='test',
             ),
             ExportTemplate(
-                name='Export Template 3', template_code='{% for obj in queryset %}{{ obj.name }}\n{% endfor %}'
+                name='Export Template 3',
+                template_code='{% for obj in queryset %}{{ obj.name }}\n{% endfor %}'
             ),
         )
         ExportTemplate.objects.bulk_create(export_templates)
@@ -523,6 +537,7 @@ class TagTest(APIViewTestCases.APIViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
+
         tags = (
             Tag(name='Tag 1', slug='tag-1'),
             Tag(name='Tag 2', slug='tag-2'),
@@ -531,12 +546,16 @@ class TagTest(APIViewTestCases.APIViewTestCase):
         Tag.objects.bulk_create(tags)
 
 
-class TaggedItemTest(APIViewTestCases.GetObjectViewTestCase, APIViewTestCases.ListObjectsViewTestCase):
+class TaggedItemTest(
+    APIViewTestCases.GetObjectViewTestCase,
+    APIViewTestCases.ListObjectsViewTestCase
+):
     model = TaggedItem
     brief_fields = ['display', 'id', 'object', 'object_id', 'object_type', 'tag', 'url']
 
     @classmethod
     def setUpTestData(cls):
+
         tags = (
             Tag(name='Tag 1', slug='tag-1'),
             Tag(name='Tag 2', slug='tag-2'),
@@ -560,7 +579,7 @@ class ImageAttachmentTest(
     APIViewTestCases.GetObjectViewTestCase,
     APIViewTestCases.ListObjectsViewTestCase,
     APIViewTestCases.DeleteObjectViewTestCase,
-    APIViewTestCases.GraphQLTestCase,
+    APIViewTestCases.GraphQLTestCase
 ):
     model = ImageAttachment
     brief_fields = ['description', 'display', 'id', 'image', 'name', 'url']
@@ -578,7 +597,7 @@ class ImageAttachmentTest(
                 name='Image Attachment 1',
                 image='http://example.com/image1.png',
                 image_height=100,
-                image_width=100,
+                image_width=100
             ),
             ImageAttachment(
                 object_type=ct,
@@ -586,7 +605,7 @@ class ImageAttachmentTest(
                 name='Image Attachment 2',
                 image='http://example.com/image2.png',
                 image_height=100,
-                image_width=100,
+                image_width=100
             ),
             ImageAttachment(
                 object_type=ct,
@@ -594,8 +613,8 @@ class ImageAttachmentTest(
                 name='Image Attachment 3',
                 image='http://example.com/image3.png',
                 image_height=100,
-                image_width=100,
-            ),
+                image_width=100
+            )
         )
         ImageAttachment.objects.bulk_create(image_attachments)
 
@@ -672,13 +691,43 @@ class ConfigContextProfileTest(APIViewTestCases.APIViewTestCase):
     def setUpTestData(cls):
         profiles = (
             ConfigContextProfile(
-                name='Config Context Profile 1', schema={'properties': {'foo': {'type': 'string'}}, 'required': ['foo']}
+                name='Config Context Profile 1',
+                schema={
+                    "properties": {
+                        "foo": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "foo"
+                    ]
+                }
             ),
             ConfigContextProfile(
-                name='Config Context Profile 2', schema={'properties': {'bar': {'type': 'string'}}, 'required': ['bar']}
+                name='Config Context Profile 2',
+                schema={
+                    "properties": {
+                        "bar": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "bar"
+                    ]
+                }
             ),
             ConfigContextProfile(
-                name='Config Context Profile 3', schema={'properties': {'baz': {'type': 'string'}}, 'required': ['baz']}
+                name='Config Context Profile 3',
+                schema={
+                    "properties": {
+                        "baz": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "baz"
+                    ]
+                }
             ),
         )
         ConfigContextProfile.objects.bulk_create(profiles)
@@ -752,6 +801,7 @@ class ConfigContextTest(APIViewTestCases.APIViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
+
         config_contexts = (
             ConfigContext(name='Config Context 1', weight=100, data={'foo': 123}),
             ConfigContext(name='Config Context 2', weight=200, data={'bar': 456}),
@@ -776,14 +826,21 @@ class ConfigContextTest(APIViewTestCases.APIViewTestCase):
         self.assertEqual(rendered_context['baz'], 789)
 
         # Add another context specific to the site
-        configcontext4 = ConfigContext(name='Config Context 4', data={'site_data': 'ABC'})
+        configcontext4 = ConfigContext(
+            name='Config Context 4',
+            data={'site_data': 'ABC'}
+        )
         configcontext4.save()
         configcontext4.sites.add(site)
         rendered_context = device.get_config_context()
         self.assertEqual(rendered_context['site_data'], 'ABC')
 
         # Override one of the default contexts
-        configcontext5 = ConfigContext(name='Config Context 5', weight=2000, data={'foo': 999})
+        configcontext5 = ConfigContext(
+            name='Config Context 5',
+            weight=2000,
+            data={'foo': 999}
+        )
         configcontext5.save()
         configcontext5.sites.add(site)
         rendered_context = device.get_config_context()
@@ -791,7 +848,11 @@ class ConfigContextTest(APIViewTestCases.APIViewTestCase):
 
         # Add a context which does NOT match our device and ensure it does not apply
         site2 = Site.objects.create(name='Site 2', slug='site-2')
-        configcontext6 = ConfigContext(name='Config Context 6', weight=2000, data={'bar': 999})
+        configcontext6 = ConfigContext(
+            name='Config Context 6',
+            weight=2000,
+            data={'bar': 999}
+        )
         configcontext6.save()
         configcontext6.sites.add(site2)
         rendered_context = device.get_config_context()
@@ -871,12 +932,18 @@ class ConfigTemplateTest(APIViewTestCases.APIViewTestCase):
     @classmethod
     def setUpTestData(cls):
         config_templates = (
-            ConfigTemplate(name='Config Template 1', template_code='Foo: {{ foo }}'),
+            ConfigTemplate(
+                name='Config Template 1',
+                template_code='Foo: {{ foo }}'
+            ),
             ConfigTemplate(
                 name='Config Template 2',
                 template_code='Bar: {{ bar }}',
             ),
-            ConfigTemplate(name='Config Template 3', template_code='Baz: {{ baz }}'),
+            ConfigTemplate(
+                name='Config Template 3',
+                template_code='Baz: {{ baz }}'
+            ),
         )
         ConfigTemplate.objects.bulk_create(config_templates)
 
@@ -923,6 +990,7 @@ class ConfigTemplateTest(APIViewTestCases.APIViewTestCase):
 
 
 class ScriptTest(APITestCase):
+
     class TestScriptClass(PythonClass):
         class Meta:
             name = 'Test script'
@@ -1044,6 +1112,7 @@ class ScriptTest(APITestCase):
 
 
 class CreatedUpdatedFilterTest(APITestCase):
+
     @classmethod
     def setUpTestData(cls):
         site1 = Site.objects.create(name='Site 1', slug='site-1')
@@ -1051,14 +1120,14 @@ class CreatedUpdatedFilterTest(APITestCase):
         rackrole1 = RackRole.objects.create(name='Rack Role 1', slug='rack-role-1', color='ff0000')
         racks = (
             Rack(site=site1, location=location1, role=rackrole1, name='Rack 1', u_height=42),
-            Rack(site=site1, location=location1, role=rackrole1, name='Rack 2', u_height=42),
+            Rack(site=site1, location=location1, role=rackrole1, name='Rack 2', u_height=42)
         )
         Rack.objects.bulk_create(racks)
 
         # Change the created and last_updated of the second rack
         Rack.objects.filter(pk=racks[1].pk).update(
             last_updated=make_aware(datetime.datetime(2001, 2, 3, 1, 2, 3, 4)),
-            created=make_aware(datetime.datetime(2001, 2, 3)),
+            created=make_aware(datetime.datetime(2001, 2, 3))
         )
 
     def test_get_rack_created(self):

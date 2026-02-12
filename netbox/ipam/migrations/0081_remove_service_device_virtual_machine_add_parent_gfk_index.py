@@ -2,6 +2,7 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
+
     dependencies = [
         ('contenttypes', '0002_remove_content_type_name'),
         ('extras', '0126_exporttemplate_file_name'),
@@ -25,7 +26,9 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='service',
             name='parent_object_type',
-            field=models.ForeignKey(on_delete=models.deletion.PROTECT, related_name='+', to='contenttypes.contenttype'),
+            field=models.ForeignKey(
+                on_delete=models.deletion.PROTECT, related_name='+', to='contenttypes.contenttype'
+            ),
         ),
         migrations.AddIndex(
             model_name='service',

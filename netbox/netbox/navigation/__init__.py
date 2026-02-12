@@ -18,9 +18,9 @@ __all__ = (
 # Navigation menu data classes
 #
 
-
 @dataclass
 class MenuItemButton:
+
     link: str
     title: str
     icon_class: str
@@ -43,6 +43,7 @@ class MenuItemButton:
 
 @dataclass
 class MenuItem:
+
     link: str
     link_text: str
     _url: Optional[str] = None
@@ -66,12 +67,14 @@ class MenuItem:
 
 @dataclass
 class MenuGroup:
+
     label: str
     items: Sequence[MenuItem]
 
 
 @dataclass
 class Menu:
+
     label: str
     icon_class: str
     groups: Sequence[MenuGroup]
@@ -85,13 +88,12 @@ class Menu:
 # Utility functions
 #
 
-
 def get_model_item(app_label, model_name, label, actions=('add', 'bulk_import')):
     return MenuItem(
         link=f'{app_label}:{model_name}_list',
         link_text=label,
         permissions=[f'{app_label}.view_{model_name}'],
-        buttons=get_model_buttons(app_label, model_name, actions),
+        buttons=get_model_buttons(app_label, model_name, actions)
     )
 
 
@@ -104,7 +106,7 @@ def get_model_buttons(app_label, model_name, actions=('add', 'bulk_import')):
                 link=f'{app_label}:{model_name}_add',
                 title='Add',
                 icon_class='mdi mdi-plus-thick',
-                permissions=[f'{app_label}.add_{model_name}'],
+                permissions=[f'{app_label}.add_{model_name}']
             )
         )
     if 'bulk_import' in actions:
@@ -113,7 +115,7 @@ def get_model_buttons(app_label, model_name, actions=('add', 'bulk_import')):
                 link=f'{app_label}:{model_name}_bulk_import',
                 title='Import',
                 icon_class='mdi mdi-upload',
-                permissions=[f'{app_label}.add_{model_name}'],
+                permissions=[f'{app_label}.add_{model_name}']
             )
         )
 

@@ -27,36 +27,75 @@ from utilities.json import JobLogDecoder
 from utilities.querysets import RestrictedQuerySet
 from utilities.rqworker import get_queue_for_model
 
-__all__ = ('Job',)
+__all__ = (
+    'Job',
+)
 
 
 class Job(models.Model):
     """
     Tracks the lifecycle of a job which represents a background task (e.g. the execution of a custom script).
     """
-
     object_type = models.ForeignKey(
-        to='contenttypes.ContentType', related_name='jobs', on_delete=models.CASCADE, blank=True, null=True
+        to='contenttypes.ContentType',
+        related_name='jobs',
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True
     )
-    object_id = models.PositiveBigIntegerField(blank=True, null=True)
-    object = GenericForeignKey(ct_field='object_type', fk_field='object_id', for_concrete_model=False)
-    name = models.CharField(verbose_name=_('name'), max_length=200)
-    created = models.DateTimeField(verbose_name=_('created'), auto_now_add=True)
-    scheduled = models.DateTimeField(verbose_name=_('scheduled'), null=True, blank=True)
+    object_id = models.PositiveBigIntegerField(
+        blank=True,
+        null=True
+    )
+    object = GenericForeignKey(
+        ct_field='object_type',
+        fk_field='object_id',
+        for_concrete_model=False
+    )
+    name = models.CharField(
+        verbose_name=_('name'),
+        max_length=200
+    )
+    created = models.DateTimeField(
+        verbose_name=_('created'),
+        auto_now_add=True
+    )
+    scheduled = models.DateTimeField(
+        verbose_name=_('scheduled'),
+        null=True,
+        blank=True
+    )
     interval = models.PositiveIntegerField(
         verbose_name=_('interval'),
         blank=True,
         null=True,
-        validators=(MinValueValidator(1),),
-        help_text=_('Recurrence interval (in minutes)'),
+        validators=(
+            MinValueValidator(1),
+        ),
+        help_text=_('Recurrence interval (in minutes)')
     )
-    started = models.DateTimeField(verbose_name=_('started'), null=True, blank=True)
-    completed = models.DateTimeField(verbose_name=_('completed'), null=True, blank=True)
+    started = models.DateTimeField(
+        verbose_name=_('started'),
+        null=True,
+        blank=True
+    )
+    completed = models.DateTimeField(
+        verbose_name=_('completed'),
+        null=True,
+        blank=True
+    )
     user = models.ForeignKey(
-        to=settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='+', blank=True, null=True
+        to=settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        related_name='+',
+        blank=True,
+        null=True
     )
     status = models.CharField(
-        verbose_name=_('status'), max_length=30, choices=JobStatusChoices, default=JobStatusChoices.STATUS_PENDING
+        verbose_name=_('status'),
+        max_length=30,
+        choices=JobStatusChoices,
+        default=JobStatusChoices.STATUS_PENDING
     )
     data = models.JSONField(
         verbose_name=_('data'),
@@ -93,7 +132,9 @@ class Job(models.Model):
 
     class Meta:
         ordering = ['-created']
-        indexes = (models.Index(fields=('object_type', 'object_id')),)
+        indexes = (
+            models.Index(fields=('object_type', 'object_id')),
+        )
         verbose_name = _('job')
         verbose_name_plural = _('jobs')
 
@@ -125,7 +166,7 @@ class Job(models.Model):
         # Validate the assigned object type
         if self.object_type and not has_feature(self.object_type, 'jobs'):
             raise ValidationError(
-                _('Jobs cannot be assigned to this object type ({type}).').format(type=self.object_type)
+                _("Jobs cannot be assigned to this object type ({type}).").format(type=self.object_type)
             )
 
     @property
@@ -141,7 +182,7 @@ class Job(models.Model):
         duration = self.completed - start_time
         minutes, seconds = divmod(duration.total_seconds(), 60)
 
-        return f'{int(minutes)} minutes, {seconds:.2f} seconds'
+        return f"{int(minutes)} minutes, {seconds:.2f} seconds"
 
     def delete(self, *args, **kwargs):
         # Use the stored queue name, or fall back to get_queue_for_model for legacy jobs
@@ -182,7 +223,7 @@ class Job(models.Model):
         """
         if status not in JobStatusChoices.TERMINAL_STATE_CHOICES:
             raise ValueError(
-                _('Invalid status for job termination. Choices are: {choices}').format(
+                _("Invalid status for job termination. Choices are: {choices}").format(
                     choices=', '.join(JobStatusChoices.TERMINAL_STATE_CHOICES)
                 )
             )
@@ -214,16 +255,16 @@ class Job(models.Model):
 
     @classmethod
     def enqueue(
-        cls,
-        func,
-        instance=None,
-        name='',
-        user=None,
-        schedule_at=None,
-        interval=None,
-        immediate=False,
-        queue_name=None,
-        **kwargs,
+            cls,
+            func,
+            instance=None,
+            name='',
+            user=None,
+            schedule_at=None,
+            interval=None,
+            immediate=False,
+            queue_name=None,
+            **kwargs
     ):
         """
         Create a Job instance and enqueue a job using the given callable
@@ -239,7 +280,7 @@ class Job(models.Model):
                 management commands only.
         """
         if schedule_at and immediate:
-            raise ValueError(_('enqueue() cannot be called with values for both schedule_at and immediate.'))
+            raise ValueError(_("enqueue() cannot be called with values for both schedule_at and immediate."))
 
         if instance:
             object_type = ObjectType.objects.get_for_model(instance, for_concrete_model=False)

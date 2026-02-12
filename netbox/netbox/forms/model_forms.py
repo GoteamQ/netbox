@@ -16,7 +16,13 @@ __all__ = (
 )
 
 
-class NetBoxModelForm(ChangelogMessageMixin, CheckLastUpdatedMixin, CustomFieldsMixin, TagsMixin, forms.ModelForm):
+class NetBoxModelForm(
+    ChangelogMessageMixin,
+    CheckLastUpdatedMixin,
+    CustomFieldsMixin,
+    TagsMixin,
+    forms.ModelForm
+):
     """
     Base form for creating & editing NetBox models. Extends Django's ModelForm to add support for custom fields.
 
@@ -24,7 +30,6 @@ class NetBoxModelForm(ChangelogMessageMixin, CheckLastUpdatedMixin, CustomFields
         fieldsets: An iterable of FieldSets which define a name and set of fields to display per section of
             the rendered form (optional). If not defined, the all fields will be rendered as a single section.
     """
-
     fieldsets = ()
 
     def _get_content_type(self):
@@ -43,6 +48,7 @@ class NetBoxModelForm(ChangelogMessageMixin, CheckLastUpdatedMixin, CustomFields
         return customfield.to_form_field()
 
     def clean(self):
+
         # Save custom field data on instance
         for cf_name, customfield in self.custom_fields.items():
             if cf_name not in self.fields:
@@ -77,7 +83,6 @@ class PrimaryModelForm(OwnerMixin, NetBoxModelForm):
     """
     Form for models which inherit from PrimaryModel.
     """
-
     comments = CommentField()
 
 
@@ -85,7 +90,6 @@ class OrganizationalModelForm(OwnerMixin, NetBoxModelForm):
     """
     Form for models which inherit from OrganizationalModel.
     """
-
     slug = SlugField()
     comments = CommentField()
 
@@ -94,6 +98,5 @@ class NestedGroupModelForm(OwnerMixin, NetBoxModelForm):
     """
     Form for models which inherit from NestedGroupModel.
     """
-
     slug = SlugField()
     comments = CommentField()

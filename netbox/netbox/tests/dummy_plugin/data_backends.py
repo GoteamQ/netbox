@@ -13,4 +13,6 @@ class DummyBackend(DataBackend):
         yield '/tmp'
 
 
-backends = (DummyBackend,)
+backends = (
+    DummyBackend,
+)

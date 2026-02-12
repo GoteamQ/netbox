@@ -48,7 +48,6 @@ class ColorSelect(forms.Select):
     """
     Extends the built-in Select widget to colorize each <option>.
     """
-
     option_template_name = 'widgets/colorselect_option.html'
 
     def __init__(self, *args, **kwargs):
@@ -61,11 +60,10 @@ class HTMXSelect(forms.Select):
     """
     Selection widget that will re-generate the HTML form upon the selection of a new option.
     """
-
     def __init__(self, method='get', hx_url='.', hx_target_id='form_fields', attrs=None, **kwargs):
         method = method.lower()
         if method not in ('delete', 'get', 'patch', 'post', 'put'):
-            raise ValueError(f'Unsupported HTTP method: {method}')
+            raise ValueError(f"Unsupported HTTP method: {method}")
         _attrs = {
             f'hx-{method}': hx_url,
             'hx-include': f'#{hx_target_id}',
@@ -81,7 +79,6 @@ class SelectWithPK(forms.Select):
     """
     Include the primary key of each option in the option label (e.g. "Router7 (4721)").
     """
-
     option_template_name = 'widgets/select_option_with_pk.html'
 
 
@@ -90,7 +87,6 @@ class SelectMultipleBase(forms.SelectMultiple):
     Base class for select widgets that filter choices based on selected values.
     Subclasses should set `include_selected` to control filtering behavior.
     """
-
     include_selected = False
 
     def optgroups(self, name, value, attrs=None):
@@ -100,7 +96,9 @@ class SelectMultipleBase(forms.SelectMultiple):
         for choice in self.choices:
             if isinstance(choice[1], (list, tuple)):  # optgroup
                 group_label, group_choices = choice
-                filtered_group = [c for c in group_choices if (str(c[0]) in value) == include_selected]
+                filtered_group = [
+                    c for c in group_choices if (str(c[0]) in value) == include_selected
+                ]
 
                 if filtered_group:  # Only include optgroup if it has choices left
                     filtered_choices.append((group_label, filtered_group))
@@ -138,7 +136,6 @@ class SelectedOptions(SelectMultipleBase):
     Renders a <select multiple=true> including only choices that have _not_ been selected. (For unbound fields, this
     will include _all_ choices.) Employed by SplitMultiSelectWidget.
     """
-
     include_selected = True
 
 
@@ -151,13 +148,18 @@ class SplitMultiSelectWidget(forms.MultiWidget):
         ordering: If true, the selected choices list will include controls to reorder items within the list. This should
                   be enabled only if the order of the selected choices is significant.
     """
-
     template_name = 'widgets/splitmultiselect.html'
 
     def __init__(self, choices, attrs=None, ordering=False):
         widgets = [
-            AvailableOptions(attrs={'size': 8}, choices=choices),
-            SelectedOptions(attrs={'size': 8, 'class': 'select-all'}, choices=choices),
+            AvailableOptions(
+                attrs={'size': 8},
+                choices=choices
+            ),
+            SelectedOptions(
+                attrs={'size': 8, 'class': 'select-all'},
+                choices=choices
+            ),
         ]
 
         super().__init__(widgets, attrs)

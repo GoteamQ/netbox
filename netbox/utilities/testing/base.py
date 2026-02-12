@@ -29,6 +29,7 @@ class TestCase(_TestCase):
     user_permissions = ()
 
     def setUp(self):
+
         # Create the test user and assign permissions
         self.user = User.objects.create_user(username='testuser')
         self.add_permissions(*self.user_permissions)
@@ -94,7 +95,7 @@ class TestCase(_TestCase):
                 # Attempt to extract form validation errors from the response HTML
                 form_errors = extract_form_failures(response.content)
                 err = form_errors or response.content or 'No data'
-            err_message = f'Expected HTTP status {expected_status}; received {response.status_code}: {err}'
+            err_message = f"Expected HTTP status {expected_status}; received {response.status_code}: {err}"
         self.assertEqual(response.status_code, expected_status, err_message)
 
 
@@ -102,7 +103,6 @@ class ModelTestCase(TestCase):
     """
     Parent class for TestCases which deal with models.
     """
-
     model = None
 
     def _get_queryset(self):
@@ -210,7 +210,9 @@ class ModelTestCase(TestCase):
         model_dict = self.model_to_dict(instance, fields=fields, api=api)
 
         # Omit any dictionary keys which are not instance attributes or have been excluded
-        model_data = {k: v for k, v in data.items() if hasattr(instance, k) and k not in exclude}
+        model_data = {
+            k: v for k, v in data.items() if hasattr(instance, k) and k not in exclude
+        }
 
         self.assertDictEqual(model_dict, model_data)
 

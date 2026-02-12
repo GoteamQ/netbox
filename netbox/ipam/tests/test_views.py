@@ -54,17 +54,17 @@ class ASNRangeTestCase(ViewTestCases.PrimaryObjectViewTestCase):
         }
 
         cls.csv_data = (
-            'name,slug,rir,tenant,start,end,description',
-            f'ASN Range 4,asn-range-4,{rirs[1].name},{tenants[1].name},400,499,Fourth range',
-            f'ASN Range 5,asn-range-5,{rirs[1].name},{tenants[1].name},500,599,Fifth range',
-            f'ASN Range 6,asn-range-6,{rirs[1].name},{tenants[1].name},600,699,Sixth range',
+            "name,slug,rir,tenant,start,end,description",
+            f"ASN Range 4,asn-range-4,{rirs[1].name},{tenants[1].name},400,499,Fourth range",
+            f"ASN Range 5,asn-range-5,{rirs[1].name},{tenants[1].name},500,599,Fifth range",
+            f"ASN Range 6,asn-range-6,{rirs[1].name},{tenants[1].name},600,699,Sixth range",
         )
 
         cls.csv_update_data = (
-            'id,description',
-            f'{asn_ranges[0].pk},New description 1',
-            f'{asn_ranges[1].pk},New description 2',
-            f'{asn_ranges[2].pk},New description 3',
+            "id,description",
+            f"{asn_ranges[0].pk},New description 1",
+            f"{asn_ranges[1].pk},New description 2",
+            f"{asn_ranges[2].pk},New description 3",
         )
 
         cls.bulk_edit_data = {
@@ -84,7 +84,10 @@ class ASNTestCase(ViewTestCases.PrimaryObjectViewTestCase):
         ]
         RIR.objects.bulk_create(rirs)
 
-        sites = (Site(name='Site 1', slug='site-1'), Site(name='Site 2', slug='site-2'))
+        sites = (
+            Site(name='Site 1', slug='site-1'),
+            Site(name='Site 2', slug='site-2')
+        )
         Site.objects.bulk_create(sites)
 
         tenants = (
@@ -118,18 +121,18 @@ class ASNTestCase(ViewTestCases.PrimaryObjectViewTestCase):
         }
 
         cls.csv_data = (
-            'asn,rir',
-            '65003,RIR 1',
-            '65004,RIR 2',
-            '4200000003,RIR 1',
-            '4200000004,RIR 2',
+            "asn,rir",
+            "65003,RIR 1",
+            "65004,RIR 2",
+            "4200000003,RIR 1",
+            "4200000004,RIR 2",
         )
 
         cls.csv_update_data = (
-            'id,description',
-            f'{asns[0].pk},New description1',
-            f'{asns[1].pk},New description2',
-            f'{asns[2].pk},New description3',
+            "id,description",
+            f"{asns[0].pk},New description1",
+            f"{asns[1].pk},New description2",
+            f"{asns[2].pk},New description3",
         )
 
         cls.bulk_edit_data = {
@@ -143,6 +146,7 @@ class VRFTestCase(ViewTestCases.PrimaryObjectViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
+
         tenants = (
             Tenant(name='Tenant A', slug='tenant-a'),
             Tenant(name='Tenant B', slug='tenant-b'),
@@ -168,17 +172,17 @@ class VRFTestCase(ViewTestCases.PrimaryObjectViewTestCase):
         }
 
         cls.csv_data = (
-            'name',
-            'VRF 4',
-            'VRF 5',
-            'VRF 6',
+            "name",
+            "VRF 4",
+            "VRF 5",
+            "VRF 6",
         )
 
         cls.csv_update_data = (
-            'id,name',
-            f'{vrfs[0].pk},VRF 7',
-            f'{vrfs[1].pk},VRF 8',
-            f'{vrfs[2].pk},VRF 9',
+            "id,name",
+            f"{vrfs[0].pk},VRF 7",
+            f"{vrfs[1].pk},VRF 8",
+            f"{vrfs[2].pk},VRF 9",
         )
 
         cls.bulk_edit_data = {
@@ -193,6 +197,7 @@ class RouteTargetTestCase(ViewTestCases.PrimaryObjectViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
+
         tenants = (
             Tenant(name='Tenant A', slug='tenant-a'),
             Tenant(name='Tenant B', slug='tenant-b'),
@@ -215,17 +220,17 @@ class RouteTargetTestCase(ViewTestCases.PrimaryObjectViewTestCase):
         }
 
         cls.csv_data = (
-            'name,tenant,description',
-            '65000:1004,Tenant A,Foo',
-            '65000:1005,Tenant B,Bar',
-            '65000:1006,,No tenant',
+            "name,tenant,description",
+            "65000:1004,Tenant A,Foo",
+            "65000:1005,Tenant B,Bar",
+            "65000:1006,,No tenant",
         )
 
         cls.csv_update_data = (
-            'id,name,description',
-            f'{route_targets[0].pk},65000:1007,New description1',
-            f'{route_targets[1].pk},65000:1008,New description2',
-            f'{route_targets[2].pk},65000:1009,New description3',
+            "id,name,description",
+            f"{route_targets[0].pk},65000:1007,New description1",
+            f"{route_targets[1].pk},65000:1008,New description2",
+            f"{route_targets[2].pk},65000:1009,New description3",
         )
 
         cls.bulk_edit_data = {
@@ -239,6 +244,7 @@ class RIRTestCase(ViewTestCases.OrganizationalObjectViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
+
         rirs = (
             RIR(name='RIR 1', slug='rir-1'),
             RIR(name='RIR 2', slug='rir-2'),
@@ -257,17 +263,17 @@ class RIRTestCase(ViewTestCases.OrganizationalObjectViewTestCase):
         }
 
         cls.csv_data = (
-            'name,slug,description',
-            'RIR 4,rir-4,Fourth RIR',
-            'RIR 5,rir-5,Fifth RIR',
-            'RIR 6,rir-6,Sixth RIR',
+            "name,slug,description",
+            "RIR 4,rir-4,Fourth RIR",
+            "RIR 5,rir-5,Fifth RIR",
+            "RIR 6,rir-6,Sixth RIR",
         )
 
         cls.csv_update_data = (
-            'id,name,description',
-            f'{rirs[0].pk},RIR 7,Fourth RIR7',
-            f'{rirs[1].pk},RIR 8,Fifth RIR8',
-            f'{rirs[2].pk},RIR 9,Sixth RIR9',
+            "id,name,description",
+            f"{rirs[0].pk},RIR 7,Fourth RIR7",
+            f"{rirs[1].pk},RIR 8,Fifth RIR8",
+            f"{rirs[2].pk},RIR 9,Sixth RIR9",
         )
 
         cls.bulk_edit_data = {
@@ -280,6 +286,7 @@ class AggregateTestCase(ViewTestCases.PrimaryObjectViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
+
         rirs = (
             RIR(name='RIR 1', slug='rir-1'),
             RIR(name='RIR 2', slug='rir-2'),
@@ -304,17 +311,17 @@ class AggregateTestCase(ViewTestCases.PrimaryObjectViewTestCase):
         }
 
         cls.csv_data = (
-            'prefix,rir',
-            '10.4.0.0/16,RIR 1',
-            '10.5.0.0/16,RIR 1',
-            '10.6.0.0/16,RIR 1',
+            "prefix,rir",
+            "10.4.0.0/16,RIR 1",
+            "10.5.0.0/16,RIR 1",
+            "10.6.0.0/16,RIR 1",
         )
 
         cls.csv_update_data = (
-            'id,description',
-            f'{aggregates[0].pk},New description1',
-            f'{aggregates[1].pk},New description2',
-            f'{aggregates[2].pk},New description3',
+            "id,description",
+            f"{aggregates[0].pk},New description1",
+            f"{aggregates[1].pk},New description2",
+            f"{aggregates[2].pk},New description3",
         )
 
         cls.bulk_edit_data = {
@@ -344,6 +351,7 @@ class RoleTestCase(ViewTestCases.OrganizationalObjectViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
+
         roles = (
             Role(name='Role 1', slug='role-1'),
             Role(name='Role 2', slug='role-2'),
@@ -362,17 +370,17 @@ class RoleTestCase(ViewTestCases.OrganizationalObjectViewTestCase):
         }
 
         cls.csv_data = (
-            'name,slug,weight',
-            'Role 4,role-4,1000',
-            'Role 5,role-5,1000',
-            'Role 6,role-6,1000',
+            "name,slug,weight",
+            "Role 4,role-4,1000",
+            "Role 5,role-5,1000",
+            "Role 6,role-6,1000",
         )
 
         cls.csv_update_data = (
-            'id,name,description',
-            f'{roles[0].pk},Role 7,New description7',
-            f'{roles[1].pk},Role 8,New description8',
-            f'{roles[2].pk},Role 9,New description9',
+            "id,name,description",
+            f"{roles[0].pk},Role 7,New description7",
+            f"{roles[1].pk},Role 8,New description8",
+            f"{roles[2].pk},Role 9,New description9",
         )
 
         cls.bulk_edit_data = {
@@ -385,6 +393,7 @@ class PrefixTestCase(ViewTestCases.PrimaryObjectViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
+
         sites = (
             Site(name='Site 1', slug='site-1'),
             Site(name='Site 2', slug='site-2'),
@@ -428,17 +437,17 @@ class PrefixTestCase(ViewTestCases.PrimaryObjectViewTestCase):
 
         site = sites[0].pk
         cls.csv_data = (
-            'vrf,prefix,status,scope_type,scope_id',
-            f'VRF 1,10.4.0.0/16,active,dcim.site,{site}',
-            f'VRF 1,10.5.0.0/16,active,dcim.site,{site}',
-            f'VRF 1,10.6.0.0/16,active,dcim.site,{site}',
+            "vrf,prefix,status,scope_type,scope_id",
+            f"VRF 1,10.4.0.0/16,active,dcim.site,{site}",
+            f"VRF 1,10.5.0.0/16,active,dcim.site,{site}",
+            f"VRF 1,10.6.0.0/16,active,dcim.site,{site}",
         )
 
         cls.csv_update_data = (
-            'id,description,status',
-            f'{prefixes[0].pk},New description 7,{PrefixStatusChoices.STATUS_RESERVED}',
-            f'{prefixes[1].pk},New description 8,{PrefixStatusChoices.STATUS_RESERVED}',
-            f'{prefixes[2].pk},New description 9,{PrefixStatusChoices.STATUS_RESERVED}',
+            "id,description,status",
+            f"{prefixes[0].pk},New description 7,{PrefixStatusChoices.STATUS_RESERVED}",
+            f"{prefixes[1].pk},New description 8,{PrefixStatusChoices.STATUS_RESERVED}",
+            f"{prefixes[2].pk},New description 9,{PrefixStatusChoices.STATUS_RESERVED}",
         )
 
         cls.bulk_edit_data = {
@@ -511,7 +520,10 @@ scope_id: {site.pk}
         # Add all required permissions to the test user
         self.add_permissions('ipam.view_prefix', 'ipam.add_prefix')
 
-        form_data = {'data': IMPORT_DATA, 'format': 'yaml'}
+        form_data = {
+            'data': IMPORT_DATA,
+            'format': 'yaml'
+        }
         response = self.client.post(reverse('ipam:prefix_bulk_import'), data=form_data, follow=True)
         self.assertHttpStatus(response, 200)
 
@@ -534,13 +546,16 @@ scope_id: {site.pk}
 vlan_group: Group 1
 vlan: 102
 """
-        vlan_group = VLANGroup.objects.create(name='Group 1', slug='group-1', scope=Site.objects.get(name='Site 1'))
+        vlan_group = VLANGroup.objects.create(name='Group 1', slug='group-1', scope=Site.objects.get(name="Site 1"))
         VLAN.objects.create(vid=102, name='VLAN102', group=vlan_group)
 
         # Add all required permissions to the test user
         self.add_permissions('ipam.view_prefix', 'ipam.add_prefix')
 
-        form_data = {'data': IMPORT_DATA, 'format': 'yaml'}
+        form_data = {
+            'data': IMPORT_DATA,
+            'format': 'yaml'
+        }
         response = self.client.post(reverse('ipam:prefix_bulk_import'), data=form_data, follow=True)
         self.assertHttpStatus(response, 200)
 
@@ -576,7 +591,10 @@ description: LOC02-MGMT
         # Add all required permissions to the test user
         self.add_permissions('ipam.view_prefix', 'ipam.add_prefix')
 
-        form_data = {'data': IMPORT_DATA, 'format': 'yaml'}
+        form_data = {
+            'data': IMPORT_DATA,
+            'format': 'yaml'
+        }
         response = self.client.post(reverse('ipam:prefix_bulk_import'), data=form_data, follow=True)
         self.assertHttpStatus(response, 200)
 
@@ -611,7 +629,10 @@ description: Test Site-Specific VLAN
         # Add all required permissions to the test user
         self.add_permissions('ipam.view_prefix', 'ipam.add_prefix')
 
-        form_data = {'data': IMPORT_DATA, 'format': 'yaml'}
+        form_data = {
+            'data': IMPORT_DATA,
+            'format': 'yaml'
+        }
         response = self.client.post(reverse('ipam:prefix_bulk_import'), data=form_data, follow=True)
         self.assertHttpStatus(response, 200)
 
@@ -625,6 +646,7 @@ class IPRangeTestCase(ViewTestCases.PrimaryObjectViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
+
         vrfs = (
             VRF(name='VRF 1', rd='65000:1'),
             VRF(name='VRF 2', rd='65000:2'),
@@ -662,17 +684,17 @@ class IPRangeTestCase(ViewTestCases.PrimaryObjectViewTestCase):
         }
 
         cls.csv_data = (
-            'vrf,start_address,end_address,status',
-            'VRF 1,10.1.0.1/16,10.1.9.254/16,active',
-            'VRF 1,10.2.0.1/16,10.2.9.254/16,active',
-            'VRF 1,10.3.0.1/16,10.3.9.254/16,active',
+            "vrf,start_address,end_address,status",
+            "VRF 1,10.1.0.1/16,10.1.9.254/16,active",
+            "VRF 1,10.2.0.1/16,10.2.9.254/16,active",
+            "VRF 1,10.3.0.1/16,10.3.9.254/16,active",
         )
 
         cls.csv_update_data = (
-            'id,description,status',
-            f'{ip_ranges[0].pk},New description 7,{IPRangeStatusChoices.STATUS_RESERVED}',
-            f'{ip_ranges[1].pk},New description 8,{IPRangeStatusChoices.STATUS_RESERVED}',
-            f'{ip_ranges[2].pk},New description 9,{IPRangeStatusChoices.STATUS_RESERVED}',
+            "id,description,status",
+            f"{ip_ranges[0].pk},New description 7,{IPRangeStatusChoices.STATUS_RESERVED}",
+            f"{ip_ranges[1].pk},New description 8,{IPRangeStatusChoices.STATUS_RESERVED}",
+            f"{ip_ranges[2].pk},New description 9,{IPRangeStatusChoices.STATUS_RESERVED}",
         )
 
         cls.bulk_edit_data = {
@@ -686,7 +708,9 @@ class IPRangeTestCase(ViewTestCases.PrimaryObjectViewTestCase):
     @override_settings(EXEMPT_VIEW_PERMISSIONS=['*'])
     def test_iprange_ipaddresses(self):
         iprange = IPRange.objects.create(
-            start_address=IPNetwork('192.168.0.1/24'), end_address=IPNetwork('192.168.0.100/24'), size=99
+            start_address=IPNetwork('192.168.0.1/24'),
+            end_address=IPNetwork('192.168.0.100/24'),
+            size=99
         )
         ip_addresses = (
             IPAddress(address=IPNetwork('192.168.0.1/24')),
@@ -705,6 +729,7 @@ class IPAddressTestCase(ViewTestCases.PrimaryObjectViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
+
         vrfs = (
             VRF(name='VRF 1', rd='65000:1'),
             VRF(name='VRF 2', rd='65000:2'),
@@ -721,9 +746,21 @@ class IPAddressTestCase(ViewTestCases.PrimaryObjectViewTestCase):
         tags = create_tags('Alpha', 'Bravo', 'Charlie')
 
         fhrp_groups = (
-            FHRPGroup(name='FHRP Group 1', protocol=FHRPGroupProtocolChoices.PROTOCOL_HSRP, group_id=10),
-            FHRPGroup(name='FHRP Group 2', protocol=FHRPGroupProtocolChoices.PROTOCOL_HSRP, group_id=20),
-            FHRPGroup(name='FHRP Group 3', protocol=FHRPGroupProtocolChoices.PROTOCOL_HSRP, group_id=30),
+            FHRPGroup(
+                name='FHRP Group 1',
+                protocol=FHRPGroupProtocolChoices.PROTOCOL_HSRP,
+                group_id=10
+            ),
+            FHRPGroup(
+                name='FHRP Group 2',
+                protocol=FHRPGroupProtocolChoices.PROTOCOL_HSRP,
+                group_id=20
+            ),
+            FHRPGroup(
+                name='FHRP Group 3',
+                protocol=FHRPGroupProtocolChoices.PROTOCOL_HSRP,
+                group_id=30
+            ),
         )
         FHRPGroup.objects.bulk_create(fhrp_groups)
         cls.form_data = {
@@ -739,17 +776,17 @@ class IPAddressTestCase(ViewTestCases.PrimaryObjectViewTestCase):
         }
 
         cls.csv_data = (
-            'vrf,address,status,fhrp_group',
-            'VRF 1,192.0.2.4/24,active,FHRP Group 1',
-            'VRF 1,192.0.2.5/24,active,FHRP Group 2',
-            'VRF 1,192.0.2.6/24,active,FHRP Group 3',
+            "vrf,address,status,fhrp_group",
+            "VRF 1,192.0.2.4/24,active,FHRP Group 1",
+            "VRF 1,192.0.2.5/24,active,FHRP Group 2",
+            "VRF 1,192.0.2.6/24,active,FHRP Group 3",
         )
 
         cls.csv_update_data = (
-            'id,description,status',
-            f'{ipaddresses[0].pk},New description 7,{IPAddressStatusChoices.STATUS_RESERVED}',
-            f'{ipaddresses[1].pk},New description 8,{IPAddressStatusChoices.STATUS_RESERVED}',
-            f'{ipaddresses[2].pk},New description 9,{IPAddressStatusChoices.STATUS_RESERVED}',
+            "id,description,status",
+            f"{ipaddresses[0].pk},New description 7,{IPAddressStatusChoices.STATUS_RESERVED}",
+            f"{ipaddresses[1].pk},New description 8,{IPAddressStatusChoices.STATUS_RESERVED}",
+            f"{ipaddresses[2].pk},New description 9,{IPAddressStatusChoices.STATUS_RESERVED}",
         )
 
         cls.bulk_edit_data = {
@@ -780,7 +817,10 @@ class FHRPGroupTestCase(ViewTestCases.PrimaryObjectViewTestCase):
                 auth_type=FHRPGroupAuthTypeChoices.AUTHENTICATION_MD5,
                 auth_key='foobar123',
             ),
-            FHRPGroup(protocol=FHRPGroupProtocolChoices.PROTOCOL_HSRP, group_id=30),
+            FHRPGroup(
+                protocol=FHRPGroupProtocolChoices.PROTOCOL_HSRP,
+                group_id=30
+            ),
         )
         FHRPGroup.objects.bulk_create(fhrp_groups)
 
@@ -797,17 +837,17 @@ class FHRPGroupTestCase(ViewTestCases.PrimaryObjectViewTestCase):
         }
 
         cls.csv_data = (
-            'protocol,group_id,auth_type,auth_key,description',
-            'vrrp2,40,plaintext,foobar123,Foo',
-            'vrrp3,50,md5,foobar123,Bar',
-            'hsrp,60,,,',
+            "protocol,group_id,auth_type,auth_key,description",
+            "vrrp2,40,plaintext,foobar123,Foo",
+            "vrrp3,50,md5,foobar123,Bar",
+            "hsrp,60,,,",
         )
 
         cls.csv_update_data = (
-            'id,name,description',
-            f'{fhrp_groups[0].pk},FHRP Group 1,New description 1',
-            f'{fhrp_groups[1].pk},FHRP Group 2,New description 2',
-            f'{fhrp_groups[2].pk},FHRP Group 3,New description 3',
+            "id,name,description",
+            f"{fhrp_groups[0].pk},FHRP Group 1,New description 1",
+            f"{fhrp_groups[1].pk},FHRP Group 2,New description 2",
+            f"{fhrp_groups[2].pk},FHRP Group 3,New description 3",
         )
 
         cls.bulk_edit_data = {
@@ -820,6 +860,7 @@ class VLANGroupTestCase(ViewTestCases.OrganizationalObjectViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
+
         sites = (
             Site(name='Site 1', slug='site-1'),
             Site(name='Site 2', slug='site-2'),
@@ -844,17 +885,17 @@ class VLANGroupTestCase(ViewTestCases.OrganizationalObjectViewTestCase):
         }
 
         cls.csv_data = (
-            'name,slug,scope_type,scope_id,description',
-            'VLAN Group 4,vlan-group-4,,,Fourth VLAN group',
-            f'VLAN Group 5,vlan-group-5,dcim.site,{sites[0].pk},Fifth VLAN group',
-            f'VLAN Group 6,vlan-group-6,dcim.site,{sites[1].pk},Sixth VLAN group',
+            "name,slug,scope_type,scope_id,description",
+            "VLAN Group 4,vlan-group-4,,,Fourth VLAN group",
+            f"VLAN Group 5,vlan-group-5,dcim.site,{sites[0].pk},Fifth VLAN group",
+            f"VLAN Group 6,vlan-group-6,dcim.site,{sites[1].pk},Sixth VLAN group",
         )
 
         cls.csv_update_data = (
-            'id,name,description',
-            f'{vlan_groups[0].pk},VLAN Group 7,Fourth VLAN group7',
-            f'{vlan_groups[1].pk},VLAN Group 8,Fifth VLAN group8',
-            f'{vlan_groups[2].pk},VLAN Group 9,Sixth VLAN group9',
+            "id,name,description",
+            f"{vlan_groups[0].pk},VLAN Group 7,Fourth VLAN group7",
+            f"{vlan_groups[1].pk},VLAN Group 8,Fifth VLAN group8",
+            f"{vlan_groups[2].pk},VLAN Group 9,Sixth VLAN group9",
         )
 
         cls.bulk_edit_data = {
@@ -867,6 +908,7 @@ class VLANTestCase(ViewTestCases.PrimaryObjectViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
+
         sites = (
             Site(name='Site 1', slug='site-1'),
             Site(name='Site 2', slug='site-2'),
@@ -907,17 +949,17 @@ class VLANTestCase(ViewTestCases.PrimaryObjectViewTestCase):
         }
 
         cls.csv_data = (
-            'vid,name,status',
-            '104,VLAN104,active',
-            '105,VLAN105,active',
-            '106,VLAN106,active',
+            "vid,name,status",
+            "104,VLAN104,active",
+            "105,VLAN105,active",
+            "106,VLAN106,active",
         )
 
         cls.csv_update_data = (
-            'id,name,description',
-            f'{vlans[0].pk},VLAN107,New description 7',
-            f'{vlans[1].pk},VLAN108,New description 8',
-            f'{vlans[2].pk},VLAN109,New description 9',
+            "id,name,description",
+            f"{vlans[0].pk},VLAN107,New description 7",
+            f"{vlans[1].pk},VLAN108,New description 8",
+            f"{vlans[2].pk},VLAN109,New description 9",
         )
 
         cls.bulk_edit_data = {
@@ -935,6 +977,7 @@ class VLANTranslationPolicyTestCase(ViewTestCases.PrimaryObjectViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
+
         vlan_translation_policies = (
             VLANTranslationPolicy(
                 name='Policy 1',
@@ -960,17 +1003,17 @@ class VLANTranslationPolicyTestCase(ViewTestCases.PrimaryObjectViewTestCase):
         }
 
         cls.csv_data = (
-            'name,description',
-            'Policy101,foobar1',
-            'Policy102,foobar2',
-            'Policy103,foobar3',
+            "name,description",
+            "Policy101,foobar1",
+            "Policy102,foobar2",
+            "Policy103,foobar3",
         )
 
         cls.csv_update_data = (
-            'id,name,description',
-            f'{vlan_translation_policies[0].pk},Policy101,New description 1',
-            f'{vlan_translation_policies[1].pk},Policy102,New description 2',
-            f'{vlan_translation_policies[2].pk},Policy103,New description 3',
+            "id,name,description",
+            f"{vlan_translation_policies[0].pk},Policy101,New description 1",
+            f"{vlan_translation_policies[1].pk},Policy102,New description 2",
+            f"{vlan_translation_policies[2].pk},Policy103,New description 3",
         )
 
         cls.bulk_edit_data = {
@@ -983,6 +1026,7 @@ class VLANTranslationRuleTestCase(ViewTestCases.PrimaryObjectViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
+
         vlan_translation_policies = (
             VLANTranslationPolicy(
                 name='Policy 1',
@@ -1025,17 +1069,17 @@ class VLANTranslationRuleTestCase(ViewTestCases.PrimaryObjectViewTestCase):
         }
 
         cls.csv_data = (
-            'policy,local_vid,remote_vid',
-            f'{vlan_translation_policies[0].name},103,203',
-            f'{vlan_translation_policies[0].name},104,204',
-            f'{vlan_translation_policies[1].name},105,205',
+            "policy,local_vid,remote_vid",
+            f"{vlan_translation_policies[0].name},103,203",
+            f"{vlan_translation_policies[0].name},104,204",
+            f"{vlan_translation_policies[1].name},105,205",
         )
 
         cls.csv_update_data = (
-            'id,local_vid,remote_vid',
-            f'{vlan_translation_rules[0].pk},105,205',
-            f'{vlan_translation_rules[1].pk},106,206',
-            f'{vlan_translation_rules[2].pk},107,207',
+            "id,local_vid,remote_vid",
+            f"{vlan_translation_rules[0].pk},105,205",
+            f"{vlan_translation_rules[1].pk},106,206",
+            f"{vlan_translation_rules[2].pk},107,207",
         )
 
         cls.bulk_edit_data = {
@@ -1066,17 +1110,17 @@ class ServiceTemplateTestCase(ViewTestCases.PrimaryObjectViewTestCase):
         }
 
         cls.csv_data = (
-            'name,protocol,ports,description',
-            'Service Template 4,tcp,1,First service template',
-            'Service Template 5,tcp,2,Second service template',
-            'Service Template 6,tcp,3,Third service template',
+            "name,protocol,ports,description",
+            "Service Template 4,tcp,1,First service template",
+            "Service Template 5,tcp,2,Second service template",
+            "Service Template 6,tcp,3,Third service template",
         )
 
         cls.csv_update_data = (
-            'id,name,description',
-            f'{service_templates[0].pk},Service Template 7,First service template7',
-            f'{service_templates[1].pk},Service Template 8,Second service template8',
-            f'{service_templates[2].pk},Service Template 9,Third service template9',
+            "id,name,description",
+            f"{service_templates[0].pk},Service Template 7,First service template7",
+            f"{service_templates[1].pk},Service Template 8,Second service template8",
+            f"{service_templates[2].pk},Service Template 9,Third service template9",
         )
 
         cls.bulk_edit_data = {
@@ -1093,6 +1137,7 @@ class ServiceTestCase(ViewTestCases.PrimaryObjectViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
+
         site = Site.objects.create(name='Site 1', slug='site-1')
         manufacturer = Manufacturer.objects.create(name='Manufacturer 1', slug='manufacturer-1')
         devicetype = DeviceType.objects.create(manufacturer=manufacturer, model='Device Type 1')
@@ -1131,18 +1176,18 @@ class ServiceTestCase(ViewTestCases.PrimaryObjectViewTestCase):
         }
 
         cls.csv_data = (
-            'parent_object_type,parent,name,protocol,ports,ipaddresses,description',
-            'dcim.device,Device 1,Service 1,tcp,1,192.0.2.1/24,First service',
-            'dcim.device,Device 1,Service 2,tcp,2,192.0.2.2/24,Second service',
-            'dcim.device,Device 1,Service 3,udp,3,,Third service',
-            'ipam.fhrpgroup,Group 1,Service 4,udp,4,192.0.2.3/24,Fourth service',
+            "parent_object_type,parent,name,protocol,ports,ipaddresses,description",
+            "dcim.device,Device 1,Service 1,tcp,1,192.0.2.1/24,First service",
+            "dcim.device,Device 1,Service 2,tcp,2,192.0.2.2/24,Second service",
+            "dcim.device,Device 1,Service 3,udp,3,,Third service",
+            "ipam.fhrpgroup,Group 1,Service 4,udp,4,192.0.2.3/24,Fourth service",
         )
 
         cls.csv_update_data = (
-            'id,name,description',
-            f'{services[0].pk},Service 7,First service7',
-            f'{services[1].pk},Service 8,Second service8',
-            f'{services[2].pk},Service 9,Third service9',
+            "id,name,description",
+            f"{services[0].pk},Service 7,First service7",
+            f"{services[1].pk},Service 8,Second service8",
+            f"{services[2].pk},Service 9,Third service9",
         )
 
         cls.bulk_edit_data = {
@@ -1156,8 +1201,8 @@ class ServiceTestCase(ViewTestCases.PrimaryObjectViewTestCase):
         device = Device.objects.first()
         addr = IPAddress.objects.create(address='192.0.2.4/24')
         csv_data = (
-            'parent_object_type,parent_object_id,name,protocol,ports,ipaddresses,description',
-            f'dcim.device,{device.pk},Service 11,tcp,10,{addr.address},Eleventh service',
+            "parent_object_type,parent_object_id,name,protocol,ports,ipaddresses,description",
+            f"dcim.device,{device.pk},Service 11,tcp,10,{addr.address},Eleventh service",
         )
 
         initial_count = self._get_queryset().count()
@@ -1187,8 +1232,8 @@ class ServiceTestCase(ViewTestCases.PrimaryObjectViewTestCase):
         interface = device.interfaces.first()
         addr = IPAddress.objects.create(assigned_object=interface, address='192.0.2.3/24')
         csv_data = (
-            'parent_object_type,parent_object_id,name,protocol,ports,ipaddresses,description',
-            f'dcim.device,{device.pk},Service 11,tcp,10,{addr.address},Eleventh service',
+            "parent_object_type,parent_object_id,name,protocol,ports,ipaddresses,description",
+            f"dcim.device,{device.pk},Service 11,tcp,10,{addr.address},Eleventh service",
         )
 
         initial_count = self._get_queryset().count()
@@ -1220,7 +1265,7 @@ class ServiceTestCase(ViewTestCases.PrimaryObjectViewTestCase):
             name='HTTP',
             protocol=ServiceProtocolChoices.PROTOCOL_TCP,
             ports=[80],
-            description='Hypertext transfer protocol',
+            description='Hypertext transfer protocol'
         )
 
         request = {

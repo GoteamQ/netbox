@@ -21,7 +21,6 @@ class ConfigContextQuerySetMixin:
     Provides a get_queryset() method which deals with adding the config context
     data annotation or not.
     """
-
     def get_queryset(self):
         """
         Build the proper queryset based on the request context
@@ -42,14 +41,13 @@ class ConfigTemplateRenderMixin:
     """
     Provides a method to return a rendered ConfigTemplate as REST API data.
     """
-
     def render_configtemplate(self, request, configtemplate, context):
         try:
             output = configtemplate.render(context=context)
         except TemplateError as e:
-            return Response(
-                {'detail': f'An error occurred while rendering the template (line {e.lineno}): {e}'}, status=500
-            )
+            return Response({
+                'detail': f"An error occurred while rendering the template (line {e.lineno}): {e}"
+            }, status=500)
 
         # If the client has requested "text/plain", return the raw content.
         if request.accepted_renderer.format == 'txt':
@@ -57,7 +55,10 @@ class ConfigTemplateRenderMixin:
 
         template_serializer = ConfigTemplateSerializer(configtemplate, nested=True, context={'request': request})
 
-        return Response({'configtemplate': template_serializer.data, 'content': output})
+        return Response({
+            'configtemplate': template_serializer.data,
+            'content': output
+        })
 
 
 class RenderConfigMixin(ConfigTemplateRenderMixin):
@@ -85,7 +86,9 @@ class RenderConfigMixin(ConfigTemplateRenderMixin):
         object_type = instance._meta.model_name
         configtemplate = instance.get_config_template()
         if not configtemplate:
-            return Response({'error': f'No config template found for this {object_type}.'}, status=HTTP_400_BAD_REQUEST)
+            return Response({
+                'error': f'No config template found for this {object_type}.'
+            }, status=HTTP_400_BAD_REQUEST)
 
         # Compile context data
         context_data = instance.get_config_context()

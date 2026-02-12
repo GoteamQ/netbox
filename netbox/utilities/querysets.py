@@ -14,7 +14,6 @@ class RestrictedPrefetch(Prefetch):
     Extend Django's Prefetch to accept a user and action to be passed to the
     `restrict()` method of the related object's queryset.
     """
-
     def __init__(self, lookup, user, action='view', queryset=None, to_attr=None):
         self.restrict_user = user
         self.restrict_action = action
@@ -37,6 +36,7 @@ class RestrictedPrefetch(Prefetch):
 
 
 class RestrictedQuerySet(QuerySet):
+
     def restrict(self, user, action='view'):
         """
         Filter the QuerySet to return only objects on which the specified user has been granted the specified

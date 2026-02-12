@@ -27,7 +27,6 @@ class ChoiceField(serializers.Field):
     :param choices: An iterable of choices in the form (value, key).
     :param allow_blank: Allow blank values in addition to the listed choices.
     """
-
     def __init__(self, choices, allow_blank=False, **kwargs):
         self.choiceset = choices
         self.allow_blank = allow_blank
@@ -65,7 +64,7 @@ class ChoiceField(serializers.Field):
         if data == '':
             if self.allow_blank:
                 return data
-            raise ValidationError(_('This field may not be blank.'))
+            raise ValidationError(_("This field may not be blank."))
 
         # Provide an explicit error message if the request is trying to write a dict or list
         if isinstance(data, (dict, list)):
@@ -91,7 +90,7 @@ class ChoiceField(serializers.Field):
         except TypeError:  # Input is an unhashable type
             pass
 
-        raise ValidationError(_('{value} is not a valid choice.').format(value=data))
+        raise ValidationError(_("{value} is not a valid choice.").format(value=data))
 
     @property
     def choices(self):
@@ -103,10 +102,9 @@ class ContentTypeField(RelatedField):
     """
     Represent a ContentType as '<app_label>.<model>'
     """
-
     default_error_messages = {
-        'does_not_exist': _('Invalid content type: {content_type}'),
-        'invalid': _("Invalid value. Specify a content type as '<app_label>.<model_name>'."),
+        "does_not_exist": _("Invalid content type: {content_type}"),
+        "invalid": _("Invalid value. Specify a content type as '<app_label>.<model_name>'."),
     }
 
     def to_internal_value(self, data):
@@ -119,14 +117,13 @@ class ContentTypeField(RelatedField):
             self.fail('invalid')
 
     def to_representation(self, obj):
-        return f'{obj.app_label}.{obj.model}'
+        return f"{obj.app_label}.{obj.model}"
 
 
 class IPNetworkSerializer(serializers.Serializer):
     """
     Representation of an IP network value (e.g. 192.0.2.0/24).
     """
-
     def to_representation(self, instance):
         return str(instance)
 
@@ -139,7 +136,6 @@ class SerializedPKRelatedField(PrimaryKeyRelatedField):
     Extends PrimaryKeyRelatedField to return a serialized object on read. This is useful for representing related
     objects in a ManyToManyField while still allowing a set of primary keys to be written.
     """
-
     def __init__(self, serializer, nested=False, **kwargs):
         self.serializer = serializer
         self.nested = nested
@@ -158,7 +154,6 @@ class RelatedObjectCountField(serializers.ReadOnlyField):
     is detected by get_annotations_for_serializer() when determining the annotations to be added to a queryset
     depending on the serializer fields selected for inclusion in the response.
     """
-
     def __init__(self, relation, **kwargs):
         self.relation = relation
 
@@ -169,12 +164,11 @@ class IntegerRangeSerializer(serializers.Serializer):
     """
     Represents a range of integers.
     """
-
     def to_internal_value(self, data):
         if not isinstance(data, (list, tuple)) or len(data) != 2:
-            raise ValidationError(_('Ranges must be specified in the form (lower, upper).'))
+            raise ValidationError(_("Ranges must be specified in the form (lower, upper)."))
         if type(data[0]) is not int or type(data[1]) is not int:
-            raise ValidationError(_('Range boundaries must be defined as integers.'))
+            raise ValidationError(_("Range boundaries must be defined as integers."))
 
         return NumericRange(data[0], data[1] + 1, bounds='[)')
 
@@ -186,7 +180,6 @@ class AttributesField(serializers.JSONField):
     """
     Custom attributes stored as JSON data.
     """
-
     def to_internal_value(self, data):
         data = super().to_internal_value(data)
 

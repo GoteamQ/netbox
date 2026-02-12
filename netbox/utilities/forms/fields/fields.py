@@ -28,7 +28,6 @@ class QueryField(forms.CharField):
     A CharField subclass used for global search/query fields in filter forms.
     This field type signals to FilterModifierMixin to skip enhancement with lookup modifiers.
     """
-
     pass
 
 
@@ -36,7 +35,6 @@ class CommentField(forms.CharField):
     """
     A textarea with support for Markdown rendering. Exists mostly just to add a standard `help_text`.
     """
-
     widget = widgets.MarkdownWidget
     label = _('Comments')
     help_text = _(
@@ -55,10 +53,9 @@ class SlugField(forms.SlugField):
     Parameters:
         slug_source: Name of the form field from which the slug value will be derived
     """
-
     widget = widgets.SlugWidget
     label = _('Slug')
-    help_text = _('URL-friendly unique shorthand')
+    help_text = _("URL-friendly unique shorthand")
 
     def __init__(self, *, slug_source='name', label=label, help_text=help_text, **kwargs):
         super().__init__(label=label, help_text=help_text, **kwargs)
@@ -69,7 +66,7 @@ class SlugField(forms.SlugField):
         if prefix := form.prefix:
             slug_source = self.widget.attrs.get('slug-source')
             if slug_source and not slug_source.startswith(f'{prefix}-'):
-                self.widget.attrs['slug-source'] = f'{prefix}-{slug_source}'
+                self.widget.attrs['slug-source'] = f"{prefix}-{slug_source}"
 
         return super().get_bound_field(form, field_name)
 
@@ -79,7 +76,6 @@ class ColorField(forms.CharField):
     A field which represents a color value in hexadecimal `RRGGBB` format. Utilizes NetBox's `ColorSelect` widget to
     render choices.
     """
-
     widget = widgets.ColorSelect
 
 
@@ -92,10 +88,12 @@ class TagFilterField(forms.MultipleChoiceField):
 
     def __init__(self, model, *args, **kwargs):
         def get_choices():
-            tags = model.tags.annotate(count=Count('extras_taggeditem_items')).order_by('name')
+            tags = model.tags.annotate(
+                count=Count('extras_taggeditem_items')
+            ).order_by('name')
             return [
                 (settings.FILTERS_NULL_CHOICE_VALUE, settings.FILTERS_NULL_CHOICE_LABEL),  # "None" option
-                *[(str(tag.slug), f'{tag.name} ({tag.count})') for tag in tags],
+                *[(str(tag.slug), f'{tag.name} ({tag.count})') for tag in tags]
             ]
 
         # Choices are fetched each time the form is initialized
@@ -107,7 +105,6 @@ class LaxURLField(forms.URLField):
     Modifies Django's built-in URLField to remove the requirement for fully-qualified domain names
     (e.g. http://myserver/ is valid)
     """
-
     default_validators = [EnhancedURLValidator()]
 
 
@@ -115,7 +112,6 @@ class JSONField(_JSONField):
     """
     Custom wrapper around Django's built-in JSONField to avoid presenting "null" as the default text.
     """
-
     empty_values = [None, '', ()]
 
     def __init__(self, *args, **kwargs):
@@ -143,7 +139,6 @@ class MACAddressField(forms.Field):
     """
     Validates a 48-bit MAC address.
     """
-
     widget = forms.CharField
     default_error_messages = {
         'invalid': _('MAC address must be in EUI-48 format'),

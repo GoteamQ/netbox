@@ -13,7 +13,8 @@ def copy_site_assignments(apps, schema_editor):
     db_alias = schema_editor.connection.alias
 
     Prefix.objects.using(db_alias).filter(site__isnull=False).update(
-        scope_type=ContentType.objects.get_for_model(Site), scope_id=models.F('site_id')
+        scope_type=ContentType.objects.get_for_model(Site),
+        scope_id=models.F('site_id')
     )
 
 
@@ -52,12 +53,10 @@ def oc_prefix_scope(objectchange, reverting):
         if data is None:
             continue
         if site_id := data.get('site'):
-            data.update(
-                {
-                    'scope_type': site_ct,
-                    'scope_id': site_id,
-                }
-            )
+            data.update({
+                'scope_type': site_ct,
+                'scope_id': site_id,
+            })
 
 
 objectchange_migrators = {

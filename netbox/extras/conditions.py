@@ -32,7 +32,6 @@ class Condition:
     :param value: The value being compared
     :param op: The logical operation to use when evaluating the value (default: 'eq')
     """
-
     EQ = 'eq'
     GT = 'gt'
     GTE = 'gte'
@@ -42,7 +41,9 @@ class Condition:
     CONTAINS = 'contains'
     REGEX = 'regex'
 
-    OPERATORS = (EQ, GT, GTE, LT, LTE, IN, CONTAINS, REGEX)
+    OPERATORS = (
+        EQ, GT, GTE, LT, LTE, IN, CONTAINS, REGEX
+    )
 
     TYPES = {
         str: (EQ, CONTAINS, REGEX),
@@ -50,20 +51,18 @@ class Condition:
         int: (EQ, GT, GTE, LT, LTE, CONTAINS),
         float: (EQ, GT, GTE, LT, LTE, CONTAINS),
         list: (EQ, IN, CONTAINS),
-        type(None): (EQ,),
+        type(None): (EQ,)
     }
 
     def __init__(self, attr, value, op=EQ, negate=False):
         if op not in self.OPERATORS:
-            raise ValueError(
-                _('Unknown operator: {op}. Must be one of: {operators}').format(
-                    op=op, operators=', '.join(self.OPERATORS)
-                )
-            )
+            raise ValueError(_("Unknown operator: {op}. Must be one of: {operators}").format(
+                op=op, operators=', '.join(self.OPERATORS)
+            ))
         if type(value) not in self.TYPES:
-            raise ValueError(_('Unsupported value type: {value}').format(value=type(value)))
+            raise ValueError(_("Unsupported value type: {value}").format(value=type(value)))
         if op not in self.TYPES[type(value)]:
-            raise ValueError(_('Invalid type for {op} operation: {value}').format(op=op, value=type(value)))
+            raise ValueError(_("Invalid type for {op} operation: {value}").format(op=op, value=type(value)))
 
         self.attr = attr
         self.value = value
@@ -75,7 +74,6 @@ class Condition:
         """
         Evaluate the provided data to determine whether it matches the condition.
         """
-
         def _get(obj, key):
             if isinstance(obj, list):
                 return [operator.getitem(item or {}, key) for item in obj]
@@ -84,7 +82,7 @@ class Condition:
         try:
             value = functools.reduce(_get, self.attr.split('.'), data)
         except KeyError:
-            raise InvalidCondition(f'Invalid key path: {self.attr}')
+            raise InvalidCondition(f"Invalid key path: {self.attr}")
         try:
             result = self.eval_func(value)
         except TypeError as e:
@@ -141,10 +139,9 @@ class ConditionSet:
 
     :param ruleset: A dictionary mapping a logical operator to a list of conditional rules
     """
-
     def __init__(self, ruleset):
         if type(ruleset) is not dict:
-            raise ValueError(_('Ruleset must be a dictionary, not {ruleset}.').format(ruleset=type(ruleset)))
+            raise ValueError(_("Ruleset must be a dictionary, not {ruleset}.").format(ruleset=type(ruleset)))
 
         if len(ruleset) == 1:
             self.logic = (list(ruleset.keys())[0]).lower()
@@ -153,14 +150,15 @@ class ConditionSet:
 
             # Compile the set of Conditions
             self.conditions = [
-                ConditionSet(rule) if is_ruleset(rule) else Condition(**rule) for rule in ruleset[self.logic]
+                ConditionSet(rule) if is_ruleset(rule) else Condition(**rule)
+                for rule in ruleset[self.logic]
             ]
         else:
             try:
                 self.logic = None
                 self.conditions = [Condition(**ruleset)]
             except TypeError:
-                raise ValueError(_('Incorrect key(s) informed. Please check documentation.'))
+                raise ValueError(_("Incorrect key(s) informed. Please check documentation."))
 
     def eval(self, data):
         """

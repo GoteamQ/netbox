@@ -98,7 +98,9 @@ class VirtualCircuitIndex(SearchIndex):
 @register_search
 class VirtualCircuitTerminationIndex(SearchIndex):
     model = models.VirtualCircuitTermination
-    fields = (('description', 500),)
+    fields = (
+        ('description', 500),
+    )
     display_attrs = ('virtual_circuit', 'role', 'description')
 
 

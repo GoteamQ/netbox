@@ -39,7 +39,7 @@ class Migration(migrations.Migration):
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
                         related_name='table_configs',
-                        to='contenttypes.contenttype',
+                        to='contenttypes.contenttype'
                     ),
                 ),
                 (

@@ -25,15 +25,22 @@ class NetBoxModelBulkEditForm(ChangelogMessageMixin, CustomFieldsMixin, BulkEdit
         fieldsets: An iterable of two-tuples which define a heading and field set to display per section of
             the rendered form (optional). If not defined, the all fields will be rendered as a single section.
     """
-
     fieldsets = None
 
     pk = forms.ModelMultipleChoiceField(
         queryset=None,  # Set from self.model on init
-        widget=forms.MultipleHiddenInput,
+        widget=forms.MultipleHiddenInput
     )
-    add_tags = DynamicModelMultipleChoiceField(label=_('Add tags'), queryset=Tag.objects.all(), required=False)
-    remove_tags = DynamicModelMultipleChoiceField(label=_('Remove tags'), queryset=Tag.objects.all(), required=False)
+    add_tags = DynamicModelMultipleChoiceField(
+        label=_('Add tags'),
+        queryset=Tag.objects.all(),
+        required=False
+    )
+    remove_tags = DynamicModelMultipleChoiceField(
+        label=_('Remove tags'),
+        queryset=Tag.objects.all(),
+        required=False
+    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -53,8 +60,7 @@ class NetBoxModelBulkEditForm(ChangelogMessageMixin, CustomFieldsMixin, BulkEdit
     def _extend_nullable_fields(self):
         nullable_common_fields = ['owner']
         nullable_custom_fields = [
-            name
-            for name, customfield in self.custom_fields.items()
+            name for name, customfield in self.custom_fields.items()
             if (not customfield.required and customfield.ui_editable == CustomFieldUIEditableChoices.YES)
         ]
         self.nullable_fields = (
@@ -68,8 +74,11 @@ class PrimaryModelBulkEditForm(OwnerMixin, NetBoxModelBulkEditForm):
     """
     Bulk edit form for models which inherit from PrimaryModel.
     """
-
-    description = forms.CharField(label=_('Description'), max_length=100, required=False)
+    description = forms.CharField(
+        label=_('Description'),
+        max_length=100,
+        required=False
+    )
     comments = CommentField()
 
 
@@ -77,8 +86,11 @@ class OrganizationalModelBulkEditForm(OwnerMixin, NetBoxModelBulkEditForm):
     """
     Bulk edit form for models which inherit from OrganizationalModel.
     """
-
-    description = forms.CharField(label=_('Description'), max_length=200, required=False)
+    description = forms.CharField(
+        label=_('Description'),
+        max_length=200,
+        required=False
+    )
     comments = CommentField()
 
 
@@ -86,6 +98,9 @@ class NestedGroupModelBulkEditForm(OwnerMixin, NetBoxModelBulkEditForm):
     """
     Bulk edit form for models which inherit from NestedGroupModel.
     """
-
-    description = forms.CharField(label=_('Description'), max_length=200, required=False)
+    description = forms.CharField(
+        label=_('Description'),
+        max_length=200,
+        required=False
+    )
     comments = CommentField()

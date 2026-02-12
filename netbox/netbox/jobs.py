@@ -27,10 +27,12 @@ def system_job(interval):
     Decorator for registering a `JobRunner` class as system background job.
     """
     if type(interval) is not int:
-        raise ImproperlyConfigured('System job interval must be an integer (minutes).')
+        raise ImproperlyConfigured("System job interval must be an integer (minutes).")
 
     def _wrapper(cls):
-        registry['system_jobs'][cls] = {'interval': interval}
+        registry['system_jobs'][cls] = {
+            'interval': interval
+        }
         return cls
 
     return _wrapper
@@ -40,7 +42,6 @@ class JobLogHandler(logging.Handler):
     """
     A logging handler which records entries on a Job.
     """
-
     def __init__(self, job, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.job = job
@@ -69,7 +70,7 @@ class JobRunner(ABC):
         self.job = job
 
         # Initiate the system logger
-        self.logger = logging.getLogger(f'netbox.jobs.{self.__class__.__name__}')
+        self.logger = logging.getLogger(f"netbox.jobs.{self.__class__.__name__}")
         self.logger.setLevel(logging.DEBUG)
         self.logger.addHandler(JobLogHandler(job))
 
@@ -102,7 +103,7 @@ class JobRunner(ABC):
             job.terminate()
 
         except JobFailed:
-            logger.warning(f'Job {job} failed')
+            logger.warning(f"Job {job} failed")
             job.terminate(status=JobStatusChoices.STATUS_FAILED)
 
         except Exception as e:
@@ -116,10 +117,10 @@ class JobRunner(ABC):
                 # Determine the new scheduled time. Cannot be earlier than one minute in the future.
                 new_scheduled_time = max(
                     (job.scheduled or job.started) + timedelta(minutes=job.interval),
-                    timezone.now() + timedelta(minutes=1),
+                    timezone.now() + timedelta(minutes=1)
                 )
-                if job.object and getattr(job.object, 'python_class', None):
-                    kwargs['job_timeout'] = job.object.python_class.job_timeout
+                if job.object and getattr(job.object, "python_class", None):
+                    kwargs["job_timeout"] = job.object.python_class.job_timeout
                 cls.enqueue(
                     instance=job.object,
                     name=job.name,
@@ -191,7 +192,6 @@ class AsyncViewJob(JobRunner):
     """
     Execute a view as a background job.
     """
-
     class Meta:
         name = 'Async View'
 

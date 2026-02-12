@@ -33,11 +33,13 @@ __all__ = (
     'VRFFilterForm',
 )
 
-PREFIX_MASK_LENGTH_CHOICES = add_blank_choice([(i, i) for i in range(PREFIX_LENGTH_MIN, PREFIX_LENGTH_MAX + 1)])
+PREFIX_MASK_LENGTH_CHOICES = add_blank_choice([
+    (i, i) for i in range(PREFIX_LENGTH_MIN, PREFIX_LENGTH_MAX + 1)
+])
 
-IPADDRESS_MASK_LENGTH_CHOICES = add_blank_choice(
-    [(i, i) for i in range(IPADDRESS_MASK_LENGTH_MIN, IPADDRESS_MASK_LENGTH_MAX + 1)]
-)
+IPADDRESS_MASK_LENGTH_CHOICES = add_blank_choice([
+    (i, i) for i in range(IPADDRESS_MASK_LENGTH_MIN, IPADDRESS_MASK_LENGTH_MAX + 1)
+])
 
 
 class VRFFilterForm(TenancyFilterForm, PrimaryModelFilterSetForm):
@@ -49,10 +51,14 @@ class VRFFilterForm(TenancyFilterForm, PrimaryModelFilterSetForm):
         FieldSet('owner_group_id', 'owner_id', name=_('Ownership')),
     )
     import_target_id = DynamicModelMultipleChoiceField(
-        queryset=RouteTarget.objects.all(), required=False, label=_('Import targets')
+        queryset=RouteTarget.objects.all(),
+        required=False,
+        label=_('Import targets')
     )
     export_target_id = DynamicModelMultipleChoiceField(
-        queryset=RouteTarget.objects.all(), required=False, label=_('Export targets')
+        queryset=RouteTarget.objects.all(),
+        required=False,
+        label=_('Export targets')
     )
     tag = TagFilterField(model)
 
@@ -66,10 +72,14 @@ class RouteTargetFilterForm(TenancyFilterForm, PrimaryModelFilterSetForm):
         FieldSet('owner_group_id', 'owner_id', name=_('Ownership')),
     )
     importing_vrf_id = DynamicModelMultipleChoiceField(
-        queryset=VRF.objects.all(), required=False, label=_('Imported by VRF')
+        queryset=VRF.objects.all(),
+        required=False,
+        label=_('Imported by VRF')
     )
     exporting_vrf_id = DynamicModelMultipleChoiceField(
-        queryset=VRF.objects.all(), required=False, label=_('Exported by VRF')
+        queryset=VRF.objects.all(),
+        required=False,
+        label=_('Exported by VRF')
     )
     tag = TagFilterField(model)
 
@@ -82,7 +92,11 @@ class RIRFilterForm(OrganizationalModelFilterSetForm):
         FieldSet('owner_group_id', 'owner_id', name=_('Ownership')),
     )
     is_private = forms.NullBooleanField(
-        required=False, label=_('Private'), widget=forms.Select(choices=BOOLEAN_WITH_BLANK_CHOICES)
+        required=False,
+        label=_('Private'),
+        widget=forms.Select(
+            choices=BOOLEAN_WITH_BLANK_CHOICES
+        )
     )
     tag = TagFilterField(model)
 
@@ -97,9 +111,15 @@ class AggregateFilterForm(ContactModelFilterForm, TenancyFilterForm, PrimaryMode
         FieldSet('contact', 'contact_role', 'contact_group', name=_('Contacts')),
     )
     family = forms.ChoiceField(
-        required=False, choices=add_blank_choice(IPAddressFamilyChoices), label=_('Address family')
+        required=False,
+        choices=add_blank_choice(IPAddressFamilyChoices),
+        label=_('Address family')
     )
-    rir_id = DynamicModelMultipleChoiceField(queryset=RIR.objects.all(), required=False, label=_('RIR'))
+    rir_id = DynamicModelMultipleChoiceField(
+        queryset=RIR.objects.all(),
+        required=False,
+        label=_('RIR')
+    )
     tag = TagFilterField(model)
 
 
@@ -111,9 +131,19 @@ class ASNRangeFilterForm(TenancyFilterForm, OrganizationalModelFilterSetForm):
         FieldSet('tenant_group_id', 'tenant_id', name=_('Tenant')),
         FieldSet('owner_group_id', 'owner_id', name=_('Ownership')),
     )
-    rir_id = DynamicModelMultipleChoiceField(queryset=RIR.objects.all(), required=False, label=_('RIR'))
-    start = forms.IntegerField(label=_('Start'), required=False)
-    end = forms.IntegerField(label=_('End'), required=False)
+    rir_id = DynamicModelMultipleChoiceField(
+        queryset=RIR.objects.all(),
+        required=False,
+        label=_('RIR')
+    )
+    start = forms.IntegerField(
+        label=_('Start'),
+        required=False
+    )
+    end = forms.IntegerField(
+        label=_('End'),
+        required=False
+    )
     tag = TagFilterField(model)
 
 
@@ -125,11 +155,21 @@ class ASNFilterForm(TenancyFilterForm, PrimaryModelFilterSetForm):
         FieldSet('tenant_group_id', 'tenant_id', name=_('Tenant')),
         FieldSet('owner_group_id', 'owner_id', name=_('Ownership')),
     )
-    rir_id = DynamicModelMultipleChoiceField(queryset=RIR.objects.all(), required=False, label=_('RIR'))
-    site_group_id = DynamicModelMultipleChoiceField(
-        queryset=SiteGroup.objects.all(), required=False, label=_('Site group')
+    rir_id = DynamicModelMultipleChoiceField(
+        queryset=RIR.objects.all(),
+        required=False,
+        label=_('RIR')
     )
-    site_id = DynamicModelMultipleChoiceField(queryset=Site.objects.all(), required=False, label=_('Site'))
+    site_group_id = DynamicModelMultipleChoiceField(
+        queryset=SiteGroup.objects.all(),
+        required=False,
+        label=_('Site group')
+    )
+    site_id = DynamicModelMultipleChoiceField(
+        queryset=Site.objects.all(),
+        required=False,
+        label=_('Site')
+    )
     tag = TagFilterField(model)
 
 
@@ -147,14 +187,8 @@ class PrefixFilterForm(ContactModelFilterForm, TenancyFilterForm, PrimaryModelFi
     fieldsets = (
         FieldSet('q', 'filter_id', 'tag'),
         FieldSet(
-            'within_include',
-            'family',
-            'status',
-            'role_id',
-            'mask_length',
-            'is_pool',
-            'mark_utilized',
-            name=_('Addressing'),
+            'within_include', 'family', 'status', 'role_id', 'mask_length', 'is_pool', 'mark_utilized',
+            name=_('Addressing')
         ),
         FieldSet('vlan_group_id', 'vlan_id', name=_('VLAN Assignment')),
         FieldSet('vrf_id', 'present_in_vrf_id', name=_('VRF')),
@@ -163,7 +197,9 @@ class PrefixFilterForm(ContactModelFilterForm, TenancyFilterForm, PrimaryModelFi
         FieldSet('owner_group_id', 'owner_id', name=_('Ownership')),
         FieldSet('contact', 'contact_role', 'contact_group', name=_('Contacts')),
     )
-    mask_length__lte = forms.IntegerField(widget=forms.HiddenInput())
+    mask_length__lte = forms.IntegerField(
+        widget=forms.HiddenInput()
+    )
     within_include = forms.CharField(
         required=False,
         widget=forms.TextInput(
@@ -171,31 +207,73 @@ class PrefixFilterForm(ContactModelFilterForm, TenancyFilterForm, PrimaryModelFi
                 'placeholder': 'Prefix',
             }
         ),
-        label=_('Search within'),
+        label=_('Search within')
     )
     family = forms.ChoiceField(
-        required=False, choices=add_blank_choice(IPAddressFamilyChoices), label=_('Address family')
+        required=False,
+        choices=add_blank_choice(IPAddressFamilyChoices),
+        label=_('Address family')
     )
-    mask_length = forms.MultipleChoiceField(required=False, choices=PREFIX_MASK_LENGTH_CHOICES, label=_('Mask length'))
+    mask_length = forms.MultipleChoiceField(
+        required=False,
+        choices=PREFIX_MASK_LENGTH_CHOICES,
+        label=_('Mask length')
+    )
     vrf_id = DynamicModelMultipleChoiceField(
-        queryset=VRF.objects.all(), required=False, label=_('Assigned VRF'), null_option='Global'
+        queryset=VRF.objects.all(),
+        required=False,
+        label=_('Assigned VRF'),
+        null_option='Global'
     )
-    present_in_vrf_id = DynamicModelChoiceField(queryset=VRF.objects.all(), required=False, label=_('Present in VRF'))
-    status = forms.MultipleChoiceField(label=_('Status'), choices=PrefixStatusChoices, required=False)
-    region_id = DynamicModelMultipleChoiceField(queryset=Region.objects.all(), required=False, label=_('Region'))
+    present_in_vrf_id = DynamicModelChoiceField(
+        queryset=VRF.objects.all(),
+        required=False,
+        label=_('Present in VRF')
+    )
+    status = forms.MultipleChoiceField(
+        label=_('Status'),
+        choices=PrefixStatusChoices,
+        required=False
+    )
+    region_id = DynamicModelMultipleChoiceField(
+        queryset=Region.objects.all(),
+        required=False,
+        label=_('Region')
+    )
     site_group_id = DynamicModelMultipleChoiceField(
-        queryset=SiteGroup.objects.all(), required=False, label=_('Site group')
+        queryset=SiteGroup.objects.all(),
+        required=False,
+        label=_('Site group')
     )
-    site_id = DynamicModelMultipleChoiceField(queryset=Site.objects.all(), required=False, label=_('Site'))
-    location_id = DynamicModelMultipleChoiceField(queryset=Location.objects.all(), required=False, label=_('Location'))
+    site_id = DynamicModelMultipleChoiceField(
+        queryset=Site.objects.all(),
+        required=False,
+        label=_('Site')
+    )
+    location_id = DynamicModelMultipleChoiceField(
+        queryset=Location.objects.all(),
+        required=False,
+        label=_('Location')
+    )
     role_id = DynamicModelMultipleChoiceField(
-        queryset=Role.objects.all(), required=False, null_option='None', label=_('Role')
+        queryset=Role.objects.all(),
+        required=False,
+        null_option='None',
+        label=_('Role')
     )
     is_pool = forms.NullBooleanField(
-        required=False, label=_('Is a pool'), widget=forms.Select(choices=BOOLEAN_WITH_BLANK_CHOICES)
+        required=False,
+        label=_('Is a pool'),
+        widget=forms.Select(
+            choices=BOOLEAN_WITH_BLANK_CHOICES
+        )
     )
     mark_utilized = forms.NullBooleanField(
-        required=False, label=_('Treat as fully utilized'), widget=forms.Select(choices=BOOLEAN_WITH_BLANK_CHOICES)
+        required=False,
+        label=_('Treat as fully utilized'),
+        widget=forms.Select(
+            choices=BOOLEAN_WITH_BLANK_CHOICES
+        )
     )
     vlan_group_id = DynamicModelMultipleChoiceField(
         queryset=VLANGroup.objects.all(),
@@ -221,20 +299,40 @@ class IPRangeFilterForm(ContactModelFilterForm, TenancyFilterForm, PrimaryModelF
         FieldSet('contact', 'contact_role', 'contact_group', name=_('Contacts')),
     )
     family = forms.ChoiceField(
-        required=False, choices=add_blank_choice(IPAddressFamilyChoices), label=_('Address family')
+        required=False,
+        choices=add_blank_choice(IPAddressFamilyChoices),
+        label=_('Address family')
     )
     vrf_id = DynamicModelMultipleChoiceField(
-        queryset=VRF.objects.all(), required=False, label=_('Assigned VRF'), null_option='Global'
+        queryset=VRF.objects.all(),
+        required=False,
+        label=_('Assigned VRF'),
+        null_option='Global'
     )
-    status = forms.MultipleChoiceField(label=_('Status'), choices=IPRangeStatusChoices, required=False)
+    status = forms.MultipleChoiceField(
+        label=_('Status'),
+        choices=IPRangeStatusChoices,
+        required=False
+    )
     role_id = DynamicModelMultipleChoiceField(
-        queryset=Role.objects.all(), required=False, null_option='None', label=_('Role')
+        queryset=Role.objects.all(),
+        required=False,
+        null_option='None',
+        label=_('Role')
     )
     mark_populated = forms.NullBooleanField(
-        required=False, label=_('Treat as populated'), widget=forms.Select(choices=BOOLEAN_WITH_BLANK_CHOICES)
+        required=False,
+        label=_('Treat as populated'),
+        widget=forms.Select(
+            choices=BOOLEAN_WITH_BLANK_CHOICES
+        )
     )
     mark_utilized = forms.NullBooleanField(
-        required=False, label=_('Treat as fully utilized'), widget=forms.Select(choices=BOOLEAN_WITH_BLANK_CHOICES)
+        required=False,
+        label=_('Treat as fully utilized'),
+        widget=forms.Select(
+            choices=BOOLEAN_WITH_BLANK_CHOICES
+        )
     )
     tag = TagFilterField(model)
 
@@ -244,14 +342,8 @@ class IPAddressFilterForm(ContactModelFilterForm, TenancyFilterForm, PrimaryMode
     fieldsets = (
         FieldSet('q', 'filter_id', 'tag'),
         FieldSet(
-            'parent',
-            'family',
-            'status',
-            'role',
-            'mask_length',
-            'assigned_to_interface',
-            'dns_name',
-            name=_('Attributes'),
+            'parent', 'family', 'status', 'role', 'mask_length', 'assigned_to_interface', 'dns_name',
+            name=_('Attributes')
         ),
         FieldSet('vrf_id', 'present_in_vrf_id', name=_('VRF')),
         FieldSet('device_id', 'virtual_machine_id', name=_('Device/VM')),
@@ -267,16 +359,29 @@ class IPAddressFilterForm(ContactModelFilterForm, TenancyFilterForm, PrimaryMode
                 'placeholder': 'Prefix',
             }
         ),
-        label=_('Parent Prefix'),
+        label=_('Parent Prefix')
     )
     family = forms.ChoiceField(
-        required=False, choices=add_blank_choice(IPAddressFamilyChoices), label=_('Address family')
+        required=False,
+        choices=add_blank_choice(IPAddressFamilyChoices),
+        label=_('Address family')
     )
-    mask_length = forms.ChoiceField(required=False, choices=IPADDRESS_MASK_LENGTH_CHOICES, label=_('Mask length'))
+    mask_length = forms.ChoiceField(
+        required=False,
+        choices=IPADDRESS_MASK_LENGTH_CHOICES,
+        label=_('Mask length')
+    )
     vrf_id = DynamicModelMultipleChoiceField(
-        queryset=VRF.objects.all(), required=False, label=_('Assigned VRF'), null_option='Global'
+        queryset=VRF.objects.all(),
+        required=False,
+        label=_('Assigned VRF'),
+        null_option='Global'
     )
-    present_in_vrf_id = DynamicModelChoiceField(queryset=VRF.objects.all(), required=False, label=_('Present in VRF'))
+    present_in_vrf_id = DynamicModelChoiceField(
+        queryset=VRF.objects.all(),
+        required=False,
+        label=_('Present in VRF')
+    )
     device_id = DynamicModelMultipleChoiceField(
         queryset=Device.objects.all(),
         required=False,
@@ -287,12 +392,27 @@ class IPAddressFilterForm(ContactModelFilterForm, TenancyFilterForm, PrimaryMode
         required=False,
         label=_('Assigned VM'),
     )
-    status = forms.MultipleChoiceField(label=_('Status'), choices=IPAddressStatusChoices, required=False)
-    role = forms.MultipleChoiceField(label=_('Role'), choices=IPAddressRoleChoices, required=False)
-    assigned_to_interface = forms.NullBooleanField(
-        required=False, label=_('Assigned to an interface'), widget=forms.Select(choices=BOOLEAN_WITH_BLANK_CHOICES)
+    status = forms.MultipleChoiceField(
+        label=_('Status'),
+        choices=IPAddressStatusChoices,
+        required=False
     )
-    dns_name = forms.CharField(required=False, label=_('DNS Name'))
+    role = forms.MultipleChoiceField(
+        label=_('Role'),
+        choices=IPAddressRoleChoices,
+        required=False
+    )
+    assigned_to_interface = forms.NullBooleanField(
+        required=False,
+        label=_('Assigned to an interface'),
+        widget=forms.Select(
+            choices=BOOLEAN_WITH_BLANK_CHOICES
+        )
+    )
+    dns_name = forms.CharField(
+        required=False,
+        label=_('DNS Name')
+    )
     tag = TagFilterField(model)
 
 
@@ -304,13 +424,29 @@ class FHRPGroupFilterForm(PrimaryModelFilterSetForm):
         FieldSet('auth_type', 'auth_key', name=_('Authentication')),
         FieldSet('owner_group_id', 'owner_id', name=_('Ownership')),
     )
-    name = forms.CharField(label=_('Name'), required=False)
-    protocol = forms.MultipleChoiceField(label=_('Protocol'), choices=FHRPGroupProtocolChoices, required=False)
-    group_id = forms.IntegerField(min_value=0, required=False, label=_('Group ID'))
-    auth_type = forms.MultipleChoiceField(
-        choices=FHRPGroupAuthTypeChoices, required=False, label=_('Authentication type')
+    name = forms.CharField(
+        label=_('Name'),
+        required=False
     )
-    auth_key = forms.CharField(required=False, label=_('Authentication key'))
+    protocol = forms.MultipleChoiceField(
+        label=_('Protocol'),
+        choices=FHRPGroupProtocolChoices,
+        required=False
+    )
+    group_id = forms.IntegerField(
+        min_value=0,
+        required=False,
+        label=_('Group ID')
+    )
+    auth_type = forms.MultipleChoiceField(
+        choices=FHRPGroupAuthTypeChoices,
+        required=False,
+        label=_('Authentication type')
+    )
+    auth_key = forms.CharField(
+        required=False,
+        label=_('Authentication key')
+    )
     tag = TagFilterField(model)
 
 
@@ -324,18 +460,46 @@ class VLANGroupFilterForm(TenancyFilterForm, OrganizationalModelFilterSetForm):
         FieldSet('owner_group_id', 'owner_id', name=_('Ownership')),
     )
     model = VLANGroup
-    region = DynamicModelMultipleChoiceField(queryset=Region.objects.all(), required=False, label=_('Region'))
+    region = DynamicModelMultipleChoiceField(
+        queryset=Region.objects.all(),
+        required=False,
+        label=_('Region')
+    )
     site_group = DynamicModelMultipleChoiceField(
-        queryset=SiteGroup.objects.all(), required=False, label=_('Site group')
+        queryset=SiteGroup.objects.all(),
+        required=False,
+        label=_('Site group')
     )
-    site = DynamicModelMultipleChoiceField(queryset=Site.objects.all(), required=False, label=_('Site'))
-    location = DynamicModelMultipleChoiceField(queryset=Location.objects.all(), required=False, label=_('Location'))
-    rack = DynamicModelMultipleChoiceField(queryset=Rack.objects.all(), required=False, label=_('Rack'))
-    cluster = DynamicModelMultipleChoiceField(queryset=Cluster.objects.all(), required=False, label=_('Cluster'))
+    site = DynamicModelMultipleChoiceField(
+        queryset=Site.objects.all(),
+        required=False,
+        label=_('Site')
+    )
+    location = DynamicModelMultipleChoiceField(
+        queryset=Location.objects.all(),
+        required=False,
+        label=_('Location')
+    )
+    rack = DynamicModelMultipleChoiceField(
+        queryset=Rack.objects.all(),
+        required=False,
+        label=_('Rack')
+    )
+    cluster = DynamicModelMultipleChoiceField(
+        queryset=Cluster.objects.all(),
+        required=False,
+        label=_('Cluster')
+    )
     cluster_group = DynamicModelMultipleChoiceField(
-        queryset=ClusterGroup.objects.all(), required=False, label=_('Cluster group')
+        queryset=ClusterGroup.objects.all(),
+        required=False,
+        label=_('Cluster group')
     )
-    contains_vid = forms.IntegerField(min_value=0, required=False, label=_('Contains VLAN ID'))
+    contains_vid = forms.IntegerField(
+        min_value=0,
+        required=False,
+        label=_('Contains VLAN ID')
+    )
 
     tag = TagFilterField(model)
 
@@ -347,7 +511,10 @@ class VLANTranslationPolicyFilterForm(PrimaryModelFilterSetForm):
         FieldSet('name', name=_('Attributes')),
         FieldSet('owner_group_id', 'owner_id', name=_('Ownership')),
     )
-    name = forms.CharField(required=False, label=_('Name'))
+    name = forms.CharField(
+        required=False,
+        label=_('Name')
+    )
     tag = TagFilterField(model)
 
 
@@ -359,10 +526,20 @@ class VLANTranslationRuleFilterForm(NetBoxModelFilterSetForm):
     )
     tag = TagFilterField(model)
     policy_id = DynamicModelMultipleChoiceField(
-        queryset=VLANTranslationPolicy.objects.all(), required=False, label=_('VLAN Translation Policy')
+        queryset=VLANTranslationPolicy.objects.all(),
+        required=False,
+        label=_('VLAN Translation Policy')
     )
-    local_vid = forms.IntegerField(min_value=1, required=False, label=_('Local VLAN ID'))
-    remote_vid = forms.IntegerField(min_value=1, required=False, label=_('Remote VLAN ID'))
+    local_vid = forms.IntegerField(
+        min_value=1,
+        required=False,
+        label=_('Local VLAN ID')
+    )
+    remote_vid = forms.IntegerField(
+        min_value=1,
+        required=False,
+        label=_('Remote VLAN ID')
+    )
 
 
 class VLANFilterForm(TenancyFilterForm, PrimaryModelFilterSetForm):
@@ -376,34 +553,65 @@ class VLANFilterForm(TenancyFilterForm, PrimaryModelFilterSetForm):
         FieldSet('owner_group_id', 'owner_id', name=_('Ownership')),
     )
     selector_fields = ('filter_id', 'q', 'group_id')
-    region_id = DynamicModelMultipleChoiceField(queryset=Region.objects.all(), required=False, label=_('Region'))
+    region_id = DynamicModelMultipleChoiceField(
+        queryset=Region.objects.all(),
+        required=False,
+        label=_('Region')
+    )
     site_group_id = DynamicModelMultipleChoiceField(
-        queryset=SiteGroup.objects.all(), required=False, label=_('Site group')
+        queryset=SiteGroup.objects.all(),
+        required=False,
+        label=_('Site group')
     )
     site_id = DynamicModelMultipleChoiceField(
         queryset=Site.objects.all(),
         required=False,
         null_option='None',
-        query_params={'region': '$region'},
-        label=_('Site'),
+        query_params={
+            'region': '$region'
+        },
+        label=_('Site')
     )
     group_id = DynamicModelMultipleChoiceField(
         queryset=VLANGroup.objects.all(),
         required=False,
         null_option='None',
-        query_params={'region': '$region'},
-        label=_('VLAN group'),
+        query_params={
+            'region': '$region'
+        },
+        label=_('VLAN group')
     )
-    status = forms.MultipleChoiceField(label=_('Status'), choices=VLANStatusChoices, required=False)
+    status = forms.MultipleChoiceField(
+        label=_('Status'),
+        choices=VLANStatusChoices,
+        required=False
+    )
     role_id = DynamicModelMultipleChoiceField(
-        queryset=Role.objects.all(), required=False, null_option='None', label=_('Role')
+        queryset=Role.objects.all(),
+        required=False,
+        null_option='None',
+        label=_('Role')
     )
-    vid = forms.IntegerField(required=False, label=_('VLAN ID'))
-    qinq_role = forms.MultipleChoiceField(label=_('Q-in-Q role'), choices=VLANQinQRoleChoices, required=False)
+    vid = forms.IntegerField(
+        required=False,
+        label=_('VLAN ID')
+    )
+    qinq_role = forms.MultipleChoiceField(
+        label=_('Q-in-Q role'),
+        choices=VLANQinQRoleChoices,
+        required=False
+    )
     qinq_svlan_id = DynamicModelMultipleChoiceField(
-        queryset=VLAN.objects.all(), required=False, null_option='None', label=_('Q-in-Q SVLAN')
+        queryset=VLAN.objects.all(),
+        required=False,
+        null_option='None',
+        label=_('Q-in-Q SVLAN')
     )
-    l2vpn_id = DynamicModelMultipleChoiceField(queryset=L2VPN.objects.all(), required=False, label=_('L2VPN'))
+    l2vpn_id = DynamicModelMultipleChoiceField(
+        queryset=L2VPN.objects.all(),
+        required=False,
+        label=_('L2VPN')
+    )
     tag = TagFilterField(model)
 
 
@@ -414,7 +622,11 @@ class ServiceTemplateFilterForm(PrimaryModelFilterSetForm):
         FieldSet('protocol', 'port', name=_('Attributes')),
         FieldSet('owner_group_id', 'owner_id', name=_('Ownership')),
     )
-    protocol = forms.ChoiceField(label=_('Protocol'), choices=add_blank_choice(ServiceProtocolChoices), required=False)
+    protocol = forms.ChoiceField(
+        label=_('Protocol'),
+        choices=add_blank_choice(ServiceProtocolChoices),
+        required=False
+    )
     port = forms.IntegerField(
         label=_('Port'),
         required=False,

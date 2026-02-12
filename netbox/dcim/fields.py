@@ -25,7 +25,6 @@ class eui64_unix_expanded_uppercase(eui64_unix_expanded):
 # Fields
 #
 
-
 class MACAddressField(models.Field):
     description = 'PostgreSQL MAC Address field'
 
@@ -46,7 +45,7 @@ class MACAddressField(models.Field):
         try:
             return EUI(value, version=48, dialect=mac_unix_expanded_uppercase)
         except AddrFormatError:
-            raise ValidationError(_('Invalid MAC address format: {value}').format(value=value))
+            raise ValidationError(_("Invalid MAC address format: {value}").format(value=value))
 
     def db_type(self, connection):
         return 'macaddr'
@@ -75,7 +74,7 @@ class WWNField(models.Field):
         try:
             return EUI(value, version=64, dialect=eui64_unix_expanded_uppercase)
         except AddrFormatError:
-            raise ValidationError(_('Invalid WWN format: {value}').format(value=value))
+            raise ValidationError(_("Invalid WWN format: {value}").format(value=value))
 
     def db_type(self, connection):
         return 'macaddr8'
@@ -90,7 +89,6 @@ class PathField(ArrayField):
     """
     An ArrayField which holds a set of objects, each identified by a (type, ID) tuple.
     """
-
     def __init__(self, **kwargs):
         kwargs['base_field'] = models.CharField(max_length=40)
         super().__init__(**kwargs)

@@ -16,10 +16,8 @@ from extras.filters import TagFilter, TagIDFilter
 from extras.models import CustomField, SavedFilter
 from users.filterset_mixins import OwnerFilterMixin
 from utilities.constants import (
-    FILTER_CHAR_BASED_LOOKUP_MAP,
-    FILTER_NEGATION_LOOKUP_MAP,
-    FILTER_TREENODE_NEGATION_LOOKUP_MAP,
-    FILTER_NUMERIC_BASED_LOOKUP_MAP,
+    FILTER_CHAR_BASED_LOOKUP_MAP, FILTER_NEGATION_LOOKUP_MAP, FILTER_TREENODE_NEGATION_LOOKUP_MAP,
+    FILTER_NUMERIC_BASED_LOOKUP_MAP
 )
 from utilities.forms.fields import MACAddressField
 from utilities import filters
@@ -46,32 +44,58 @@ STANDARD_LOOKUPS = (
 # FilterSets
 #
 
-
 class BaseFilterSet(django_filters.FilterSet):
     """
     A base FilterSet which provides some enhanced functionality over django-filter2's FilterSet class.
     """
-
     FILTER_DEFAULTS = deepcopy(django_filters.filterset.FILTER_FOR_DBFIELD_DEFAULTS)
-    FILTER_DEFAULTS.update(
-        {
-            models.AutoField: {'filter_class': filters.MultiValueNumberFilter},
-            models.CharField: {'filter_class': filters.MultiValueCharFilter},
-            models.DateField: {'filter_class': filters.MultiValueDateFilter},
-            models.DateTimeField: {'filter_class': filters.MultiValueDateTimeFilter},
-            models.DecimalField: {'filter_class': filters.MultiValueDecimalFilter},
-            models.EmailField: {'filter_class': filters.MultiValueCharFilter},
-            models.FloatField: {'filter_class': filters.MultiValueNumberFilter},
-            models.IntegerField: {'filter_class': filters.MultiValueNumberFilter},
-            models.PositiveIntegerField: {'filter_class': filters.MultiValueNumberFilter},
-            models.PositiveSmallIntegerField: {'filter_class': filters.MultiValueNumberFilter},
-            models.SlugField: {'filter_class': filters.MultiValueCharFilter},
-            models.SmallIntegerField: {'filter_class': filters.MultiValueNumberFilter},
-            models.TimeField: {'filter_class': filters.MultiValueTimeFilter},
-            models.URLField: {'filter_class': filters.MultiValueCharFilter},
-            MACAddressField: {'filter_class': filters.MultiValueMACAddressFilter},
-        }
-    )
+    FILTER_DEFAULTS.update({
+        models.AutoField: {
+            'filter_class': filters.MultiValueNumberFilter
+        },
+        models.CharField: {
+            'filter_class': filters.MultiValueCharFilter
+        },
+        models.DateField: {
+            'filter_class': filters.MultiValueDateFilter
+        },
+        models.DateTimeField: {
+            'filter_class': filters.MultiValueDateTimeFilter
+        },
+        models.DecimalField: {
+            'filter_class': filters.MultiValueDecimalFilter
+        },
+        models.EmailField: {
+            'filter_class': filters.MultiValueCharFilter
+        },
+        models.FloatField: {
+            'filter_class': filters.MultiValueNumberFilter
+        },
+        models.IntegerField: {
+            'filter_class': filters.MultiValueNumberFilter
+        },
+        models.PositiveIntegerField: {
+            'filter_class': filters.MultiValueNumberFilter
+        },
+        models.PositiveSmallIntegerField: {
+            'filter_class': filters.MultiValueNumberFilter
+        },
+        models.SlugField: {
+            'filter_class': filters.MultiValueCharFilter
+        },
+        models.SmallIntegerField: {
+            'filter_class': filters.MultiValueNumberFilter
+        },
+        models.TimeField: {
+            'filter_class': filters.MultiValueTimeFilter
+        },
+        models.URLField: {
+            'filter_class': filters.MultiValueCharFilter
+        },
+        MACAddressField: {
+            'filter_class': filters.MultiValueMACAddressFilter
+        },
+    })
 
     def __init__(self, data=None, *args, **kwargs):
         # bit of a hack for #9231 - extras.lookup.Empty is registered in apps.ready
@@ -83,7 +107,8 @@ class BaseFilterSet(django_filters.FilterSet):
         if data and ('filter' in data or 'filter_id' in data):
             data = data.copy()  # Get a mutable copy
             saved_filters = SavedFilter.objects.filter(
-                Q(slug__in=data.pop('filter', [])) | Q(pk__in=data.pop('filter_id', []))
+                Q(slug__in=data.pop('filter', [])) |
+                Q(pk__in=data.pop('filter_id', []))
             )
             for sf in saved_filters:
                 for key, value in sf.parameters.items():
@@ -101,39 +126,37 @@ class BaseFilterSet(django_filters.FilterSet):
     @staticmethod
     def _get_filter_lookup_dict(existing_filter):
         # Choose the lookup expression map based on the filter type
-        if isinstance(
-            existing_filter,
-            (
-                django_filters.NumberFilter,
-                filters.MultiValueDateFilter,
-                filters.MultiValueDateTimeFilter,
-                filters.MultiValueNumberFilter,
-                filters.MultiValueDecimalFilter,
-                filters.MultiValueTimeFilter,
-            ),
-        ):
+        if isinstance(existing_filter, (
+            django_filters.NumberFilter,
+            filters.MultiValueDateFilter,
+            filters.MultiValueDateTimeFilter,
+            filters.MultiValueNumberFilter,
+            filters.MultiValueDecimalFilter,
+            filters.MultiValueTimeFilter
+        )):
             return FILTER_NUMERIC_BASED_LOOKUP_MAP
 
-        elif isinstance(existing_filter, (filters.TreeNodeMultipleChoiceFilter,)):
+        elif isinstance(existing_filter, (
+            filters.TreeNodeMultipleChoiceFilter,
+        )):
             # TreeNodeMultipleChoiceFilter only support negation but must maintain the `in` lookup expression
             return FILTER_TREENODE_NEGATION_LOOKUP_MAP
 
-        elif isinstance(
-            existing_filter, (django_filters.ModelChoiceFilter, django_filters.ModelMultipleChoiceFilter, TagFilter)
-        ):
+        elif isinstance(existing_filter, (
+            django_filters.ModelChoiceFilter,
+            django_filters.ModelMultipleChoiceFilter,
+            TagFilter
+        )):
             # These filter types support only negation
             return FILTER_NEGATION_LOOKUP_MAP
 
-        elif isinstance(
-            existing_filter,
-            (
-                django_filters.filters.CharFilter,
-                django_filters.ChoiceFilter,
-                django_filters.MultipleChoiceFilter,
-                filters.MultiValueCharFilter,
-                filters.MultiValueMACAddressFilter,
-            ),
-        ):
+        elif isinstance(existing_filter, (
+            django_filters.filters.CharFilter,
+            django_filters.ChoiceFilter,
+            django_filters.MultipleChoiceFilter,
+            filters.MultiValueCharFilter,
+            filters.MultiValueMACAddressFilter
+        )):
             return FILTER_CHAR_BASED_LOOKUP_MAP
 
         return None
@@ -184,7 +207,7 @@ class BaseFilterSet(django_filters.FilterSet):
                         label=existing_filter.label,
                         exclude=existing_filter.exclude,
                         distinct=existing_filter.distinct,
-                        **existing_filter_extra,
+                        **existing_filter_extra
                     )
                 elif hasattr(existing_filter, 'custom_field'):
                     # Filter is for a custom field
@@ -227,6 +250,7 @@ class BaseFilterSet(django_filters.FilterSet):
 
     @classmethod
     def filter_for_lookup(cls, field, lookup_type):
+
         if lookup_type == 'empty':
             return django_filters.BooleanFilter, {}
 
@@ -237,12 +261,17 @@ class ChangeLoggedModelFilterSet(BaseFilterSet):
     """
     Base FilterSet for ChangeLoggedModel classes.
     """
-
     created = filters.MultiValueDateTimeFilter()
     last_updated = filters.MultiValueDateTimeFilter()
-    created_by_request = django_filters.UUIDFilter(method='filter_by_request')
-    updated_by_request = django_filters.UUIDFilter(method='filter_by_request')
-    modified_by_request = django_filters.UUIDFilter(method='filter_by_request')
+    created_by_request = django_filters.UUIDFilter(
+        method='filter_by_request'
+    )
+    updated_by_request = django_filters.UUIDFilter(
+        method='filter_by_request'
+    )
+    modified_by_request = django_filters.UUIDFilter(
+        method='filter_by_request'
+    )
 
     def filter_by_request(self, queryset, name, value):
         content_type = ContentType.objects.get_for_model(self.Meta.model)
@@ -266,7 +295,6 @@ class NetBoxModelFilterSet(ChangeLoggedModelFilterSet):
     """
     Provides additional filtering functionality (e.g. tags, custom fields) for core NetBox models.
     """
-
     q = django_filters.CharFilter(
         method='search',
         label=_('Search'),
@@ -303,7 +331,6 @@ class PrimaryModelFilterSet(OwnerFilterMixin, NetBoxModelFilterSet):
     """
     Base filterset for models inheriting from PrimaryModel.
     """
-
     pass
 
 
@@ -311,12 +338,13 @@ class OrganizationalModelFilterSet(OwnerFilterMixin, NetBoxModelFilterSet):
     """
     Base filterset for models inheriting from OrganizationalModel.
     """
-
     def search(self, queryset, name, value):
         if not value.strip():
             return queryset
         return queryset.filter(
-            models.Q(name__icontains=value) | models.Q(slug__icontains=value) | models.Q(description__icontains=value)
+            models.Q(name__icontains=value) |
+            models.Q(slug__icontains=value) |
+            models.Q(description__icontains=value)
         )
 
 
@@ -324,14 +352,13 @@ class NestedGroupModelFilterSet(OwnerFilterMixin, NetBoxModelFilterSet):
     """
     Base filterset for models inheriting from NestedGroupModel.
     """
-
     def search(self, queryset, name, value):
         if value.strip():
             queryset = queryset.filter(
-                models.Q(name__icontains=value)
-                | models.Q(slug__icontains=value)
-                | models.Q(description__icontains=value)
-                | models.Q(comments__icontains=value)
+                models.Q(name__icontains=value) |
+                models.Q(slug__icontains=value) |
+                models.Q(description__icontains=value) |
+                models.Q(comments__icontains=value)
             )
 
         return queryset

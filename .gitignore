@@ -31,29 +31,3 @@ netbox.pid
 .coverage
 .vscode
 .python-version
-
-# Local configuration
-.env
-.env.local
-
-# Keys and Secrets
-*.pem
-*.key
-*.pub
-*.p12
-*.pfx
-*secret*
-id_rsa
-id_dsa
-id_ed25519
-id_ecdsa
-cookies.txt
-
-# Docker
-docker-compose.yml
-docker-compose.override.yml
-docker-compose.cloud.yml
-
-# GCP / Cloud Build
-cloudbuild.yaml
-.gcloudignore

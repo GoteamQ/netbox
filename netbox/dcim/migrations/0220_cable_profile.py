@@ -4,6 +4,7 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
+
     dependencies = [
         ('dcim', '0219_devicetype_device_count'),
     ]
@@ -20,7 +21,10 @@ class Migration(migrations.Migration):
             field=models.PositiveSmallIntegerField(
                 blank=True,
                 null=True,
-                validators=[django.core.validators.MinValueValidator(1), django.core.validators.MaxValueValidator(256)],
+                validators=[
+                    django.core.validators.MinValueValidator(1),
+                    django.core.validators.MaxValueValidator(256)
+                ]
             ),
         ),
         migrations.AddField(
@@ -30,12 +34,12 @@ class Migration(migrations.Migration):
                 base_field=models.PositiveSmallIntegerField(
                     validators=[
                         django.core.validators.MinValueValidator(1),
-                        django.core.validators.MaxValueValidator(1024),
+                        django.core.validators.MaxValueValidator(1024)
                     ]
                 ),
                 blank=True,
                 null=True,
-                size=None,
+                size=None
             ),
         ),
         migrations.AlterModelOptions(
@@ -45,7 +49,8 @@ class Migration(migrations.Migration):
         migrations.AddConstraint(
             model_name='cabletermination',
             constraint=models.UniqueConstraint(
-                fields=('cable', 'cable_end', 'connector'), name='dcim_cabletermination_unique_connector'
+                fields=('cable', 'cable_end', 'connector'),
+                name='dcim_cabletermination_unique_connector'
             ),
         ),
     ]

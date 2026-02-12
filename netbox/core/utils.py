@@ -79,12 +79,9 @@ def delete_rq_job(job_id):
     """
     config = QUEUES_LIST[0]
     try:
-        job = RQ_Job.fetch(
-            job_id,
-            connection=get_redis_connection(config['connection_config']),
-        )
+        job = RQ_Job.fetch(job_id, connection=get_redis_connection(config['connection_config']),)
     except NoSuchJobError:
-        raise Http404(_('Job {job_id} not found').format(job_id=job_id))
+        raise Http404(_("Job {job_id} not found").format(job_id=job_id))
 
     queue_index = QUEUES_MAP[job.origin]
     queue = get_queue_by_index(queue_index)
@@ -100,12 +97,9 @@ def requeue_rq_job(job_id):
     """
     config = QUEUES_LIST[0]
     try:
-        job = RQ_Job.fetch(
-            job_id,
-            connection=get_redis_connection(config['connection_config']),
-        )
+        job = RQ_Job.fetch(job_id, connection=get_redis_connection(config['connection_config']),)
     except NoSuchJobError:
-        raise Http404(_('Job {id} not found.').format(id=job_id))
+        raise Http404(_("Job {id} not found.").format(id=job_id))
 
     queue_index = QUEUES_MAP[job.origin]
     queue = get_queue_by_index(queue_index)
@@ -119,12 +113,9 @@ def enqueue_rq_job(job_id):
     """
     config = QUEUES_LIST[0]
     try:
-        job = RQ_Job.fetch(
-            job_id,
-            connection=get_redis_connection(config['connection_config']),
-        )
+        job = RQ_Job.fetch(job_id, connection=get_redis_connection(config['connection_config']),)
     except NoSuchJobError:
-        raise Http404(_('Job {id} not found.').format(id=job_id))
+        raise Http404(_("Job {id} not found.").format(id=job_id))
 
     queue_index = QUEUES_MAP[job.origin]
     queue = get_queue_by_index(queue_index)
@@ -154,12 +145,9 @@ def stop_rq_job(job_id):
     """
     config = QUEUES_LIST[0]
     try:
-        job = RQ_Job.fetch(
-            job_id,
-            connection=get_redis_connection(config['connection_config']),
-        )
+        job = RQ_Job.fetch(job_id, connection=get_redis_connection(config['connection_config']),)
     except NoSuchJobError:
-        raise Http404(_('Job {job_id} not found').format(job_id=job_id))
+        raise Http404(_("Job {job_id} not found").format(job_id=job_id))
 
     queue_index = QUEUES_MAP[job.origin]
     queue = get_queue_by_index(queue_index)

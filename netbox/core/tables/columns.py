@@ -13,7 +13,6 @@ class BackendTypeColumn(tables.Column):
     """
     Display a data backend type.
     """
-
     def render(self, value):
         if backend := registry['data_backends'].get(value):
             return backend.label
@@ -30,7 +29,6 @@ class BadgeColumn(tables.Column):
     Args:
         badges: A dictionary mapping of values to core.constants.Badge instances.
     """
-
     def __init__(self, badges, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.badges = badges

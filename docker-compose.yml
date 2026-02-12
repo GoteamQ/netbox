@@ -1,0 +1,77 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: netbox
+      POSTGRES_USER: netbox
+      POSTGRES_PASSWORD: netbox
+    volumes:
+      - netbox-db-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  web:
+    build: .
+    volumes:
+      - .:/opt/netbox
+    depends_on:
+      - db
+      - redis
+    environment:
+      ALLOWED_HOSTS: "localhost,127.0.0.1,0.0.0.0"
+      SECRET_KEY: ")%hadA7jDkTo1+0UkOq%WqX^bHR8Yfm5-P33X7hQKqk4yuD8&w"
+      DB_NAME: netbox
+      DB_USER: netbox
+      DB_PASSWORD: netbox
+      DB_HOST: db
+      DB_PORT: 5432
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ""
+      REDIS_USERNAME: ""
+      REDIS_TASKS_DB: 0
+      REDIS_CACHE_DB: 1
+      DEBUG: "false"
+      DEVELOPER: "false"
+      GCP_CLEANUP_ON_STARTUP: "true"
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+
+  worker:
+    build: .
+    volumes:
+      - .:/opt/netbox
+    depends_on:
+      - db
+      - redis
+    restart: unless-stopped
+    environment:
+      ALLOWED_HOSTS: "localhost,127.0.0.1,0.0.0.0"
+      SECRET_KEY: ")%hadA7jDkTo1+0UkOq%WqX^bHR8Yfm5-P33X7hQKqk4yuD8&w"
+      DB_NAME: netbox
+      DB_USER: netbox
+      DB_PASSWORD: netbox
+      DB_HOST: db
+      DB_PORT: 5432
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ""
+      REDIS_USERNAME: ""
+      REDIS_TASKS_DB: 0
+      REDIS_CACHE_DB: 1
+      DEBUG: "false"
+      DEVELOPER: "false"
+      GCP_CLEANUP_ON_STARTUP: "true"
+    command: ["python", "netbox/manage.py", "rqworker"]
+    deploy:
+      mode: replicated
+      replicas: 5
+
+volumes:
+  netbox-db-data:

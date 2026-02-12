@@ -47,7 +47,6 @@ class ObjectView(ActionsMixin, BaseObjectView):
         tab: A ViewTab instance for the view
         actions: An iterable of ObjectAction subclasses (see ActionsMixin)
     """
-
     layout = None
     tab = None
     actions = (CloneObject, EditObject, DeleteObject)
@@ -79,17 +78,13 @@ class ObjectView(ActionsMixin, BaseObjectView):
         instance = self.get_object(**kwargs)
         actions = self.get_permitted_actions(request.user, model=instance)
 
-        return render(
-            request,
-            self.get_template_name(),
-            {
-                'object': instance,
-                'actions': actions,
-                'tab': self.tab,
-                'layout': self.layout,
-                **self.get_extra_context(request, instance),
-            },
-        )
+        return render(request, self.get_template_name(), {
+            'object': instance,
+            'actions': actions,
+            'tab': self.tab,
+            'layout': self.layout,
+            **self.get_extra_context(request, instance),
+        })
 
 
 class ObjectChildrenView(ObjectView, ActionsMixin, TableMixin):
@@ -104,7 +99,6 @@ class ObjectChildrenView(ObjectView, ActionsMixin, TableMixin):
         filterset_form: The form class used to render filter options
         actions: An iterable of ObjectAction subclasses (see ActionsMixin)
     """
-
     child_model = None
     table = None
     filterset = None
@@ -120,9 +114,9 @@ class ObjectChildrenView(ObjectView, ActionsMixin, TableMixin):
             request: The current request
             parent: The parent object
         """
-        raise NotImplementedError(
-            _('{class_name} must implement get_children()').format(class_name=self.__class__.__name__)
-        )
+        raise NotImplementedError(_('{class_name} must implement get_children()').format(
+            class_name=self.__class__.__name__
+        ))
 
     def prep_table_data(self, request, queryset, parent):
         """
@@ -158,34 +152,26 @@ class ObjectChildrenView(ObjectView, ActionsMixin, TableMixin):
 
         # If this is an HTMX request, return only the rendered table HTML
         if htmx_partial(request):
-            return render(
-                request,
-                'htmx/table.html',
-                {
-                    'object': instance,
-                    'table': table,
-                    'model': self.child_model,
-                },
-            )
-
-        return render(
-            request,
-            self.get_template_name(),
-            {
+            return render(request, 'htmx/table.html', {
                 'object': instance,
-                'model': self.child_model,
-                'child_model': self.child_model,
-                'base_template': f'{instance._meta.app_label}/{instance._meta.model_name}.html',
                 'table': table,
-                'table_config': f'{table.name}_config',
-                'table_configs': get_table_configs(table, request.user),
-                'filter_form': self.filterset_form(request.GET) if self.filterset_form else None,
-                'actions': actions,
-                'tab': self.tab,
-                'return_url': request.get_full_path(),
-                **self.get_extra_context(request, instance),
-            },
-        )
+                'model': self.child_model,
+            })
+
+        return render(request, self.get_template_name(), {
+            'object': instance,
+            'model': self.child_model,
+            'child_model': self.child_model,
+            'base_template': f'{instance._meta.app_label}/{instance._meta.model_name}.html',
+            'table': table,
+            'table_config': f'{table.name}_config',
+            'table_configs': get_table_configs(table, request.user),
+            'filter_form': self.filterset_form(request.GET) if self.filterset_form else None,
+            'actions': actions,
+            'tab': self.tab,
+            'return_url': request.get_full_path(),
+            **self.get_extra_context(request, instance),
+        })
 
 
 class ObjectEditView(GetReturnURLMixin, BaseObjectView):
@@ -195,7 +181,6 @@ class ObjectEditView(GetReturnURLMixin, BaseObjectView):
     Attributes:
         form: The form used to create or edit the object
     """
-
     template_name = 'generic/object_edit.html'
     form = None
     htmx_template_name = 'htmx/form.html'
@@ -274,16 +259,12 @@ class ObjectEditView(GetReturnURLMixin, BaseObjectView):
         if htmx_partial(request):
             return render(request, self.htmx_template_name, context)
 
-        return render(
-            request,
-            self.template_name,
-            {
-                **context,
-                'return_url': self.get_return_url(request, obj),
-                'prerequisite_model': get_prerequisite_model(self.queryset),
-                **self.get_extra_context(request, obj),
-            },
-        )
+        return render(request, self.template_name, {
+            **context,
+            'return_url': self.get_return_url(request, obj),
+            'prerequisite_model': get_prerequisite_model(self.queryset),
+            **self.get_extra_context(request, obj),
+        })
 
     def post(self, request, *args, **kwargs):
         """
@@ -307,7 +288,7 @@ class ObjectEditView(GetReturnURLMixin, BaseObjectView):
         restrict_form_fields(form, request.user)
 
         if form.is_valid():
-            logger.debug('Form validation was successful')
+            logger.debug("Form validation was successful")
 
             # Record changelog message (if any)
             obj._changelog_message = form.cleaned_data.pop('changelog_message', '')
@@ -322,9 +303,10 @@ class ObjectEditView(GetReturnURLMixin, BaseObjectView):
                         raise PermissionsViolation()
 
                 msg = '{} {}'.format(
-                    'Created' if object_created else 'Modified', self.queryset.model._meta.verbose_name
+                    'Created' if object_created else 'Modified',
+                    self.queryset.model._meta.verbose_name
                 )
-                logger.info(f'{msg} {obj} (PK: {obj.pk})')
+                logger.info(f"{msg} {obj} (PK: {obj.pk})")
                 if hasattr(obj, 'get_absolute_url'):
                     msg = mark_safe(f'{msg} <a href="{obj.get_absolute_url()}">{escape(obj)}</a>')
                 else:
@@ -333,13 +315,9 @@ class ObjectEditView(GetReturnURLMixin, BaseObjectView):
 
                 # Object was created via "quick add" modal
                 if '_quickadd' in request.POST:
-                    return render(
-                        request,
-                        'htmx/quick_add_created.html',
-                        {
-                            'object': obj,
-                        },
-                    )
+                    return render(request, 'htmx/quick_add_created.html', {
+                        'object': obj,
+                    })
 
                 # If adding another object, redirect back to the edit form
                 if '_addanother' in request.POST:
@@ -351,7 +329,7 @@ class ObjectEditView(GetReturnURLMixin, BaseObjectView):
                     if params:
                         if 'return_url' in request.GET:
                             params['return_url'] = request.GET.get('return_url')
-                        redirect_url += f'?{params.urlencode()}'
+                        redirect_url += f"?{params.urlencode()}"
                         if not safe_for_redirect(redirect_url):
                             redirect_url = reverse('home')
 
@@ -361,11 +339,9 @@ class ObjectEditView(GetReturnURLMixin, BaseObjectView):
 
                 # If the object has been created or edited via HTMX, return an HTMX redirect to the object view
                 if request.htmx:
-                    return HttpResponse(
-                        headers={
-                            'HX-Location': return_url,
-                        }
-                    )
+                    return HttpResponse(headers={
+                        'HX-Location': return_url,
+                    })
 
                 return redirect(return_url)
 
@@ -375,7 +351,7 @@ class ObjectEditView(GetReturnURLMixin, BaseObjectView):
                 clear_events.send(sender=self)
 
         else:
-            logger.debug('Form validation failed')
+            logger.debug("Form validation failed")
 
         context = {
             'model': model,
@@ -396,7 +372,6 @@ class ObjectDeleteView(GetReturnURLMixin, BaseObjectView):
     """
     Delete a single object.
     """
-
     template_name = 'generic/object_delete.html'
 
     def get_required_permission(self):
@@ -434,11 +409,9 @@ class ObjectDeleteView(GetReturnURLMixin, BaseObjectView):
         handle_protectederror(protected_objects, request, exc)
 
         if request.htmx:
-            return HttpResponse(
-                headers={
-                    'HX-Redirect': obj.get_absolute_url(),
-                }
-            )
+            return HttpResponse(headers={
+                'HX-Redirect': obj.get_absolute_url(),
+            })
         else:
             return redirect(obj.get_absolute_url())
 
@@ -466,30 +439,22 @@ class ObjectDeleteView(GetReturnURLMixin, BaseObjectView):
         # If this is an HTMX request, return only the rendered deletion form as modal content
         if htmx_partial(request):
             form_url = get_action_url(self.queryset.model, action='delete', kwargs={'pk': obj.pk})
-            return render(
-                request,
-                'htmx/delete_form.html',
-                {
-                    'object': obj,
-                    'object_type': self.queryset.model._meta.verbose_name,
-                    'form': form,
-                    'form_url': form_url,
-                    'dependent_objects': dependent_objects,
-                    **self.get_extra_context(request, obj),
-                },
-            )
-
-        return render(
-            request,
-            self.template_name,
-            {
+            return render(request, 'htmx/delete_form.html', {
                 'object': obj,
+                'object_type': self.queryset.model._meta.verbose_name,
                 'form': form,
-                'return_url': self.get_return_url(request, obj),
+                'form_url': form_url,
                 'dependent_objects': dependent_objects,
                 **self.get_extra_context(request, obj),
-            },
-        )
+            })
+
+        return render(request, self.template_name, {
+            'object': obj,
+            'form': form,
+            'return_url': self.get_return_url(request, obj),
+            'dependent_objects': dependent_objects,
+            **self.get_extra_context(request, obj),
+        })
 
     def post(self, request, *args, **kwargs):
         """
@@ -503,7 +468,7 @@ class ObjectDeleteView(GetReturnURLMixin, BaseObjectView):
         form = DeleteForm(request.POST, instance=obj)
 
         if form.is_valid():
-            logger.debug('Form validation was successful')
+            logger.debug("Form validation was successful")
 
             # Take a snapshot of change-logged models
             if hasattr(obj, 'snapshot'):
@@ -516,7 +481,7 @@ class ObjectDeleteView(GetReturnURLMixin, BaseObjectView):
             try:
                 obj.delete()
             except (ProtectedError, RestrictedError) as e:
-                logger.info(f'Caught {type(e)} while attempting to delete objects')
+                logger.info(f"Caught {type(e)} while attempting to delete objects")
                 handle_protectederror([obj], request, e)
                 return redirect(obj.get_absolute_url())
             except AbortRequest as e:
@@ -534,30 +499,24 @@ class ObjectDeleteView(GetReturnURLMixin, BaseObjectView):
             return redirect(self.get_return_url(request, obj))
 
         else:
-            logger.debug('Form validation failed')
+            logger.debug("Form validation failed")
 
-        return render(
-            request,
-            self.template_name,
-            {
-                'object': obj,
-                'form': form,
-                'return_url': self.get_return_url(request, obj),
-                **self.get_extra_context(request, obj),
-            },
-        )
+        return render(request, self.template_name, {
+            'object': obj,
+            'form': form,
+            'return_url': self.get_return_url(request, obj),
+            **self.get_extra_context(request, obj),
+        })
 
 
 #
 # Device/VirtualMachine components
 #
 
-
 class ComponentCreateView(GetReturnURLMixin, BaseObjectView):
     """
     Add one or more components (e.g. interfaces, console ports, etc.) to a Device or VirtualMachine.
     """
-
     template_name = 'generic/object_edit.html'
     form = None
     model_form = None
@@ -582,23 +541,15 @@ class ComponentCreateView(GetReturnURLMixin, BaseObjectView):
 
         # If this is an HTMX request, return only the rendered form HTML
         if htmx_partial(request):
-            return render(
-                request,
-                'htmx/form.html',
-                {
-                    'form': form,
-                },
-            )
-
-        return render(
-            request,
-            self.template_name,
-            {
-                'object': instance,
+            return render(request, 'htmx/form.html', {
                 'form': form,
-                'return_url': self.get_return_url(request),
-            },
-        )
+            })
+
+        return render(request, self.template_name, {
+            'object': instance,
+            'form': form,
+            'return_url': self.get_return_url(request),
+        })
 
     def post(self, request):
         logger = logging.getLogger('netbox.views.ComponentCreateView')
@@ -607,7 +558,7 @@ class ComponentCreateView(GetReturnURLMixin, BaseObjectView):
 
         # Note that the form instance is a replicated field base
         # This is needed to avoid running custom validators multiple times
-        form.instance._replicated_base = hasattr(self.form, 'replication_fields')
+        form.instance._replicated_base = hasattr(self.form, "replication_fields")
 
         if form.is_valid():
             changelog_message = form.cleaned_data.pop('changelog_message', '')
@@ -648,10 +599,9 @@ class ComponentCreateView(GetReturnURLMixin, BaseObjectView):
                         if self.queryset.filter(pk__in=[obj.pk for obj in new_objs]).count() != len(new_objs):
                             raise PermissionsViolation
 
-                        messages.success(
-                            request,
-                            'Added {} {}'.format(len(new_components), self.queryset.model._meta.verbose_name_plural),
-                        )
+                        messages.success(request, "Added {} {}".format(
+                            len(new_components), self.queryset.model._meta.verbose_name_plural
+                        ))
 
                         # Redirect user on success
                         if '_addanother' in request.POST and safe_for_redirect(request.get_full_path()):
@@ -664,12 +614,8 @@ class ComponentCreateView(GetReturnURLMixin, BaseObjectView):
                     form.add_error(None, e.message)
                     clear_events.send(sender=self)
 
-        return render(
-            request,
-            self.template_name,
-            {
-                'object': instance,
-                'form': form,
-                'return_url': self.get_return_url(request),
-            },
-        )
+        return render(request, self.template_name, {
+            'object': instance,
+            'form': form,
+            'return_url': self.get_return_url(request),
+        })

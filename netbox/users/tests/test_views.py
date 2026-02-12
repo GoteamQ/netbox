@@ -46,17 +46,17 @@ class UserTestCase(
         }
 
         cls.csv_data = (
-            'username,first_name,last_name,email,password',
-            'username4,first4,last4,email4@foo.com,pass4xxx',
-            'username5,first5,last5,email5@foo.com,pass5xxx',
-            'username6,first6,last6,email6@foo.com,pass6xxx',
+            "username,first_name,last_name,email,password",
+            "username4,first4,last4,email4@foo.com,pass4xxx",
+            "username5,first5,last5,email5@foo.com,pass5xxx",
+            "username6,first6,last6,email6@foo.com,pass6xxx",
         )
 
         cls.csv_update_data = (
-            'id,first_name,last_name',
-            f'{users[0].pk},first7,last7',
-            f'{users[1].pk},first8,last8',
-            f'{users[2].pk},first9,last9',
+            "id,first_name,last_name",
+            f"{users[0].pk},first7,last7",
+            f"{users[1].pk},first8,last8",
+            f"{users[2].pk},first9,last9",
         )
 
         cls.bulk_edit_data = {
@@ -123,6 +123,7 @@ class GroupTestCase(
 
     @classmethod
     def setUpTestData(cls):
+
         groups = (
             Group(name='group1'),
             Group(name='group2'),
@@ -134,13 +135,18 @@ class GroupTestCase(
             'name': 'groupx',
         }
 
-        cls.csv_data = ('name', 'group4group5group6')
+        cls.csv_data = (
+            "name",
+            "group4"
+            "group5"
+            "group6"
+        )
 
         cls.csv_update_data = (
-            'id,name',
-            f'{groups[0].pk},group7',
-            f'{groups[1].pk},group8',
-            f'{groups[2].pk},group9',
+            "id,name",
+            f"{groups[0].pk},group7",
+            f"{groups[1].pk},group8",
+            f"{groups[2].pk},group9",
         )
 
         cls.bulk_edit_data = {
@@ -178,13 +184,18 @@ class ObjectPermissionTestCase(
             'actions': 'view,edit,delete',
         }
 
-        cls.csv_data = ('name', 'permission4permission5permission6')
+        cls.csv_data = (
+            "name",
+            "permission4"
+            "permission5"
+            "permission6"
+        )
 
         cls.csv_update_data = (
-            'id,name,actions',
-            f'{permissions[0].pk},permission7',
-            f'{permissions[1].pk},permission8',
-            f'{permissions[2].pk},permission9',
+            "id,name,actions",
+            f"{permissions[0].pk},permission7",
+            f"{permissions[1].pk},permission8",
+            f"{permissions[2].pk},permission9",
         )
 
         cls.bulk_edit_data = {
@@ -229,17 +240,17 @@ class TokenTestCase(
         }
 
         cls.csv_data = (
-            'token,user,description,enabled,write_enabled',
-            f'zjebxBPzICiPbWz0Wtx0fTL7bCKXKGTYhNzkgC2S,{users[0].pk},Test token,true,true',
-            f'9Z5kGtQWba60Vm226dPDfEAV6BhlTr7H5hAXAfbF,{users[1].pk},Test token,true,false',
-            f'njpMnNT6r0k0MDccoUhTYYlvP9BvV3qLzYN2p6Uu,{users[1].pk},Test token,false,true',
+            "token,user,description,enabled,write_enabled",
+            f"zjebxBPzICiPbWz0Wtx0fTL7bCKXKGTYhNzkgC2S,{users[0].pk},Test token,true,true",
+            f"9Z5kGtQWba60Vm226dPDfEAV6BhlTr7H5hAXAfbF,{users[1].pk},Test token,true,false",
+            f"njpMnNT6r0k0MDccoUhTYYlvP9BvV3qLzYN2p6Uu,{users[1].pk},Test token,false,true",
         )
 
         cls.csv_update_data = (
-            'id,description',
-            f'{tokens[0].pk},New description',
-            f'{tokens[1].pk},New description',
-            f'{tokens[2].pk},New description',
+            "id,description",
+            f"{tokens[0].pk},New description",
+            f"{tokens[1].pk},New description",
+            f"{tokens[2].pk},New description",
         )
 
         cls.bulk_edit_data = {
@@ -265,17 +276,17 @@ class OwnerGroupTestCase(ViewTestCases.AdminModelViewTestCase):
         }
 
         cls.csv_data = (
-            'name,description',
-            'Owner Group 4,Foo',
-            'Owner Group 5,Bar',
-            'Owner Group 6,Baz',
+            "name,description",
+            "Owner Group 4,Foo",
+            "Owner Group 5,Bar",
+            "Owner Group 6,Baz",
         )
 
         cls.csv_update_data = (
-            'id,description',
-            f'{owner_groups[0].pk},Foo',
-            f'{owner_groups[1].pk},Bar',
-            f'{owner_groups[2].pk},Baz',
+            "id,description",
+            f"{owner_groups[0].pk},Foo",
+            f"{owner_groups[1].pk},Bar",
+            f"{owner_groups[2].pk},Baz",
         )
 
         cls.bulk_edit_data = {
@@ -334,17 +345,17 @@ class OwnerTestCase(ViewTestCases.AdminModelViewTestCase):
         }
 
         cls.csv_data = (
-            'name,group,description',
-            'Owner 4,Owner Group 4,Foo',
-            'Owner 5,Owner Group 4,Bar',
-            'Owner 6,Owner Group 4,Baz',
+            "name,group,description",
+            "Owner 4,Owner Group 4,Foo",
+            "Owner 5,Owner Group 4,Bar",
+            "Owner 6,Owner Group 4,Baz",
         )
 
         cls.csv_update_data = (
-            'id,description',
-            f'{owners[0].pk},Foo',
-            f'{owners[1].pk},Bar',
-            f'{owners[2].pk},Baz',
+            "id,description",
+            f"{owners[0].pk},Foo",
+            f"{owners[1].pk},Bar",
+            f"{owners[2].pk},Baz",
         )
 
         cls.bulk_edit_data = {

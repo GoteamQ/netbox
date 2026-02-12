@@ -90,8 +90,7 @@ MODULAR_COMPONENT_TEMPLATE_MODELS = Q(
         'poweroutlettemplate',
         'powerporttemplate',
         'rearporttemplate',
-    ),
-)
+    ))
 
 MODULAR_COMPONENT_MODELS = Q(
     app_label='dcim',
@@ -103,8 +102,7 @@ MODULAR_COMPONENT_MODELS = Q(
         'poweroutlet',
         'powerport',
         'rearport',
-    ),
-)
+    ))
 
 
 #
@@ -115,20 +113,19 @@ CABLE_TRACE_SVG_DEFAULT_WIDTH = 400
 
 # Cable endpoint types
 CABLE_TERMINATION_MODELS = Q(
-    Q(app_label='circuits', model__in=('circuittermination',))
-    | Q(
-        app_label='dcim',
-        model__in=(
-            'consoleport',
-            'consoleserverport',
-            'frontport',
-            'interface',
-            'powerfeed',
-            'poweroutlet',
-            'powerport',
-            'rearport',
-        ),
-    )
+    Q(app_label='circuits', model__in=(
+        'circuittermination',
+    )) |
+    Q(app_label='dcim', model__in=(
+        'consoleport',
+        'consoleserverport',
+        'frontport',
+        'interface',
+        'powerfeed',
+        'poweroutlet',
+        'powerport',
+        'rearport',
+    ))
 )
 
 COMPATIBLE_TERMINATION_TYPES = {
@@ -145,10 +142,7 @@ COMPATIBLE_TERMINATION_TYPES = {
 
 # Models which can serve to scope an object by location
 LOCATION_SCOPE_TYPES = (
-    'region',
-    'sitegroup',
-    'site',
-    'location',
+    'region', 'sitegroup', 'site', 'location',
 )
 
 
@@ -157,5 +151,6 @@ LOCATION_SCOPE_TYPES = (
 #
 
 MACADDRESS_ASSIGNMENT_MODELS = Q(
-    Q(app_label='dcim', model='interface') | Q(app_label='virtualization', model='vminterface')
+    Q(app_label='dcim', model='interface') |
+    Q(app_label='virtualization', model='vminterface')
 )

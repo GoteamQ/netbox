@@ -31,7 +31,11 @@ class ChangeLoggedModelFilter(ChangeLoggingMixin, BaseModelFilter):
 
 
 class NetBoxModelFilter(
-    CustomFieldsFilterMixin, JournalEntriesFilterMixin, TagsFilterMixin, ChangeLoggingMixin, BaseModelFilter
+    CustomFieldsFilterMixin,
+    JournalEntriesFilterMixin,
+    TagsFilterMixin,
+    ChangeLoggingMixin,
+    BaseModelFilter
 ):
     pass
 

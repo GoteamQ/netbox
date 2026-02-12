@@ -13,7 +13,9 @@ def populate_mac_addresses(apps, schema_editor):
 
     mac_addresses = [
         MACAddress(
-            mac_address=vminterface.mac_address, assigned_object_type=vminterface_ct, assigned_object_id=vminterface.pk
+            mac_address=vminterface.mac_address,
+            assigned_object_type=vminterface_ct,
+            assigned_object_id=vminterface.pk
         )
         for vminterface in VMInterface.objects.using(db_alias).filter(mac_address__isnull=False)
     ]

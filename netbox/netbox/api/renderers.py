@@ -10,7 +10,6 @@ class FormlessBrowsableAPIRenderer(BrowsableAPIRenderer):
     """
     Override the built-in BrowsableAPIRenderer to disable HTML forms.
     """
-
     def show_form_for_method(self, *args, **kwargs):
         return False
 
@@ -22,7 +21,6 @@ class TextRenderer(BaseRenderer):
     """
     Return raw data as plain text.
     """
-
     media_type = 'text/plain'
     format = 'txt'
 

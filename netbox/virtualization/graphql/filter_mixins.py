@@ -9,7 +9,9 @@ from strawberry_django import FilterLookup
 if TYPE_CHECKING:
     from .filters import VirtualMachineFilter
 
-__all__ = ('VMComponentFilterMixin',)
+__all__ = (
+    'VMComponentFilterMixin',
+)
 
 
 @dataclass

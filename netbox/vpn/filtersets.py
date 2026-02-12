@@ -29,6 +29,7 @@ __all__ = (
 
 @register_filterset
 class TunnelGroupFilterSet(OrganizationalModelFilterSet, ContactModelFilterSet):
+
     class Meta:
         model = TunnelGroup
         fields = ('id', 'name', 'slug', 'description')
@@ -36,7 +37,9 @@ class TunnelGroupFilterSet(OrganizationalModelFilterSet, ContactModelFilterSet):
 
 @register_filterset
 class TunnelFilterSet(PrimaryModelFilterSet, TenancyFilterSet, ContactModelFilterSet):
-    status = django_filters.MultipleChoiceFilter(choices=TunnelStatusChoices)
+    status = django_filters.MultipleChoiceFilter(
+        choices=TunnelStatusChoices
+    )
     group_id = django_filters.ModelMultipleChoiceFilter(
         queryset=TunnelGroup.objects.all(),
         label=_('Tunnel group (ID)'),
@@ -47,7 +50,9 @@ class TunnelFilterSet(PrimaryModelFilterSet, TenancyFilterSet, ContactModelFilte
         to_field_name='slug',
         label=_('Tunnel group (slug)'),
     )
-    encapsulation = django_filters.MultipleChoiceFilter(choices=TunnelEncapsulationChoices)
+    encapsulation = django_filters.MultipleChoiceFilter(
+        choices=TunnelEncapsulationChoices
+    )
     ipsec_profile_id = django_filters.ModelMultipleChoiceFilter(
         queryset=IPSecProfile.objects.all(),
         label=_('IPSec profile (ID)'),
@@ -67,7 +72,9 @@ class TunnelFilterSet(PrimaryModelFilterSet, TenancyFilterSet, ContactModelFilte
         if not value.strip():
             return queryset
         return queryset.filter(
-            Q(name__icontains=value) | Q(description__icontains=value) | Q(comments__icontains=value)
+            Q(name__icontains=value) |
+            Q(description__icontains=value) |
+            Q(comments__icontains=value)
         )
 
 
@@ -84,7 +91,9 @@ class TunnelTerminationFilterSet(NetBoxModelFilterSet):
         to_field_name='name',
         label=_('Tunnel (name)'),
     )
-    role = django_filters.MultipleChoiceFilter(choices=TunnelTerminationRoleChoices)
+    role = django_filters.MultipleChoiceFilter(
+        choices=TunnelTerminationRoleChoices
+    )
     termination_type = ContentTypeFilter()
     interface = django_filters.ModelMultipleChoiceFilter(
         field_name='interface__name',
@@ -132,10 +141,18 @@ class IKEProposalFilterSet(PrimaryModelFilterSet):
         to_field_name='name',
         label=_('IKE policy (name)'),
     )
-    authentication_method = django_filters.MultipleChoiceFilter(choices=AuthenticationMethodChoices)
-    encryption_algorithm = django_filters.MultipleChoiceFilter(choices=EncryptionAlgorithmChoices)
-    authentication_algorithm = django_filters.MultipleChoiceFilter(choices=AuthenticationAlgorithmChoices)
-    group = django_filters.MultipleChoiceFilter(choices=DHGroupChoices)
+    authentication_method = django_filters.MultipleChoiceFilter(
+        choices=AuthenticationMethodChoices
+    )
+    encryption_algorithm = django_filters.MultipleChoiceFilter(
+        choices=EncryptionAlgorithmChoices
+    )
+    authentication_algorithm = django_filters.MultipleChoiceFilter(
+        choices=AuthenticationAlgorithmChoices
+    )
+    group = django_filters.MultipleChoiceFilter(
+        choices=DHGroupChoices
+    )
 
     class Meta:
         model = IKEProposal
@@ -145,19 +162,28 @@ class IKEProposalFilterSet(PrimaryModelFilterSet):
         if not value.strip():
             return queryset
         return queryset.filter(
-            Q(name__icontains=value) | Q(description__icontains=value) | Q(comments__icontains=value)
+            Q(name__icontains=value) |
+            Q(description__icontains=value) |
+            Q(comments__icontains=value)
         )
 
 
 @register_filterset
 class IKEPolicyFilterSet(PrimaryModelFilterSet):
-    version = django_filters.MultipleChoiceFilter(choices=IKEVersionChoices)
-    mode = django_filters.MultipleChoiceFilter(choices=IKEModeChoices)
+    version = django_filters.MultipleChoiceFilter(
+        choices=IKEVersionChoices
+    )
+    mode = django_filters.MultipleChoiceFilter(
+        choices=IKEModeChoices
+    )
     ike_proposal_id = django_filters.ModelMultipleChoiceFilter(
-        field_name='proposals', queryset=IKEProposal.objects.all()
+        field_name='proposals',
+        queryset=IKEProposal.objects.all()
     )
     ike_proposal = django_filters.ModelMultipleChoiceFilter(
-        field_name='proposals__name', queryset=IKEProposal.objects.all(), to_field_name='name'
+        field_name='proposals__name',
+        queryset=IKEProposal.objects.all(),
+        to_field_name='name'
     )
 
     class Meta:
@@ -168,7 +194,9 @@ class IKEPolicyFilterSet(PrimaryModelFilterSet):
         if not value.strip():
             return queryset
         return queryset.filter(
-            Q(name__icontains=value) | Q(description__icontains=value) | Q(comments__icontains=value)
+            Q(name__icontains=value) |
+            Q(description__icontains=value) |
+            Q(comments__icontains=value)
         )
 
 
@@ -185,8 +213,12 @@ class IPSecProposalFilterSet(PrimaryModelFilterSet):
         to_field_name='name',
         label=_('IPSec policy (name)'),
     )
-    encryption_algorithm = django_filters.MultipleChoiceFilter(choices=EncryptionAlgorithmChoices)
-    authentication_algorithm = django_filters.MultipleChoiceFilter(choices=AuthenticationAlgorithmChoices)
+    encryption_algorithm = django_filters.MultipleChoiceFilter(
+        choices=EncryptionAlgorithmChoices
+    )
+    authentication_algorithm = django_filters.MultipleChoiceFilter(
+        choices=AuthenticationAlgorithmChoices
+    )
 
     class Meta:
         model = IPSecProposal
@@ -196,18 +228,25 @@ class IPSecProposalFilterSet(PrimaryModelFilterSet):
         if not value.strip():
             return queryset
         return queryset.filter(
-            Q(name__icontains=value) | Q(description__icontains=value) | Q(comments__icontains=value)
+            Q(name__icontains=value) |
+            Q(description__icontains=value) |
+            Q(comments__icontains=value)
         )
 
 
 @register_filterset
 class IPSecPolicyFilterSet(PrimaryModelFilterSet):
-    pfs_group = django_filters.MultipleChoiceFilter(choices=DHGroupChoices)
+    pfs_group = django_filters.MultipleChoiceFilter(
+        choices=DHGroupChoices
+    )
     ipsec_proposal_id = django_filters.ModelMultipleChoiceFilter(
-        field_name='proposals', queryset=IPSecProposal.objects.all()
+        field_name='proposals',
+        queryset=IPSecProposal.objects.all()
     )
     ipsec_proposal = django_filters.ModelMultipleChoiceFilter(
-        field_name='proposals__name', queryset=IPSecProposal.objects.all(), to_field_name='name'
+        field_name='proposals__name',
+        queryset=IPSecProposal.objects.all(),
+        to_field_name='name'
     )
 
     class Meta:
@@ -218,13 +257,17 @@ class IPSecPolicyFilterSet(PrimaryModelFilterSet):
         if not value.strip():
             return queryset
         return queryset.filter(
-            Q(name__icontains=value) | Q(description__icontains=value) | Q(comments__icontains=value)
+            Q(name__icontains=value) |
+            Q(description__icontains=value) |
+            Q(comments__icontains=value)
         )
 
 
 @register_filterset
 class IPSecProfileFilterSet(PrimaryModelFilterSet):
-    mode = django_filters.MultipleChoiceFilter(choices=IPSecModeChoices)
+    mode = django_filters.MultipleChoiceFilter(
+        choices=IPSecModeChoices
+    )
     ike_policy_id = django_filters.ModelMultipleChoiceFilter(
         queryset=IKEPolicy.objects.all(),
         label=_('IKE policy (ID)'),
@@ -254,13 +297,18 @@ class IPSecProfileFilterSet(PrimaryModelFilterSet):
         if not value.strip():
             return queryset
         return queryset.filter(
-            Q(name__icontains=value) | Q(description__icontains=value) | Q(comments__icontains=value)
+            Q(name__icontains=value) |
+            Q(description__icontains=value) |
+            Q(comments__icontains=value)
         )
 
 
 @register_filterset
 class L2VPNFilterSet(PrimaryModelFilterSet, TenancyFilterSet, ContactModelFilterSet):
-    type = django_filters.MultipleChoiceFilter(choices=L2VPNTypeChoices, null_value=None)
+    type = django_filters.MultipleChoiceFilter(
+        choices=L2VPNTypeChoices,
+        null_value=None
+    )
     status = django_filters.MultipleChoiceFilter(
         choices=L2VPNStatusChoices,
     )
@@ -394,7 +442,8 @@ class L2VPNTerminationFilterSet(NetBoxModelFilterSet):
         label=_('VLAN (ID)'),
     )
     assigned_object_type_id = django_filters.ModelMultipleChoiceFilter(
-        queryset=ObjectType.objects.all(), field_name='assigned_object_type'
+        queryset=ObjectType.objects.all(),
+        field_name='assigned_object_type'
     )
     assigned_object_type = ContentTypeFilter()
 
@@ -409,15 +458,17 @@ class L2VPNTerminationFilterSet(NetBoxModelFilterSet):
         return queryset.filter(qs_filter)
 
     def filter_assigned_object(self, queryset, name, value):
-        qs = queryset.filter(Q(**{'{}__in'.format(name): value}))
+        qs = queryset.filter(
+            Q(**{'{}__in'.format(name): value})
+        )
         return qs
 
     def filter_site(self, queryset, name, value):
         qs = queryset.filter(
             Q(
-                Q(**{'vlan__site__{}__in'.format(name): value})
-                | Q(**{'interface__device__site__{}__in'.format(name): value})
-                | Q(**{'vminterface__virtual_machine__site__{}__in'.format(name): value})
+                Q(**{'vlan__site__{}__in'.format(name): value}) |
+                Q(**{'interface__device__site__{}__in'.format(name): value}) |
+                Q(**{'vminterface__virtual_machine__site__{}__in'.format(name): value})
             )
         )
         return qs
@@ -425,9 +476,9 @@ class L2VPNTerminationFilterSet(NetBoxModelFilterSet):
     def filter_region(self, queryset, name, value):
         qs = queryset.filter(
             Q(
-                Q(**{'vlan__site__region__{}__in'.format(name): value})
-                | Q(**{'interface__device__site__region__{}__in'.format(name): value})
-                | Q(**{'vminterface__virtual_machine__site__region__{}__in'.format(name): value})
+                Q(**{'vlan__site__region__{}__in'.format(name): value}) |
+                Q(**{'interface__device__site__region__{}__in'.format(name): value}) |
+                Q(**{'vminterface__virtual_machine__site__region__{}__in'.format(name): value})
             )
         )
         return qs

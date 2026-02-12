@@ -20,12 +20,10 @@ class PrefixFormTestCase(TestCase):
 
     def test_vlan_field_sets_dynamic_params_for_scope_site(self):
         """data-dynamic-params present when scope type is Site and when scope is specifc site"""
-        form = PrefixForm(
-            data={
-                'scope_type': ContentType.objects.get_for_model(Site).id,
-                'scope': self.site,
-            }
-        )
+        form = PrefixForm(data={
+            'scope_type': ContentType.objects.get_for_model(Site).id,
+            'scope': self.site,
+        })
 
         assert form.fields['vlan'].widget.attrs['data-dynamic-params'] == self.default_dynamic_params
 
@@ -37,11 +35,9 @@ class PrefixFormTestCase(TestCase):
             SiteGroup(name='Site Group 1', slug='site-group-1'),
         ]
         for case in cases:
-            form = PrefixForm(
-                data={
-                    'scope_type': ContentType.objects.get_for_model(case._meta.model).id,
-                    'scope': case,
-                }
-            )
+            form = PrefixForm(data={
+                'scope_type': ContentType.objects.get_for_model(case._meta.model).id,
+                'scope': case,
+            })
 
             assert 'data-dynamic-params' not in form.fields['vlan'].widget.attrs

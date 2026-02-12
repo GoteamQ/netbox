@@ -38,7 +38,6 @@ class SearchIndex:
         fields: An iterable of two-tuples defining the model fields to be indexed and the weight associated with each.
         display_attrs: An iterable of additional object attributes to include when displaying search results.
     """
-
     model = None
     category = None
     fields = ()
@@ -112,7 +111,9 @@ class SearchIndex:
                 type_ = cls.get_attr_type(instance, name)
             value = cls.get_field_value(instance, name)
             if type_ and value:
-                values.append(ObjectFieldValue(name, type_, weight, value))
+                values.append(
+                    ObjectFieldValue(name, type_, weight, value)
+                )
 
         # Capture custom fields
         if getattr(instance, 'custom_field_data', None):
@@ -123,7 +124,9 @@ class SearchIndex:
                 value = instance.custom_field_data.get(cf.name)
                 weight = cf.search_weight
                 if type_ and value and weight:
-                    values.append(ObjectFieldValue(f'cf_{cf.name}', type_, weight, value))
+                    values.append(
+                        ObjectFieldValue(f'cf_{cf.name}', type_, weight, value)
+                    )
 
         return values
 

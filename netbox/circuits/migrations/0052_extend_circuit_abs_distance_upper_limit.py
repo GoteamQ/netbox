@@ -2,6 +2,7 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
+
     dependencies = [
         ('circuits', '0051_virtualcircuit_group_assignment'),
     ]

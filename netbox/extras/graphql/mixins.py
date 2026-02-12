@@ -20,6 +20,7 @@ if TYPE_CHECKING:
 
 @strawberry.type
 class ConfigContextMixin:
+
     @strawberry_django.field
     def config_context(self) -> strawberry.scalars.JSON:
         return self.get_config_context()
@@ -27,6 +28,7 @@ class ConfigContextMixin:
 
 @strawberry.type
 class CustomFieldsMixin:
+
     @strawberry_django.field
     def custom_fields(self) -> strawberry.scalars.JSON:
         return self.custom_field_data
@@ -34,6 +36,7 @@ class CustomFieldsMixin:
 
 @strawberry.type
 class ImageAttachmentsMixin:
+
     @strawberry_django.field
     def image_attachments(self, info: Info) -> List[Annotated['ImageAttachmentType', strawberry.lazy('.types')]]:
         return self.images.restrict(info.context.request.user, 'view')
@@ -41,6 +44,7 @@ class ImageAttachmentsMixin:
 
 @strawberry.type
 class JournalEntriesMixin:
+
     @strawberry_django.field
     def journal_entries(self, info: Info) -> List[Annotated['JournalEntryType', strawberry.lazy('.types')]]:
         return self.journal_entries.all()
@@ -48,9 +52,11 @@ class JournalEntriesMixin:
 
 @strawberry.type
 class TagsMixin:
+
     tags: List[Annotated['TagType', strawberry.lazy('.types')]]
 
 
 @strawberry.type
 class ContactsMixin:
+
     contacts: List[Annotated['ContactAssignmentType', strawberry.lazy('tenancy.graphql.types')]]

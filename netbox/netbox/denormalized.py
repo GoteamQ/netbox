@@ -23,7 +23,9 @@ def register(model, field_name, mappings):
     field = model._meta.get_field(field_name)
     rel_model = field.related_model
 
-    registry['denormalized_fields'][rel_model].append((model, field_name, mappings))
+    registry['denormalized_fields'][rel_model].append(
+        (model, field_name, mappings)
+    )
 
 
 @receiver(post_save)
@@ -31,7 +33,6 @@ def update_denormalized_fields(sender, instance, created, raw, **kwargs):
     """
     Check if the sender has denormalized fields registered, and update them as necessary.
     """
-
     def _get_field_value(instance, field_name):
         field = instance._meta.get_field(field_name)
         return field.value_from_object(instance)
@@ -48,8 +49,7 @@ def update_denormalized_fields(sender, instance, created, raw, **kwargs):
         }
         update_params = {
             # Map the denormalized field names to the instance's values
-            denorm: _get_field_value(instance, origin)
-            for denorm, origin in mappings.items()
+            denorm: _get_field_value(instance, origin) for denorm, origin in mappings.items()
         }
 
         # TODO: Improve efficiency here by placing conditions on the query?

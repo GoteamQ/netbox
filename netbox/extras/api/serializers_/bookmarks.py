@@ -5,7 +5,9 @@ from netbox.api.gfk_fields import GFKSerializerField
 from netbox.api.serializers import ValidatedModelSerializer
 from users.api.serializers_.users import UserSerializer
 
-__all__ = ('BookmarkSerializer',)
+__all__ = (
+    'BookmarkSerializer',
+)
 
 
 class BookmarkSerializer(ValidatedModelSerializer):
@@ -18,13 +20,6 @@ class BookmarkSerializer(ValidatedModelSerializer):
     class Meta:
         model = Bookmark
         fields = [
-            'id',
-            'url',
-            'display',
-            'object_type',
-            'object_id',
-            'object',
-            'user',
-            'created',
+            'id', 'url', 'display', 'object_type', 'object_id', 'object', 'user', 'created',
         ]
         brief_fields = ('id', 'url', 'display', 'object_id', 'object_type')

@@ -152,13 +152,15 @@ def add_custom_field_data(form_data, model):
     for cf in custom_fields:
         cf.object_types.set([object_type])
 
-    form_data.update({f'cf_{k}': v if type(v) is str else json.dumps(v) for k, v in DUMMY_CF_DATA.items()})
+    form_data.update({
+        f'cf_{k}': v if type(v) is str else json.dumps(v)
+        for k, v in DUMMY_CF_DATA.items()
+    })
 
 
 #
 # Misc utilities
 #
-
 
 def get_random_string(length, charset=None):
     """

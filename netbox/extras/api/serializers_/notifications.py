@@ -23,39 +23,31 @@ class NotificationSerializer(ValidatedModelSerializer):
     class Meta:
         model = Notification
         fields = [
-            'id',
-            'url',
-            'display',
-            'object_type',
-            'object_id',
-            'object',
-            'user',
-            'created',
-            'read',
-            'event_type',
+            'id', 'url', 'display', 'object_type', 'object_id', 'object', 'user', 'created', 'read', 'event_type',
         ]
         brief_fields = ('id', 'url', 'display', 'object_type', 'object_id', 'user', 'read', 'event_type')
 
 
 class NotificationGroupSerializer(ChangeLogMessageSerializer, ValidatedModelSerializer):
     groups = SerializedPKRelatedField(
-        queryset=Group.objects.all(), serializer=GroupSerializer, nested=True, required=False, many=True
+        queryset=Group.objects.all(),
+        serializer=GroupSerializer,
+        nested=True,
+        required=False,
+        many=True
     )
     users = SerializedPKRelatedField(
-        queryset=User.objects.all(), serializer=UserSerializer, nested=True, required=False, many=True
+        queryset=User.objects.all(),
+        serializer=UserSerializer,
+        nested=True,
+        required=False,
+        many=True
     )
 
     class Meta:
         model = NotificationGroup
         fields = [
-            'id',
-            'url',
-            'display',
-            'display_url',
-            'name',
-            'description',
-            'groups',
-            'users',
+            'id', 'url', 'display', 'display_url', 'name', 'description', 'groups', 'users',
         ]
         brief_fields = ('id', 'url', 'display', 'name', 'description')
 
@@ -70,13 +62,6 @@ class SubscriptionSerializer(ValidatedModelSerializer):
     class Meta:
         model = Subscription
         fields = [
-            'id',
-            'url',
-            'display',
-            'object_type',
-            'object_id',
-            'object',
-            'user',
-            'created',
+            'id', 'url', 'display', 'object_type', 'object_id', 'object', 'user', 'created',
         ]
         brief_fields = ('id', 'url', 'display', 'object_type', 'object_id', 'user')

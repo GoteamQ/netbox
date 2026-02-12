@@ -46,15 +46,14 @@ __all__ = (
 # Script variables
 #
 
-
 class ScriptVariable:
     """
     Base model for script variables
     """
-
     form_field = forms.CharField
 
     def __init__(self, label='', description='', default=None, required=True, widget=None):
+
         # Initialize field attributes
         if not hasattr(self, 'field_attrs'):
             self.field_attrs = {}
@@ -86,7 +85,6 @@ class StringVar(ScriptVariable):
     """
     Character string representation. Can enforce minimum/maximum length and/or regex validation.
     """
-
     def __init__(self, min_length=None, max_length=None, regex=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -99,7 +97,11 @@ class StringVar(ScriptVariable):
         # Optional regular expression validation
         if regex:
             self.field_attrs['validators'] = [
-                RegexValidator(regex=regex, message='Invalid value. Must match regex: {}'.format(regex), code='invalid')
+                RegexValidator(
+                    regex=regex,
+                    message='Invalid value. Must match regex: {}'.format(regex),
+                    code='invalid'
+                )
             ]
 
 
@@ -107,7 +109,6 @@ class TextVar(ScriptVariable):
     """
     Free-form text data. Renders as a <textarea>.
     """
-
     form_field = forms.CharField
 
     def __init__(self, *args, **kwargs):
@@ -120,7 +121,6 @@ class IntegerVar(ScriptVariable):
     """
     Integer representation. Can enforce minimum/maximum values.
     """
-
     form_field = forms.IntegerField
 
     def __init__(self, min_value=None, max_value=None, *args, **kwargs):
@@ -137,36 +137,26 @@ class DecimalVar(ScriptVariable):
     """
     Decimal representation. Can enforce minimum/maximum values, maximum digits and decimal places.
     """
-
     form_field = forms.DecimalField
 
-    def __init__(
-        self,
-        min_value=None,
-        max_value=None,
-        max_digits=None,
-        decimal_places=None,
-        *args,
-        **kwargs,
-    ):
+    def __init__(self, min_value=None, max_value=None, max_digits=None, decimal_places=None, *args, **kwargs,):
         super().__init__(*args, **kwargs)
 
         # Optional constraints
         if min_value:
-            self.field_attrs['min_value'] = min_value
+            self.field_attrs["min_value"] = min_value
         if max_value:
-            self.field_attrs['max_value'] = max_value
+            self.field_attrs["max_value"] = max_value
         if max_digits:
-            self.field_attrs['max_digits'] = max_digits
+            self.field_attrs["max_digits"] = max_digits
         if decimal_places:
-            self.field_attrs['decimal_places'] = decimal_places
+            self.field_attrs["decimal_places"] = decimal_places
 
 
 class BooleanVar(ScriptVariable):
     """
     Boolean representation (true/false). Renders as a checkbox.
     """
-
     form_field = forms.BooleanField
 
     def __init__(self, *args, **kwargs):
@@ -188,7 +178,6 @@ class ChoiceVar(ScriptVariable):
             )
         )
     """
-
     form_field = forms.ChoiceField
 
     def __init__(self, choices, *args, **kwargs):
@@ -202,7 +191,6 @@ class DateVar(ScriptVariable):
     """
     A date.
     """
-
     form_field = forms.DateField
 
     def __init__(self, *args, **kwargs):
@@ -214,7 +202,6 @@ class DateTimeVar(ScriptVariable):
     """
     A date and a time.
     """
-
     form_field = forms.DateTimeField
 
     def __init__(self, *args, **kwargs):
@@ -226,7 +213,6 @@ class MultiChoiceVar(ScriptVariable):
     """
     Like ChoiceVar, but allows for the selection of multiple choices.
     """
-
     form_field = forms.MultipleChoiceField
 
     def __init__(self, choices, *args, **kwargs):
@@ -248,28 +234,24 @@ class ObjectVar(ScriptVariable):
     :param selector: Include an advanced object selection widget to assist the user in identifying the desired
         object (optional)
     """
-
     form_field = DynamicModelChoiceField
 
     def __init__(self, model, query_params=None, context=None, null_option=None, selector=False, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.field_attrs.update(
-            {
-                'queryset': model.objects.all(),
-                'query_params': query_params,
-                'context': context,
-                'null_option': null_option,
-                'selector': selector,
-            }
-        )
+        self.field_attrs.update({
+            'queryset': model.objects.all(),
+            'query_params': query_params,
+            'context': context,
+            'null_option': null_option,
+            'selector': selector,
+        })
 
 
 class MultiObjectVar(ObjectVar):
     """
     Like ObjectVar, but can represent one or more objects.
     """
-
     form_field = DynamicModelMultipleChoiceField
 
 
@@ -277,7 +259,6 @@ class FileVar(ScriptVariable):
     """
     An uploaded file.
     """
-
     form_field = forms.FileField
 
 
@@ -285,7 +266,6 @@ class IPAddressVar(ScriptVariable):
     """
     An IPv4 or IPv6 address without a mask.
     """
-
     form_field = IPAddressFormField
 
 
@@ -293,7 +273,6 @@ class IPAddressWithMaskVar(ScriptVariable):
     """
     An IPv4 or IPv6 address with a mask.
     """
-
     form_field = IPNetworkFormField
 
 
@@ -301,7 +280,6 @@ class IPNetworkVar(ScriptVariable):
     """
     An IPv4 or IPv6 prefix.
     """
-
     form_field = IPNetworkFormField
 
     def __init__(self, min_prefix_length=None, max_prefix_length=None, *args, **kwargs):
@@ -310,15 +288,18 @@ class IPNetworkVar(ScriptVariable):
         # Set prefix validator and optional minimum/maximum prefix lengths
         self.field_attrs['validators'] = [prefix_validator]
         if min_prefix_length is not None:
-            self.field_attrs['validators'].append(MinPrefixLengthValidator(min_prefix_length))
+            self.field_attrs['validators'].append(
+                MinPrefixLengthValidator(min_prefix_length)
+            )
         if max_prefix_length is not None:
-            self.field_attrs['validators'].append(MaxPrefixLengthValidator(max_prefix_length))
+            self.field_attrs['validators'].append(
+                MaxPrefixLengthValidator(max_prefix_length)
+            )
 
 
 #
 # Scripts
 #
-
 
 class BaseScript:
     """
@@ -340,13 +321,13 @@ class BaseScript:
         self._current_test = None  # Tracks the current test method being run (if any)
 
         # Initiate the log
-        self.logger = logging.getLogger(f'netbox.scripts.{self.__module__}.{self.__class__.__name__}')
+        self.logger = logging.getLogger(f"netbox.scripts.{self.__module__}.{self.__class__.__name__}")
 
         # Declare the placeholder for the current request
         self.request = None
 
         # Initiate the storage backend (local, S3, etc) as a class attr
-        self.storage = storages.create_storage(storages.backends['scripts'])
+        self.storage = storages.create_storage(storages.backends["scripts"])
 
         # Compile test methods and initialize results skeleton
         for method in dir(self):
@@ -376,7 +357,7 @@ class BaseScript:
 
     @classmethod
     def root_module(cls):
-        return cls.__module__.split('.')[0]
+        return cls.__module__.split(".")[0]
 
     # Author-defined attributes
 
@@ -469,7 +450,9 @@ class BaseScript:
         # Order variables according to field_order
         if not cls.field_order:
             return vars
-        ordered_vars = {field: vars.pop(field) for field in cls.field_order if field in vars}
+        ordered_vars = {
+            field: vars.pop(field) for field in cls.field_order if field in vars
+        }
         ordered_vars.update(vars)
 
         return ordered_vars
@@ -518,7 +501,9 @@ class BaseScript:
         Return a Django form suitable for populating the context data required to run this Script.
         """
         # Create a dynamic ScriptForm subclass from script variables
-        fields = {name: var.as_field() for name, var in self._get_vars().items()}
+        fields = {
+            name: var.as_field() for name, var in self._get_vars().items()
+        }
         FormClass = type('ScriptForm', (ScriptForm,), fields)
 
         form = FormClass(data, files, initial=initial)
@@ -542,10 +527,11 @@ class BaseScript:
         Log a message. Do not call this method directly; use one of the log_* wrappers below.
         """
         if level not in LogLevelChoices.values():
-            raise ValueError(f'Invalid logging level: {level}')
+            raise ValueError(f"Invalid logging level: {level}")
 
         # A test method is currently active, so log the message using legacy Report logging
         if self._current_test:
+
             # Increment the event counter for this level
             if level in self.tests[self._current_test]:
                 self.tests[self._current_test][level] += 1
@@ -553,31 +539,28 @@ class BaseScript:
             # Record message (if any) to the report log
             if message:
                 # TODO: Use a dataclass for test method logs
-                self.tests[self._current_test]['log'].append(
-                    (
-                        timezone.now().isoformat(),
-                        level,
-                        str(obj) if obj else None,
-                        obj.get_absolute_url() if hasattr(obj, 'get_absolute_url') else None,
-                        str(message),
-                    )
-                )
+                self.tests[self._current_test]['log'].append((
+                    timezone.now().isoformat(),
+                    level,
+                    str(obj) if obj else None,
+                    obj.get_absolute_url() if hasattr(obj, 'get_absolute_url') else None,
+                    str(message),
+                ))
 
         elif message:
+
             # Record to the script's log
-            self.messages.append(
-                {
-                    'time': timezone.now().isoformat(),
-                    'status': level,
-                    'message': str(message),
-                    'obj': str(obj) if obj else None,
-                    'url': obj.get_absolute_url() if hasattr(obj, 'get_absolute_url') else None,
-                }
-            )
+            self.messages.append({
+                'time': timezone.now().isoformat(),
+                'status': level,
+                'message': str(message),
+                'obj': str(obj) if obj else None,
+                'url': obj.get_absolute_url() if hasattr(obj, 'get_absolute_url') else None,
+            })
 
             # Record to the system log
             if obj:
-                message = f'{obj}: {message}'
+                message = f"{obj}: {message}"
             self.logger.log(LogLevelChoices.SYSTEM_LEVELS[level], message)
 
     def log_debug(self, message=None, obj=None):
@@ -604,7 +587,7 @@ class BaseScript:
         """
         Run the report and save its results. Each test method will be executed in order.
         """
-        self.logger.info('Running report')
+        self.logger.info("Running report")
         try:
             for test_name in self.tests:
                 self._current_test = test_name
@@ -633,7 +616,6 @@ class Script(BaseScript):
     """
     Classes which inherit this model will appear in the list of available scripts.
     """
-
     pass
 
 

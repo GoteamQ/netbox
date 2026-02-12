@@ -11,6 +11,7 @@ from users.models import Token
 
 
 class AppTest(APITestCase):
+
     def test_http_headers(self):
         response = self.client.get(reverse('api-root'), **self.header)
 
@@ -45,6 +46,7 @@ class AppTest(APITestCase):
 
 
 class OptionalLimitOffsetPaginationTest(TestCase):
+
     def setUp(self):
         self.paginator = OptionalLimitOffsetPagination()
         self.factory = RequestFactory()
@@ -62,8 +64,8 @@ class OptionalLimitOffsetPaginationTest(TestCase):
             self.paginator.paginate_queryset(queryset, request)
 
         error_msg = str(cm.exception)
-        self.assertIn('Paginating over an unordered queryset is unreliable', error_msg)
-        self.assertIn('Ensure that a minimal ordering has been applied', error_msg)
+        self.assertIn("Paginating over an unordered queryset is unreliable", error_msg)
+        self.assertIn("Ensure that a minimal ordering has been applied", error_msg)
 
     def test_allows_ordered_queryset(self):
         """Should not raise exception for ordered QuerySet"""

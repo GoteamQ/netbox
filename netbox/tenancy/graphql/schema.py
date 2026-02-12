@@ -6,7 +6,7 @@ import strawberry_django
 from .types import *
 
 
-@strawberry.type(name='Query')
+@strawberry.type(name="Query")
 class TenancyQuery:
     tenant: TenantType = strawberry_django.field()
     tenant_list: List[TenantType] = strawberry_django.field()

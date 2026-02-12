@@ -2,6 +2,7 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
+
     dependencies = [
         ('vpn', '0007_natural_ordering'),
     ]

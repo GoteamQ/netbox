@@ -4,6 +4,7 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
+
     dependencies = [
         ('dcim', '0206_load_module_type_profiles'),
     ]

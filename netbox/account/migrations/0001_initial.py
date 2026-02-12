@@ -4,6 +4,7 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
+
     initial = True
 
     dependencies = [
@@ -13,7 +14,8 @@ class Migration(migrations.Migration):
     operations = [
         migrations.CreateModel(
             name='UserToken',
-            fields=[],
+            fields=[
+            ],
             options={
                 'verbose_name': 'token',
                 'proxy': True,

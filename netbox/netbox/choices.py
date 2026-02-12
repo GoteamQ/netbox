@@ -18,7 +18,6 @@ __all__ = (
 # Generic color choices
 #
 
-
 class ColorChoices(ChoiceSet):
     COLOR_DARK_RED = 'aa1409'
     COLOR_RED = 'f44336'
@@ -83,7 +82,6 @@ class ColorChoices(ChoiceSet):
 # Button color choices
 #
 
-
 class ButtonColorChoices(ChoiceSet):
     DEFAULT = 'default'
     BLUE = 'blue'
@@ -122,7 +120,6 @@ class ButtonColorChoices(ChoiceSet):
 #
 # Import Choices
 #
-
 
 class ImportMethodChoices(ChoiceSet):
     DIRECT = 'direct'
@@ -167,6 +164,7 @@ class CSVDelimiterChoices(ChoiceSet):
 
 
 class DistanceUnitChoices(ChoiceSet):
+
     # Metric
     UNIT_KILOMETER = 'km'
     UNIT_METER = 'm'
@@ -184,6 +182,7 @@ class DistanceUnitChoices(ChoiceSet):
 
 
 class WeightUnitChoices(ChoiceSet):
+
     # Metric
     UNIT_KILOGRAM = 'kg'
     UNIT_GRAM = 'g'

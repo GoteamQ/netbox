@@ -10,7 +10,12 @@ from utilities.testing import APITestCase, ModelViewTestCase, create_tags, post_
 
 
 class ModelFormCustomValidationTest(TestCase):
-    @override_settings(CUSTOM_VALIDATORS={'circuits.provider': [{'tags': {'required': True}}]})
+
+    @override_settings(CUSTOM_VALIDATORS={
+        'circuits.provider': [
+            {'tags': {'required': True}}
+        ]
+    })
     def test_tags_validation(self):
         """
         Check that custom validation rules work for tag assignment.
@@ -27,7 +32,11 @@ class ModelFormCustomValidationTest(TestCase):
         form = ProviderForm(data)
         self.assertTrue(form.is_valid())
 
-    @override_settings(CUSTOM_VALIDATORS={'circuits.provider': [{'asns': {'required': True}}]})
+    @override_settings(CUSTOM_VALIDATORS={
+        'circuits.provider': [
+            {'asns': {'required': True}}
+        ]
+    })
     def test_m2m_validation(self):
         """
         Check that custom validation rules work for many-to-many fields.
@@ -40,13 +49,11 @@ class ModelFormCustomValidationTest(TestCase):
         self.assertFalse(form.is_valid())
 
         rir = RIR.objects.create(name='RIR 1', slug='rir-1')
-        asns = ASN.objects.bulk_create(
-            (
-                ASN(rir=rir, asn=65001),
-                ASN(rir=rir, asn=65002),
-                ASN(rir=rir, asn=65003),
-            )
-        )
+        asns = ASN.objects.bulk_create((
+            ASN(rir=rir, asn=65001),
+            ASN(rir=rir, asn=65002),
+            ASN(rir=rir, asn=65003),
+        ))
         data['asns'] = [asn.pk for asn in asns]
         form = ProviderForm(data)
         self.assertTrue(form.is_valid())
@@ -58,13 +65,11 @@ class BulkEditCustomValidationTest(ModelViewTestCase):
     @classmethod
     def setUpTestData(cls):
         rir = RIR.objects.create(name='RIR 1', slug='rir-1')
-        asns = ASN.objects.bulk_create(
-            (
-                ASN(rir=rir, asn=65001),
-                ASN(rir=rir, asn=65002),
-                ASN(rir=rir, asn=65003),
-            )
-        )
+        asns = ASN.objects.bulk_create((
+            ASN(rir=rir, asn=65001),
+            ASN(rir=rir, asn=65002),
+            ASN(rir=rir, asn=65003),
+        ))
 
         providers = (
             Provider(name='Provider 1', slug='provider-1'),
@@ -75,7 +80,11 @@ class BulkEditCustomValidationTest(ModelViewTestCase):
         for provider in providers:
             provider.asns.set(asns)
 
-    @override_settings(CUSTOM_VALIDATORS={'circuits.provider': [{'asns': {'required': True}}]})
+    @override_settings(CUSTOM_VALIDATORS={
+        'circuits.provider': [
+            {'asns': {'required': True}}
+        ]
+    })
     def test_bulk_edit_without_m2m(self):
         """
         Check that custom validation rules do not interfere with bulk editing.
@@ -97,9 +106,16 @@ class BulkEditCustomValidationTest(ModelViewTestCase):
         }
         response = self.client.post(**request)
         self.assertHttpStatus(response, 302)
-        self.assertEqual(Provider.objects.filter(description=data['description']).count(), len(data['pk']))
+        self.assertEqual(
+            Provider.objects.filter(description=data['description']).count(),
+            len(data['pk'])
+        )
 
-    @override_settings(CUSTOM_VALIDATORS={'circuits.provider': [{'asns': {'required': True}}]})
+    @override_settings(CUSTOM_VALIDATORS={
+        'circuits.provider': [
+            {'asns': {'required': True}}
+        ]
+    })
     def test_bulk_edit_m2m(self):
         """
         Test that custom validation rules are enforced during bulk editing.
@@ -147,16 +163,20 @@ class BulkImportCustomValidationTest(ModelViewTestCase):
     def setUpTestData(cls):
         create_tags('Tag1', 'Tag2', 'Tag3')
 
-    @override_settings(CUSTOM_VALIDATORS={'circuits.provider': [{'tags': {'required': True}}]})
+    @override_settings(CUSTOM_VALIDATORS={
+        'circuits.provider': [
+            {'tags': {'required': True}}
+        ]
+    })
     def test_bulk_import_invalid(self):
         """
         Test that custom validation rules are enforced during bulk import.
         """
         csv_data = (
-            'name,slug',
-            'Provider 1,provider-1',
-            'Provider 2,provider-2',
-            'Provider 3,provider-3',
+            "name,slug",
+            "Provider 1,provider-1",
+            "Provider 2,provider-2",
+            "Provider 3,provider-3",
         )
         data = {
             'data': '\n'.join(csv_data),
@@ -180,10 +200,10 @@ class BulkImportCustomValidationTest(ModelViewTestCase):
 
         # Import providers successfully with tag assignments
         csv_data = (
-            'name,slug,tags',
-            'Provider 1,provider-1,tag1',
-            'Provider 2,provider-2,tag2',
-            'Provider 3,provider-3,tag3',
+            "name,slug,tags",
+            "Provider 1,provider-1,tag1",
+            "Provider 2,provider-2,tag2",
+            "Provider 3,provider-3,tag3",
         )
         data['data'] = '\n'.join(csv_data)
         request = {
@@ -196,7 +216,12 @@ class BulkImportCustomValidationTest(ModelViewTestCase):
 
 
 class APISerializerCustomValidationTest(APITestCase):
-    @override_settings(CUSTOM_VALIDATORS={'circuits.provider': [{'tags': {'required': True}}]})
+
+    @override_settings(CUSTOM_VALIDATORS={
+        'circuits.provider': [
+            {'tags': {'required': True}}
+        ]
+    })
     def test_tags_validation(self):
         """
         Check that custom validation rules work for tag assignment.
@@ -213,7 +238,11 @@ class APISerializerCustomValidationTest(APITestCase):
         serializer = ProviderSerializer(data=data)
         self.assertTrue(serializer.is_valid())
 
-    @override_settings(CUSTOM_VALIDATORS={'circuits.provider': [{'asns': {'required': True}}]})
+    @override_settings(CUSTOM_VALIDATORS={
+        'circuits.provider': [
+            {'asns': {'required': True}}
+        ]
+    })
     def test_m2m_validation(self):
         """
         Check that custom validation rules work for many-to-many fields.
@@ -226,13 +255,11 @@ class APISerializerCustomValidationTest(APITestCase):
         self.assertFalse(serializer.is_valid())
 
         rir = RIR.objects.create(name='RIR 1', slug='rir-1')
-        asns = ASN.objects.bulk_create(
-            (
-                ASN(rir=rir, asn=65001),
-                ASN(rir=rir, asn=65002),
-                ASN(rir=rir, asn=65003),
-            )
-        )
+        asns = ASN.objects.bulk_create((
+            ASN(rir=rir, asn=65001),
+            ASN(rir=rir, asn=65002),
+            ASN(rir=rir, asn=65003),
+        ))
         data['asns'] = [asn.pk for asn in asns]
         serializer = ProviderSerializer(data=data)
         self.assertTrue(serializer.is_valid())

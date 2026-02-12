@@ -14,7 +14,9 @@ from netbox.models.features import ChangeLoggingMixin
 from netbox.models.features import has_feature
 from utilities.data import shallow_compare_dict
 
-__all__ = ('ObjectChange',)
+__all__ = (
+    'ObjectChange',
+)
 
 
 class ObjectChange(models.Model):
@@ -23,26 +25,81 @@ class ObjectChange(models.Model):
     indicate an object related to the one being changed. For example, a change to an interface may also indicate the
     parent device. This will ensure changes made to component models appear in the parent model's changelog.
     """
-
-    time = models.DateTimeField(verbose_name=_('time'), auto_now_add=True, editable=False, db_index=True)
+    time = models.DateTimeField(
+        verbose_name=_('time'),
+        auto_now_add=True,
+        editable=False,
+        db_index=True
+    )
     user = models.ForeignKey(
-        to=settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, related_name='changes', blank=True, null=True
+        to=settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        related_name='changes',
+        blank=True,
+        null=True
     )
-    user_name = models.CharField(verbose_name=_('user name'), max_length=150, editable=False)
-    request_id = models.UUIDField(verbose_name=_('request ID'), editable=False, db_index=True)
-    action = models.CharField(verbose_name=_('action'), max_length=50, choices=ObjectChangeActionChoices)
-    changed_object_type = models.ForeignKey(to='contenttypes.ContentType', on_delete=models.PROTECT, related_name='+')
+    user_name = models.CharField(
+        verbose_name=_('user name'),
+        max_length=150,
+        editable=False
+    )
+    request_id = models.UUIDField(
+        verbose_name=_('request ID'),
+        editable=False,
+        db_index=True
+    )
+    action = models.CharField(
+        verbose_name=_('action'),
+        max_length=50,
+        choices=ObjectChangeActionChoices
+    )
+    changed_object_type = models.ForeignKey(
+        to='contenttypes.ContentType',
+        on_delete=models.PROTECT,
+        related_name='+'
+    )
     changed_object_id = models.PositiveBigIntegerField()
-    changed_object = GenericForeignKey(ct_field='changed_object_type', fk_field='changed_object_id')
-    related_object_type = models.ForeignKey(
-        to='contenttypes.ContentType', on_delete=models.PROTECT, related_name='+', blank=True, null=True
+    changed_object = GenericForeignKey(
+        ct_field='changed_object_type',
+        fk_field='changed_object_id'
     )
-    related_object_id = models.PositiveBigIntegerField(blank=True, null=True)
-    related_object = GenericForeignKey(ct_field='related_object_type', fk_field='related_object_id')
-    object_repr = models.CharField(max_length=200, editable=False)
-    message = models.CharField(verbose_name=_('message'), max_length=200, editable=False, blank=True)
-    prechange_data = models.JSONField(verbose_name=_('pre-change data'), editable=False, blank=True, null=True)
-    postchange_data = models.JSONField(verbose_name=_('post-change data'), editable=False, blank=True, null=True)
+    related_object_type = models.ForeignKey(
+        to='contenttypes.ContentType',
+        on_delete=models.PROTECT,
+        related_name='+',
+        blank=True,
+        null=True
+    )
+    related_object_id = models.PositiveBigIntegerField(
+        blank=True,
+        null=True
+    )
+    related_object = GenericForeignKey(
+        ct_field='related_object_type',
+        fk_field='related_object_id'
+    )
+    object_repr = models.CharField(
+        max_length=200,
+        editable=False
+    )
+    message = models.CharField(
+        verbose_name=_('message'),
+        max_length=200,
+        editable=False,
+        blank=True
+    )
+    prechange_data = models.JSONField(
+        verbose_name=_('pre-change data'),
+        editable=False,
+        blank=True,
+        null=True
+    )
+    postchange_data = models.JSONField(
+        verbose_name=_('post-change data'),
+        editable=False,
+        blank=True,
+        null=True
+    )
 
     objects = ObjectChangeQuerySet.as_manager()
 
@@ -57,7 +114,10 @@ class ObjectChange(models.Model):
 
     def __str__(self):
         return '{} {} {} by {}'.format(
-            self.changed_object_type, self.object_repr, self.get_action_display().lower(), self.user_name
+            self.changed_object_type,
+            self.object_repr,
+            self.get_action_display().lower(),
+            self.user_name
         )
 
     def clean(self):
@@ -66,12 +126,13 @@ class ObjectChange(models.Model):
         # Validate the assigned object type
         if not has_feature(self.changed_object_type, 'change_logging'):
             raise ValidationError(
-                _('Change logging is not supported for this object type ({type}).').format(
+                _("Change logging is not supported for this object type ({type}).").format(
                     type=self.changed_object_type
                 )
             )
 
     def save(self, *args, **kwargs):
+
         # Record the user's name and the object's representation as static strings
         if not self.user_name:
             self.user_name = self.user.username
@@ -147,6 +208,10 @@ class ObjectChange(models.Model):
             changed_attrs = sorted(changed_data.keys())
 
         return {
-            'pre': {k: prechange_data.get(k) for k in changed_attrs},
-            'post': {k: postchange_data.get(k) for k in changed_attrs},
+            'pre': {
+                k: prechange_data.get(k) for k in changed_attrs
+            },
+            'post': {
+                k: postchange_data.get(k) for k in changed_attrs
+            },
         }

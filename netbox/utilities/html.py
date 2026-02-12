@@ -17,7 +17,12 @@ def clean_html(html, schemes):
     Sanitizes HTML based on a whitelist of allowed tags and attributes.
     Also takes a list of allowed URI schemes.
     """
-    return nh3.clean(html, tags=HTML_ALLOWED_TAGS, attributes=HTML_ALLOWED_ATTRIBUTES, url_schemes=set(schemes))
+    return nh3.clean(
+        html,
+        tags=HTML_ALLOWED_TAGS,
+        attributes=HTML_ALLOWED_ATTRIBUTES,
+        url_schemes=set(schemes)
+    )
 
 
 def foreground_color(bg_color, dark='000000', light='ffffff'):
@@ -29,7 +34,7 @@ def foreground_color(bg_color, dark='000000', light='ffffff'):
     """
     THRESHOLD = 150
     bg_color = bg_color.strip('#')
-    r, g, b = [int(bg_color[c : c + 2], 16) for c in (0, 2, 4)]
+    r, g, b = [int(bg_color[c:c + 2], 16) for c in (0, 2, 4)]
     if r * 0.299 + g * 0.587 + b * 0.114 > THRESHOLD:
         return dark
     else:
@@ -53,7 +58,7 @@ def highlight(value, highlight, trim_pre=None, trim_post=None, trim_placeholder=
             pre, match, post = highlight.split(value, maxsplit=1)
         else:
             highlight = re.escape(highlight)
-            pre, match, post = re.split(rf'({highlight})', value, maxsplit=1, flags=re.IGNORECASE)
+            pre, match, post = re.split(fr'({highlight})', value, maxsplit=1, flags=re.IGNORECASE)
     except ValueError:
         # Match not found
         return escape(value)

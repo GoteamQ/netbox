@@ -16,6 +16,7 @@ class UserTestCase(TestCase, BaseFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
+
         groups = (
             Group(name='Group 1'),
             Group(name='Group 2'),
@@ -29,12 +30,32 @@ class UserTestCase(TestCase, BaseFilterSetTests):
                 first_name='Hank',
                 last_name='Hill',
                 email='hank@stricklandpropane.com',
-                is_superuser=True,
+                is_superuser=True
             ),
-            User(username='User2', first_name='Dale', last_name='Gribble', email='dale@dalesdeadbug.com'),
-            User(username='User3', first_name='Bill', last_name='Dauterive', email='bill.dauterive@army.mil'),
-            User(username='User4', first_name='Jeff', last_name='Boomhauer', email='boomhauer@dangolemail.com'),
-            User(username='User5', first_name='Debbie', last_name='Grund', is_active=False),
+            User(
+                username='User2',
+                first_name='Dale',
+                last_name='Gribble',
+                email='dale@dalesdeadbug.com'
+            ),
+            User(
+                username='User3',
+                first_name='Bill',
+                last_name='Dauterive',
+                email='bill.dauterive@army.mil'
+            ),
+            User(
+                username='User4',
+                first_name='Jeff',
+                last_name='Boomhauer',
+                email='boomhauer@dangolemail.com'
+            ),
+            User(
+                username='User5',
+                first_name='Debbie',
+                last_name='Grund',
+                is_active=False
+            )
         )
         User.objects.bulk_create(users)
 
@@ -100,6 +121,7 @@ class GroupTestCase(TestCase, BaseFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
+
         groups = (
             Group(name='Group 1'),
             Group(name='Group 2'),
@@ -153,6 +175,7 @@ class ObjectPermissionTestCase(TestCase, BaseFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
+
         groups = (
             Group(name='Group 1'),
             Group(name='Group 2'),
@@ -247,6 +270,7 @@ class TokenTestCase(TestCase, BaseFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
+
         users = (
             User(username='User1'),
             User(username='User2'),
@@ -341,6 +365,7 @@ class OwnerGroupTestCase(TestCase, BaseFilterSetTests):
 
     @classmethod
     def setUpTestData(cls):
+
         owner_groups = (
             OwnerGroup(name='Owner Group 1', description='Foo'),
             OwnerGroup(name='Owner Group 2', description='Bar'),

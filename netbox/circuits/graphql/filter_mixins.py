@@ -8,7 +8,9 @@ from strawberry_django import BaseFilterLookup
 if TYPE_CHECKING:
     from netbox.graphql.enums import ColorEnum
 
-__all__ = ('CircuitTypeFilterMixin',)
+__all__ = (
+    'CircuitTypeFilterMixin',
+)
 
 
 @dataclass

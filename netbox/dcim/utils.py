@@ -78,7 +78,8 @@ def update_interface_bridges(device, interface_templates, module=None):
 
         if interface_template.bridge:
             interface.bridge = Interface.objects.get(
-                device=device, name=interface_template.bridge.resolve_name(module=module)
+                device=device,
+                name=interface_template.bridge.resolve_name(module=module)
             )
             interface.full_clean()
             interface.save()
@@ -93,8 +94,12 @@ def create_port_mappings(device, device_or_module_type, module=None):
     templates = device_or_module_type.port_mappings.prefetch_related('front_port', 'rear_port')
 
     # Cache front & rear ports for efficient lookups by name
-    front_ports = {fp.name: fp for fp in FrontPort.objects.filter(device=device)}
-    rear_ports = {rp.name: rp for rp in RearPort.objects.filter(device=device)}
+    front_ports = {
+        fp.name: fp for fp in FrontPort.objects.filter(device=device)
+    }
+    rear_ports = {
+        rp.name: rp for rp in RearPort.objects.filter(device=device)
+    }
 
     # Replicate PortMappings
     mappings = []

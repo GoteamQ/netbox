@@ -4,6 +4,7 @@ from django.core.management.commands.makemigrations import Command as _Command
 
 
 class Command(_Command):
+
     def handle(self, *args, **kwargs):
         """
         This built-in management command enables the creation of new database schema migration files, which should
@@ -12,10 +13,10 @@ class Command(_Command):
         """
         if not kwargs['check_changes'] and not settings.DEVELOPER:
             raise CommandError(
-                'This command is available for development purposes only. It will\n'
-                'NOT resolve any issues with missing or unapplied migrations. For assistance,\n'
-                'please post to the NetBox discussion forum on GitHub:\n'
-                '    https://github.com/netbox-community/netbox/discussions'
+                "This command is available for development purposes only. It will\n"
+                "NOT resolve any issues with missing or unapplied migrations. For assistance,\n"
+                "please post to the NetBox discussion forum on GitHub:\n"
+                "    https://github.com/netbox-community/netbox/discussions"
             )
 
         super().handle(*args, **kwargs)

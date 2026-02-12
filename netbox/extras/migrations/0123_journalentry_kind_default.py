@@ -14,10 +14,14 @@ def set_kind_default(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
+
     dependencies = [
         ('extras', '0122_charfield_null_choices'),
     ]
 
     operations = [
-        migrations.RunPython(code=set_kind_default, reverse_code=migrations.RunPython.noop),
+        migrations.RunPython(
+            code=set_kind_default,
+            reverse_code=migrations.RunPython.noop
+        ),
     ]

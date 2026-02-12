@@ -112,7 +112,9 @@ class JSONSchemaProperty:
             if self.maxLength is not None:
                 field_kwargs['max_length'] = self.maxLength
             if self.pattern is not None:
-                field_kwargs['validators'] = [RegexValidator(regex=self.pattern)]
+                field_kwargs['validators'] = [
+                    RegexValidator(regex=self.pattern)
+                ]
 
         # Integer/number validation
         elif self.type in (PropertyTypeEnum.INTEGER.value, PropertyTypeEnum.NUMBER.value):
@@ -122,7 +124,9 @@ class JSONSchemaProperty:
             if self.maximum:
                 field_kwargs['max_value'] = self.maximum
             if self.multipleOf:
-                field_kwargs['validators'] = [MultipleOfValidator(multiple=self.multipleOf)]
+                field_kwargs['validators'] = [
+                    MultipleOfValidator(multiple=self.multipleOf)
+                ]
 
         return self.field_class(**field_kwargs)
 
@@ -139,11 +143,11 @@ class JSONSchemaProperty:
             try:
                 return STRING_FORM_FIELDS[self.format]
             except KeyError:
-                raise ValueError(f'Unsupported string format type: {self.format}')
+                raise ValueError(f"Unsupported string format type: {self.format}")
         try:
             return FORM_FIELDS[self.type]
         except KeyError:
-            raise ValueError(f'Unknown property type: {self.type}')
+            raise ValueError(f"Unknown property type: {self.type}")
 
 
 def validate_schema(schema):
@@ -155,11 +159,11 @@ def validate_schema(schema):
         return
     # Provide some basic sanity checking (not provided by jsonschema)
     if type(schema) is not dict:
-        raise ValidationError(_('Invalid JSON schema definition'))
+        raise ValidationError(_("Invalid JSON schema definition"))
     if not schema.get('properties'):
-        raise ValidationError(_('JSON schema must define properties'))
+        raise ValidationError(_("JSON schema must define properties"))
     try:
         ValidatorClass = validator_for(schema)
         ValidatorClass.check_schema(schema)
     except SchemaError as e:
-        raise ValidationError(_('Invalid JSON schema definition: {error}').format(error=e))
+        raise ValidationError(_("Invalid JSON schema definition: {error}").format(error=e))

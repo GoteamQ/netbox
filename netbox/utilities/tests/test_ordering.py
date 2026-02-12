@@ -7,8 +7,8 @@ class NaturalizationTestCase(TestCase):
     """
     Validate the operation of the functions which generate values suitable for natural ordering.
     """
-
     def test_naturalize(self):
+
         # Original, naturalized
         data = (
             ('abc', 'abc'),
@@ -27,8 +27,10 @@ class NaturalizationTestCase(TestCase):
         self.assertEqual(naturalize('abc123def456', max_length=10), 'abc0000012')
 
     def test_naturalize_interface(self):
+
         # Original, naturalized
         data = (
+
             # IOS/JunOS-style
             ('Gi', '9999999999999999Gi..................'),
             ('Gi1', '9999999999999999Gi000001............'),
@@ -46,12 +48,14 @@ class NaturalizationTestCase(TestCase):
             ('Gi1/2/3/4/5', '0001000200030004Gi000005............'),
             ('Gi1/2/3/4/5:6', '0001000200030004Gi000005000006......'),
             ('Gi1/2/3/4/5:6.7', '0001000200030004Gi000005000006000007'),
+
             # Generic
             ('Interface 1', '9999999999999999Interface 000001............'),
             ('Interface 1 (other)', '9999999999999999Interface 000001............ (other)'),
             ('Interface 99', '9999999999999999Interface 000099............'),
             ('PCIe1-p1', '9999999999999999PCIe000001............-p00000001'),
             ('PCIe1-p99', '9999999999999999PCIe000001............-p00000099'),
+
         )
 
         for origin, naturalized in data:

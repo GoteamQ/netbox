@@ -1,11 +1,7 @@
 from django.test import TestCase
 
 from dcim.choices import (
-    DeviceFaceChoices,
-    DeviceStatusChoices,
-    InterfaceModeChoices,
-    InterfaceTypeChoices,
-    PortTypeChoices,
+    DeviceFaceChoices, DeviceStatusChoices, InterfaceModeChoices, InterfaceTypeChoices, PortTypeChoices,
     PowerOutletStatusChoices,
 )
 from dcim.forms import *
@@ -24,7 +20,9 @@ class PowerOutletFormTestCase(TestCase):
     def setUpTestData(cls):
         cls.site = site = Site.objects.create(name='Site 1', slug='site-1')
         cls.manufacturer = manufacturer = Manufacturer.objects.create(name='Manufacturer 1', slug='manufacturer-1')
-        cls.role = role = DeviceRole.objects.create(name='Device Role 1', slug='device-role-1', color='ff0000')
+        cls.role = role = DeviceRole.objects.create(
+            name='Device Role 1', slug='device-role-1', color='ff0000'
+        )
         cls.device_type = device_type = DeviceType.objects.create(
             manufacturer=manufacturer, model='Device Type 1', slug='device-type-1', u_height=1
         )
@@ -34,39 +32,33 @@ class PowerOutletFormTestCase(TestCase):
         )
 
     def test_status_is_required(self):
-        form = PowerOutletForm(
-            data={
-                'device': self.device,
-                'module': None,
-                'name': 'New Enabled Outlet',
-            }
-        )
+        form = PowerOutletForm(data={
+            'device': self.device,
+            'module': None,
+            'name': 'New Enabled Outlet',
+        })
         self.assertFalse(form.is_valid())
         self.assertIn('status', form.errors)
 
     def test_status_must_be_defined_choice(self):
-        form = PowerOutletForm(
-            data={
-                'device': self.device,
-                'module': None,
-                'name': 'New Enabled Outlet',
-                'status': "this isn't a defined choice",
-            }
-        )
+        form = PowerOutletForm(data={
+            'device': self.device,
+            'module': None,
+            'name': 'New Enabled Outlet',
+            'status': 'this isn\'t a defined choice',
+        })
         self.assertFalse(form.is_valid())
         self.assertIn('status', form.errors)
         self.assertTrue(form.errors['status'][-1].startswith('Select a valid choice.'))
 
     def test_status_recognizes_choices(self):
         for index, choice in enumerate(PowerOutletStatusChoices.CHOICES):
-            form = PowerOutletForm(
-                data={
-                    'device': self.device,
-                    'module': None,
-                    'name': f'New Enabled Outlet {index + 1}',
-                    'status': choice[0],
-                }
-            )
+            form = PowerOutletForm(data={
+                'device': self.device,
+                'module': None,
+                'name': f'New Enabled Outlet {index + 1}',
+                'status': choice[0],
+            })
             self.assertEqual({}, form.errors)
             self.assertTrue(form.is_valid())
             instance = form.save()
@@ -74,116 +66,113 @@ class PowerOutletFormTestCase(TestCase):
 
 
 class DeviceTestCase(TestCase):
+
     @classmethod
     def setUpTestData(cls):
+
         site = Site.objects.create(name='Site 1', slug='site-1')
         rack = Rack.objects.create(name='Rack 1', site=site)
         manufacturer = Manufacturer.objects.create(name='Manufacturer 1', slug='manufacturer-1')
         device_type = DeviceType.objects.create(
             manufacturer=manufacturer, model='Device Type 1', slug='device-type-1', u_height=1
         )
-        role = DeviceRole.objects.create(name='Device Role 1', slug='device-role-1', color='ff0000')
+        role = DeviceRole.objects.create(
+            name='Device Role 1', slug='device-role-1', color='ff0000'
+        )
         Platform.objects.create(name='Platform 1', slug='platform-1')
-        Device.objects.create(name='Device 1', device_type=device_type, role=role, site=site, rack=rack, position=1)
+        Device.objects.create(
+            name='Device 1', device_type=device_type, role=role, site=site, rack=rack, position=1
+        )
         cluster_type = ClusterType.objects.create(name='Cluster Type 1', slug='cluster-type-1')
         cluster_group = ClusterGroup.objects.create(name='Cluster Group 1', slug='cluster-group-1')
         Cluster.objects.create(name='Cluster 1', type=cluster_type, group=cluster_group)
 
     def test_racked_device(self):
-        form = DeviceForm(
-            data={
-                'name': 'New Device',
-                'role': DeviceRole.objects.first().pk,
-                'tenant': None,
-                'manufacturer': Manufacturer.objects.first().pk,
-                'device_type': DeviceType.objects.first().pk,
-                'site': Site.objects.first().pk,
-                'rack': Rack.objects.first().pk,
-                'face': DeviceFaceChoices.FACE_FRONT,
-                'position': 2,
-                'platform': Platform.objects.first().pk,
-                'status': DeviceStatusChoices.STATUS_ACTIVE,
-            }
-        )
+        form = DeviceForm(data={
+            'name': 'New Device',
+            'role': DeviceRole.objects.first().pk,
+            'tenant': None,
+            'manufacturer': Manufacturer.objects.first().pk,
+            'device_type': DeviceType.objects.first().pk,
+            'site': Site.objects.first().pk,
+            'rack': Rack.objects.first().pk,
+            'face': DeviceFaceChoices.FACE_FRONT,
+            'position': 2,
+            'platform': Platform.objects.first().pk,
+            'status': DeviceStatusChoices.STATUS_ACTIVE,
+        })
         self.assertTrue(form.is_valid())
         self.assertTrue(form.save())
 
     def test_racked_device_occupied(self):
-        form = DeviceForm(
-            data={
-                'name': 'test',
-                'role': DeviceRole.objects.first().pk,
-                'tenant': None,
-                'manufacturer': Manufacturer.objects.first().pk,
-                'device_type': DeviceType.objects.first().pk,
-                'site': Site.objects.first().pk,
-                'rack': Rack.objects.first().pk,
-                'face': DeviceFaceChoices.FACE_FRONT,
-                'position': 1,
-                'platform': Platform.objects.first().pk,
-                'status': DeviceStatusChoices.STATUS_ACTIVE,
-            }
-        )
+        form = DeviceForm(data={
+            'name': 'test',
+            'role': DeviceRole.objects.first().pk,
+            'tenant': None,
+            'manufacturer': Manufacturer.objects.first().pk,
+            'device_type': DeviceType.objects.first().pk,
+            'site': Site.objects.first().pk,
+            'rack': Rack.objects.first().pk,
+            'face': DeviceFaceChoices.FACE_FRONT,
+            'position': 1,
+            'platform': Platform.objects.first().pk,
+            'status': DeviceStatusChoices.STATUS_ACTIVE,
+        })
         self.assertFalse(form.is_valid())
         self.assertIn('position', form.errors)
 
     def test_non_racked_device(self):
-        form = DeviceForm(
-            data={
-                'name': 'New Device',
-                'role': DeviceRole.objects.first().pk,
-                'tenant': None,
-                'manufacturer': Manufacturer.objects.first().pk,
-                'device_type': DeviceType.objects.first().pk,
-                'site': Site.objects.first().pk,
-                'rack': None,
-                'face': None,
-                'position': None,
-                'platform': Platform.objects.first().pk,
-                'status': DeviceStatusChoices.STATUS_ACTIVE,
-            }
-        )
+        form = DeviceForm(data={
+            'name': 'New Device',
+            'role': DeviceRole.objects.first().pk,
+            'tenant': None,
+            'manufacturer': Manufacturer.objects.first().pk,
+            'device_type': DeviceType.objects.first().pk,
+            'site': Site.objects.first().pk,
+            'rack': None,
+            'face': None,
+            'position': None,
+            'platform': Platform.objects.first().pk,
+            'status': DeviceStatusChoices.STATUS_ACTIVE,
+        })
         self.assertTrue(form.is_valid())
         self.assertTrue(form.save())
 
     def test_non_racked_device_with_face(self):
-        form = DeviceForm(
-            data={
-                'name': 'New Device',
-                'role': DeviceRole.objects.first().pk,
-                'tenant': None,
-                'manufacturer': Manufacturer.objects.first().pk,
-                'device_type': DeviceType.objects.first().pk,
-                'site': Site.objects.first().pk,
-                'rack': None,
-                'face': DeviceFaceChoices.FACE_REAR,
-                'platform': None,
-                'status': DeviceStatusChoices.STATUS_ACTIVE,
-            }
-        )
+        form = DeviceForm(data={
+            'name': 'New Device',
+            'role': DeviceRole.objects.first().pk,
+            'tenant': None,
+            'manufacturer': Manufacturer.objects.first().pk,
+            'device_type': DeviceType.objects.first().pk,
+            'site': Site.objects.first().pk,
+            'rack': None,
+            'face': DeviceFaceChoices.FACE_REAR,
+            'platform': None,
+            'status': DeviceStatusChoices.STATUS_ACTIVE,
+        })
         self.assertFalse(form.is_valid())
         self.assertIn('face', form.errors)
 
     def test_non_racked_device_with_position(self):
-        form = DeviceForm(
-            data={
-                'name': 'New Device',
-                'role': DeviceRole.objects.first().pk,
-                'tenant': None,
-                'manufacturer': Manufacturer.objects.first().pk,
-                'device_type': DeviceType.objects.first().pk,
-                'site': Site.objects.first().pk,
-                'rack': None,
-                'position': 10,
-                'platform': None,
-                'status': DeviceStatusChoices.STATUS_ACTIVE,
-            }
-        )
+        form = DeviceForm(data={
+            'name': 'New Device',
+            'role': DeviceRole.objects.first().pk,
+            'tenant': None,
+            'manufacturer': Manufacturer.objects.first().pk,
+            'device_type': DeviceType.objects.first().pk,
+            'site': Site.objects.first().pk,
+            'rack': None,
+            'position': 10,
+            'platform': None,
+            'status': DeviceStatusChoices.STATUS_ACTIVE,
+        })
         self.assertFalse(form.is_valid())
         self.assertIn('position', form.errors)
 
 
 class FrontPortTestCase(TestCase):
+
     @classmethod
     def setUpTestData(cls):
         cls.device = create_test_device('Panel Device 1')
@@ -230,6 +219,7 @@ class FrontPortTestCase(TestCase):
 
 
 class InterfaceTestCase(TestCase):
+
     @classmethod
     def setUpTestData(cls):
         cls.device = create_test_device('Device 1')
@@ -286,7 +276,7 @@ class InterfaceTestCase(TestCase):
             'name': 'ethernet1/1',
             'type': InterfaceTypeChoices.TYPE_1GE_GBIC,
             'mode': InterfaceModeChoices.MODE_ACCESS,
-            'untagged_vlan': self.vlans[0].pk,
+            'untagged_vlan': self.vlans[0].pk
         }
         form = InterfaceCreateForm(data)
 
@@ -299,7 +289,7 @@ class InterfaceTestCase(TestCase):
             'type': InterfaceTypeChoices.TYPE_1GE_GBIC,
             'mode': InterfaceModeChoices.MODE_TAGGED,
             'untagged_vlan': self.vlans[0].pk,
-            'tagged_vlans': [self.vlans[1].pk, self.vlans[2].pk],
+            'tagged_vlans': [self.vlans[1].pk, self.vlans[2].pk]
         }
         form = InterfaceCreateForm(data)
         self.assertTrue(form.is_valid())
@@ -325,7 +315,7 @@ class InterfaceTestCase(TestCase):
             'type': InterfaceTypeChoices.TYPE_1GE_GBIC,
             'mode': InterfaceModeChoices.MODE_ACCESS,
             'untagged_vlan': self.vlans[0].pk,
-            'tagged_vlans': [self.vlans[1].pk, self.vlans[2].pk],
+            'tagged_vlans': [self.vlans[1].pk, self.vlans[2].pk]
         }
         form = InterfaceCreateForm(data)
 
@@ -343,7 +333,7 @@ class InterfaceTestCase(TestCase):
             'name': 'Ethernet 1/5',
             'type': InterfaceTypeChoices.TYPE_1GE_GBIC,
             'mode': InterfaceModeChoices.MODE_ACCESS,
-            'tagged_vlans': [self.vlans[0].pk, self.vlans[1].pk, self.vlans[2].pk],
+            'tagged_vlans': [self.vlans[0].pk, self.vlans[1].pk, self.vlans[2].pk]
         }
         form = InterfaceForm(data, instance=self.interface)
 
@@ -361,7 +351,7 @@ class InterfaceTestCase(TestCase):
             'name': 'ethernet1/6',
             'type': InterfaceTypeChoices.TYPE_1GE_GBIC,
             'mode': InterfaceModeChoices.MODE_TAGGED_ALL,
-            'tagged_vlans': [self.vlans[0].pk, self.vlans[1].pk, self.vlans[2].pk],
+            'tagged_vlans': [self.vlans[0].pk, self.vlans[1].pk, self.vlans[2].pk]
         }
         form = InterfaceCreateForm(data)
 
@@ -379,7 +369,7 @@ class InterfaceTestCase(TestCase):
             'name': 'Ethernet 1/7',
             'type': InterfaceTypeChoices.TYPE_1GE_GBIC,
             'mode': InterfaceModeChoices.MODE_TAGGED_ALL,
-            'tagged_vlans': [self.vlans[0].pk, self.vlans[1].pk, self.vlans[2].pk],
+            'tagged_vlans': [self.vlans[0].pk, self.vlans[1].pk, self.vlans[2].pk]
         }
         form = InterfaceForm(data)
         self.assertTrue(form.is_valid())
@@ -397,7 +387,7 @@ class InterfaceTestCase(TestCase):
             'type': InterfaceTypeChoices.TYPE_1GE_GBIC,
             'mode': None,
             'untagged_vlan': self.vlans[0].pk,
-            'tagged_vlans': [self.vlans[0].pk, self.vlans[1].pk, self.vlans[2].pk],
+            'tagged_vlans': [self.vlans[0].pk, self.vlans[1].pk, self.vlans[2].pk]
         }
         form = InterfaceCreateForm(data)
 
@@ -416,7 +406,7 @@ class InterfaceTestCase(TestCase):
             'type': InterfaceTypeChoices.TYPE_1GE_GBIC,
             'mode': None,
             'untagged_vlan': self.vlans[0].pk,
-            'tagged_vlans': [self.vlans[0].pk, self.vlans[1].pk, self.vlans[2].pk],
+            'tagged_vlans': [self.vlans[0].pk, self.vlans[1].pk, self.vlans[2].pk]
         }
         form = InterfaceForm(data)
         self.assertTrue(form.is_valid())

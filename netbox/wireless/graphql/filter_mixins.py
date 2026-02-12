@@ -8,7 +8,9 @@ from strawberry_django import FilterLookup
 if TYPE_CHECKING:
     from .enums import *
 
-__all__ = ('WirelessAuthenticationFilterMixin',)
+__all__ = (
+    'WirelessAuthenticationFilterMixin',
+)
 
 
 @dataclass

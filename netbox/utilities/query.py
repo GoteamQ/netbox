@@ -15,7 +15,13 @@ def count_related(model, field):
     Return a Subquery suitable for annotating a child object count.
     """
     subquery = Subquery(
-        model.objects.filter(**{field: OuterRef('pk')}).order_by().values(field).annotate(c=Count('*')).values('c')
+        model.objects.filter(
+            **{field: OuterRef('pk')}
+        ).order_by().values(
+            field
+        ).annotate(
+            c=Count('*')
+        ).values('c')
     )
 
     return Coalesce(subquery, 0)

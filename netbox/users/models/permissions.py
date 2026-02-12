@@ -6,7 +6,9 @@ from django.utils.translation import gettext_lazy as _
 from netbox.models.features import CloningMixin
 from utilities.querysets import RestrictedQuerySet
 
-__all__ = ('ObjectPermission',)
+__all__ = (
+    'ObjectPermission',
+)
 
 
 class ObjectPermission(CloningMixin, models.Model):
@@ -14,27 +16,36 @@ class ObjectPermission(CloningMixin, models.Model):
     A mapping of view, add, change, and/or delete permission for users and/or groups to an arbitrary set of objects
     identified by ORM query parameters.
     """
-
-    name = models.CharField(verbose_name=_('name'), max_length=100)
-    description = models.CharField(verbose_name=_('description'), max_length=200, blank=True)
-    enabled = models.BooleanField(verbose_name=_('enabled'), default=True)
-    object_types = models.ManyToManyField(to='contenttypes.ContentType', related_name='object_permissions')
+    name = models.CharField(
+        verbose_name=_('name'),
+        max_length=100
+    )
+    description = models.CharField(
+        verbose_name=_('description'),
+        max_length=200,
+        blank=True
+    )
+    enabled = models.BooleanField(
+        verbose_name=_('enabled'),
+        default=True
+    )
+    object_types = models.ManyToManyField(
+        to='contenttypes.ContentType',
+        related_name='object_permissions'
+    )
     actions = ArrayField(
-        base_field=models.CharField(max_length=30), help_text=_('The list of actions granted by this permission')
+        base_field=models.CharField(max_length=30),
+        help_text=_("The list of actions granted by this permission")
     )
     constraints = models.JSONField(
         blank=True,
         null=True,
         verbose_name=_('constraints'),
-        help_text=_('Queryset filter matching the applicable objects of the selected type(s)'),
+        help_text=_("Queryset filter matching the applicable objects of the selected type(s)")
     )
 
     clone_fields = (
-        'description',
-        'enabled',
-        'object_types',
-        'actions',
-        'constraints',
+        'description', 'enabled', 'object_types', 'actions', 'constraints',
     )
 
     objects = RestrictedQuerySet.as_manager()

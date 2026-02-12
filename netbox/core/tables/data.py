@@ -45,42 +45,31 @@ class DataSourceTable(PrimaryModelTable):
     class Meta(PrimaryModelTable.Meta):
         model = DataSource
         fields = (
-            'pk',
-            'id',
-            'name',
-            'type',
-            'status',
-            'enabled',
-            'source_url',
-            'description',
-            'sync_interval',
-            'comments',
-            'parameters',
-            'last_synced',
-            'created',
-            'last_updated',
-            'file_count',
+            'pk', 'id', 'name', 'type', 'status', 'enabled', 'source_url', 'description', 'sync_interval', 'comments',
+            'parameters', 'last_synced', 'created', 'last_updated', 'file_count',
         )
         default_columns = ('pk', 'name', 'type', 'status', 'enabled', 'description', 'sync_interval', 'file_count')
 
 
 class DataFileTable(NetBoxTable):
-    source = tables.Column(verbose_name=_('Source'), linkify=True)
-    path = tables.Column(verbose_name=_('Path'), linkify=True)
+    source = tables.Column(
+        verbose_name=_('Source'),
+        linkify=True
+    )
+    path = tables.Column(
+        verbose_name=_('Path'),
+        linkify=True
+    )
     last_updated = columns.DateTimeColumn(
         verbose_name=_('Last updated'),
     )
-    actions = columns.ActionsColumn(actions=('delete',))
+    actions = columns.ActionsColumn(
+        actions=('delete',)
+    )
 
     class Meta(NetBoxTable.Meta):
         model = DataFile
         fields = (
-            'pk',
-            'id',
-            'source',
-            'path',
-            'last_updated',
-            'size',
-            'hash',
+            'pk', 'id', 'source', 'path', 'last_updated', 'size', 'hash',
         )
         default_columns = ('pk', 'source', 'path', 'size', 'last_updated')

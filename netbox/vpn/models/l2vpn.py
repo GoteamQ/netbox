@@ -16,24 +16,49 @@ __all__ = (
 
 
 class L2VPN(ContactsMixin, PrimaryModel):
-    name = models.CharField(verbose_name=_('name'), max_length=100, unique=True, db_collation='natural_sort')
-    slug = models.SlugField(verbose_name=_('slug'), max_length=100, unique=True)
-    type = models.CharField(verbose_name=_('type'), max_length=50, choices=L2VPNTypeChoices)
+    name = models.CharField(
+        verbose_name=_('name'),
+        max_length=100,
+        unique=True,
+        db_collation="natural_sort"
+    )
+    slug = models.SlugField(
+        verbose_name=_('slug'),
+        max_length=100,
+        unique=True
+    )
+    type = models.CharField(
+        verbose_name=_('type'),
+        max_length=50,
+        choices=L2VPNTypeChoices
+    )
     status = models.CharField(
         verbose_name=_('status'),
         max_length=50,
         choices=L2VPNStatusChoices,
         default=L2VPNStatusChoices.STATUS_ACTIVE,
     )
-    identifier = models.BigIntegerField(verbose_name=_('identifier'), null=True, blank=True)
+    identifier = models.BigIntegerField(
+        verbose_name=_('identifier'),
+        null=True,
+        blank=True
+    )
     import_targets = models.ManyToManyField(
         to='ipam.RouteTarget',
         related_name='importing_l2vpns',
         blank=True,
     )
-    export_targets = models.ManyToManyField(to='ipam.RouteTarget', related_name='exporting_l2vpns', blank=True)
+    export_targets = models.ManyToManyField(
+        to='ipam.RouteTarget',
+        related_name='exporting_l2vpns',
+        blank=True
+    )
     tenant = models.ForeignKey(
-        to='tenancy.Tenant', on_delete=models.PROTECT, related_name='l2vpns', blank=True, null=True
+        to='tenancy.Tenant',
+        on_delete=models.PROTECT,
+        related_name='l2vpns',
+        blank=True,
+        null=True
     )
 
     clone_fields = ('type', 'status')
@@ -60,19 +85,33 @@ class L2VPN(ContactsMixin, PrimaryModel):
 
 
 class L2VPNTermination(NetBoxModel):
-    l2vpn = models.ForeignKey(to='vpn.L2VPN', on_delete=models.CASCADE, related_name='terminations')
-    assigned_object_type = models.ForeignKey(to='contenttypes.ContentType', on_delete=models.PROTECT, related_name='+')
+    l2vpn = models.ForeignKey(
+        to='vpn.L2VPN',
+        on_delete=models.CASCADE,
+        related_name='terminations'
+    )
+    assigned_object_type = models.ForeignKey(
+        to='contenttypes.ContentType',
+        on_delete=models.PROTECT,
+        related_name='+'
+    )
     assigned_object_id = models.PositiveBigIntegerField()
-    assigned_object = GenericForeignKey(ct_field='assigned_object_type', fk_field='assigned_object_id')
+    assigned_object = GenericForeignKey(
+        ct_field='assigned_object_type',
+        fk_field='assigned_object_id'
+    )
 
     clone_fields = ('l2vpn',)
-    prerequisite_models = ('vpn.L2VPN',)
+    prerequisite_models = (
+        'vpn.L2VPN',
+    )
 
     class Meta:
         ordering = ('l2vpn',)
         constraints = (
             models.UniqueConstraint(
-                fields=('assigned_object_type', 'assigned_object_id'), name='vpn_l2vpntermination_assigned_object'
+                fields=('assigned_object_type', 'assigned_object_id'),
+                name='vpn_l2vpntermination_assigned_object'
             ),
         )
         verbose_name = _('L2VPN termination')
@@ -88,12 +127,8 @@ class L2VPNTermination(NetBoxModel):
         if self.assigned_object:
             obj_id = self.assigned_object.pk
             obj_type = ObjectType.objects.get_for_model(self.assigned_object)
-            if (
-                L2VPNTermination.objects.filter(assigned_object_id=obj_id, assigned_object_type=obj_type)
-                .exclude(pk=self.pk)
-                .count()
-                > 0
-            ):
+            if L2VPNTermination.objects.filter(assigned_object_id=obj_id, assigned_object_type=obj_type).\
+                    exclude(pk=self.pk).count() > 0:
                 raise ValidationError(
                     _('L2VPN Termination already assigned ({assigned_object})').format(
                         assigned_object=self.assigned_object
@@ -109,8 +144,7 @@ class L2VPNTermination(NetBoxModel):
                     _(
                         '{l2vpn_type} L2VPNs cannot have more than two terminations; found {terminations_count} '
                         'already defined.'
-                    ).format(l2vpn_type=l2vpn_type, terminations_count=terminations_count)
-                )
+                    ).format(l2vpn_type=l2vpn_type, terminations_count=terminations_count))
 
     @property
     def assigned_object_parent(self):

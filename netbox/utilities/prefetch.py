@@ -3,7 +3,9 @@ from django.db.models import ManyToManyField
 from django.db.models.fields.related import ForeignObjectRel
 from taggit.managers import TaggableManager
 
-__all__ = ('get_prefetchable_fields',)
+__all__ = (
+    'get_prefetchable_fields',
+)
 
 
 def get_prefetchable_fields(model):

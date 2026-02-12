@@ -23,7 +23,6 @@ class CSVSelectWidget(forms.Select):
     Custom Select widget for CSV imports that treats blank values as omitted.
     This allows model defaults to be applied when a CSV field is present but empty.
     """
-
     def value_omitted_from_data(self, data, files, name):
         # Check if value is omitted using parent behavior
         if super().value_omitted_from_data(data, files, name):
@@ -46,7 +45,6 @@ class CSVChoiceField(CSVChoicesMixin, forms.ChoiceField):
     A CSV field which accepts a single selection value.
     Treats blank CSV values as omitted to allow model defaults.
     """
-
     widget = CSVSelectWidget
 
 
@@ -54,12 +52,11 @@ class CSVMultipleChoiceField(CSVChoicesMixin, forms.MultipleChoiceField):
     """
     A CSV field which accepts multiple selection values.
     """
-
     def to_python(self, value):
         if not value:
             return []
         if not isinstance(value, str):
-            raise forms.ValidationError(_('Invalid value for a multiple choice field: {value}').format(value=value))
+            raise forms.ValidationError(_("Invalid value for a multiple choice field: {value}").format(value=value))
         return value.split(',')
 
 
@@ -68,7 +65,6 @@ class CSVTypedChoiceField(forms.TypedChoiceField):
     A CSV field for typed choice values.
     Treats blank CSV values as omitted to allow model defaults.
     """
-
     STATIC_CHOICES = True
     widget = CSVSelectWidget
 
@@ -77,7 +73,6 @@ class CSVModelChoiceField(forms.ModelChoiceField):
     """
     Extends Django's `ModelChoiceField` to provide additional validation for CSV values.
     """
-
     default_error_messages = {
         'invalid_choice': _('Object not found: %(value)s'),
     }
@@ -99,7 +94,6 @@ class CSVModelMultipleChoiceField(forms.ModelMultipleChoiceField):
     """
     Extends Django's `ModelMultipleChoiceField` to support comma-separated values.
     """
-
     default_error_messages = {
         'invalid_choice': _('Object not found: %(value)s'),
     }
@@ -114,7 +108,6 @@ class CSVContentTypeField(CSVModelChoiceField):
     """
     CSV field for referencing a single content type, in the form `<app>.<model>`.
     """
-
     STATIC_CHOICES = True
 
     def prepare_value(self, value):
@@ -137,7 +130,6 @@ class CSVMultipleContentTypeField(forms.ModelMultipleChoiceField):
     """
     CSV field for referencing one or more content types, in the form `<app>.<model>`.
     """
-
     STATIC_CHOICES = True
 
     # TODO: Improve validation of selected ContentTypes

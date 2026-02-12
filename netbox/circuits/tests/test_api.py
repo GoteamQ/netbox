@@ -9,6 +9,7 @@ from utilities.testing import APITestCase, APIViewTestCases
 
 
 class AppTest(APITestCase):
+
     def test_root(self):
         url = reverse('circuits-api:api-root')
         response = self.client.get('{}?format=api'.format(url), **self.header)
@@ -25,8 +26,11 @@ class ProviderTest(APIViewTestCases.APIViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
+
         rir = RIR.objects.create(name='RFC 6996', is_private=True)
-        asns = [ASN(asn=65000 + i, rir=rir) for i in range(8)]
+        asns = [
+            ASN(asn=65000 + i, rir=rir) for i in range(8)
+        ]
         ASN.objects.bulk_create(asns)
 
         providers = (
@@ -78,6 +82,7 @@ class CircuitTypeTest(APIViewTestCases.APIViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
+
         circuit_types = (
             CircuitType(name='Circuit Type 1', slug='circuit-type-1'),
             CircuitType(name='Circuit Type 2', slug='circuit-type-2'),
@@ -96,6 +101,7 @@ class CircuitTest(APIViewTestCases.APIViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
+
         providers = (
             Provider(name='Provider 1', slug='provider-1'),
             Provider(name='Provider 2', slug='provider-2'),
@@ -152,7 +158,7 @@ class CircuitTest(APIViewTestCases.APIViewTestCase):
 class CircuitTerminationTest(APIViewTestCases.APIViewTestCase):
     model = CircuitTermination
     brief_fields = ['_occupied', 'cable', 'circuit', 'description', 'display', 'id', 'term_side', 'url']
-    user_permissions = ('circuits.view_circuit',)
+    user_permissions = ('circuits.view_circuit', )
 
     @classmethod
     def setUpTestData(cls):
@@ -206,7 +212,9 @@ class CircuitTerminationTest(APIViewTestCases.APIViewTestCase):
             },
         ]
 
-        cls.bulk_update_data = {'port_speed': 123456}
+        cls.bulk_update_data = {
+            'port_speed': 123456
+        }
 
 
 class CircuitGroupTest(APIViewTestCases.APIViewTestCase):
@@ -219,9 +227,9 @@ class CircuitGroupTest(APIViewTestCases.APIViewTestCase):
     @classmethod
     def setUpTestData(cls):
         circuit_groups = (
-            CircuitGroup(name='Circuit Group 1', slug='circuit-group-1'),
-            CircuitGroup(name='Circuit Group 2', slug='circuit-group-2'),
-            CircuitGroup(name='Circuit Group 3', slug='circuit-group-3'),
+            CircuitGroup(name="Circuit Group 1", slug='circuit-group-1'),
+            CircuitGroup(name="Circuit Group 2", slug='circuit-group-2'),
+            CircuitGroup(name="Circuit Group 3", slug='circuit-group-3'),
         )
         CircuitGroup.objects.bulk_create(circuit_groups)
 
@@ -295,6 +303,7 @@ class CircuitGroupAssignmentTest(APIViewTestCases.APIViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
+
         circuit_groups = (
             CircuitGroup(name='Circuit Group 1', slug='circuit-group-1'),
             CircuitGroup(name='Circuit Group 2', slug='circuit-group-2'),
@@ -320,13 +329,19 @@ class CircuitGroupAssignmentTest(APIViewTestCases.APIViewTestCase):
 
         assignments = (
             CircuitGroupAssignment(
-                group=circuit_groups[0], member=circuits[0], priority=CircuitPriorityChoices.PRIORITY_PRIMARY
+                group=circuit_groups[0],
+                member=circuits[0],
+                priority=CircuitPriorityChoices.PRIORITY_PRIMARY
             ),
             CircuitGroupAssignment(
-                group=circuit_groups[1], member=circuits[1], priority=CircuitPriorityChoices.PRIORITY_SECONDARY
+                group=circuit_groups[1],
+                member=circuits[1],
+                priority=CircuitPriorityChoices.PRIORITY_SECONDARY
             ),
             CircuitGroupAssignment(
-                group=circuit_groups[2], member=circuits[2], priority=CircuitPriorityChoices.PRIORITY_TERTIARY
+                group=circuit_groups[2],
+                member=circuits[2],
+                priority=CircuitPriorityChoices.PRIORITY_TERTIARY
             ),
         )
         CircuitGroupAssignment.objects.bulk_create(assignments)
@@ -356,7 +371,7 @@ class CircuitGroupAssignmentTest(APIViewTestCases.APIViewTestCase):
 class ProviderNetworkTest(APIViewTestCases.APIViewTestCase):
     model = ProviderNetwork
     brief_fields = ['description', 'display', 'id', 'name', 'url']
-    user_permissions = ('circuits.view_provider',)
+    user_permissions = ('circuits.view_provider', )
 
     @classmethod
     def setUpTestData(cls):
@@ -417,6 +432,7 @@ class VirtualCircuitTypeTest(APIViewTestCases.APIViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
+
         virtual_circuit_types = (
             VirtualCircuitType(name='Virtual Circuit Type 1', slug='virtual-circuit-type-1'),
             VirtualCircuitType(name='Virtual Circuit Type 2', slug='virtual-circuit-type-2'),
@@ -438,7 +454,8 @@ class VirtualCircuitTest(APIViewTestCases.APIViewTestCase):
         provider_network = ProviderNetwork.objects.create(provider=provider, name='Provider Network 1')
         provider_account = ProviderAccount.objects.create(provider=provider, account='Provider Account 1')
         virtual_circuit_type = VirtualCircuitType.objects.create(
-            name='Virtual Circuit Type 1', slug='virtual-circuit-type-1'
+            name='Virtual Circuit Type 1',
+            slug='virtual-circuit-type-1'
         )
 
         virtual_circuits = (
@@ -446,19 +463,19 @@ class VirtualCircuitTest(APIViewTestCases.APIViewTestCase):
                 provider_network=provider_network,
                 provider_account=provider_account,
                 type=virtual_circuit_type,
-                cid='Virtual Circuit 1',
+                cid='Virtual Circuit 1'
             ),
             VirtualCircuit(
                 provider_network=provider_network,
                 provider_account=provider_account,
                 type=virtual_circuit_type,
-                cid='Virtual Circuit 2',
+                cid='Virtual Circuit 2'
             ),
             VirtualCircuit(
                 provider_network=provider_network,
                 provider_account=provider_account,
                 type=virtual_circuit_type,
-                cid='Virtual Circuit 3',
+                cid='Virtual Circuit 3'
             ),
         )
         VirtualCircuit.objects.bulk_create(virtual_circuits)
@@ -521,35 +538,66 @@ class VirtualCircuitTerminationTest(APIViewTestCases.APIViewTestCase):
         virtual_interfaces = (
             # Point-to-point VCs
             Interface(
-                device=devices[0], name='eth0.1', parent=physical_interfaces[0], type=InterfaceTypeChoices.TYPE_VIRTUAL
+                device=devices[0],
+                name='eth0.1',
+                parent=physical_interfaces[0],
+                type=InterfaceTypeChoices.TYPE_VIRTUAL
             ),
             Interface(
-                device=devices[0], name='eth0.2', parent=physical_interfaces[0], type=InterfaceTypeChoices.TYPE_VIRTUAL
+                device=devices[0],
+                name='eth0.2',
+                parent=physical_interfaces[0],
+                type=InterfaceTypeChoices.TYPE_VIRTUAL
             ),
             Interface(
-                device=devices[0], name='eth0.3', parent=physical_interfaces[0], type=InterfaceTypeChoices.TYPE_VIRTUAL
+                device=devices[0],
+                name='eth0.3',
+                parent=physical_interfaces[0],
+                type=InterfaceTypeChoices.TYPE_VIRTUAL
             ),
             Interface(
-                device=devices[1], name='eth0.1', parent=physical_interfaces[1], type=InterfaceTypeChoices.TYPE_VIRTUAL
+                device=devices[1],
+                name='eth0.1',
+                parent=physical_interfaces[1],
+                type=InterfaceTypeChoices.TYPE_VIRTUAL
             ),
             Interface(
-                device=devices[2], name='eth0.1', parent=physical_interfaces[2], type=InterfaceTypeChoices.TYPE_VIRTUAL
+                device=devices[2],
+                name='eth0.1',
+                parent=physical_interfaces[2],
+                type=InterfaceTypeChoices.TYPE_VIRTUAL
             ),
             Interface(
-                device=devices[3], name='eth0.1', parent=physical_interfaces[3], type=InterfaceTypeChoices.TYPE_VIRTUAL
+                device=devices[3],
+                name='eth0.1',
+                parent=physical_interfaces[3],
+                type=InterfaceTypeChoices.TYPE_VIRTUAL
             ),
+
             # Hub and spoke VCs
             Interface(
-                device=devices[0], name='eth0.9', parent=physical_interfaces[0], type=InterfaceTypeChoices.TYPE_VIRTUAL
+                device=devices[0],
+                name='eth0.9',
+                parent=physical_interfaces[0],
+                type=InterfaceTypeChoices.TYPE_VIRTUAL
             ),
             Interface(
-                device=devices[1], name='eth0.9', parent=physical_interfaces[0], type=InterfaceTypeChoices.TYPE_VIRTUAL
+                device=devices[1],
+                name='eth0.9',
+                parent=physical_interfaces[0],
+                type=InterfaceTypeChoices.TYPE_VIRTUAL
             ),
             Interface(
-                device=devices[2], name='eth0.9', parent=physical_interfaces[0], type=InterfaceTypeChoices.TYPE_VIRTUAL
+                device=devices[2],
+                name='eth0.9',
+                parent=physical_interfaces[0],
+                type=InterfaceTypeChoices.TYPE_VIRTUAL
             ),
             Interface(
-                device=devices[3], name='eth0.9', parent=physical_interfaces[0], type=InterfaceTypeChoices.TYPE_VIRTUAL
+                device=devices[3],
+                name='eth0.9',
+                parent=physical_interfaces[0],
+                type=InterfaceTypeChoices.TYPE_VIRTUAL
             ),
         )
         Interface.objects.bulk_create(virtual_interfaces)
@@ -558,7 +606,8 @@ class VirtualCircuitTerminationTest(APIViewTestCases.APIViewTestCase):
         provider_network = ProviderNetwork.objects.create(provider=provider, name='Provider Network 1')
         provider_account = ProviderAccount.objects.create(provider=provider, account='Provider Account 1')
         virtual_circuit_type = VirtualCircuitType.objects.create(
-            name='Virtual Circuit Type 1', slug='virtual-circuit-type-1'
+            name='Virtual Circuit Type 1',
+            slug='virtual-circuit-type-1'
         )
 
         virtual_circuits = (
@@ -566,25 +615,25 @@ class VirtualCircuitTerminationTest(APIViewTestCases.APIViewTestCase):
                 provider_network=provider_network,
                 provider_account=provider_account,
                 cid='Virtual Circuit 1',
-                type=virtual_circuit_type,
+                type=virtual_circuit_type
             ),
             VirtualCircuit(
                 provider_network=provider_network,
                 provider_account=provider_account,
                 cid='Virtual Circuit 2',
-                type=virtual_circuit_type,
+                type=virtual_circuit_type
             ),
             VirtualCircuit(
                 provider_network=provider_network,
                 provider_account=provider_account,
                 cid='Virtual Circuit 3',
-                type=virtual_circuit_type,
+                type=virtual_circuit_type
             ),
             VirtualCircuit(
                 provider_network=provider_network,
                 provider_account=provider_account,
                 cid='Virtual Circuit 4',
-                type=virtual_circuit_type,
+                type=virtual_circuit_type
             ),
         )
         VirtualCircuit.objects.bulk_create(virtual_circuits)
@@ -593,32 +642,32 @@ class VirtualCircuitTerminationTest(APIViewTestCases.APIViewTestCase):
             VirtualCircuitTermination(
                 virtual_circuit=virtual_circuits[0],
                 role=VirtualCircuitTerminationRoleChoices.ROLE_PEER,
-                interface=virtual_interfaces[0],
+                interface=virtual_interfaces[0]
             ),
             VirtualCircuitTermination(
                 virtual_circuit=virtual_circuits[0],
                 role=VirtualCircuitTerminationRoleChoices.ROLE_PEER,
-                interface=virtual_interfaces[3],
+                interface=virtual_interfaces[3]
             ),
             VirtualCircuitTermination(
                 virtual_circuit=virtual_circuits[1],
                 role=VirtualCircuitTerminationRoleChoices.ROLE_PEER,
-                interface=virtual_interfaces[1],
+                interface=virtual_interfaces[1]
             ),
             VirtualCircuitTermination(
                 virtual_circuit=virtual_circuits[1],
                 role=VirtualCircuitTerminationRoleChoices.ROLE_PEER,
-                interface=virtual_interfaces[4],
+                interface=virtual_interfaces[4]
             ),
             VirtualCircuitTermination(
                 virtual_circuit=virtual_circuits[2],
                 role=VirtualCircuitTerminationRoleChoices.ROLE_PEER,
-                interface=virtual_interfaces[2],
+                interface=virtual_interfaces[2]
             ),
             VirtualCircuitTermination(
                 virtual_circuit=virtual_circuits[2],
                 role=VirtualCircuitTerminationRoleChoices.ROLE_PEER,
-                interface=virtual_interfaces[5],
+                interface=virtual_interfaces[5]
             ),
         )
         VirtualCircuitTermination.objects.bulk_create(virtual_circuit_terminations)
@@ -627,21 +676,21 @@ class VirtualCircuitTerminationTest(APIViewTestCases.APIViewTestCase):
             {
                 'virtual_circuit': virtual_circuits[3].pk,
                 'role': VirtualCircuitTerminationRoleChoices.ROLE_HUB,
-                'interface': virtual_interfaces[6].pk,
+                'interface': virtual_interfaces[6].pk
             },
             {
                 'virtual_circuit': virtual_circuits[3].pk,
                 'role': VirtualCircuitTerminationRoleChoices.ROLE_SPOKE,
-                'interface': virtual_interfaces[7].pk,
+                'interface': virtual_interfaces[7].pk
             },
             {
                 'virtual_circuit': virtual_circuits[3].pk,
                 'role': VirtualCircuitTerminationRoleChoices.ROLE_SPOKE,
-                'interface': virtual_interfaces[8].pk,
+                'interface': virtual_interfaces[8].pk
             },
             {
                 'virtual_circuit': virtual_circuits[3].pk,
                 'role': VirtualCircuitTerminationRoleChoices.ROLE_SPOKE,
-                'interface': virtual_interfaces[9].pk,
+                'interface': virtual_interfaces[9].pk
             },
         ]

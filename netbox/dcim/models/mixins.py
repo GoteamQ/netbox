@@ -15,7 +15,11 @@ __all__ = (
 
 class RenderConfigMixin(models.Model):
     config_template = models.ForeignKey(
-        to='extras.ConfigTemplate', on_delete=models.PROTECT, related_name='%(class)ss', blank=True, null=True
+        to='extras.ConfigTemplate',
+        on_delete=models.PROTECT,
+        related_name='%(class)ss',
+        blank=True,
+        null=True
     )
 
     class Meta:
@@ -39,17 +43,46 @@ class CachedScopeMixin(models.Model):
     Includes cached fields for each to allow efficient filtering. Appropriate validation must be done in the clean()
     method as this does not have any as validation is generally model-specific.
     """
-
     scope_type = models.ForeignKey(
-        to='contenttypes.ContentType', on_delete=models.PROTECT, related_name='+', blank=True, null=True
+        to='contenttypes.ContentType',
+        on_delete=models.PROTECT,
+        related_name='+',
+        blank=True,
+        null=True
     )
-    scope_id = models.PositiveBigIntegerField(blank=True, null=True)
-    scope = GenericForeignKey(ct_field='scope_type', fk_field='scope_id')
+    scope_id = models.PositiveBigIntegerField(
+        blank=True,
+        null=True
+    )
+    scope = GenericForeignKey(
+        ct_field='scope_type',
+        fk_field='scope_id'
+    )
 
-    _location = models.ForeignKey(to='dcim.Location', on_delete=models.CASCADE, blank=True, null=True)
-    _site = models.ForeignKey(to='dcim.Site', on_delete=models.CASCADE, blank=True, null=True)
-    _region = models.ForeignKey(to='dcim.Region', on_delete=models.CASCADE, blank=True, null=True)
-    _site_group = models.ForeignKey(to='dcim.SiteGroup', on_delete=models.CASCADE, blank=True, null=True)
+    _location = models.ForeignKey(
+        to='dcim.Location',
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True
+    )
+    _site = models.ForeignKey(
+        to='dcim.Site',
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True
+    )
+    _region = models.ForeignKey(
+        to='dcim.Region',
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True
+    )
+    _site_group = models.ForeignKey(
+        to='dcim.SiteGroup',
+        on_delete=models.CASCADE,
+        blank=True,
+        null=True
+    )
 
     class Meta:
         abstract = True
@@ -57,7 +90,9 @@ class CachedScopeMixin(models.Model):
     def clean(self):
         if self.scope_type and not (self.scope or self.scope_id):
             scope_type = self.scope_type.model_class()
-            raise ValidationError(_('Please select a {scope_type}.').format(scope_type=scope_type._meta.model_name))
+            raise ValidationError(
+                _("Please select a {scope_type}.").format(scope_type=scope_type._meta.model_name)
+            )
         super().clean()
 
     def save(self, *args, **kwargs):
@@ -83,28 +118,34 @@ class CachedScopeMixin(models.Model):
                 self._site_group = self.scope.site.group
                 self._site = self.scope.site
                 self._location = self.scope
-
     cache_related_objects.alters_data = True
 
 
 class InterfaceValidationMixin:
+
     def clean(self):
         super().clean()
 
         # An interface cannot be bridged to itself
         if self.pk and self.bridge_id == self.pk:
-            raise ValidationError({'bridge': _('An interface cannot be bridged to itself.')})
+            raise ValidationError({'bridge': _("An interface cannot be bridged to itself.")})
 
         # Only physical interfaces may have a PoE mode/type assigned
         if self.poe_mode and self.type in VIRTUAL_IFACE_TYPES:
-            raise ValidationError({'poe_mode': _('Virtual interfaces cannot have a PoE mode.')})
+            raise ValidationError({
+                'poe_mode': _("Virtual interfaces cannot have a PoE mode.")
+            })
         if self.poe_type and self.type in VIRTUAL_IFACE_TYPES:
-            raise ValidationError({'poe_type': _('Virtual interfaces cannot have a PoE type.')})
+            raise ValidationError({
+                'poe_type': _("Virtual interfaces cannot have a PoE type.")
+            })
 
         # An interface with a PoE type set must also specify a mode
         if self.poe_type and not self.poe_mode:
-            raise ValidationError({'poe_type': _('Must specify PoE mode when designating a PoE type.')})
+            raise ValidationError({
+                'poe_type': _("Must specify PoE mode when designating a PoE type.")
+            })
 
         # RF role may be set only for wireless interfaces
         if self.rf_role and self.type not in WIRELESS_IFACE_TYPES:
-            raise ValidationError({'rf_role': _('Wireless role may be set only on wireless interfaces.')})
+            raise ValidationError({'rf_role': _("Wireless role may be set only on wireless interfaces.")})

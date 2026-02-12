@@ -16,7 +16,6 @@ class TenantColumn(tables.TemplateColumn):
     """
     Include the tenant description.
     """
-
     template_code = TENANT_COLUMN
 
     def __init__(self, *args, **kwargs):
@@ -30,7 +29,6 @@ class TenantGroupColumn(tables.TemplateColumn):
     """
     Include the tenant group description.
     """
-
     template_code = TENANT_GROUP_COLUMN
 
     def __init__(self, accessor=tables.A('tenant__group'), *args, **kwargs):
@@ -54,5 +52,7 @@ class TenancyColumnsMixin(tables.Table):
 
 class ContactsColumnMixin(tables.Table):
     contacts = columns.ManyToManyColumn(
-        verbose_name=_('Contacts'), linkify_item=True, transform=lambda obj: obj.contact.name
+        verbose_name=_('Contacts'),
+        linkify_item=True,
+        transform=lambda obj: obj.contact.name
     )

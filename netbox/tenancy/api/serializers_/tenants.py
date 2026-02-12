@@ -18,22 +18,8 @@ class TenantGroupSerializer(NestedGroupModelSerializer):
     class Meta:
         model = TenantGroup
         fields = [
-            'id',
-            'url',
-            'display_url',
-            'display',
-            'name',
-            'slug',
-            'parent',
-            'description',
-            'tags',
-            'custom_fields',
-            'created',
-            'last_updated',
-            'tenant_count',
-            'owner',
-            'comments',
-            '_depth',
+            'id', 'url', 'display_url', 'display', 'name', 'slug', 'parent', 'description', 'tags', 'custom_fields',
+            'created', 'last_updated', 'tenant_count', 'owner', 'comments', '_depth',
         ]
         brief_fields = ('id', 'url', 'display', 'name', 'slug', 'description', 'tenant_count', '_depth')
 
@@ -56,29 +42,9 @@ class TenantSerializer(PrimaryModelSerializer):
     class Meta:
         model = Tenant
         fields = [
-            'id',
-            'url',
-            'display_url',
-            'display',
-            'name',
-            'slug',
-            'group',
-            'description',
-            'owner',
-            'comments',
-            'tags',
-            'custom_fields',
-            'created',
-            'last_updated',
-            'circuit_count',
-            'device_count',
-            'ipaddress_count',
-            'prefix_count',
-            'rack_count',
-            'site_count',
-            'virtualmachine_count',
-            'vlan_count',
-            'vrf_count',
+            'id', 'url', 'display_url', 'display', 'name', 'slug', 'group', 'description', 'owner', 'comments', 'tags',
+            'custom_fields', 'created', 'last_updated', 'circuit_count', 'device_count', 'ipaddress_count',
+            'prefix_count', 'rack_count', 'site_count', 'virtualmachine_count', 'vlan_count', 'vrf_count',
             'cluster_count',
         ]
         brief_fields = ('id', 'url', 'display', 'name', 'slug', 'description')

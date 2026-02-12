@@ -9,6 +9,7 @@ __all__ = (
 
 
 class ContentTypeChoiceMixin:
+
     def __init__(self, queryset, *args, **kwargs):
         # Order ContentTypes by app_label
         queryset = queryset.order_by('app_label', 'model')
@@ -25,7 +26,6 @@ class ContentTypeChoiceField(ContentTypeChoiceMixin, forms.ModelChoiceField):
     """
     Selection field for a single content type.
     """
-
     pass
 
 
@@ -33,5 +33,4 @@ class ContentTypeMultipleChoiceField(ContentTypeChoiceMixin, forms.ModelMultiple
     """
     Selection field for one or more content types.
     """
-
     pass

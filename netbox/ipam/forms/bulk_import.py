@@ -10,11 +10,7 @@ from ipam.models import *
 from netbox.forms import NetBoxModelImportForm, OrganizationalModelImportForm, PrimaryModelImportForm
 from tenancy.models import Tenant
 from utilities.forms.fields import (
-    CSVChoiceField,
-    CSVContentTypeField,
-    CSVModelChoiceField,
-    CSVModelMultipleChoiceField,
-    SlugField,
+    CSVChoiceField, CSVContentTypeField, CSVModelChoiceField, CSVModelMultipleChoiceField, SlugField,
     NumericRangeArrayField,
 )
 from virtualization.models import VirtualMachine, VMInterface
@@ -46,28 +42,26 @@ class VRFImportForm(PrimaryModelImportForm):
         queryset=Tenant.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_('Assigned tenant'),
+        help_text=_('Assigned tenant')
     )
     import_targets = CSVModelMultipleChoiceField(
-        queryset=RouteTarget.objects.all(), required=False, to_field_name='name', help_text=_('Import route targets')
+        queryset=RouteTarget.objects.all(),
+        required=False,
+        to_field_name='name',
+        help_text=_('Import route targets')
     )
     export_targets = CSVModelMultipleChoiceField(
-        queryset=RouteTarget.objects.all(), required=False, to_field_name='name', help_text=_('Export route targets')
+        queryset=RouteTarget.objects.all(),
+        required=False,
+        to_field_name='name',
+        help_text=_('Export route targets')
     )
 
     class Meta:
         model = VRF
         fields = (
-            'name',
-            'rd',
-            'tenant',
-            'enforce_unique',
-            'description',
-            'import_targets',
-            'export_targets',
-            'owner',
-            'comments',
-            'tags',
+            'name', 'rd', 'tenant', 'enforce_unique', 'description', 'import_targets', 'export_targets', 'owner',
+            'comments', 'tags',
         )
 
 
@@ -77,7 +71,7 @@ class RouteTargetImportForm(PrimaryModelImportForm):
         queryset=Tenant.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_('Assigned tenant'),
+        help_text=_('Assigned tenant')
     )
 
     class Meta:
@@ -95,14 +89,17 @@ class RIRImportForm(OrganizationalModelImportForm):
 
 class AggregateImportForm(PrimaryModelImportForm):
     rir = CSVModelChoiceField(
-        label=_('RIR'), queryset=RIR.objects.all(), to_field_name='name', help_text=_('Assigned RIR')
+        label=_('RIR'),
+        queryset=RIR.objects.all(),
+        to_field_name='name',
+        help_text=_('Assigned RIR')
     )
     tenant = CSVModelChoiceField(
         label=_('Tenant'),
         queryset=Tenant.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_('Assigned tenant'),
+        help_text=_('Assigned tenant')
     )
 
     class Meta:
@@ -112,14 +109,17 @@ class AggregateImportForm(PrimaryModelImportForm):
 
 class ASNRangeImportForm(OrganizationalModelImportForm):
     rir = CSVModelChoiceField(
-        label=_('RIR'), queryset=RIR.objects.all(), to_field_name='name', help_text=_('Assigned RIR')
+        label=_('RIR'),
+        queryset=RIR.objects.all(),
+        to_field_name='name',
+        help_text=_('Assigned RIR')
     )
     tenant = CSVModelChoiceField(
         label=_('Tenant'),
         queryset=Tenant.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_('Assigned tenant'),
+        help_text=_('Assigned tenant')
     )
 
     class Meta:
@@ -129,14 +129,17 @@ class ASNRangeImportForm(OrganizationalModelImportForm):
 
 class ASNImportForm(PrimaryModelImportForm):
     rir = CSVModelChoiceField(
-        label=_('RIR'), queryset=RIR.objects.all(), to_field_name='name', help_text=_('Assigned RIR')
+        label=_('RIR'),
+        queryset=RIR.objects.all(),
+        to_field_name='name',
+        help_text=_('Assigned RIR')
     )
     tenant = CSVModelChoiceField(
         label=_('Tenant'),
         queryset=Tenant.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_('Assigned tenant'),
+        help_text=_('Assigned tenant')
     )
 
     class Meta:
@@ -145,6 +148,7 @@ class ASNImportForm(PrimaryModelImportForm):
 
 
 class RoleImportForm(OrganizationalModelImportForm):
+
     class Meta:
         model = Role
         fields = ('name', 'slug', 'weight', 'description', 'owner', 'comments', 'tags')
@@ -152,60 +156,58 @@ class RoleImportForm(OrganizationalModelImportForm):
 
 class PrefixImportForm(ScopedImportForm, PrimaryModelImportForm):
     vrf = CSVModelChoiceField(
-        label=_('VRF'), queryset=VRF.objects.all(), to_field_name='name', required=False, help_text=_('Assigned VRF')
+        label=_('VRF'),
+        queryset=VRF.objects.all(),
+        to_field_name='name',
+        required=False,
+        help_text=_('Assigned VRF')
     )
     tenant = CSVModelChoiceField(
         label=_('Tenant'),
         queryset=Tenant.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_('Assigned tenant'),
+        help_text=_('Assigned tenant')
     )
     vlan_group = CSVModelChoiceField(
         label=_('VLAN group'),
         queryset=VLANGroup.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_("VLAN's group (if any)"),
+        help_text=_("VLAN's group (if any)")
     )
     vlan_site = CSVModelChoiceField(
         label=_('VLAN Site'),
         queryset=Site.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_("VLAN's site (if any)"),
+        help_text=_("VLAN's site (if any)")
     )
     vlan = CSVModelChoiceField(
-        label=_('VLAN'), queryset=VLAN.objects.all(), required=False, to_field_name='vid', help_text=_('Assigned VLAN')
+        label=_('VLAN'),
+        queryset=VLAN.objects.all(),
+        required=False,
+        to_field_name='vid',
+        help_text=_("Assigned VLAN")
     )
-    status = CSVChoiceField(label=_('Status'), choices=PrefixStatusChoices, help_text=_('Operational status'))
+    status = CSVChoiceField(
+        label=_('Status'),
+        choices=PrefixStatusChoices,
+        help_text=_('Operational status')
+    )
     role = CSVModelChoiceField(
         label=_('Role'),
         queryset=Role.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_('Functional role'),
+        help_text=_('Functional role')
     )
 
     class Meta:
         model = Prefix
         fields = (
-            'prefix',
-            'vrf',
-            'tenant',
-            'vlan_group',
-            'vlan_site',
-            'vlan',
-            'status',
-            'role',
-            'scope_type',
-            'scope_id',
-            'is_pool',
-            'mark_utilized',
-            'description',
-            'owner',
-            'comments',
-            'tags',
+            'prefix', 'vrf', 'tenant', 'vlan_group', 'vlan_site', 'vlan', 'status', 'role', 'scope_type', 'scope_id',
+            'is_pool', 'mark_utilized', 'description', 'owner', 'comments', 'tags',
         )
         labels = {
             'scope_id': _('Scope ID'),
@@ -224,10 +226,14 @@ class PrefixImportForm(ScopedImportForm, PrimaryModelImportForm):
         query = Q()
 
         if vlan_site:
-            query |= Q(**{f'site__{self.fields["vlan_site"].to_field_name}': vlan_site})
+            query |= Q(**{
+                f"site__{self.fields['vlan_site'].to_field_name}": vlan_site
+            })
 
         if vlan_group:
-            query &= Q(**{f'group__{self.fields["vlan_group"].to_field_name}': vlan_group})
+            query &= Q(**{
+                f"group__{self.fields['vlan_group'].to_field_name}": vlan_group
+            })
 
         queryset = self.fields['vlan'].queryset.filter(query)
         self.fields['vlan'].queryset = queryset
@@ -235,127 +241,127 @@ class PrefixImportForm(ScopedImportForm, PrimaryModelImportForm):
 
 class IPRangeImportForm(PrimaryModelImportForm):
     vrf = CSVModelChoiceField(
-        label=_('VRF'), queryset=VRF.objects.all(), to_field_name='name', required=False, help_text=_('Assigned VRF')
+        label=_('VRF'),
+        queryset=VRF.objects.all(),
+        to_field_name='name',
+        required=False,
+        help_text=_('Assigned VRF')
     )
     tenant = CSVModelChoiceField(
         label=_('Tenant'),
         queryset=Tenant.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_('Assigned tenant'),
+        help_text=_('Assigned tenant')
     )
-    status = CSVChoiceField(label=_('Status'), choices=IPRangeStatusChoices, help_text=_('Operational status'))
+    status = CSVChoiceField(
+        label=_('Status'),
+        choices=IPRangeStatusChoices,
+        help_text=_('Operational status')
+    )
     role = CSVModelChoiceField(
         label=_('Role'),
         queryset=Role.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_('Functional role'),
+        help_text=_('Functional role')
     )
 
     class Meta:
         model = IPRange
         fields = (
-            'start_address',
-            'end_address',
-            'vrf',
-            'tenant',
-            'status',
-            'role',
-            'mark_populated',
-            'mark_utilized',
-            'description',
-            'owner',
-            'comments',
-            'tags',
+            'start_address', 'end_address', 'vrf', 'tenant', 'status', 'role', 'mark_populated', 'mark_utilized',
+            'description', 'owner', 'comments', 'tags',
         )
 
 
 class IPAddressImportForm(PrimaryModelImportForm):
     vrf = CSVModelChoiceField(
-        label=_('VRF'), queryset=VRF.objects.all(), to_field_name='name', required=False, help_text=_('Assigned VRF')
+        label=_('VRF'),
+        queryset=VRF.objects.all(),
+        to_field_name='name',
+        required=False,
+        help_text=_('Assigned VRF')
     )
     tenant = CSVModelChoiceField(
         label=_('Tenant'),
         queryset=Tenant.objects.all(),
         to_field_name='name',
         required=False,
-        help_text=_('Assigned tenant'),
+        help_text=_('Assigned tenant')
     )
-    status = CSVChoiceField(label=_('Status'), choices=IPAddressStatusChoices, help_text=_('Operational status'))
-    role = CSVChoiceField(label=_('Role'), choices=IPAddressRoleChoices, required=False, help_text=_('Functional role'))
+    status = CSVChoiceField(
+        label=_('Status'),
+        choices=IPAddressStatusChoices,
+        help_text=_('Operational status')
+    )
+    role = CSVChoiceField(
+        label=_('Role'),
+        choices=IPAddressRoleChoices,
+        required=False,
+        help_text=_('Functional role')
+    )
     device = CSVModelChoiceField(
         label=_('Device'),
         queryset=Device.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_('Parent device of assigned interface (if any)'),
+        help_text=_('Parent device of assigned interface (if any)')
     )
     virtual_machine = CSVModelChoiceField(
         label=_('Virtual machine'),
         queryset=VirtualMachine.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_('Parent VM of assigned interface (if any)'),
+        help_text=_('Parent VM of assigned interface (if any)')
     )
     interface = CSVModelChoiceField(
         label=_('Interface'),
         queryset=Interface.objects.none(),  # Can also refer to VMInterface
         required=False,
         to_field_name='name',
-        help_text=_('Assigned interface'),
+        help_text=_('Assigned interface')
     )
     fhrp_group = CSVModelChoiceField(
         label=_('FHRP Group'),
         queryset=FHRPGroup.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_('Assigned FHRP Group name'),
+        help_text=_('Assigned FHRP Group name')
     )
     is_primary = forms.BooleanField(
-        label=_('Is primary'), help_text=_('Make this the primary IP for the assigned device'), required=False
+        label=_('Is primary'),
+        help_text=_('Make this the primary IP for the assigned device'),
+        required=False
     )
     is_oob = forms.BooleanField(
         label=_('Is out-of-band'),
         help_text=_('Designate this as the out-of-band IP address for the assigned device'),
-        required=False,
+        required=False
     )
 
     class Meta:
         model = IPAddress
         fields = [
-            'address',
-            'vrf',
-            'tenant',
-            'status',
-            'role',
-            'device',
-            'virtual_machine',
-            'interface',
-            'fhrp_group',
-            'is_primary',
-            'is_oob',
-            'dns_name',
-            'description',
-            'owner',
-            'comments',
-            'tags',
+            'address', 'vrf', 'tenant', 'status', 'role', 'device', 'virtual_machine', 'interface', 'fhrp_group',
+            'is_primary', 'is_oob', 'dns_name', 'description', 'owner', 'comments', 'tags',
         ]
 
     def __init__(self, data=None, *args, **kwargs):
         super().__init__(data, *args, **kwargs)
 
         if data:
+
             # Limit interface queryset by assigned device
             if data.get('device'):
                 self.fields['interface'].queryset = Interface.objects.filter(
-                    **{f'device__{self.fields["device"].to_field_name}': data['device']}
+                    **{f"device__{self.fields['device'].to_field_name}": data['device']}
                 )
 
             # Limit interface queryset by assigned VM
             elif data.get('virtual_machine'):
                 self.fields['interface'].queryset = VMInterface.objects.filter(
-                    **{f'virtual_machine__{self.fields["virtual_machine"].to_field_name}': data['virtual_machine']}
+                    **{f"virtual_machine__{self.fields['virtual_machine'].to_field_name}": data['virtual_machine']}
                 )
 
     def clean_is_primary(self):
@@ -383,19 +389,28 @@ class IPAddressImportForm(PrimaryModelImportForm):
 
         # Validate is_primary and is_oob
         if is_primary and not device and not virtual_machine:
-            raise forms.ValidationError(
-                {'is_primary': _('No device or virtual machine specified; cannot set as primary IP')}
-            )
+            raise forms.ValidationError({
+                "is_primary": _("No device or virtual machine specified; cannot set as primary IP")
+            })
         if is_oob and not device:
-            raise forms.ValidationError({'is_oob': _('No device specified; cannot set as out-of-band IP')})
+            raise forms.ValidationError({
+                "is_oob": _("No device specified; cannot set as out-of-band IP")
+            })
         if is_oob and virtual_machine:
-            raise forms.ValidationError({'is_oob': _('Cannot set out-of-band IP for virtual machines')})
+            raise forms.ValidationError({
+                "is_oob": _("Cannot set out-of-band IP for virtual machines")
+            })
         if is_primary and not interface:
-            raise forms.ValidationError({'is_primary': _('No interface specified; cannot set as primary IP')})
+            raise forms.ValidationError({
+                "is_primary": _("No interface specified; cannot set as primary IP")
+            })
         if is_oob and not interface:
-            raise forms.ValidationError({'is_oob': _('No interface specified; cannot set as out-of-band IP')})
+            raise forms.ValidationError({
+                "is_oob": _("No interface specified; cannot set as out-of-band IP")
+            })
 
     def save(self, *args, **kwargs):
+
         # Set interface assignment
         if self.cleaned_data.get('interface'):
             self.instance.assigned_object = self.cleaned_data['interface']
@@ -423,8 +438,15 @@ class IPAddressImportForm(PrimaryModelImportForm):
 
 
 class FHRPGroupImportForm(PrimaryModelImportForm):
-    protocol = CSVChoiceField(label=_('Protocol'), choices=FHRPGroupProtocolChoices)
-    auth_type = CSVChoiceField(label=_('Auth type'), choices=FHRPGroupAuthTypeChoices, required=False)
+    protocol = CSVChoiceField(
+        label=_('Protocol'),
+        choices=FHRPGroupProtocolChoices
+    )
+    auth_type = CSVChoiceField(
+        label=_('Auth type'),
+        choices=FHRPGroupAuthTypeChoices,
+        required=False
+    )
 
     class Meta:
         model = FHRPGroup
@@ -435,30 +457,23 @@ class VLANGroupImportForm(OrganizationalModelImportForm):
     scope_type = CSVContentTypeField(
         queryset=ContentType.objects.filter(model__in=VLANGROUP_SCOPE_TYPES),
         required=False,
-        label=_('Scope type (app & model)'),
+        label=_('Scope type (app & model)')
     )
-    vid_ranges = NumericRangeArrayField(required=False)
+    vid_ranges = NumericRangeArrayField(
+        required=False
+    )
     tenant = CSVModelChoiceField(
         label=_('Tenant'),
         queryset=Tenant.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_('Assigned tenant'),
+        help_text=_('Assigned tenant')
     )
 
     class Meta:
         model = VLANGroup
         fields = (
-            'name',
-            'slug',
-            'scope_type',
-            'scope_id',
-            'vid_ranges',
-            'tenant',
-            'description',
-            'owner',
-            'comments',
-            'tags',
+            'name', 'slug', 'scope_type', 'scope_id', 'vid_ranges', 'tenant', 'description', 'owner', 'comments', 'tags'
         )
         labels = {
             'scope_id': 'Scope ID',
@@ -467,61 +482,62 @@ class VLANGroupImportForm(OrganizationalModelImportForm):
 
 class VLANImportForm(PrimaryModelImportForm):
     site = CSVModelChoiceField(
-        label=_('Site'), queryset=Site.objects.all(), required=False, to_field_name='name', help_text=_('Assigned site')
+        label=_('Site'),
+        queryset=Site.objects.all(),
+        required=False,
+        to_field_name='name',
+        help_text=_('Assigned site')
     )
     group = CSVModelChoiceField(
         label=_('Group'),
         queryset=VLANGroup.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_('Assigned VLAN group'),
+        help_text=_('Assigned VLAN group')
     )
     tenant = CSVModelChoiceField(
         label=_('Tenant'),
         queryset=Tenant.objects.all(),
         to_field_name='name',
         required=False,
-        help_text=_('Assigned tenant'),
+        help_text=_('Assigned tenant')
     )
-    status = CSVChoiceField(label=_('Status'), choices=VLANStatusChoices, help_text=_('Operational status'))
+    status = CSVChoiceField(
+        label=_('Status'),
+        choices=VLANStatusChoices,
+        help_text=_('Operational status')
+    )
     role = CSVModelChoiceField(
         label=_('Role'),
         queryset=Role.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_('Functional role'),
+        help_text=_('Functional role')
     )
     qinq_role = CSVChoiceField(
-        label=_('Q-in-Q role'), choices=VLANQinQRoleChoices, required=False, help_text=_('Operational status')
+        label=_('Q-in-Q role'),
+        choices=VLANQinQRoleChoices,
+        required=False,
+        help_text=_('Operational status')
     )
     qinq_svlan = CSVModelChoiceField(
         label=_('Q-in-Q SVLAN'),
         queryset=VLAN.objects.all(),
         required=False,
         to_field_name='vid',
-        help_text=_('Service VLAN (for Q-in-Q/802.1ad customer VLANs)'),
+        help_text=_("Service VLAN (for Q-in-Q/802.1ad customer VLANs)")
     )
 
     class Meta:
         model = VLAN
         fields = (
-            'site',
-            'group',
-            'vid',
-            'name',
-            'tenant',
-            'status',
-            'role',
-            'description',
-            'qinq_role',
-            'qinq_svlan',
-            'owner',
-            'comments',
-            'tags',
+            'site', 'group', 'vid', 'name', 'tenant', 'status', 'role', 'description', 'qinq_role', 'qinq_svlan',
+            'owner', 'comments', 'tags',
         )
 
 
 class VLANTranslationPolicyImportForm(PrimaryModelImportForm):
+
     class Meta:
         model = VLANTranslationPolicy
         fields = ('name', 'description', 'owner', 'comments', 'tags')
@@ -532,7 +548,7 @@ class VLANTranslationRuleImportForm(NetBoxModelImportForm):
         label=_('Policy'),
         queryset=VLANTranslationPolicy.objects.all(),
         to_field_name='name',
-        help_text=_('VLAN translation policy'),
+        help_text=_('VLAN translation policy')
     )
 
     class Meta:
@@ -541,7 +557,11 @@ class VLANTranslationRuleImportForm(NetBoxModelImportForm):
 
 
 class ServiceTemplateImportForm(PrimaryModelImportForm):
-    protocol = CSVChoiceField(label=_('Protocol'), choices=ServiceProtocolChoices, help_text=_('IP protocol'))
+    protocol = CSVChoiceField(
+        label=_('Protocol'),
+        choices=ServiceProtocolChoices,
+        help_text=_('IP protocol')
+    )
 
     class Meta:
         model = ServiceTemplate
@@ -552,20 +572,24 @@ class ServiceImportForm(PrimaryModelImportForm):
     parent_object_type = CSVContentTypeField(
         queryset=ContentType.objects.filter(SERVICE_ASSIGNMENT_MODELS),
         required=True,
-        label=_('Parent type (app & model)'),
+        label=_('Parent type (app & model)')
     )
     parent = CSVModelChoiceField(
         label=_('Parent'),
         queryset=Device.objects.all(),
         required=False,
         to_field_name='name',
-        help_text=_('Parent object name'),
+        help_text=_('Parent object name')
     )
     parent_object_id = forms.IntegerField(
         required=False,
         help_text=_('Parent object ID'),
     )
-    protocol = CSVChoiceField(label=_('Protocol'), choices=ServiceProtocolChoices, help_text=_('IP protocol'))
+    protocol = CSVChoiceField(
+        label=_('Protocol'),
+        choices=ServiceProtocolChoices,
+        help_text=_('IP protocol')
+    )
     ipaddresses = CSVModelMultipleChoiceField(
         queryset=IPAddress.objects.all(),
         required=False,
@@ -576,14 +600,7 @@ class ServiceImportForm(PrimaryModelImportForm):
     class Meta:
         model = Service
         fields = (
-            'ipaddresses',
-            'name',
-            'protocol',
-            'ports',
-            'description',
-            'owner',
-            'comments',
-            'tags',
+            'ipaddresses', 'name', 'protocol', 'ports', 'description', 'owner', 'comments', 'tags',
         )
 
     def __init__(self, data=None, *args, **kwargs):
@@ -600,7 +617,7 @@ class ServiceImportForm(PrimaryModelImportForm):
                     self.fields['parent'].queryset = VirtualMachine.objects.all()
 
     def save(self, *args, **kwargs):
-        if parent := self.cleaned_data.get('parent'):
+        if (parent := self.cleaned_data.get('parent')):
             self.instance.parent = parent
 
         return super().save(*args, **kwargs)
@@ -608,17 +625,17 @@ class ServiceImportForm(PrimaryModelImportForm):
     def clean(self):
         super().clean()
 
-        if parent_ct := self.cleaned_data.get('parent_object_type'):
-            if parent := self.cleaned_data.get('parent'):
+        if (parent_ct := self.cleaned_data.get('parent_object_type')):
+            if (parent := self.cleaned_data.get('parent')):
                 self.cleaned_data['parent_object_id'] = parent.pk
-            elif parent_id := self.cleaned_data.get('parent_object_id'):
+            elif (parent_id := self.cleaned_data.get('parent_object_id')):
                 parent = parent_ct.model_class().objects.filter(id=parent_id).first()
                 self.cleaned_data['parent'] = parent
             else:
                 # If a parent object type is passed and we've made it here, then raise a validation
                 # error since an associated parent object or parent object id has not been passed
                 raise forms.ValidationError(
-                    _('One of parent or parent_object_id must be included with parent_object_type')
+                    _("One of parent or parent_object_id must be included with parent_object_type")
                 )
 
         # making sure parent is defined. In cases where an import is resulting in an update, the
@@ -626,10 +643,12 @@ class ServiceImportForm(PrimaryModelImportForm):
         # triggered
         parent = self.cleaned_data.get('parent')
         for ip_address in self.cleaned_data.get('ipaddresses', []):
-            if not (assigned := ip_address.assigned_object) or (  # no assigned object
+            if not (assigned := ip_address.assigned_object) or (        # no assigned object
                 (isinstance(parent, FHRPGroup) and assigned != parent)  # assigned to FHRPGroup
-                and getattr(assigned, 'parent_object') != parent  # assigned to [VM]Interface
+                and getattr(assigned, 'parent_object') != parent        # assigned to [VM]Interface
             ):
-                raise forms.ValidationError(_('{ip} is not assigned to this parent.').format(ip=ip_address))
+                raise forms.ValidationError(
+                    _("{ip} is not assigned to this parent.").format(ip=ip_address)
+                )
 
         return self.cleaned_data

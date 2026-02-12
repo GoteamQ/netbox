@@ -60,7 +60,6 @@ class ObjectListView(BaseMultiObjectView, ActionsMixin, TableMixin):
         filterset_form: The form class used to render filter options
         actions: An iterable of ObjectAction subclasses (see ActionsMixin)
     """
-
     template_name = 'generic/object_list.html'
     filterset = None
     filterset_form = None
@@ -95,14 +94,18 @@ class ObjectListView(BaseMultiObjectView, ActionsMixin, TableMixin):
         exclude_columns = {'pk', 'actions'}
         if columns:
             all_columns = [col_name for col_name, _ in table.selected_columns + table.available_columns]
-            exclude_columns.update({col for col in all_columns if col not in columns})
+            exclude_columns.update({
+                col for col in all_columns if col not in columns
+            })
         exporter = TableExport(
             export_format=TableExport.CSV,
             table=table,
             exclude_columns=exclude_columns,
             delimiter=delimiter,
         )
-        return exporter.response(filename=filename or f'netbox_{self.queryset.model._meta.verbose_name_plural}.csv')
+        return exporter.response(
+            filename=filename or f'netbox_{self.queryset.model._meta.verbose_name_plural}.csv'
+        )
 
     def export_template(self, template, request):
         """
@@ -117,9 +120,10 @@ class ObjectListView(BaseMultiObjectView, ActionsMixin, TableMixin):
         except Exception as e:
             messages.error(
                 request,
-                _('There was an error rendering the selected export template ({template}): {error}').format(
-                    template=template.name, error=e
-                ),
+                _("There was an error rendering the selected export template ({template}): {error}").format(
+                    template=template.name,
+                    error=e
+                )
             )
             # Strip the `export` param and redirect user to the filtered objects list
             query_params = request.GET.copy()
@@ -155,6 +159,7 @@ class ObjectListView(BaseMultiObjectView, ActionsMixin, TableMixin):
         has_table_actions = any(action.multi for action in actions)
 
         if 'export' in request.GET:
+
             # Export the current table view
             if request.GET['export'] == 'table':
                 table = self.get_table(self.queryset, request, has_table_actions)
@@ -190,15 +195,11 @@ class ObjectListView(BaseMultiObjectView, ActionsMixin, TableMixin):
                 # Hide selection checkboxes
                 if 'pk' in table.base_columns:
                     table.columns.hide('pk')
-            return render(
-                request,
-                'htmx/table.html',
-                {
-                    'table': table,
-                    'model': model,
-                    'actions': actions,
-                },
-            )
+            return render(request, 'htmx/table.html', {
+                'table': table,
+                'model': model,
+                'actions': actions,
+            })
 
         context = {
             'model': model,
@@ -221,7 +222,6 @@ class BulkCreateView(GetReturnURLMixin, BaseMultiObjectView):
     model_form: The ModelForm used to create individual objects
     pattern_target: Name of the field to be evaluated as a pattern (if any)
     """
-
     form = None
     model_form = None
     pattern_target = ''
@@ -234,6 +234,7 @@ class BulkCreateView(GetReturnURLMixin, BaseMultiObjectView):
 
         # Create objects from the expanded. Abort the transaction on the first validation error.
         for value in form.cleaned_data['pattern']:
+
             # Reinstantiate the model form each time to avoid overwriting the same instance. Use a mutable
             # copy of the POST QueryDict so that we can update the target field value.
             model_form = self.model_form(request.POST.copy())
@@ -267,17 +268,13 @@ class BulkCreateView(GetReturnURLMixin, BaseMultiObjectView):
         form = self.form()
         model_form = self.model_form(initial=initial)
 
-        return render(
-            request,
-            self.template_name,
-            {
-                'obj_type': self.model_form._meta.model._meta.verbose_name,
-                'form': form,
-                'model_form': model_form,
-                'return_url': self.get_return_url(request),
-                **self.get_extra_context(request),
-            },
-        )
+        return render(request, self.template_name, {
+            'obj_type': self.model_form._meta.model._meta.verbose_name,
+            'form': form,
+            'model_form': model_form,
+            'return_url': self.get_return_url(request),
+            **self.get_extra_context(request),
+        })
 
     def post(self, request):
         logger = logging.getLogger('netbox.views.BulkCreateView')
@@ -286,7 +283,7 @@ class BulkCreateView(GetReturnURLMixin, BaseMultiObjectView):
         model_form = self.model_form(request.POST)
 
         if form.is_valid():
-            logger.debug('Form validation was successful')
+            logger.debug("Form validation was successful")
 
             try:
                 with transaction.atomic(using=router.db_for_write(model)):
@@ -297,7 +294,7 @@ class BulkCreateView(GetReturnURLMixin, BaseMultiObjectView):
                         raise PermissionsViolation
 
                 # If we make it to this point, validation has succeeded on all new objects.
-                msg = f'Added {len(new_objs)} {model._meta.verbose_name_plural}'
+                msg = f"Added {len(new_objs)} {model._meta.verbose_name_plural}"
                 logger.info(msg)
                 messages.success(request, msg)
 
@@ -314,19 +311,15 @@ class BulkCreateView(GetReturnURLMixin, BaseMultiObjectView):
                 clear_events.send(sender=self)
 
         else:
-            logger.debug('Form validation failed')
+            logger.debug("Form validation failed")
 
-        return render(
-            request,
-            self.template_name,
-            {
-                'form': form,
-                'model_form': model_form,
-                'obj_type': model._meta.verbose_name,
-                'return_url': self.get_return_url(request),
-                **self.get_extra_context(request),
-            },
-        )
+        return render(request, self.template_name, {
+            'form': form,
+            'model_form': model_form,
+            'obj_type': model._meta.verbose_name,
+            'return_url': self.get_return_url(request),
+            **self.get_extra_context(request),
+        })
 
 
 class BulkImportView(GetReturnURLMixin, BaseMultiObjectView):
@@ -336,7 +329,6 @@ class BulkImportView(GetReturnURLMixin, BaseMultiObjectView):
     Attributes:
         model_form: The form used to create each imported object
     """
-
     template_name = 'generic/bulk_import.html'
     model_form = None
     related_object_forms = dict()
@@ -374,7 +366,7 @@ class BulkImportView(GetReturnURLMixin, BaseMultiObjectView):
             if field_name == '__all__':
                 field_name = ''
             for err in errors:
-                error_messages.append(f'Record {index} {prefix}{field_name}: {err}')
+                error_messages.append(f"Record {index} {prefix}{field_name}: {err}")
         return error_messages
 
     def _save_object(self, model_form, request, parent_idx):
@@ -389,16 +381,22 @@ class BulkImportView(GetReturnURLMixin, BaseMultiObjectView):
 
         # Iterate through the related object forms (if any), validating and saving each instance.
         for field_name, related_object_form in self.related_object_forms.items():
+
             related_objects = model_form.data.get(field_name, list())
             if not isinstance(related_objects, list):
-                raise ValidationError(self._compile_form_errors({field_name: [_('Must be a list.')]}, index=parent_idx))
+                raise ValidationError(
+                    self._compile_form_errors(
+                        {field_name: [_("Must be a list.")]},
+                        index=parent_idx
+                    )
+                )
 
             related_obj_pks = []
             for i, rel_obj_data in enumerate(related_objects, start=1):
                 if not isinstance(rel_obj_data, dict):
                     raise ValidationError(
                         self._compile_form_errors(
-                            {f'{field_name}[{i}]': [_('Must be a dictionary.')]},
+                            {f'{field_name}[{i}]': [_("Must be a dictionary.")]},
                             index=parent_idx,
                         )
                     )
@@ -450,15 +448,18 @@ class BulkImportView(GetReturnURLMixin, BaseMultiObjectView):
         # check for duplicate IDs
         duplicate_pks = [pk for pk, count in Counter(prefetch_ids).items() if count > 1]
         if duplicate_pks:
-            error_msg = _('Duplicate objects found: {model} with ID(s) {ids} appears multiple times').format(
+            error_msg = _(
+                "Duplicate objects found: {model} with ID(s) {ids} appears multiple times"
+            ).format(
                 model=title(self.queryset.model._meta.verbose_name),
-                ids=', '.join(str(pk) for pk in sorted(duplicate_pks)),
+                ids=', '.join(str(pk) for pk in sorted(duplicate_pks))
             )
             raise ValidationError(error_msg)
 
-        prefetched_objects = (
-            {obj.pk: obj for obj in self.queryset.model.objects.filter(id__in=prefetch_ids)} if prefetch_ids else {}
-        )
+        prefetched_objects = {
+            obj.pk: obj
+            for obj in self.queryset.model.objects.filter(id__in=prefetch_ids)
+        } if prefetch_ids else {}
 
         for i, record in enumerate(records, start=1):
             object_id = int(record.pop('id')) if record.get('id') else None
@@ -470,7 +471,8 @@ class BulkImportView(GetReturnURLMixin, BaseMultiObjectView):
                 except KeyError:
                     raise ValidationError(
                         self._compile_form_errors(
-                            {'id': [_('Object with ID {id} does not exist').format(id=object_id)]}, index=i
+                            {'id': [_("Object with ID {id} does not exist").format(id=object_id)]},
+                            index=i
                         )
                     )
 
@@ -516,7 +518,9 @@ class BulkImportView(GetReturnURLMixin, BaseMultiObjectView):
                 saved_objects.append(obj)
             else:
                 # Raise model form errors
-                raise ValidationError(self._compile_form_errors(model_form.errors, index=i))
+                raise ValidationError(
+                    self._compile_form_errors(model_form.errors, index=i)
+                )
 
         return saved_objects
 
@@ -530,17 +534,13 @@ class BulkImportView(GetReturnURLMixin, BaseMultiObjectView):
         if not issubclass(model, ChangeLoggingMixin):
             form.fields.pop('changelog_message')
 
-        return render(
-            request,
-            self.template_name,
-            {
-                'model': model,
-                'form': form,
-                'fields': self._get_form_fields(),
-                'return_url': self.get_return_url(request),
-                **self.get_extra_context(request),
-            },
-        )
+        return render(request, self.template_name, {
+            'model': model,
+            'form': form,
+            'fields': self._get_form_fields(),
+            'return_url': self.get_return_url(request),
+            **self.get_extra_context(request),
+        })
 
     def post(self, request):
         logger = logging.getLogger('netbox.views.BulkImportView')
@@ -550,7 +550,7 @@ class BulkImportView(GetReturnURLMixin, BaseMultiObjectView):
             form.fields.pop('changelog_message')
 
         if form.is_valid():
-            logger.debug('Import form validation was successful')
+            logger.debug("Import form validation was successful")
             redirect_url = get_action_url(model, action='list')
 
             # If indicated, defer this request to a background job & redirect the user
@@ -572,7 +572,8 @@ class BulkImportView(GetReturnURLMixin, BaseMultiObjectView):
                         raise PermissionsViolation
 
                 msg = _('Imported {count} {object_type}').format(
-                    count=len(new_objects), object_type=model._meta.verbose_name_plural
+                    count=len(new_objects),
+                    object_type=model._meta.verbose_name_plural
                 )
                 logger.info(msg)
 
@@ -582,7 +583,7 @@ class BulkImportView(GetReturnURLMixin, BaseMultiObjectView):
                     return
 
                 messages.success(request, msg)
-                return redirect(f'{redirect_url}?modified_by_request={request.id}')
+                return redirect(f"{redirect_url}?modified_by_request={request.id}")
 
             except (AbortRequest, PermissionsViolation, ValidationError) as e:
                 err_messages = e.messages if type(e) is ValidationError else [e.message]
@@ -591,25 +592,21 @@ class BulkImportView(GetReturnURLMixin, BaseMultiObjectView):
                     form.add_error(None, msg)
                     if is_background_request(request):
                         request.job.logger.error(msg)
-                        request.job.logger.warning('Bulk import aborted')
+                        request.job.logger.warning("Bulk import aborted")
                 clear_events.send(sender=self)
                 if is_background_request(request):
                     raise JobFailed
 
         else:
-            logger.debug('Form validation failed')
+            logger.debug("Form validation failed")
 
-        return render(
-            request,
-            self.template_name,
-            {
-                'model': model,
-                'form': form,
-                'fields': self._get_form_fields(),
-                'return_url': self.get_return_url(request),
-                **self.get_extra_context(request),
-            },
-        )
+        return render(request, self.template_name, {
+            'model': model,
+            'form': form,
+            'fields': self._get_form_fields(),
+            'return_url': self.get_return_url(request),
+            **self.get_extra_context(request),
+        })
 
 
 class BulkEditView(GetReturnURLMixin, BaseMultiObjectView):
@@ -620,7 +617,6 @@ class BulkEditView(GetReturnURLMixin, BaseMultiObjectView):
         filterset: FilterSet to apply when deleting by QuerySet
         form: The form class used to edit objects in bulk
     """
-
     template_name = 'generic/bulk_edit.html'
     filterset = None
     form = None
@@ -641,7 +637,9 @@ class BulkEditView(GetReturnURLMixin, BaseMultiObjectView):
 
     def _update_objects(self, form, request):
         custom_fields = getattr(form, 'custom_fields', {})
-        standard_fields = [field for field in form.fields if field not in list(custom_fields) + ['pk']]
+        standard_fields = [
+            field for field in form.fields if field not in list(custom_fields) + ['pk']
+        ]
         nullified_fields = request.POST.getlist('_nullify')
         updated_objects = []
         model_fields = {}
@@ -663,6 +661,7 @@ class BulkEditView(GetReturnURLMixin, BaseMultiObjectView):
                 model_fields[name] = None
 
         for obj in self.queryset.filter(pk__in=form.cleaned_data['pk']):
+
             # Take a snapshot of change-logged models
             if hasattr(obj, 'snapshot'):
                 obj.snapshot()
@@ -713,7 +712,7 @@ class BulkEditView(GetReturnURLMixin, BaseMultiObjectView):
             self.post_save_operations(form, obj)
 
             if is_background_request(request):
-                request.job.logger.info(f'Updated {obj}')
+                request.job.logger.info(f"Updated {obj}")
 
         # Rebuild the tree for MPTT models
         if issubclass(self.queryset.model, MPTTModel):
@@ -758,7 +757,7 @@ class BulkEditView(GetReturnURLMixin, BaseMultiObjectView):
 
         if '_apply' in request.POST:
             if form.is_valid():
-                logger.debug('Form validation was successful')
+                logger.debug("Form validation was successful")
 
                 # If indicated, defer this request to a background job & redirect the user
                 if form.cleaned_data['background_job']:
@@ -804,27 +803,24 @@ class BulkEditView(GetReturnURLMixin, BaseMultiObjectView):
                         raise JobFailed
 
             else:
-                logger.debug('Form validation failed')
+                logger.debug("Form validation failed")
 
         # Retrieve objects being edited
         table = self.table(self.queryset.filter(pk__in=pk_list), orderable=False)
         if not table.rows:
             messages.warning(
-                request, _('No {object_type} were selected.').format(object_type=model._meta.verbose_name_plural)
+                request,
+                _("No {object_type} were selected.").format(object_type=model._meta.verbose_name_plural)
             )
             return redirect(self.get_return_url(request))
 
-        return render(
-            request,
-            self.template_name,
-            {
-                'model': model,
-                'form': form,
-                'table': table,
-                'return_url': self.get_return_url(request),
-                **self.get_extra_context(request),
-            },
-        )
+        return render(request, self.template_name, {
+            'model': model,
+            'form': form,
+            'table': table,
+            'return_url': self.get_return_url(request),
+            **self.get_extra_context(request),
+        })
 
 
 class BulkRenameView(GetReturnURLMixin, BaseMultiObjectView):
@@ -834,7 +830,6 @@ class BulkRenameView(GetReturnURLMixin, BaseMultiObjectView):
     Attributes:
         field_name: The name of the object attribute for which the value is being updated (defaults to "name")
     """
-
     field_name = 'name'
     template_name = 'generic/bulk_rename.html'
     # Match BulkEditView/BulkDeleteView behavior: allow passing a FilterSet
@@ -846,7 +841,10 @@ class BulkRenameView(GetReturnURLMixin, BaseMultiObjectView):
 
         # Create a new Form class from BulkRenameForm
         class _Form(BulkRenameForm):
-            pk = ModelMultipleChoiceField(queryset=self.queryset, widget=MultipleHiddenInput())
+            pk = ModelMultipleChoiceField(
+                queryset=self.queryset,
+                widget=MultipleHiddenInput()
+            )
 
         self.form = _Form
 
@@ -905,15 +903,15 @@ class BulkRenameView(GetReturnURLMixin, BaseMultiObjectView):
 
                             messages.success(
                                 request,
-                                _('Renamed {count} {object_type}').format(
+                                _("Renamed {count} {object_type}").format(
                                     count=len(selected_objects),
-                                    object_type=self.queryset.model._meta.verbose_name_plural,
-                                ),
+                                    object_type=self.queryset.model._meta.verbose_name_plural
+                                )
                             )
                             return redirect(self.get_return_url(request))
 
                 except IntegrityError as e:
-                    messages.error(self.request, ', '.join(e.args))
+                    messages.error(self.request, ", ".join(e.args))
                     clear_events.send(sender=self)
 
                 except (AbortRequest, PermissionsViolation) as e:
@@ -924,17 +922,13 @@ class BulkRenameView(GetReturnURLMixin, BaseMultiObjectView):
         else:
             form = self.form(initial={'pk': pk_list})
 
-        return render(
-            request,
-            self.template_name,
-            {
-                'field_name': self.field_name,
-                'form': form,
-                'obj_type_plural': self.queryset.model._meta.verbose_name_plural,
-                'selected_objects': selected_objects,
-                'return_url': self.get_return_url(request),
-            },
-        )
+        return render(request, self.template_name, {
+            'field_name': self.field_name,
+            'form': form,
+            'obj_type_plural': self.queryset.model._meta.verbose_name_plural,
+            'selected_objects': selected_objects,
+            'return_url': self.get_return_url(request),
+        })
 
 
 class BulkDeleteView(GetReturnURLMixin, BaseMultiObjectView):
@@ -945,7 +939,6 @@ class BulkDeleteView(GetReturnURLMixin, BaseMultiObjectView):
         filterset: FilterSet to apply when deleting by QuerySet
         table: The table used to display devices being deleted
     """
-
     template_name = 'generic/bulk_delete.html'
     filterset = None
     table = None
@@ -976,7 +969,7 @@ class BulkDeleteView(GetReturnURLMixin, BaseMultiObjectView):
         if '_confirm' in request.POST:
             form = BulkDeleteForm(model, request.POST)
             if form.is_valid():
-                logger.debug('Form validation was successful')
+                logger.debug("Form validation was successful")
 
                 # If indicated, defer this request to a background job & redirect the user
                 if form.cleaned_data['background_job']:
@@ -993,6 +986,7 @@ class BulkDeleteView(GetReturnURLMixin, BaseMultiObjectView):
                 try:
                     with transaction.atomic(using=router.db_for_write(model)):
                         for obj in queryset:
+
                             # Take a snapshot of change-logged models
                             if hasattr(obj, 'snapshot'):
                                 obj.snapshot()
@@ -1004,10 +998,11 @@ class BulkDeleteView(GetReturnURLMixin, BaseMultiObjectView):
                             obj.delete()
 
                             if is_background_request(request):
-                                request.job.logger.info(f'Deleted {obj}')
+                                request.job.logger.info(f"Deleted {obj}")
 
                     msg = _('Deleted {count} {object_type}').format(
-                        count=deleted_count, object_type=model._meta.verbose_name_plural
+                        count=deleted_count,
+                        object_type=model._meta.verbose_name_plural
                     )
                     logger.info(msg)
 
@@ -1019,10 +1014,10 @@ class BulkDeleteView(GetReturnURLMixin, BaseMultiObjectView):
                     messages.success(request, msg)
 
                 except (ProtectedError, RestrictedError) as e:
-                    logger.warning(f'Caught {type(e)} while attempting to delete objects')
+                    logger.warning(f"Caught {type(e)} while attempting to delete objects")
                     if is_background_request(request):
                         request.job.logger.error(
-                            _('Deletion failed due to the presence of one or more dependent objects.')
+                            _("Deletion failed due to the presence of one or more dependent objects.")
                         )
                         raise JobFailed
                     handle_protectederror(queryset, request, e)
@@ -1037,48 +1032,40 @@ class BulkDeleteView(GetReturnURLMixin, BaseMultiObjectView):
                 return redirect(self.get_return_url(request))
 
             else:
-                logger.debug('Form validation failed')
+                logger.debug("Form validation failed")
 
         else:
-            form = BulkDeleteForm(
-                model,
-                initial={
-                    'pk': pk_list,
-                    'return_url': self.get_return_url(request),
-                },
-            )
+            form = BulkDeleteForm(model, initial={
+                'pk': pk_list,
+                'return_url': self.get_return_url(request),
+            })
 
         # Retrieve objects being deleted
         table = self.table(self.queryset.filter(pk__in=pk_list), orderable=False)
         if not table.rows:
             messages.warning(
-                request, _('No {object_type} were selected.').format(object_type=model._meta.verbose_name_plural)
+                request,
+                _("No {object_type} were selected.").format(object_type=model._meta.verbose_name_plural)
             )
             return redirect(self.get_return_url(request))
 
-        return render(
-            request,
-            self.template_name,
-            {
-                'model': model,
-                'form': form,
-                'table': table,
-                'return_url': self.get_return_url(request),
-                **self.get_extra_context(request),
-            },
-        )
+        return render(request, self.template_name, {
+            'model': model,
+            'form': form,
+            'table': table,
+            'return_url': self.get_return_url(request),
+            **self.get_extra_context(request),
+        })
 
 
 #
 # Device/VirtualMachine components
 #
 
-
 class BulkComponentCreateView(GetReturnURLMixin, BaseMultiObjectView):
     """
     Add one or more components (e.g. interfaces, console ports, etc.) to a set of Devices or VirtualMachines.
     """
-
     template_name = 'generic/bulk_add_component.html'
     parent_model = None
     parent_field = None
@@ -1106,7 +1093,7 @@ class BulkComponentCreateView(GetReturnURLMixin, BaseMultiObjectView):
         if not selected_objects:
             messages.warning(
                 request,
-                _('No {object_type} were selected.').format(object_type=self.parent_model._meta.verbose_name_plural),
+                _("No {object_type} were selected.").format(object_type=self.parent_model._meta.verbose_name_plural)
             )
             return redirect(self.get_return_url(request))
         table = self.table(selected_objects, orderable=False)
@@ -1115,18 +1102,24 @@ class BulkComponentCreateView(GetReturnURLMixin, BaseMultiObjectView):
             form = self.form(request.POST)
 
             if form.is_valid():
-                logger.debug('Form validation was successful')
+                logger.debug("Form validation was successful")
 
                 new_components = []
                 data = deepcopy(form.cleaned_data)
-                replication_data = {field: data.pop(field) for field in form.replication_fields}
+                replication_data = {
+                    field: data.pop(field) for field in form.replication_fields
+                }
 
                 try:
                     with transaction.atomic(using=router.db_for_write(self.queryset.model)):
+
                         for obj in data['pk']:
+
                             pattern_count = len(replication_data[form.replication_fields[0]])
                             for i in range(pattern_count):
-                                component_data = {self.parent_field: obj.pk}
+                                component_data = {
+                                    self.parent_field: obj.pk
+                                }
                                 component_data.update(data)
                                 for field, values in replication_data.items():
                                     if values:
@@ -1135,7 +1128,7 @@ class BulkComponentCreateView(GetReturnURLMixin, BaseMultiObjectView):
                                 component_form = self.model_form(component_data)
                                 if component_form.is_valid():
                                     instance = component_form.save()
-                                    logger.debug(f'Created {instance} on {instance.parent_object}')
+                                    logger.debug(f"Created {instance} on {instance.parent_object}")
                                     new_components.append(instance)
                                 else:
                                     for field, errors in component_form.errors.as_data().items():
@@ -1156,8 +1149,11 @@ class BulkComponentCreateView(GetReturnURLMixin, BaseMultiObjectView):
                     clear_events.send(sender=self)
 
                 if not form.errors:
-                    msg = 'Added {} {} to {} {}.'.format(
-                        len(new_components), model_name, len(form.cleaned_data['pk']), parent_model_name
+                    msg = "Added {} {} to {} {}.".format(
+                        len(new_components),
+                        model_name,
+                        len(form.cleaned_data['pk']),
+                        parent_model_name
                     )
                     logger.info(msg)
                     messages.success(request, msg)
@@ -1165,19 +1161,15 @@ class BulkComponentCreateView(GetReturnURLMixin, BaseMultiObjectView):
                     return redirect(self.get_return_url(request))
 
             else:
-                logger.debug('Form validation failed')
+                logger.debug("Form validation failed")
 
         else:
             form = self.form(initial={'pk': pk_list})
 
-        return render(
-            request,
-            self.template_name,
-            {
-                'form': form,
-                'parent_model_name': parent_model_name,
-                'model_name': model_name,
-                'table': table,
-                'return_url': self.get_return_url(request),
-            },
-        )
+        return render(request, self.template_name, {
+            'form': form,
+            'parent_model_name': parent_model_name,
+            'model_name': model_name,
+            'table': table,
+            'return_url': self.get_return_url(request),
+        })

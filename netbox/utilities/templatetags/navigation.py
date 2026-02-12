@@ -2,13 +2,15 @@ from django import template
 
 from netbox.navigation.menu import get_menus
 
-__all__ = ('nav',)
+__all__ = (
+    'nav',
+)
 
 
 register = template.Library()
 
 
-@register.inclusion_tag('navigation/menu.html', takes_context=True)
+@register.inclusion_tag("navigation/menu.html", takes_context=True)
 def nav(context):
     """
     Render the navigation menu.
@@ -28,7 +30,9 @@ def nav(context):
                     continue
                 if item.staff_only and not user.is_superuser:
                     continue
-                buttons = [button for button in item.buttons if user.has_perms(button.permissions)]
+                buttons = [
+                    button for button in item.buttons if user.has_perms(button.permissions)
+                ]
                 items.append((item, buttons))
             if items:
                 groups.append((group, items))

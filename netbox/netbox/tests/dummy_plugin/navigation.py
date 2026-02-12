@@ -17,7 +17,7 @@ items = (
                 title='Button 2',
                 icon_class='mdi mdi-plus-thick',
             ),
-        ),
+        )
     ),
     PluginMenuItem(
         link='plugins:dummy_plugin:dummy_model_list',

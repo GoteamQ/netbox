@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.core.cache import cache
 from django.test import override_settings, TestCase
 
@@ -6,26 +7,11 @@ from netbox.config import clear_config, get_config
 
 
 # Prefix cache keys to avoid interfering with the local environment
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': 'netbox-config-tests',
-    }
-}
+CACHES = settings.CACHES
+CACHES['default'].update({'KEY_PREFIX': 'TEST-'})
 
 
 class ConfigTestCase(TestCase):
-    def setUp(self):
-        super().setUp()
-        ConfigRevision.objects.all().delete()
-        clear_config()
-        cache.clear()
-
-    def tearDown(self):
-        ConfigRevision.objects.all().delete()
-        clear_config()
-        cache.clear()
-        super().tearDown()
 
     @override_settings(CACHES=CACHES)
     def test_config_init_empty(self):
@@ -44,7 +30,6 @@ class ConfigTestCase(TestCase):
 
         # Create a config but don't load it into the cache
         configrevision = ConfigRevision.objects.create(data=CONFIG_DATA)
-        self.addCleanup(configrevision.delete)
 
         config = get_config()
         self.assertEqual(config.config, CONFIG_DATA)
@@ -59,7 +44,6 @@ class ConfigTestCase(TestCase):
 
         # Create a config and load it into the cache
         configrevision = ConfigRevision.objects.create(data=CONFIG_DATA)
-        self.addCleanup(configrevision.delete)
         configrevision.activate()
 
         config = get_config()
@@ -75,7 +59,6 @@ class ConfigTestCase(TestCase):
 
         # Create a config and load it into the cache
         configrevision = ConfigRevision.objects.create(data=CONFIG_DATA)
-        self.addCleanup(configrevision.delete)
         configrevision.activate()
 
         config = get_config()

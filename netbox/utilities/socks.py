@@ -15,7 +15,6 @@ class ProxyHTTPConnection(HTTPConnection):
     a urllib3 PoolManager that routes connections via the proxy.
     This is for an HTTP (not HTTPS) connection
     """
-
     use_rdns = False
 
     def __init__(self, *args, **kwargs):
@@ -28,20 +27,23 @@ class ProxyHTTPConnection(HTTPConnection):
             from python_socks.sync import Proxy
         except ModuleNotFoundError as e:
             logger.info(
-                'Configuring an HTTP proxy using SOCKS requires the python_socks library. Check that it has been '
-                'installed.'
+                "Configuring an HTTP proxy using SOCKS requires the python_socks library. Check that it has been "
+                "installed."
             )
             raise e
 
         proxy = Proxy.from_url(self._proxy_url, rdns=self.use_rdns)
-        return proxy.connect(dest_host=self.host, dest_port=self.port, timeout=self.timeout)
+        return proxy.connect(
+            dest_host=self.host,
+            dest_port=self.port,
+            timeout=self.timeout
+        )
 
 
 class ProxyHTTPSConnection(ProxyHTTPConnection, HTTPSConnection):
     """
     A Proxy connection class for an HTTPS (not HTTP) connection.
     """
-
     pass
 
 
@@ -50,7 +52,6 @@ class RdnsProxyHTTPConnection(ProxyHTTPConnection):
     A Proxy connection class for an HTTP remote-dns connection.
     I.E. socks4a, socks4h, socks5a, socks5h
     """
-
     use_rdns = True
 
 
@@ -59,7 +60,6 @@ class RdnsProxyHTTPSConnection(ProxyHTTPSConnection):
     A Proxy connection class for an HTTPS remote-dns connection.
     I.E. socks4a, socks4h, socks5a, socks5h
     """
-
     use_rdns = True
 
 

@@ -18,7 +18,7 @@ models.Field.deconstruct = custom_deconstruct
 
 
 class CoreConfig(AppConfig):
-    name = 'core'
+    name = "core"
 
     def ready(self):
         from core.api import schema  # noqa: F401

@@ -17,7 +17,9 @@ __all__ = (
 
 
 ColorValidator = RegexValidator(
-    regex='^[0-9a-f]{6}$', message='Enter a valid hexadecimal RGB color code.', code='invalid'
+    regex='^[0-9a-f]{6}$',
+    message='Enter a valid hexadecimal RGB color code.',
+    code='invalid'
 )
 
 
@@ -26,18 +28,15 @@ class EnhancedURLValidator(URLValidator):
     Extends Django's built-in URLValidator to permit the use of hostnames with no domain extension and enforce allowed
     schemes specified in the configuration.
     """
-
     fqdn_re = URLValidator.hostname_re + URLValidator.domain_re + URLValidator.tld_re
     host_res = [URLValidator.ipv4_re, URLValidator.ipv6_re, fqdn_re, URLValidator.hostname_re]
     regex = _lazy_re_compile(
-        r'^(?:[a-z0-9\.\-\+]*)://'  # Scheme (enforced separately)
-        r'(?:\S+(?::\S*)?@)?'  # HTTP basic authentication
-        r'(?:' + '|'.join(host_res) + ')'  # IPv4, IPv6, FQDN, or hostname
-        r'(?::\d{2,5})?'  # Port number
-        r'(?:[/?#][^\s]*)?'  # Path
-        r'\Z',
-        re.IGNORECASE,
-    )
+        r'^(?:[a-z0-9\.\-\+]*)://'          # Scheme (enforced separately)
+        r'(?:\S+(?::\S*)?@)?'               # HTTP basic authentication
+        r'(?:' + '|'.join(host_res) + ')'   # IPv4, IPv6, FQDN, or hostname
+        r'(?::\d{2,5})?'                    # Port number
+        r'(?:[/?#][^\s]*)?'                 # Path
+        r'\Z', re.IGNORECASE)
     schemes = None
 
     def __call__(self, value):
@@ -51,7 +50,6 @@ class ExclusionValidator(BaseValidator):
     """
     Ensure that a field's value is not equal to any of the specified values.
     """
-
     message = 'This value may not be %(show_value)s.'
 
     def compare(self, a, b):
@@ -63,7 +61,6 @@ class MultipleOfValidator(BaseValidator):
     Checks that a field's value is a numeric multiple of the given value. Both values are
     cast as Decimals for comparison.
     """
-
     def __init__(self, multiple):
         self.multiple = decimal.Decimal(str(multiple))
         super().__init__(limit_value=None)
@@ -71,7 +68,7 @@ class MultipleOfValidator(BaseValidator):
     def __call__(self, value):
         if decimal.Decimal(str(value)) % self.multiple != 0:
             raise ValidationError(
-                _('{value} must be a multiple of {multiple}.').format(value=value, multiple=self.multiple)
+                _("{value} must be a multiple of {multiple}.").format(value=value, multiple=self.multiple)
             )
 
 
@@ -83,4 +80,4 @@ def validate_regex(value):
     try:
         re.compile(value)
     except re.error:
-        raise ValidationError(_('{value} is not a valid regular expression.').format(value=value))
+        raise ValidationError(_("{value} is not a valid regular expression.").format(value=value))

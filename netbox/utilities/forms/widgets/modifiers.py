@@ -23,7 +23,6 @@ class FilterModifierWidget(forms.Widget):
     The original widget's semantics (name, id, attributes) are preserved.
     The modifier dropdown controls which lookup type is used (exact, contains, etc.).
     """
-
     template_name = 'widgets/filter_modifier.html'
 
     def __init__(self, widget, lookups, attrs=None):
@@ -50,7 +49,7 @@ class FilterModifierWidget(forms.Widget):
             during rendering from the query parameter names.
         """
         # Special handling for empty - check if field__empty exists
-        empty_param = f'{name}__empty'
+        empty_param = f"{name}__empty"
         if empty_param in data:
             # Return the boolean value for empty lookup
             return data.get(empty_param)
@@ -67,7 +66,7 @@ class FilterModifierWidget(forms.Widget):
                 # Skip empty_true/false variants - they're handled above
                 if lookup in (MODIFIER_EMPTY_TRUE, MODIFIER_EMPTY_FALSE):
                     continue
-                lookup_name = f'{name}__{lookup}'
+                lookup_name = f"{name}__{lookup}"
                 test_value = self.original_widget.value_from_datadict(data, files, lookup_name)
                 if test_value is not None:
                     value = test_value

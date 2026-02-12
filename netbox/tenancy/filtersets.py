@@ -3,10 +3,7 @@ from django.db.models import Q
 from django.utils.translation import gettext as _
 
 from netbox.filtersets import (
-    NestedGroupModelFilterSet,
-    NetBoxModelFilterSet,
-    OrganizationalModelFilterSet,
-    PrimaryModelFilterSet,
+    NestedGroupModelFilterSet, NetBoxModelFilterSet, OrganizationalModelFilterSet, PrimaryModelFilterSet,
 )
 from utilities.filters import ContentTypeFilter, TreeNodeMultipleChoiceFilter
 from utilities.filtersets import register_filterset
@@ -27,7 +24,6 @@ __all__ = (
 #
 # Contacts
 #
-
 
 @register_filterset
 class ContactGroupFilterSet(NestedGroupModelFilterSet):
@@ -67,6 +63,7 @@ class ContactGroupFilterSet(NestedGroupModelFilterSet):
 
 @register_filterset
 class ContactRoleFilterSet(OrganizationalModelFilterSet):
+
     class Meta:
         model = ContactRole
         fields = ('id', 'name', 'slug', 'description')
@@ -96,14 +93,14 @@ class ContactFilterSet(PrimaryModelFilterSet):
         if not value.strip():
             return queryset
         return queryset.filter(
-            Q(name__icontains=value)
-            | Q(title__icontains=value)
-            | Q(phone__icontains=value)
-            | Q(email__icontains=value)
-            | Q(address__icontains=value)
-            | Q(link__icontains=value)
-            | Q(description__icontains=value)
-            | Q(comments__icontains=value)
+            Q(name__icontains=value) |
+            Q(title__icontains=value) |
+            Q(phone__icontains=value) |
+            Q(email__icontains=value) |
+            Q(address__icontains=value) |
+            Q(link__icontains=value) |
+            Q(description__icontains=value) |
+            Q(comments__icontains=value)
         )
 
 
@@ -149,7 +146,10 @@ class ContactAssignmentFilterSet(NetBoxModelFilterSet):
     def search(self, queryset, name, value):
         if not value.strip():
             return queryset
-        return queryset.filter(Q(contact__name__icontains=value) | Q(role__name__icontains=value))
+        return queryset.filter(
+            Q(contact__name__icontains=value) |
+            Q(role__name__icontains=value)
+        )
 
 
 class ContactModelFilterSet(django_filters.FilterSet):
@@ -159,7 +159,9 @@ class ContactModelFilterSet(django_filters.FilterSet):
         label=_('Contact'),
     )
     contact_role = django_filters.ModelMultipleChoiceFilter(
-        field_name='contacts__role', queryset=ContactRole.objects.all(), label=_('Contact Role')
+        field_name='contacts__role',
+        queryset=ContactRole.objects.all(),
+        label=_('Contact Role')
     )
     contact_group = TreeNodeMultipleChoiceFilter(
         queryset=ContactGroup.objects.all(),
@@ -172,7 +174,6 @@ class ContactModelFilterSet(django_filters.FilterSet):
 #
 # Tenancy
 #
-
 
 @register_filterset
 class TenantGroupFilterSet(NestedGroupModelFilterSet):
@@ -229,10 +230,10 @@ class TenantFilterSet(PrimaryModelFilterSet, ContactModelFilterSet):
         if not value.strip():
             return queryset
         return queryset.filter(
-            Q(name__icontains=value)
-            | Q(slug__icontains=value)
-            | Q(description__icontains=value)
-            | Q(comments__icontains=value)
+            Q(name__icontains=value) |
+            Q(slug__icontains=value) |
+            Q(description__icontains=value) |
+            Q(comments__icontains=value)
         )
 
 
@@ -240,7 +241,6 @@ class TenancyFilterSet(django_filters.FilterSet):
     """
     An inheritable FilterSet for models which support Tenant assignment.
     """
-
     tenant_group_id = TreeNodeMultipleChoiceFilter(
         queryset=TenantGroup.objects.all(),
         field_name='tenant__group',

@@ -2,6 +2,7 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
+
     dependencies = [
         ('core', '0014_datasource_sync_interval'),
     ]

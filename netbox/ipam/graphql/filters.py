@@ -14,10 +14,7 @@ from dcim.models import Device
 from ipam import models
 from ipam.graphql.filter_mixins import ServiceFilterMixin
 from netbox.graphql.filters import (
-    ChangeLoggedModelFilter,
-    NetBoxModelFilter,
-    OrganizationalModelFilter,
-    PrimaryModelFilter,
+    ChangeLoggedModelFilter, NetBoxModelFilter, OrganizationalModelFilter, PrimaryModelFilter,
 )
 from tenancy.graphql.filter_mixins import ContactFilterMixin, TenancyFilterMixin
 from virtualization.models import VMInterface
@@ -59,10 +56,12 @@ class ASNFilter(TenancyFilterMixin, PrimaryModelFilter):
     asn: Annotated['BigIntegerLookup', strawberry.lazy('netbox.graphql.filter_lookups')] | None = (
         strawberry_django.filter_field()
     )
-    sites: Annotated['SiteFilter', strawberry.lazy('dcim.graphql.filters')] | None = strawberry_django.filter_field()
-    providers: Annotated['ProviderFilter', strawberry.lazy('circuits.graphql.filters')] | None = (
-        strawberry_django.filter_field()
-    )
+    sites: (
+        Annotated['SiteFilter', strawberry.lazy('dcim.graphql.filters')] | None
+    ) = strawberry_django.filter_field()
+    providers: (
+        Annotated['ProviderFilter', strawberry.lazy('circuits.graphql.filters')] | None
+    ) = strawberry_django.filter_field()
 
 
 @strawberry_django.filter_type(models.ASNRange, lookups=True)
@@ -100,7 +99,7 @@ class AggregateFilter(ContactFilterMixin, TenancyFilterMixin, PrimaryModelFilter
                 query = str(netaddr.IPNetwork(subnet.strip()).cidr)
             except (AddrFormatError, ValueError):
                 continue
-            q |= Q(**{f'{prefix}prefix__net_contains': query})
+            q |= Q(**{f"{prefix}prefix__net_contains": query})
         return q
 
     @strawberry_django.filter_field()
@@ -109,7 +108,7 @@ class AggregateFilter(ContactFilterMixin, TenancyFilterMixin, PrimaryModelFilter
         value: Annotated['IPAddressFamilyEnum', strawberry.lazy('ipam.graphql.enums')],
         prefix,
     ) -> Q:
-        return Q(**{f'{prefix}prefix__family': value.value})
+        return Q(**{f"{prefix}prefix__family": value.value})
 
 
 @strawberry_django.filter_type(models.FHRPGroup, lookups=True)
@@ -154,11 +153,11 @@ class FHRPGroupAssignmentFilter(ChangeLoggedModelFilter):
 
     @strawberry_django.filter_field()
     def virtual_machine_id(self, value: list[str], prefix) -> Q:
-        return Q(**{f'{prefix}interface_id__in': VMInterface.objects.filter(virtual_machine_id__in=value)})
+        return Q(**{f"{prefix}interface_id__in": VMInterface.objects.filter(virtual_machine_id__in=value)})
 
     @strawberry_django.filter_field()
     def virtual_machine(self, value: list[str], prefix) -> Q:
-        return Q(**{f'{prefix}interface_id__in': VMInterface.objects.filter(virtual_machine__name__in=value)})
+        return Q(**{f"{prefix}interface_id__in": VMInterface.objects.filter(virtual_machine__name__in=value)})
 
     def filter_device(self, field, value, prefix) -> Q:
         """Helper to standardize logic for device and device_id filters"""
@@ -166,7 +165,7 @@ class FHRPGroupAssignmentFilter(ChangeLoggedModelFilter):
         interface_ids = []
         for device in devices:
             interface_ids.extend(device.vc_interfaces().values_list('id', flat=True))
-        return Q(**{f'{prefix}interface_id__in': interface_ids})
+        return Q(**{f"{prefix}interface_id__in": interface_ids})
 
 
 @strawberry_django.filter_type(models.IPAddress, lookups=True)
@@ -196,7 +195,7 @@ class IPAddressFilter(ContactFilterMixin, TenancyFilterMixin, PrimaryModelFilter
 
     @strawberry_django.filter_field()
     def assigned(self, value: bool, prefix) -> Q:
-        return Q(**{f'{prefix}assigned_object_id__isnull': not value})
+        return Q(**{f"{prefix}assigned_object_id__isnull": not value})
 
     @strawberry_django.filter_field()
     def parent(self, value: list[str], prefix) -> Q:
@@ -208,7 +207,7 @@ class IPAddressFilter(ContactFilterMixin, TenancyFilterMixin, PrimaryModelFilter
                 query = str(netaddr.IPNetwork(subnet.strip()).cidr)
             except (AddrFormatError, ValueError):
                 continue
-            q |= Q(**{f'{prefix}address__net_host_contained': query})
+            q |= Q(**{f"{prefix}address__net_host_contained": query})
         return q
 
     @strawberry_django.filter_field()
@@ -217,7 +216,7 @@ class IPAddressFilter(ContactFilterMixin, TenancyFilterMixin, PrimaryModelFilter
         value: Annotated['IPAddressFamilyEnum', strawberry.lazy('ipam.graphql.enums')],
         prefix,
     ) -> Q:
-        return Q(**{f'{prefix}address__family': value.value})
+        return Q(**{f"{prefix}address__family": value.value})
 
 
 @strawberry_django.filter_type(models.IPRange, lookups=True)
@@ -247,8 +246,8 @@ class IPRangeFilter(ContactFilterMixin, TenancyFilterMixin, PrimaryModelFilter):
                 continue
             q |= Q(
                 **{
-                    f'{prefix}start_address__net_host_contained': query,
-                    f'{prefix}end_address__net_host_contained': query,
+                    f"{prefix}start_address__net_host_contained": query,
+                    f"{prefix}end_address__net_host_contained": query,
                 }
             )
         return q
@@ -267,8 +266,8 @@ class IPRangeFilter(ContactFilterMixin, TenancyFilterMixin, PrimaryModelFilter):
                 continue
             q |= Q(
                 **{
-                    f'{prefix}start_address__host__inet__lte': query_start,
-                    f'{prefix}end_address__host__inet__gte': query_end,
+                    f"{prefix}start_address__host__inet__lte": query_start,
+                    f"{prefix}end_address__host__inet__gte": query_end,
                 }
             )
         return q
@@ -299,7 +298,7 @@ class PrefixFilter(ContactFilterMixin, ScopedFilterMixin, TenancyFilterMixin, Pr
                 query = str(netaddr.IPNetwork(subnet.strip()).cidr)
             except (AddrFormatError, ValueError):
                 continue
-            q |= Q(**{f'{prefix}prefix__net_contains': query})
+            q |= Q(**{f"{prefix}prefix__net_contains": query})
         return q
 
     @strawberry_django.filter_field()
@@ -308,7 +307,7 @@ class PrefixFilter(ContactFilterMixin, ScopedFilterMixin, TenancyFilterMixin, Pr
         value: Annotated['IPAddressFamilyEnum', strawberry.lazy('ipam.graphql.enums')],
         prefix,
     ) -> Q:
-        return Q(**{f'{prefix}prefix__family': value.value})
+        return Q(**{f"{prefix}prefix__family": value.value})
 
 
 @strawberry_django.filter_type(models.RIR, lookups=True)

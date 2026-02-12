@@ -9,6 +9,7 @@ from wireless.models import *
 
 
 class AppTest(APITestCase):
+
     def test_root(self):
         url = reverse('wireless-api:api-root')
         response = self.client.get('{}?format=api'.format(url), **self.header)
@@ -42,6 +43,7 @@ class WirelessLANGroupTest(APIViewTestCases.APIViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
+
         WirelessLANGroup.objects.create(name='Wireless LAN Group 1', slug='wireless-lan-group-1')
         WirelessLANGroup.objects.create(name='Wireless LAN Group 2', slug='wireless-lan-group-2')
         WirelessLANGroup.objects.create(name='Wireless LAN Group 3', slug='wireless-lan-group-3')
@@ -53,6 +55,7 @@ class WirelessLANTest(APIViewTestCases.APIViewTestCase):
 
     @classmethod
     def setUpTestData(cls):
+
         sites = (
             Site(name='Site 1', slug='site-1'),
             Site(name='Site 2', slug='site-2'),
@@ -124,7 +127,7 @@ class WirelessLinkTest(APIViewTestCases.APIViewTestCase):
         'distance': 100,
         'distance_unit': 'm',
     }
-    user_permissions = ('dcim.view_interface',)
+    user_permissions = ('dcim.view_interface', )
 
     @classmethod
     def setUpTestData(cls):
@@ -136,9 +139,8 @@ class WirelessLinkTest(APIViewTestCases.APIViewTestCase):
                 type=InterfaceTypeChoices.TYPE_80211AC,
                 rf_channel=WirelessChannelChoices.CHANNEL_5G_32,
                 rf_channel_frequency=5160,
-                rf_channel_width=20,
-            )
-            for i in range(12)
+                rf_channel_width=20
+            ) for i in range(12)
         ]
         Interface.objects.bulk_create(interfaces)
 

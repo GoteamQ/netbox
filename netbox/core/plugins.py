@@ -21,7 +21,6 @@ class PluginAuthor:
     """
     Identifying information for the author of a plugin.
     """
-
     name: str
     org_id: str = ''
     url: str = ''
@@ -32,7 +31,6 @@ class PluginVersion:
     """
     Details for a specific versioned release of a plugin.
     """
-
     date: datetime.datetime = None
     version: str = ''
     netbox_min_version: str = ''
@@ -49,7 +47,6 @@ class Plugin:
     """
     The representation of a NetBox plugin in the catalog API.
     """
-
     id: str = ''
     icon_url: str = ''
     status: str = ''
@@ -149,7 +146,7 @@ def get_catalog_plugins():
             headers={'User-Agent': USER_AGENT_STRING},
             proxies=proxies,
             timeout=3,
-            params=payload,
+            params=payload
         ).json()
         yield first_page
         num_pages = first_page['metadata']['pagination']['last_page']
@@ -161,7 +158,7 @@ def get_catalog_plugins():
                 headers={'User-Agent': USER_AGENT_STRING},
                 proxies=proxies,
                 timeout=3,
-                params=payload,
+                params=payload
             ).json()
             yield next_page
 
@@ -170,6 +167,7 @@ def get_catalog_plugins():
 
         for page in get_pages():
             for data in page['data']:
+
                 # Populate releases
                 releases = []
                 for version in data['release_recent_history']:

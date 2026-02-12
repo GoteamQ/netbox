@@ -11,6 +11,7 @@ def migrate_contact_groups(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
+
     dependencies = [
         ('tenancy', '0017_natural_ordering'),
     ]

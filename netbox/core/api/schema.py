@@ -5,11 +5,7 @@ from collections import OrderedDict
 from drf_spectacular.extensions import OpenApiSerializerFieldExtension, OpenApiSerializerExtension, _SchemaType
 from drf_spectacular.openapi import AutoSchema
 from drf_spectacular.plumbing import (
-    build_basic_type,
-    build_choice_field,
-    build_media_type_object,
-    build_object_type,
-    get_doc,
+    build_basic_type, build_choice_field, build_media_type_object, build_object_type, get_doc,
 )
 from drf_spectacular.types import OpenApiTypes
 from drf_spectacular.utils import Direction
@@ -19,8 +15,8 @@ from netbox.api.serializers import WritableNestedSerializer
 from netbox.api.viewsets import NetBoxModelViewSet
 
 # see netbox.api.routers.NetBoxRouter
-BULK_ACTIONS = ('bulk_destroy', 'bulk_partial_update', 'bulk_update')
-WRITABLE_ACTIONS = ('PATCH', 'POST', 'PUT')
+BULK_ACTIONS = ("bulk_destroy", "bulk_partial_update", "bulk_update")
+WRITABLE_ACTIONS = ("PATCH", "POST", "PUT")
 
 
 class FixTimeZoneSerializerField(OpenApiSerializerFieldExtension):
@@ -39,14 +35,19 @@ class ChoiceFieldFix(OpenApiSerializerFieldExtension):
         if direction == 'request':
             return build_cf
 
-        elif direction == 'response':
+        elif direction == "response":
             value = build_cf
             label = {
                 **build_basic_type(OpenApiTypes.STR),
-                'enum': list(OrderedDict.fromkeys(self.target.choices.values())),
+                "enum": list(OrderedDict.fromkeys(self.target.choices.values()))
             }
 
-            return build_object_type(properties={'value': value, 'label': label})
+            return build_object_type(
+                properties={
+                    "value": value,
+                    "label": label
+                }
+            )
 
 
 def viewset_handles_bulk_create(view):
@@ -68,7 +69,7 @@ class NetBoxAutoSchema(AutoSchema):
 
     @property
     def is_bulk_action(self):
-        if hasattr(self.view, 'action') and self.view.action in BULK_ACTIONS:
+        if hasattr(self.view, "action") and self.view.action in BULK_ACTIONS:
             return True
         else:
             return False
@@ -116,7 +117,7 @@ class NetBoxAutoSchema(AutoSchema):
         if serializer is not None and self.method in WRITABLE_ACTIONS:
             writable_class = self.get_writable_class(serializer)
             if writable_class is not None:
-                if hasattr(serializer, 'child'):
+                if hasattr(serializer, "child"):
                     child_serializer = self.get_writable_class(serializer.child)
                     serializer = writable_class(context=serializer.context, child=child_serializer)
                 else:
@@ -146,10 +147,10 @@ class NetBoxAutoSchema(AutoSchema):
         # If this serializer supports arrays (marked in get_request_serializer),
         # wrap the schema in oneOf to allow single object OR array
         if (
-            direction == 'request'
-            and schema is not None
-            and getattr(self.view, 'action', None) == 'create'
-            and viewset_handles_bulk_create(self.view)
+            direction == 'request' and
+            schema is not None and
+            getattr(self.view, 'action', None) == 'create' and
+            viewset_handles_bulk_create(self.view)
         ):
             return {
                 'oneOf': [
@@ -157,7 +158,7 @@ class NetBoxAutoSchema(AutoSchema):
                     {
                         'type': 'array',
                         'items': schema,  # Array of objects
-                    },
+                    }
                 ]
             }, required
 
@@ -300,15 +301,15 @@ class NetBoxAutoSchema(AutoSchema):
 
         # Determine if the method is for list or detail.
         if '{id}' in self.path:
-            return f'{self.method.capitalize()} a {model_name} object.'
-        return f'{self.method.capitalize()} a list of {model_name} objects.'
+            return f"{self.method.capitalize()} a {model_name} object."
+        return f"{self.method.capitalize()} a list of {model_name} objects."
 
 
 class FixSerializedPKRelatedField(OpenApiSerializerFieldExtension):
     target_class = 'netbox.api.fields.SerializedPKRelatedField'
 
     def map_serializer_field(self, auto_schema, direction):
-        if direction == 'response':
+        if direction == "response":
             component = auto_schema.resolve_serializer(self.target.serializer, direction)
             return component.ref if component else None
         else:

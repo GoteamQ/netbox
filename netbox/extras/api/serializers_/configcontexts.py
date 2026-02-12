@@ -22,28 +22,20 @@ __all__ = (
 
 
 class ConfigContextProfileSerializer(PrimaryModelSerializer):
-    data_source = DataSourceSerializer(nested=True, required=False)
-    data_file = DataFileSerializer(nested=True, required=False)
+    data_source = DataSourceSerializer(
+        nested=True,
+        required=False
+    )
+    data_file = DataFileSerializer(
+        nested=True,
+        required=False
+    )
 
     class Meta:
         model = ConfigContextProfile
         fields = [
-            'id',
-            'url',
-            'display_url',
-            'display',
-            'name',
-            'description',
-            'schema',
-            'tags',
-            'owner',
-            'comments',
-            'data_source',
-            'data_path',
-            'data_file',
-            'data_synced',
-            'created',
-            'last_updated',
+            'id', 'url', 'display_url', 'display', 'name', 'description', 'schema', 'tags', 'owner', 'comments',
+            'data_source', 'data_path', 'data_file', 'data_synced', 'created', 'last_updated',
         ]
         brief_fields = ('id', 'url', 'display', 'name', 'description')
 
@@ -56,77 +48,110 @@ class ConfigContextSerializer(OwnerMixin, ChangeLogMessageSerializer, ValidatedM
         default=None,
     )
     regions = SerializedPKRelatedField(
-        queryset=Region.objects.all(), serializer=RegionSerializer, nested=True, required=False, many=True
+        queryset=Region.objects.all(),
+        serializer=RegionSerializer,
+        nested=True,
+        required=False,
+        many=True
     )
     site_groups = SerializedPKRelatedField(
-        queryset=SiteGroup.objects.all(), serializer=SiteGroupSerializer, nested=True, required=False, many=True
+        queryset=SiteGroup.objects.all(),
+        serializer=SiteGroupSerializer,
+        nested=True,
+        required=False,
+        many=True
     )
     sites = SerializedPKRelatedField(
-        queryset=Site.objects.all(), serializer=SiteSerializer, nested=True, required=False, many=True
+        queryset=Site.objects.all(),
+        serializer=SiteSerializer,
+        nested=True,
+        required=False,
+        many=True
     )
     locations = SerializedPKRelatedField(
-        queryset=Location.objects.all(), serializer=LocationSerializer, nested=True, required=False, many=True
+        queryset=Location.objects.all(),
+        serializer=LocationSerializer,
+        nested=True,
+        required=False,
+        many=True
     )
     device_types = SerializedPKRelatedField(
-        queryset=DeviceType.objects.all(), serializer=DeviceTypeSerializer, nested=True, required=False, many=True
+        queryset=DeviceType.objects.all(),
+        serializer=DeviceTypeSerializer,
+        nested=True,
+        required=False,
+        many=True
     )
     roles = SerializedPKRelatedField(
-        queryset=DeviceRole.objects.all(), serializer=DeviceRoleSerializer, nested=True, required=False, many=True
+        queryset=DeviceRole.objects.all(),
+        serializer=DeviceRoleSerializer,
+        nested=True,
+        required=False,
+        many=True
     )
     platforms = SerializedPKRelatedField(
-        queryset=Platform.objects.all(), serializer=PlatformSerializer, nested=True, required=False, many=True
+        queryset=Platform.objects.all(),
+        serializer=PlatformSerializer,
+        nested=True,
+        required=False,
+        many=True
     )
     cluster_types = SerializedPKRelatedField(
-        queryset=ClusterType.objects.all(), serializer=ClusterTypeSerializer, nested=True, required=False, many=True
+        queryset=ClusterType.objects.all(),
+        serializer=ClusterTypeSerializer,
+        nested=True,
+        required=False,
+        many=True
     )
     cluster_groups = SerializedPKRelatedField(
-        queryset=ClusterGroup.objects.all(), serializer=ClusterGroupSerializer, nested=True, required=False, many=True
+        queryset=ClusterGroup.objects.all(),
+        serializer=ClusterGroupSerializer,
+        nested=True,
+        required=False,
+        many=True
     )
     clusters = SerializedPKRelatedField(
-        queryset=Cluster.objects.all(), serializer=ClusterSerializer, nested=True, required=False, many=True
+        queryset=Cluster.objects.all(),
+        serializer=ClusterSerializer,
+        nested=True,
+        required=False,
+        many=True
     )
     tenant_groups = SerializedPKRelatedField(
-        queryset=TenantGroup.objects.all(), serializer=TenantGroupSerializer, nested=True, required=False, many=True
+        queryset=TenantGroup.objects.all(),
+        serializer=TenantGroupSerializer,
+        nested=True,
+        required=False,
+        many=True
     )
     tenants = SerializedPKRelatedField(
-        queryset=Tenant.objects.all(), serializer=TenantSerializer, nested=True, required=False, many=True
+        queryset=Tenant.objects.all(),
+        serializer=TenantSerializer,
+        nested=True,
+        required=False,
+        many=True
     )
-    tags = serializers.SlugRelatedField(queryset=Tag.objects.all(), slug_field='slug', required=False, many=True)
-    data_source = DataSourceSerializer(nested=True, required=False)
-    data_file = DataFileSerializer(nested=True, required=False)
+    tags = serializers.SlugRelatedField(
+        queryset=Tag.objects.all(),
+        slug_field='slug',
+        required=False,
+        many=True
+    )
+    data_source = DataSourceSerializer(
+        nested=True,
+        required=False
+    )
+    data_file = DataFileSerializer(
+        nested=True,
+        required=False
+    )
 
     class Meta:
         model = ConfigContext
         fields = [
-            'id',
-            'url',
-            'display_url',
-            'display',
-            'name',
-            'weight',
-            'profile',
-            'description',
-            'is_active',
-            'regions',
-            'site_groups',
-            'sites',
-            'locations',
-            'device_types',
-            'roles',
-            'platforms',
-            'cluster_types',
-            'cluster_groups',
-            'clusters',
-            'tenant_groups',
-            'tenants',
-            'owner',
-            'tags',
-            'data_source',
-            'data_path',
-            'data_file',
-            'data_synced',
-            'data',
-            'created',
-            'last_updated',
+            'id', 'url', 'display_url', 'display', 'name', 'weight', 'profile', 'description', 'is_active', 'regions',
+            'site_groups', 'sites', 'locations', 'device_types', 'roles', 'platforms', 'cluster_types',
+            'cluster_groups', 'clusters', 'tenant_groups', 'tenants', 'owner', 'tags', 'data_source', 'data_path',
+            'data_file', 'data_synced', 'data', 'created', 'last_updated',
         ]
         brief_fields = ('id', 'url', 'display', 'name', 'description')

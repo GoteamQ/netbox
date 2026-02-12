@@ -22,10 +22,14 @@ __all__ = (
 # Tags
 #
 
-
 class Tag(CloningMixin, ExportTemplatesMixin, OwnerMixin, ChangeLoggedModel, TagBase):
-    id = models.BigAutoField(primary_key=True)
-    color = ColorField(verbose_name=_('color'), default=ColorChoices.COLOR_GREY)
+    id = models.BigAutoField(
+        primary_key=True
+    )
+    color = ColorField(
+        verbose_name=_('color'),
+        default=ColorChoices.COLOR_GREY
+    )
     description = models.CharField(
         verbose_name=_('description'),
         max_length=200,
@@ -35,7 +39,7 @@ class Tag(CloningMixin, ExportTemplatesMixin, OwnerMixin, ChangeLoggedModel, Tag
         to='contenttypes.ContentType',
         related_name='+',
         blank=True,
-        help_text=_('The object type(s) to which this tag can be applied.'),
+        help_text=_("The object type(s) to which this tag can be applied.")
     )
     weight = models.PositiveSmallIntegerField(
         verbose_name=_('weight'),
@@ -43,9 +47,7 @@ class Tag(CloningMixin, ExportTemplatesMixin, OwnerMixin, ChangeLoggedModel, Tag
     )
 
     clone_fields = (
-        'color',
-        'description',
-        'object_types',
+        'color', 'description', 'object_types',
     )
 
     class Meta:
@@ -64,18 +66,22 @@ class Tag(CloningMixin, ExportTemplatesMixin, OwnerMixin, ChangeLoggedModel, Tag
         # Allow Unicode in Tag slugs (avoids empty slugs for Tags with all-Unicode names)
         slug = slugify(tag, allow_unicode=True)
         if i is not None:
-            slug += '_%d' % i
+            slug += "_%d" % i
         return slug
 
 
 class TaggedItem(GenericTaggedItemBase):
-    tag = models.ForeignKey(to=Tag, related_name='%(app_label)s_%(class)s_items', on_delete=models.CASCADE)
+    tag = models.ForeignKey(
+        to=Tag,
+        related_name="%(app_label)s_%(class)s_items",
+        on_delete=models.CASCADE
+    )
 
     _netbox_private = True
     objects = RestrictedQuerySet.as_manager()
 
     class Meta:
-        indexes = [models.Index(fields=['content_type', 'object_id'])]
+        indexes = [models.Index(fields=["content_type", "object_id"])]
         verbose_name = _('tagged item')
         verbose_name_plural = _('tagged items')
         # Note: while there is no ordering applied here (because it would basically be done on fields

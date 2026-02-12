@@ -21,7 +21,6 @@ class TunnelGroup(ContactsMixin, OrganizationalModel):
     An administrative grouping of Tunnels. This can be used to correlate peer-to-peer tunnels which form a mesh,
     for example.
     """
-
     class Meta:
         ordering = ('name',)
         verbose_name = _('tunnel group')
@@ -29,35 +28,65 @@ class TunnelGroup(ContactsMixin, OrganizationalModel):
 
 
 class Tunnel(ContactsMixin, PrimaryModel):
-    name = models.CharField(verbose_name=_('name'), max_length=100, unique=True, db_collation='natural_sort')
+    name = models.CharField(
+        verbose_name=_('name'),
+        max_length=100,
+        unique=True,
+        db_collation="natural_sort"
+    )
     status = models.CharField(
-        verbose_name=_('status'), max_length=50, choices=TunnelStatusChoices, default=TunnelStatusChoices.STATUS_ACTIVE
+        verbose_name=_('status'),
+        max_length=50,
+        choices=TunnelStatusChoices,
+        default=TunnelStatusChoices.STATUS_ACTIVE
     )
     group = models.ForeignKey(
-        to='vpn.TunnelGroup', on_delete=models.PROTECT, related_name='tunnels', blank=True, null=True
+        to='vpn.TunnelGroup',
+        on_delete=models.PROTECT,
+        related_name='tunnels',
+        blank=True,
+        null=True
     )
-    encapsulation = models.CharField(verbose_name=_('encapsulation'), max_length=50, choices=TunnelEncapsulationChoices)
+    encapsulation = models.CharField(
+        verbose_name=_('encapsulation'),
+        max_length=50,
+        choices=TunnelEncapsulationChoices
+    )
     ipsec_profile = models.ForeignKey(
-        to='vpn.IPSecProfile', on_delete=models.PROTECT, related_name='tunnels', blank=True, null=True
+        to='vpn.IPSecProfile',
+        on_delete=models.PROTECT,
+        related_name='tunnels',
+        blank=True,
+        null=True
     )
     tenant = models.ForeignKey(
-        to='tenancy.Tenant', on_delete=models.PROTECT, related_name='tunnels', blank=True, null=True
+        to='tenancy.Tenant',
+        on_delete=models.PROTECT,
+        related_name='tunnels',
+        blank=True,
+        null=True
     )
-    tunnel_id = models.PositiveBigIntegerField(verbose_name=_('tunnel ID'), blank=True, null=True)
+    tunnel_id = models.PositiveBigIntegerField(
+        verbose_name=_('tunnel ID'),
+        blank=True,
+        null=True
+    )
 
     clone_fields = (
-        'status',
-        'encapsulation',
-        'ipsec_profile',
-        'tenant',
+        'status', 'encapsulation', 'ipsec_profile', 'tenant',
     )
 
     class Meta:
         ordering = ('name',)
         constraints = (
-            models.UniqueConstraint(fields=('group', 'name'), name='%(app_label)s_%(class)s_group_name'),
             models.UniqueConstraint(
-                fields=('name',), name='%(app_label)s_%(class)s_name', condition=Q(group__isnull=True)
+                fields=('group', 'name'),
+                name='%(app_label)s_%(class)s_group_name'
+            ),
+            models.UniqueConstraint(
+                fields=('name',),
+                name='%(app_label)s_%(class)s_name',
+                condition=Q(group__isnull=True)
             ),
         )
         verbose_name = _('tunnel')
@@ -71,21 +100,41 @@ class Tunnel(ContactsMixin, PrimaryModel):
 
 
 class TunnelTermination(CustomFieldsMixin, CustomLinksMixin, TagsMixin, ChangeLoggedModel):
-    tunnel = models.ForeignKey(to='vpn.Tunnel', on_delete=models.CASCADE, related_name='terminations')
+    tunnel = models.ForeignKey(
+        to='vpn.Tunnel',
+        on_delete=models.CASCADE,
+        related_name='terminations'
+    )
     role = models.CharField(
         verbose_name=_('role'),
         max_length=50,
         choices=TunnelTerminationRoleChoices,
-        default=TunnelTerminationRoleChoices.ROLE_PEER,
+        default=TunnelTerminationRoleChoices.ROLE_PEER
     )
-    termination_type = models.ForeignKey(to='contenttypes.ContentType', on_delete=models.PROTECT, related_name='+')
-    termination_id = models.PositiveBigIntegerField(blank=True, null=True)
-    termination = GenericForeignKey(ct_field='termination_type', fk_field='termination_id')
+    termination_type = models.ForeignKey(
+        to='contenttypes.ContentType',
+        on_delete=models.PROTECT,
+        related_name='+'
+    )
+    termination_id = models.PositiveBigIntegerField(
+        blank=True,
+        null=True
+    )
+    termination = GenericForeignKey(
+        ct_field='termination_type',
+        fk_field='termination_id'
+    )
     outside_ip = models.ForeignKey(
-        to='ipam.IPAddress', on_delete=models.PROTECT, related_name='tunnel_terminations', blank=True, null=True
+        to='ipam.IPAddress',
+        on_delete=models.PROTECT,
+        related_name='tunnel_terminations',
+        blank=True,
+        null=True
     )
 
-    prerequisite_models = ('vpn.Tunnel',)
+    prerequisite_models = (
+        'vpn.Tunnel',
+    )
 
     class Meta:
         ordering = ('tunnel', 'role', 'pk')
@@ -93,7 +142,7 @@ class TunnelTermination(CustomFieldsMixin, CustomLinksMixin, TagsMixin, ChangeLo
             models.UniqueConstraint(
                 fields=('termination_type', 'termination_id'),
                 name='%(app_label)s_%(class)s_termination',
-                violation_error_message=_('An object may be terminated to only one tunnel at a time.'),
+                violation_error_message=_("An object may be terminated to only one tunnel at a time.")
             ),
         )
         verbose_name = _('tunnel termination')
@@ -113,13 +162,12 @@ class TunnelTermination(CustomFieldsMixin, CustomLinksMixin, TagsMixin, ChangeLo
 
         # Check that the selected termination object is not already attached to a Tunnel
         if getattr(self.termination, 'tunnel_termination', None) and self.termination.tunnel_termination.pk != self.pk:
-            raise ValidationError(
-                {
-                    'termination': _('{name} is already attached to a tunnel ({tunnel}).').format(
-                        name=self.termination.name, tunnel=self.termination.tunnel_termination.tunnel
-                    )
-                }
-            )
+            raise ValidationError({
+                'termination': _("{name} is already attached to a tunnel ({tunnel}).").format(
+                    name=self.termination.name,
+                    tunnel=self.termination.tunnel_termination.tunnel
+                )
+            })
 
     def to_objectchange(self, action):
         objectchange = super().to_objectchange(action)

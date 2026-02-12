@@ -52,10 +52,11 @@ from .tables import CatalogPluginTable, JobLogEntryTable, PluginVersionTable
 # Data sources
 #
 
-
 @register_model_view(DataSource, 'list', path='', detail=False)
 class DataSourceListView(generic.ObjectListView):
-    queryset = DataSource.objects.annotate(file_count=count_related(DataFile, 'source'))
+    queryset = DataSource.objects.annotate(
+        file_count=count_related(DataFile, 'source')
+    )
     filterset = filtersets.DataSourceFilterSet
     filterset_form = forms.DataSourceFilterForm
     table = tables.DataSourceTable
@@ -87,7 +88,10 @@ class DataSourceSyncView(GetReturnURLMixin, BaseObjectView):
         datasource = get_object_or_404(self.queryset, pk=pk)
         # Enqueue the sync job
         job = SyncDataSourceJob.enqueue(instance=datasource, user=request.user)
-        messages.success(request, _('Queued job #{id} to sync {datasource}').format(id=job.pk, datasource=datasource))
+        messages.success(
+            request,
+            _("Queued job #{id} to sync {datasource}").format(id=job.pk, datasource=datasource)
+        )
         return redirect(self.get_return_url(request, datasource))
 
 
@@ -111,7 +115,9 @@ class DataSourceBulkImportView(generic.BulkImportView):
 
 @register_model_view(DataSource, 'bulk_edit', path='edit', detail=False)
 class DataSourceBulkEditView(generic.BulkEditView):
-    queryset = DataSource.objects.annotate(count_files=count_related(DataFile, 'source'))
+    queryset = DataSource.objects.annotate(
+        count_files=count_related(DataFile, 'source')
+    )
     filterset = filtersets.DataSourceFilterSet
     table = tables.DataSourceTable
     form = forms.DataSourceBulkEditForm
@@ -125,7 +131,9 @@ class DataSourceBulkRenameView(generic.BulkRenameView):
 
 @register_model_view(DataSource, 'bulk_delete', path='delete', detail=False)
 class DataSourceBulkDeleteView(generic.BulkDeleteView):
-    queryset = DataSource.objects.annotate(count_files=count_related(DataFile, 'source'))
+    queryset = DataSource.objects.annotate(
+        count_files=count_related(DataFile, 'source')
+    )
     filterset = filtersets.DataSourceFilterSet
     table = tables.DataSourceTable
 
@@ -133,7 +141,6 @@ class DataSourceBulkDeleteView(generic.BulkDeleteView):
 #
 # Data files
 #
-
 
 @register_model_view(DataFile, 'list', path='', detail=False)
 class DataFileListView(generic.ObjectListView):
@@ -165,7 +172,6 @@ class DataFileBulkDeleteView(generic.BulkDeleteView):
 #
 # Jobs
 #
-
 
 @register_model_view(Job, 'list', path='', detail=False)
 class JobListView(generic.ObjectListView):
@@ -217,7 +223,6 @@ class JobBulkDeleteView(generic.BulkDeleteView):
 # Change logging
 #
 
-
 @register_model_view(ObjectChange, 'list', path='', detail=False)
 class ObjectChangeListView(generic.ObjectListView):
     queryset = None
@@ -239,22 +244,20 @@ class ObjectChangeView(generic.ObjectView):
         return ObjectChange.objects.valid_models()
 
     def get_extra_context(self, request, instance):
-        related_changes = (
-            ObjectChange.objects.valid_models()
-            .restrict(request.user, 'view')
-            .filter(request_id=instance.request_id)
-            .exclude(pk=instance.pk)
+        related_changes = ObjectChange.objects.valid_models().restrict(request.user, 'view').filter(
+            request_id=instance.request_id
+        ).exclude(
+            pk=instance.pk
         )
-        related_changes_table = tables.ObjectChangeTable(data=related_changes[:50], orderable=False)
+        related_changes_table = tables.ObjectChangeTable(
+            data=related_changes[:50],
+            orderable=False
+        )
         related_changes_table.configure(request)
 
-        objectchanges = (
-            ObjectChange.objects.valid_models()
-            .restrict(request.user, 'view')
-            .filter(
-                changed_object_type=instance.changed_object_type,
-                changed_object_id=instance.changed_object_id,
-            )
+        objectchanges = ObjectChange.objects.valid_models().restrict(request.user, 'view').filter(
+            changed_object_type=instance.changed_object_type,
+            changed_object_id=instance.changed_object_id,
         )
 
         next_change = objectchanges.filter(time__gt=instance.time).order_by('time').first()
@@ -273,7 +276,9 @@ class ObjectChangeView(generic.ObjectView):
                 instance.postchange_data_clean or dict(),
                 exclude=['last_updated'],
             )
-            diff_removed = {x: prechange_data.get(x) for x in diff_added} if prechange_data else {}
+            diff_removed = {
+                x: prechange_data.get(x) for x in diff_added
+            } if prechange_data else {}
         else:
             diff_added = None
             diff_removed = None
@@ -285,14 +290,13 @@ class ObjectChangeView(generic.ObjectView):
             'prev_change': prev_change,
             'related_changes_table': related_changes_table,
             'related_changes_count': related_changes.count(),
-            'non_atomic_change': non_atomic_change,
+            'non_atomic_change': non_atomic_change
         }
 
 
 #
 # Config Revisions
 #
-
 
 @register_model_view(ConfigRevision, 'list', path='', detail=False)
 class ConfigRevisionListView(generic.ObjectListView):
@@ -344,6 +348,7 @@ class ConfigRevisionBulkDeleteView(generic.BulkDeleteView):
 
 @register_model_view(ConfigRevision, 'restore')
 class ConfigRevisionRestoreView(ContentTypePermissionRequiredMixin, View):
+
     def get_required_permission(self):
         return 'core.configrevision_edit'
 
@@ -356,22 +361,16 @@ class ConfigRevisionRestoreView(ContentTypePermissionRequiredMixin, View):
 
         params = []
         for param in PARAMS:
-            params.append(
-                (
-                    param.name,
-                    current_config.data.get(param.name, None) if current_config else None,
-                    candidate_config.data.get(param.name, None),
-                )
-            )
+            params.append((
+                param.name,
+                current_config.data.get(param.name, None) if current_config else None,
+                candidate_config.data.get(param.name, None)
+            ))
 
-        return render(
-            request,
-            'core/configrevision_restore.html',
-            {
-                'object': candidate_config,
-                'params': params,
-            },
-        )
+        return render(request, 'core/configrevision_restore.html', {
+            'object': candidate_config,
+            'params': params,
+        })
 
     def post(self, request, pk):
         if not request.user.has_perm('core.configrevision_edit'):
@@ -379,7 +378,7 @@ class ConfigRevisionRestoreView(ContentTypePermissionRequiredMixin, View):
 
         candidate_config = get_object_or_404(ConfigRevision, pk=pk)
         candidate_config.activate()
-        messages.success(request, _('Restored configuration revision #{id}').format(id=pk))
+        messages.success(request, _("Restored configuration revision #{id}").format(id=pk))
 
         return redirect(candidate_config.get_absolute_url())
 
@@ -388,8 +387,8 @@ class ConfigRevisionRestoreView(ContentTypePermissionRequiredMixin, View):
 # Background Tasks (RQ)
 #
 
-
 class BaseRQView(UserPassesTestMixin, View):
+
     def test_func(self):
         return self.request.user.is_superuser
 
@@ -398,22 +397,19 @@ class BackgroundQueueListView(TableMixin, BaseRQView):
     table = tables.BackgroundQueueTable
 
     def get(self, request):
-        data = get_statistics(run_maintenance_tasks=True)['queues']
+        data = get_statistics(run_maintenance_tasks=True)["queues"]
         table = self.get_table(data, request, bulk_actions=False)
 
-        return render(
-            request,
-            'core/rq_queue_list.html',
-            {
-                'table': table,
-            },
-        )
+        return render(request, 'core/rq_queue_list.html', {
+            'table': table,
+        })
 
 
 class BackgroundTaskListView(TableMixin, BaseRQView):
     table = tables.BackgroundTaskTable
 
     def get_table_data(self, request, queue, status):
+
         # Call get_jobs() to returned queued tasks
         if status == RQJobStatus.QUEUED:
             return queue.get_jobs()
@@ -427,36 +423,26 @@ class BackgroundTaskListView(TableMixin, BaseRQView):
 
         # If this is an HTMX request, return only the rendered table HTML
         if htmx_partial(request):
-            return render(
-                request,
-                'htmx/table.html',
-                {
-                    'table': table,
-                },
-            )
-
-        return render(
-            request,
-            'core/rq_task_list.html',
-            {
+            return render(request, 'htmx/table.html', {
                 'table': table,
-                'queue': queue,
-                'status': status,
-            },
-        )
+            })
+
+        return render(request, 'core/rq_task_list.html', {
+            'table': table,
+            'queue': queue,
+            'status': status,
+        })
 
 
 class BackgroundTaskView(BaseRQView):
+
     def get(self, request, job_id):
         # all the RQ queues should use the same connection
         config = QUEUES_LIST[0]
         try:
-            job = RQ_Job.fetch(
-                job_id,
-                connection=get_redis_connection(config['connection_config']),
-            )
+            job = RQ_Job.fetch(job_id, connection=get_redis_connection(config['connection_config']),)
         except NoSuchJobError:
-            raise Http404(_('Job {job_id} not found').format(job_id=job_id))
+            raise Http404(_("Job {job_id} not found").format(job_id=job_id))
 
         queue_index = QUEUES_MAP[job.origin]
         queue = get_queue_by_index(queue_index)
@@ -466,36 +452,29 @@ class BackgroundTaskView(BaseRQView):
         except AttributeError:
             exc_info = None
 
-        return render(
-            request,
-            'core/rq_task.html',
-            {
-                'queue': queue,
-                'job': job,
-                'queue_index': queue_index,
-                'dependency_id': job._dependency_id,
-                'exc_info': exc_info,
-            },
-        )
+        return render(request, 'core/rq_task.html', {
+            'queue': queue,
+            'job': job,
+            'queue_index': queue_index,
+            'dependency_id': job._dependency_id,
+            'exc_info': exc_info,
+        })
 
 
 class BackgroundTaskDeleteView(BaseRQView):
+
     def get(self, request, job_id):
         if not request.htmx:
             return redirect(reverse('core:background_queue_list'))
 
         form = ConfirmationForm(initial=request.GET)
 
-        return render(
-            request,
-            'htmx/delete_form.html',
-            {
-                'object_type': 'background task',
-                'object': job_id,
-                'form': form,
-                'form_url': reverse('core:background_task_delete', kwargs={'job_id': job_id}),
-            },
-        )
+        return render(request, 'htmx/delete_form.html', {
+            'object_type': 'background task',
+            'object': job_id,
+            'form': form,
+            'form_url': reverse('core:background_task_delete', kwargs={'job_id': job_id})
+        })
 
     def post(self, request, job_id):
         form = ConfirmationForm(request.POST)
@@ -510,6 +489,7 @@ class BackgroundTaskDeleteView(BaseRQView):
 
 
 class BackgroundTaskRequeueView(BaseRQView):
+
     def get(self, request, job_id):
         requeue_rq_job(job_id)
         messages.success(request, _('Job {id} has been re-enqueued.').format(id=job_id))
@@ -517,6 +497,7 @@ class BackgroundTaskRequeueView(BaseRQView):
 
 
 class BackgroundTaskEnqueueView(BaseRQView):
+
     def get(self, request, job_id):
         # all the RQ queues should use the same connection
         enqueue_rq_job(job_id)
@@ -525,6 +506,7 @@ class BackgroundTaskEnqueueView(BaseRQView):
 
 
 class BackgroundTaskStopView(BaseRQView):
+
     def get(self, request, job_id):
         stopped_jobs = stop_rq_job(job_id)
         if len(stopped_jobs) == 1:
@@ -557,26 +539,19 @@ class WorkerListView(TableMixin, BaseRQView):
                 # Hide selection checkboxes
                 if 'pk' in table.base_columns:
                     table.columns.hide('pk')
-            return render(
-                request,
-                'htmx/table.html',
-                {
-                    'table': table,
-                    'queue': queue,
-                },
-            )
-
-        return render(
-            request,
-            'core/rq_worker_list.html',
-            {
+            return render(request, 'htmx/table.html', {
                 'table': table,
                 'queue': queue,
-            },
-        )
+            })
+
+        return render(request, 'core/rq_worker_list.html', {
+            'table': table,
+            'queue': queue,
+        })
 
 
 class WorkerView(BaseRQView):
+
     def get(self, request, key):
         # all the RQ queues should use the same connection
         config = QUEUES_LIST[0]
@@ -584,35 +559,32 @@ class WorkerView(BaseRQView):
         # Convert microseconds to milliseconds
         worker.total_working_time = worker.total_working_time / 1000
 
-        return render(
-            request,
-            'core/rq_worker.html',
-            {
-                'worker': worker,
-                'job': worker.get_current_job(),
-                'total_working_time': worker.total_working_time * 1000,
-            },
-        )
+        return render(request, 'core/rq_worker.html', {
+            'worker': worker,
+            'job': worker.get_current_job(),
+            'total_working_time': worker.total_working_time * 1000,
+        })
 
 
 #
 # System
 #
 
-
 class SystemView(UserPassesTestMixin, View):
+
     def test_func(self):
         return self.request.user.is_superuser
 
     def get(self, request):
+
         # System status
         psql_version = db_name = db_size = None
         try:
             with connection.cursor() as cursor:
-                cursor.execute('SELECT version()')
+                cursor.execute("SELECT version()")
                 psql_version = cursor.fetchone()[0]
                 psql_version = psql_version.split('(')[0].strip()
-                cursor.execute('SELECT current_database()')
+                cursor.execute("SELECT current_database()")
                 db_name = cursor.fetchone()[0]
                 cursor.execute(f"SELECT pg_size_pretty(pg_database_size('{db_name}'))")
                 db_size = cursor.fetchone()[0]
@@ -651,8 +623,12 @@ class SystemView(UserPassesTestMixin, View):
                 **stats,
                 'django_apps': django_apps,
                 'plugins': plugins,
-                'config': {k: getattr(config, k) for k in sorted(params)},
-                'objects': {f'{ot.app_label}.{ot.model}': count for ot, count in objects.items()},
+                'config': {
+                    k: getattr(config, k) for k in sorted(params)
+                },
+                'objects': {
+                    f'{ot.app_label}.{ot.model}': count for ot, count in objects.items()
+                },
             }
             response = HttpResponse(json.dumps(data, cls=ConfigJSONEncoder, indent=4), content_type='text/json')
             response['Content-Disposition'] = 'attachment; filename="netbox.json"'
@@ -663,23 +639,18 @@ class SystemView(UserPassesTestMixin, View):
             if hasattr(config, attr) and getattr(config, attr, None):
                 setattr(config, attr, json.dumps(getattr(config, attr), cls=ConfigJSONEncoder, indent=4))
 
-        return render(
-            request,
-            'core/system.html',
-            {
-                'stats': stats,
-                'django_apps': django_apps,
-                'config': config,
-                'plugins': plugins,
-                'objects': objects,
-            },
-        )
+        return render(request, 'core/system.html', {
+            'stats': stats,
+            'django_apps': django_apps,
+            'config': config,
+            'plugins': plugins,
+            'objects': objects,
+        })
 
 
 #
 # Plugins
 #
-
 
 class BasePluginView(UserPassesTestMixin, View):
     CACHE_KEY_CATALOG_ERROR = 'plugins-catalog-error'
@@ -695,12 +666,13 @@ class BasePluginView(UserPassesTestMixin, View):
             if not catalog_plugins and not settings.ISOLATED_DEPLOYMENT:
                 # Cache for 5 minutes to avoid spamming connection
                 cache.set(self.CACHE_KEY_CATALOG_ERROR, True, 300)
-                messages.warning(request, _('Plugins catalog could not be loaded'))
+                messages.warning(request, _("Plugins catalog could not be loaded"))
 
         return get_local_plugins(catalog_plugins)
 
 
 class PluginListView(BasePluginView):
+
     def get(self, request):
         q = request.GET.get('q', None)
 
@@ -715,38 +687,28 @@ class PluginListView(BasePluginView):
 
         # If this is an HTMX request, return only the rendered table HTML
         if htmx_partial(request):
-            return render(
-                request,
-                'htmx/table.html',
-                {
-                    'table': table,
-                },
-            )
-
-        return render(
-            request,
-            'core/plugin_list.html',
-            {
+            return render(request, 'htmx/table.html', {
                 'table': table,
-            },
-        )
+            })
+
+        return render(request, 'core/plugin_list.html', {
+            'table': table,
+        })
 
 
 class PluginView(BasePluginView):
+
     def get(self, request, name):
+
         plugins = self.get_cached_plugins(request)
         if name not in plugins:
-            raise Http404(_('Plugin {name} not found').format(name=name))
+            raise Http404(_("Plugin {name} not found").format(name=name))
         plugin = plugins[name]
 
         table = PluginVersionTable(plugin.release_recent_history, user=request.user)
         table.configure(request)
 
-        return render(
-            request,
-            'core/plugin.html',
-            {
-                'plugin': plugin,
-                'table': table,
-            },
-        )
+        return render(request, 'core/plugin.html', {
+            'plugin': plugin,
+            'table': table,
+        })

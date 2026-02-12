@@ -17,73 +17,56 @@ __all__ = (
 
 
 class CustomFieldChoiceSetSerializer(OwnerMixin, ChangeLogMessageSerializer, ValidatedModelSerializer):
-    base_choices = ChoiceField(choices=CustomFieldChoiceSetBaseChoices, required=False)
-    extra_choices = serializers.ListField(child=serializers.ListField(min_length=2, max_length=2))
+    base_choices = ChoiceField(
+        choices=CustomFieldChoiceSetBaseChoices,
+        required=False
+    )
+    extra_choices = serializers.ListField(
+        child=serializers.ListField(
+            min_length=2,
+            max_length=2
+        )
+    )
     choices_count = serializers.IntegerField(read_only=True)
 
     class Meta:
         model = CustomFieldChoiceSet
         fields = [
-            'id',
-            'url',
-            'display_url',
-            'display',
-            'name',
-            'description',
-            'base_choices',
-            'extra_choices',
-            'order_alphabetically',
-            'choices_count',
-            'owner',
-            'created',
-            'last_updated',
+            'id', 'url', 'display_url', 'display', 'name', 'description', 'base_choices', 'extra_choices',
+            'order_alphabetically', 'choices_count', 'owner', 'created', 'last_updated',
         ]
         brief_fields = ('id', 'url', 'display', 'name', 'description', 'choices_count')
 
 
 class CustomFieldSerializer(OwnerMixin, ChangeLogMessageSerializer, ValidatedModelSerializer):
-    object_types = ContentTypeField(queryset=ObjectType.objects.with_feature('custom_fields'), many=True)
+    object_types = ContentTypeField(
+        queryset=ObjectType.objects.with_feature('custom_fields'),
+        many=True
+    )
     type = ChoiceField(choices=CustomFieldTypeChoices)
-    related_object_type = ContentTypeField(queryset=ObjectType.objects.all(), required=False, allow_null=True)
+    related_object_type = ContentTypeField(
+        queryset=ObjectType.objects.all(),
+        required=False,
+        allow_null=True
+    )
     filter_logic = ChoiceField(choices=CustomFieldFilterLogicChoices, required=False)
     data_type = serializers.SerializerMethodField()
-    choice_set = CustomFieldChoiceSetSerializer(nested=True, required=False, allow_null=True)
+    choice_set = CustomFieldChoiceSetSerializer(
+        nested=True,
+        required=False,
+        allow_null=True
+    )
     ui_visible = ChoiceField(choices=CustomFieldUIVisibleChoices, required=False)
     ui_editable = ChoiceField(choices=CustomFieldUIEditableChoices, required=False)
 
     class Meta:
         model = CustomField
         fields = [
-            'id',
-            'url',
-            'display_url',
-            'display',
-            'object_types',
-            'type',
-            'related_object_type',
-            'data_type',
-            'name',
-            'label',
-            'group_name',
-            'description',
-            'required',
-            'unique',
-            'search_weight',
-            'filter_logic',
-            'ui_visible',
-            'ui_editable',
-            'is_cloneable',
-            'default',
-            'related_object_filter',
-            'weight',
-            'validation_minimum',
-            'validation_maximum',
-            'validation_regex',
-            'choice_set',
-            'owner',
-            'comments',
-            'created',
-            'last_updated',
+            'id', 'url', 'display_url', 'display', 'object_types', 'type', 'related_object_type', 'data_type',
+            'name', 'label', 'group_name', 'description', 'required', 'unique', 'search_weight', 'filter_logic',
+            'ui_visible', 'ui_editable', 'is_cloneable', 'default', 'related_object_filter', 'weight',
+            'validation_minimum', 'validation_maximum', 'validation_regex', 'choice_set', 'owner', 'comments',
+            'created', 'last_updated',
         ]
         brief_fields = ('id', 'url', 'display', 'name', 'description')
 

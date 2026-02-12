@@ -11,7 +11,9 @@ def update_virtualmachine_disk(instance, **kwargs):
     When a VirtualDisk has been modified, update the aggregate disk_size value of its VM.
     """
     vm = instance.virtual_machine
-    VirtualMachine.objects.filter(pk=vm.pk).update(disk=vm.virtualdisks.aggregate(Sum('size'))['size__sum'])
+    VirtualMachine.objects.filter(pk=vm.pk).update(
+        disk=vm.virtualdisks.aggregate(Sum('size'))['size__sum']
+    )
 
 
 @receiver(post_save, sender=Cluster)

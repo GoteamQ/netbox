@@ -17,9 +17,9 @@ class CustomFieldModelSerializer(serializers.Serializer):
     """
     Introduces support for custom field assignment and representation.
     """
-
     custom_fields = CustomFieldsDataField(
-        source='custom_field_data', default=CreateOnlyDefault(CustomFieldDefaultValues())
+        source='custom_field_data',
+        default=CreateOnlyDefault(CustomFieldDefaultValues())
     )
 
 
@@ -28,7 +28,6 @@ class TaggableModelSerializer(serializers.Serializer):
     Introduces support for Tag assignment. Adds `tags` serialization, and handles tag assignment
     on create() and update().
     """
-
     tags = NestedTagSerializer(many=True, required=False)
 
     def create(self, validated_data):
@@ -82,10 +81,12 @@ class ChangeLogMessageSerializer(serializers.Serializer):
 
 
 class NetBoxModelSerializer(
-    ChangeLogMessageSerializer, TaggableModelSerializer, CustomFieldModelSerializer, ValidatedModelSerializer
+    ChangeLogMessageSerializer,
+    TaggableModelSerializer,
+    CustomFieldModelSerializer,
+    ValidatedModelSerializer
 ):
     """
     Adds support for custom fields and tags.
     """
-
     pass
