@@ -779,12 +779,10 @@ SPECTACULAR_SETTINGS = {
     'VERSION': RELEASE.full_version,
     'COMPONENT_SPLIT_REQUEST': True,
     'REDOC_DIST': 'SIDECAR',
-    'SERVERS': [
-        {
-            'url': BASE_PATH,
-            'description': 'NetBox',
-        }
-    ],
+    'SERVERS': [{
+        'url': '',
+        'description': 'NetBox',
+    }],
     'SWAGGER_UI_DIST': 'SIDECAR',
     'SWAGGER_UI_FAVICON_HREF': 'SIDECAR',
     'POSTPROCESSING_HOOKS': [],
