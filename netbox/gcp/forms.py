@@ -1,5 +1,5 @@
 from django import forms
-from netbox.forms import NetBoxModelForm, NetBoxModelFilterSetForm, NetBoxModelBulkEditForm, NetBoxModelImportForm, NetBoxModelBulkEditForm, NetBoxModelImportForm
+from netbox.forms import NetBoxModelForm, NetBoxModelFilterSetForm, NetBoxModelBulkEditForm, NetBoxModelImportForm
 from utilities.forms.fields import DynamicModelChoiceField
 from .models import (
     GCPOrganization,
@@ -657,6 +657,7 @@ class ServiceConnectEndpointFilterForm(NetBoxModelFilterSetForm):
     name = forms.CharField(required=False)
     region = forms.CharField(required=False)
 
+
 class GCPOrganizationBulkEditForm(NetBoxModelBulkEditForm):
     is_active = forms.NullBooleanField(
         required=False,
@@ -676,7 +677,7 @@ class GCPOrganizationBulkEditForm(NetBoxModelBulkEditForm):
         ]),
         label='Auto Discover'
     )
-    
+
     model = GCPOrganization
     fieldsets = (
         (None, ('is_active', 'auto_discover')),

@@ -1,7 +1,5 @@
-from django.conf import settings
 from django.core.cache import cache
 from django.test import override_settings, TestCase
-import copy
 
 from core.models import ConfigRevision
 from netbox.config import clear_config, get_config
