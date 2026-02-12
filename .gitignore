@@ -52,3 +52,8 @@ cookies.txt
 # Docker
 docker-compose.yml
 docker-compose.override.yml
+docker-compose.cloud.yml
+
+# GCP / Cloud Build
+cloudbuild.yaml
+.gcloudignore

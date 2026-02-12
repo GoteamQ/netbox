@@ -4,6 +4,7 @@ CORE_APPS = (
     'core',
     'dcim',
     'extras',
+    'gcp',
     'ipam',
     'tenancy',
     'users',
