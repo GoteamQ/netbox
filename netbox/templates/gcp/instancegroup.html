@@ -1,0 +1,59 @@
+{% extends 'generic/object.html' %}
+{% load render_table from django_tables2 %}
+
+{% block content %}
+  <div class="row">
+    <div class="col col-md-6">
+      <div class="card">
+        <h5 class="card-header">Instance Group</h5>
+        <div class="card-body">
+          <table class="table table-hover attr-table">
+            <tr>
+              <th scope="row">Name</th>
+              <td>{{ object.name }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Project</th>
+              <td>
+                {% if object.project %}
+                  <a href="{{ object.project.get_absolute_url }}">{{ object.project }}</a>
+                {% else %}
+                  {{ ''|placeholder }}
+                {% endif %}
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Zone</th>
+              <td>{{ object.zone|placeholder }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Region</th>
+              <td>{{ object.region|placeholder }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Template</th>
+              <td>
+                {% if object.template %}
+                  <a href="{{ object.template.get_absolute_url }}">{{ object.template }}</a>
+                {% else %}
+                  {{ ''|placeholder }}
+                {% endif %}
+              </td>
+            </tr>
+            <tr>
+              <th scope="row">Target Size</th>
+              <td>{{ object.target_size }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Is Managed</th>
+              <td>{{ object.is_managed|placeholder }}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="col col-md-6">
+      <!-- Add related panels here if needed -->
+    </div>
+  </div>
+{% endblock %}

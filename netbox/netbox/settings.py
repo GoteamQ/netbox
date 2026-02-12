@@ -467,6 +467,7 @@ INSTALLED_APPS = [
     'account',
     'circuits',
     'dcim',
+    'gcp',
     'ipam',
     'extras',
     'tenancy',

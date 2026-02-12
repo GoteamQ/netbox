@@ -1,0 +1,60 @@
+{% extends 'generic/object.html' %}
+{% load render_table from django_tables2 %}
+
+{% block content %}
+  <div class="row">
+    <div class="col col-md-6">
+      <div class="card">
+        <h5 class="card-header">Cloud Router</h5>
+        <div class="card-body">
+          <table class="table table-hover attr-table">
+            <tr>
+              <th scope="row">Name</th>
+              <td>{{ object.name }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Project</th>
+              <td>
+                {% if object.project %}
+                  <a href="{{ object.project.get_absolute_url }}">{{ object.project }}</a>
+                {% else %}
+                  {{ ''|placeholder }}
+                {% endif %}
+              </td>
+            </tr>
+            <tr>
+               <th scope="row">Network</th>
+               <td>
+                 {% if object.network %}
+                   <a href="{{ object.network.get_absolute_url }}">{{ object.network }}</a>
+                 {% else %}
+                   {{ ''|placeholder }}
+                 {% endif %}
+               </td>
+             </tr>
+             <tr>
+              <th scope="row">Region</th>
+              <td>{{ object.region|placeholder }}</td>
+            </tr>
+             <tr>
+              <th scope="row">ASN</th>
+              <td>{{ object.asn }}</td>
+            </tr>
+             <tr>
+              <th scope="row">Advertise Mode</th>
+              <td>{{ object.advertise_mode }}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+    <div class="col col-md-6">
+      <div class="card">
+        <h5 class="card-header">Cloud NATs</h5>
+        <div class="card-body">
+             {% include 'inc/panel_table.html' with table=nats_table %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

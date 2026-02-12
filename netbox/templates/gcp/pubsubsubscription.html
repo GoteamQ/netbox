@@ -1,0 +1,45 @@
+{% extends 'generic/object.html' %}
+{% load render_table from django_tables2 %}
+
+{% block content %}
+  <div class="row mb-3">
+    <div class="col col-md-6">
+      <div class="card">
+        <h5 class="card-header">Pub/Sub Subscription</h5>
+        <div class="card-body">
+          <table class="table table-hover attr-table">
+            <tr>
+              <th scope="row">Name</th>
+              <td>{{ object.name }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Project</th>
+              <td><a href="{{ object.project.get_absolute_url }}">{{ object.project }}</a></td>
+            </tr>
+            <tr>
+              <th scope="row">Topic</th>
+              <td><a href="{{ object.topic.get_absolute_url }}">{{ object.topic }}</a></td>
+            </tr>
+            <tr>
+              <th scope="row">Ack Deadline (seconds)</th>
+              <td>{{ object.ack_deadline_seconds }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Push Endpoint</th>
+              <td>{{ object.push_endpoint|placeholder }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Message Retention Duration</th>
+              <td>{{ object.message_retention_duration }}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      {% include 'inc/panels/custom_fields.html' %}
+    </div>
+    <div class="col col-md-6">
+      {% include 'inc/panels/tags.html' %}
+      {% include 'inc/panels/comments.html' %}
+    </div>
+  </div>
+{% endblock content %}

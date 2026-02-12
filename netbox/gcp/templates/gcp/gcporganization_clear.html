@@ -1,0 +1,32 @@
+{% extends 'generic/object_delete.html' %}
+{% load helpers %}
+
+{% block form %}
+    <form action="" method="post" class="form">
+        {% csrf_token %}
+        <div class="card">
+            <h5 class="card-header">
+                Clear Discovered Data
+            </h5>
+            <div class="card-body">
+                <p>
+                    Are you sure you want to delete all discovered data for <strong>{{ object }}</strong>?
+                </p>
+                <p>
+                    This will permanently delete:
+                    <ul>
+                        <li>All discovered <strong>Projects</strong> and their resources (Instances, VPCs, etc)</li>
+                        <li>All <strong>Discovery Logs</strong> history</li>
+                    </ul>
+                </p>
+                <p class="text-danger">
+                    <strong>Warning:</strong> This action cannot be undone!
+                </p>
+            </div>
+            <div class="card-footer text-end">
+                <a href="{{ return_url }}" class="btn btn-outline-secondary">Cancel</a>
+                <button type="submit" class="btn btn-danger">Confirm Clear</button>
+            </div>
+        </div>
+    </form>
+{% endblock %}

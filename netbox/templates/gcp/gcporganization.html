@@ -1,0 +1,173 @@
+{% extends 'generic/object.html' %}
+{% load helpers %}
+{% load render_table from django_tables2 %}
+
+{% block extra_controls %}
+    {% if object.discovery_status == 'running' %}
+    <form action="{% url 'gcp:gcporganization_cancel' object.pk %}" method="post" style="display: inline-block;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-warning">
+            <i class="mdi mdi-close-circle"></i> Cancel
+        </button>
+    </form>
+    {% else %}
+    <form action="{% url 'gcp:gcporganization_discover' object.pk %}" method="post" style="display: inline-block;">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">
+            <i class="mdi mdi-refresh"></i> Discover
+        </button>
+    </form>
+    {% endif %}
+    
+    <a href="{% url 'gcp:gcporganization_clear' object.pk %}" class="btn btn-danger">
+        <i class="mdi mdi-delete-alert"></i> Clear
+    </a>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col-md-6">
+        <div class="card">
+            <h5 class="card-header">Organization Details</h5>
+            <div class="card-body">
+                <table class="table table-hover attr-table">
+                    <tr>
+                        <th scope="row">Name</th>
+                        <td>{{ object.name }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Organization ID</th>
+                        <td>{{ object.organization_id }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Active</th>
+                        <td>{% if object.is_active %}Active{% else %}Inactive{% endif %}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Auto Discovery</th>
+                        <td>{% if object.auto_discover %}Enabled{% else %}Disabled{% endif %}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <h5 class="card-header">Discovery Status</h5>
+            <div class="card-body">
+                <table class="table table-hover attr-table">
+                    <tr>
+                        <th scope="row">Status</th>
+                        <td>
+                            {{ object.get_discovery_status_display }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Last Discovery</th>
+                        <td>{{ object.last_discovery|placeholder }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Projects Discovered</th>
+                        <td>{{ project_count }}</td>
+                    </tr>
+                    {% if object.discovery_error %}
+                    <tr>
+                        <th scope="row">Last Error</th>
+                        <td><span class="text-danger">{{ object.discovery_error }}</span></td>
+                    </tr>
+                    {% endif %}
+                </table>
+                <div class="mt-2">
+                    <form method="post" action="{% url 'gcp:gcporganization_discover' pk=object.pk %}" style="display: inline-block;">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-primary" {% if object.discovery_status == 'running' %}disabled{% endif %}>
+                            <i class="mdi mdi-magnify"></i> Run Discovery
+                        </button>
+                    </form>
+                    <form method="post" action="{% url 'gcp:gcporganization_cancel' pk=object.pk %}" style="display: inline-block;" class="ms-2">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-danger" {% if object.discovery_status != 'running' %}disabled{% endif %}>
+                            <i class="mdi mdi-cancel"></i> Cancel
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-md-12">
+        <div class="card">
+            <h5 class="card-header">Discovery Options</h5>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <strong>Compute:</strong> {% if object.discover_compute %}Yes{% else %}No{% endif %}
+                    </div>
+                    <div class="col-md-3">
+                        <strong>Networking:</strong> {% if object.discover_networking %}Yes{% else %}No{% endif %}
+                    </div>
+                    <div class="col-md-3">
+                        <strong>Databases:</strong> {% if object.discover_databases %}Yes{% else %}No{% endif %}
+                    </div>
+                    <div class="col-md-3">
+                        <strong>Storage:</strong> {% if object.discover_storage %}Yes{% else %}No{% endif %}
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md-3">
+                        <strong>Kubernetes:</strong> {% if object.discover_kubernetes %}Yes{% else %}No{% endif %}
+                    </div>
+                    <div class="col-md-3">
+                        <strong>Serverless:</strong> {% if object.discover_serverless %}Yes{% else %}No{% endif %}
+                    </div>
+                    <div class="col-md-3">
+                        <strong>IAM:</strong> {% if object.discover_iam %}Yes{% else %}No{% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if discovery_logs %}
+<div class="row mb-3">
+    <div class="col-md-12">
+        <div class="card">
+            <h5 class="card-header">Recent Discovery Logs</h5>
+            <div class="card-body">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Started</th>
+                            <th>Completed</th>
+                            <th>Status</th>
+                            <th>Projects</th>
+                            <th>Instances</th>
+                            <th>Networks</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in discovery_logs %}
+                        <tr>
+                            <td><a href="{% url 'gcp:discoverylog' pk=log.pk %}">{{ log.started_at }}</a></td>
+                            <td>{{ log.completed_at|placeholder }}</td>
+                            <td>
+                                {{ log.get_status_display }}
+                            </td>
+                            <td>{{ log.projects_discovered }}</td>
+                            <td>{{ log.instances_discovered }}</td>
+                            <td>{{ log.networks_discovered }}</td>
+                            <td>{{ log.total_resources }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

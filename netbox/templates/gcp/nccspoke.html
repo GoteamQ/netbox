@@ -1,0 +1,82 @@
+{% extends 'generic/object.html' %}
+{% load render_table from django_tables2 %}
+
+{% block content %}
+  <div class="row mb-3">
+    <div class="col col-md-6">
+      <div class="card">
+        <h5 class="card-header">NCC Spoke</h5>
+        <div class="card-body">
+          <table class="table table-hover attr-table">
+            <tr>
+              <th scope="row">Name</th>
+              <td>{{ object.name }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Project</th>
+              <td><a href="{{ object.project.get_absolute_url }}">{{ object.project }}</a></td>
+            </tr>
+            <tr>
+              <th scope="row">Hub</th>
+              <td><a href="{{ object.hub.get_absolute_url }}">{{ object.hub }}</a></td>
+            </tr>
+            <tr>
+              <th scope="row">Location</th>
+              <td>{{ object.location }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Description</th>
+              <td>{{ object.description|placeholder }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Spoke Type</th>
+              <td>{{ object.spoke_type }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Linked VPC Network</th>
+              <td>
+                {% if object.linked_vpc_network %}
+                  <a href="{{ object.linked_vpc_network.get_absolute_url }}">{{ object.linked_vpc_network }}</a>
+                {% else %}
+                  {{ ''|placeholder }}
+                {% endif %}
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      {% include 'inc/panels/custom_fields.html' %}
+    </div>
+    <div class="col col-md-6">
+        <div class="card">
+            <h5 class="card-header">Linked Resources</h5>
+            <div class="card-body">
+              <table class="table table-hover attr-table">
+                <tr>
+                    <th scope="row">VPN Tunnels</th>
+                    <td>
+                        {% if object.linked_vpn_tunnels %}
+                            <pre>{{ object.linked_vpn_tunnels|json_script:"vpn-tunnels" }}</pre>
+                        {% else %}
+                            {{ ''|placeholder }}
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th scope="row">Interconnect Attachments</th>
+                    <td>
+                        {% if object.linked_interconnect_attachments %}
+                            <pre>{{ object.linked_interconnect_attachments|json_script:"interconnect-attachments" }}</pre>
+                        {% else %}
+                            {{ ''|placeholder }}
+                        {% endif %}
+                    </td>
+                </tr>
+              </table>
+            </div>
+        </div>
+      {% include 'inc/panels/tags.html' %}
+      {% include 'inc/panels/comments.html' %}
+    </div>
+  </div>
+{% endblock content %}

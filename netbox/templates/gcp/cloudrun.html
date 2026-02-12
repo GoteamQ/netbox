@@ -1,0 +1,61 @@
+{% extends 'generic/object.html' %}
+{% load render_table from django_tables2 %}
+
+{% block content %}
+  <div class="row mb-3">
+    <div class="col col-md-6">
+      <div class="card">
+        <h5 class="card-header">Cloud Run Service</h5>
+        <div class="card-body">
+          <table class="table table-hover attr-table">
+            <tr>
+              <th scope="row">Name</th>
+              <td>{{ object.name }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Project</th>
+              <td><a href="{{ object.project.get_absolute_url }}">{{ object.project }}</a></td>
+            </tr>
+            <tr>
+              <th scope="row">Region</th>
+              <td>{{ object.region }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Image</th>
+              <td>{{ object.image|placeholder }}</td>
+            </tr>
+            <tr>
+              <th scope="row">URL</th>
+              <td>{{ object.url|placeholder }}</td>
+            </tr>
+            <tr>
+              <th scope="row">CPU</th>
+              <td>{{ object.cpu }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Memory</th>
+              <td>{{ object.memory }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Min Instances</th>
+              <td>{{ object.min_instances }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Max Instances</th>
+              <td>{{ object.max_instances }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Status</th>
+              <td>{{ object.status }}</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      {% include 'inc/panels/custom_fields.html' %}
+    </div>
+    <div class="col col-md-6">
+      {% include 'inc/panels/tags.html' %}
+      {% include 'inc/panels/comments.html' %}
+    </div>
+  </div>
+{% endblock content %}

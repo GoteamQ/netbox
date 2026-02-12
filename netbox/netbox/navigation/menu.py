@@ -461,6 +461,8 @@ def get_menus():
     This ensures plugin menus registered during app initialization are included.
     The result is cached since menus don't change without a Django restart.
     """
+    from gcp.navigation import GCP_MENU
+
     menus = [
         ORGANIZATION_MENU,
         RACKS_MENU,
@@ -475,6 +477,7 @@ def get_menus():
         PROVISIONING_MENU,
         CUSTOMIZATION_MENU,
         OPERATIONS_MENU,
+        GCP_MENU,
     ]
 
     # Add top-level plugin menus

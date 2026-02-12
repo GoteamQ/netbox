@@ -1,0 +1,55 @@
+{% extends 'generic/object.html' %}
+{% load render_table from django_tables2 %}
+
+{% block content %}
+  <div class="row mb-3">
+    <div class="col col-md-6">
+      <div class="card">
+        <h5 class="card-header">VPN Gateway</h5>
+        <div class="card-body">
+          <table class="table table-hover attr-table">
+            <tr>
+              <th scope="row">Name</th>
+              <td>{{ object.name }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Project</th>
+              <td><a href="{{ object.project.get_absolute_url }}">{{ object.project }}</a></td>
+            </tr>
+            <tr>
+              <th scope="row">Network</th>
+              <td><a href="{{ object.network.get_absolute_url }}">{{ object.network }}</a></td>
+            </tr>
+            <tr>
+              <th scope="row">Region</th>
+              <td>{{ object.region }}</td>
+            </tr>
+            <tr>
+              <th scope="row">Gateway Type</th>
+              <td>{{ object.gateway_type }}</td>
+            </tr>
+            <tr>
+                <th scope="row">IP Addresses</th>
+                <td>
+                    {% if object.ip_addresses %}
+                        <ul>
+                        {% for ip in object.ip_addresses %}
+                            <li>{{ ip }}</li>
+                        {% endfor %}
+                        </ul>
+                    {% else %}
+                        {{ ''|placeholder }}
+                    {% endif %}
+                </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      {% include 'inc/panels/custom_fields.html' %}
+    </div>
+    <div class="col col-md-6">
+      {% include 'inc/panels/tags.html' %}
+      {% include 'inc/panels/comments.html' %}
+    </div>
+  </div>
+{% endblock content %}
