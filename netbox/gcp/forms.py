@@ -714,3 +714,651 @@ class DiscoveryLogFilterForm(NetBoxModelFilterSetForm):
         choices=[('', '---------')] + list(DiscoveryLog.status.field.choices),
         required=False
     )
+
+
+# ============================================================
+# BulkEdit Forms
+# ============================================================
+
+class DiscoveryLogBulkEditForm(NetBoxModelBulkEditForm):
+    model = DiscoveryLog
+    fieldsets = ()
+
+
+class GCPProjectBulkEditForm(NetBoxModelBulkEditForm):
+    status = forms.CharField(max_length=50, required=False)
+
+    model = GCPProject
+    fieldsets = (
+        (None, ('status',)),
+    )
+
+
+class ComputeInstanceBulkEditForm(NetBoxModelBulkEditForm):
+    status = forms.CharField(max_length=50, required=False)
+
+    model = ComputeInstance
+    fieldsets = (
+        (None, ('status',)),
+    )
+
+
+class InstanceTemplateBulkEditForm(NetBoxModelBulkEditForm):
+    model = InstanceTemplate
+    fieldsets = ()
+
+
+class InstanceGroupBulkEditForm(NetBoxModelBulkEditForm):
+    target_size = forms.IntegerField(required=False)
+
+    model = InstanceGroup
+    fieldsets = (
+        (None, ('target_size',)),
+    )
+
+
+class VPCNetworkBulkEditForm(NetBoxModelBulkEditForm):
+    routing_mode = forms.CharField(max_length=50, required=False)
+
+    model = VPCNetwork
+    fieldsets = (
+        (None, ('routing_mode',)),
+    )
+
+
+class SubnetBulkEditForm(NetBoxModelBulkEditForm):
+    model = Subnet
+    fieldsets = ()
+
+
+class FirewallRuleBulkEditForm(NetBoxModelBulkEditForm):
+    disabled = forms.NullBooleanField(required=False)
+
+    model = FirewallRule
+    fieldsets = (
+        (None, ('disabled',)),
+    )
+
+
+class CloudRouterBulkEditForm(NetBoxModelBulkEditForm):
+    model = CloudRouter
+    fieldsets = ()
+
+
+class CloudNATBulkEditForm(NetBoxModelBulkEditForm):
+    model = CloudNAT
+    fieldsets = ()
+
+
+class LoadBalancerBulkEditForm(NetBoxModelBulkEditForm):
+    model = LoadBalancer
+    fieldsets = ()
+
+
+class CloudSQLInstanceBulkEditForm(NetBoxModelBulkEditForm):
+    status = forms.CharField(max_length=50, required=False)
+
+    model = CloudSQLInstance
+    fieldsets = (
+        (None, ('status',)),
+    )
+
+
+class CloudSpannerInstanceBulkEditForm(NetBoxModelBulkEditForm):
+    model = CloudSpannerInstance
+    fieldsets = ()
+
+
+class FirestoreDatabaseBulkEditForm(NetBoxModelBulkEditForm):
+    model = FirestoreDatabase
+    fieldsets = ()
+
+
+class BigtableInstanceBulkEditForm(NetBoxModelBulkEditForm):
+    model = BigtableInstance
+    fieldsets = ()
+
+
+class CloudStorageBucketBulkEditForm(NetBoxModelBulkEditForm):
+    storage_class = forms.CharField(max_length=50, required=False)
+
+    model = CloudStorageBucket
+    fieldsets = (
+        (None, ('storage_class',)),
+    )
+
+
+class PersistentDiskBulkEditForm(NetBoxModelBulkEditForm):
+    model = PersistentDisk
+    fieldsets = ()
+
+
+class GKEClusterBulkEditForm(NetBoxModelBulkEditForm):
+    status = forms.CharField(max_length=50, required=False)
+
+    model = GKECluster
+    fieldsets = (
+        (None, ('status',)),
+    )
+
+
+class GKENodePoolBulkEditForm(NetBoxModelBulkEditForm):
+    model = GKENodePool
+    fieldsets = ()
+
+
+class ServiceAccountBulkEditForm(NetBoxModelBulkEditForm):
+    disabled = forms.NullBooleanField(required=False)
+
+    model = ServiceAccount
+    fieldsets = (
+        (None, ('disabled',)),
+    )
+
+
+class IAMRoleBulkEditForm(NetBoxModelBulkEditForm):
+    model = IAMRole
+    fieldsets = ()
+
+
+class IAMBindingBulkEditForm(NetBoxModelBulkEditForm):
+    model = IAMBinding
+    fieldsets = ()
+
+
+class CloudFunctionBulkEditForm(NetBoxModelBulkEditForm):
+    status = forms.CharField(max_length=50, required=False)
+
+    model = CloudFunction
+    fieldsets = (
+        (None, ('status',)),
+    )
+
+
+class CloudRunBulkEditForm(NetBoxModelBulkEditForm):
+    status = forms.CharField(max_length=50, required=False)
+
+    model = CloudRun
+    fieldsets = (
+        (None, ('status',)),
+    )
+
+
+class PubSubTopicBulkEditForm(NetBoxModelBulkEditForm):
+    model = PubSubTopic
+    fieldsets = ()
+
+
+class PubSubSubscriptionBulkEditForm(NetBoxModelBulkEditForm):
+    model = PubSubSubscription
+    fieldsets = ()
+
+
+class SecretManagerSecretBulkEditForm(NetBoxModelBulkEditForm):
+    model = SecretManagerSecret
+    fieldsets = ()
+
+
+class CloudDNSZoneBulkEditForm(NetBoxModelBulkEditForm):
+    model = CloudDNSZone
+    fieldsets = ()
+
+
+class CloudDNSRecordBulkEditForm(NetBoxModelBulkEditForm):
+    model = CloudDNSRecord
+    fieldsets = ()
+
+
+class MemorystoreInstanceBulkEditForm(NetBoxModelBulkEditForm):
+    model = MemorystoreInstance
+    fieldsets = ()
+
+
+class NCCHubBulkEditForm(NetBoxModelBulkEditForm):
+    model = NCCHub
+    fieldsets = ()
+
+
+class NCCSpokeBulkEditForm(NetBoxModelBulkEditForm):
+    model = NCCSpoke
+    fieldsets = ()
+
+
+class VPNGatewayBulkEditForm(NetBoxModelBulkEditForm):
+    model = VPNGateway
+    fieldsets = ()
+
+
+class ExternalVPNGatewayBulkEditForm(NetBoxModelBulkEditForm):
+    model = ExternalVPNGateway
+    fieldsets = ()
+
+
+class VPNTunnelBulkEditForm(NetBoxModelBulkEditForm):
+    model = VPNTunnel
+    fieldsets = ()
+
+
+class InterconnectAttachmentBulkEditForm(NetBoxModelBulkEditForm):
+    model = InterconnectAttachment
+    fieldsets = ()
+
+
+class ServiceAttachmentBulkEditForm(NetBoxModelBulkEditForm):
+    model = ServiceAttachment
+    fieldsets = ()
+
+
+class ServiceConnectEndpointBulkEditForm(NetBoxModelBulkEditForm):
+    model = ServiceConnectEndpoint
+    fieldsets = ()
+
+
+# ============================================================
+# Import Forms
+# ============================================================
+
+class DiscoveryLogImportForm(NetBoxModelImportForm):
+    class Meta:
+        model = DiscoveryLog
+        fields = ('organization', 'status', 'error_message')
+
+
+class GCPProjectImportForm(NetBoxModelImportForm):
+    class Meta:
+        model = GCPProject
+        fields = ('name', 'project_id', 'project_number', 'status')
+
+
+class ComputeInstanceImportForm(NetBoxModelImportForm):
+    class Meta:
+        model = ComputeInstance
+        fields = ('name', 'project', 'zone', 'machine_type', 'status', 'internal_ip', 'external_ip')
+
+
+class InstanceTemplateImportForm(NetBoxModelImportForm):
+    class Meta:
+        model = InstanceTemplate
+        fields = ('name', 'project', 'machine_type', 'disk_size_gb')
+
+
+class InstanceGroupImportForm(NetBoxModelImportForm):
+    class Meta:
+        model = InstanceGroup
+        fields = ('name', 'project', 'zone', 'region', 'target_size', 'is_managed')
+
+
+class VPCNetworkImportForm(NetBoxModelImportForm):
+    class Meta:
+        model = VPCNetwork
+        fields = ('name', 'project', 'auto_create_subnetworks', 'routing_mode', 'mtu')
+
+
+class SubnetImportForm(NetBoxModelImportForm):
+    class Meta:
+        model = Subnet
+        fields = ('name', 'project', 'network', 'region', 'ip_cidr_range')
+
+
+class FirewallRuleImportForm(NetBoxModelImportForm):
+    class Meta:
+        model = FirewallRule
+        fields = ('name', 'project', 'network', 'direction', 'priority', 'action', 'disabled')
+
+
+class CloudRouterImportForm(NetBoxModelImportForm):
+    class Meta:
+        model = CloudRouter
+        fields = ('name', 'project', 'network', 'region', 'asn')
+
+
+class CloudNATImportForm(NetBoxModelImportForm):
+    class Meta:
+        model = CloudNAT
+        fields = ('name', 'project', 'router', 'region')
+
+
+class LoadBalancerImportForm(NetBoxModelImportForm):
+    class Meta:
+        model = LoadBalancer
+        fields = ('name', 'project', 'scheme', 'lb_type', 'region')
+
+
+class CloudSQLInstanceImportForm(NetBoxModelImportForm):
+    class Meta:
+        model = CloudSQLInstance
+        fields = ('name', 'project', 'region', 'database_type', 'database_version', 'tier', 'status')
+
+
+class CloudSpannerInstanceImportForm(NetBoxModelImportForm):
+    class Meta:
+        model = CloudSpannerInstance
+        fields = ('name', 'project', 'config', 'display_name', 'node_count', 'status')
+
+
+class FirestoreDatabaseImportForm(NetBoxModelImportForm):
+    class Meta:
+        model = FirestoreDatabase
+        fields = ('name', 'project', 'location', 'database_type', 'status')
+
+
+class BigtableInstanceImportForm(NetBoxModelImportForm):
+    class Meta:
+        model = BigtableInstance
+        fields = ('name', 'project', 'display_name', 'instance_type', 'storage_type', 'status')
+
+
+class CloudStorageBucketImportForm(NetBoxModelImportForm):
+    class Meta:
+        model = CloudStorageBucket
+        fields = ('name', 'project', 'location', 'storage_class', 'versioning_enabled')
+
+
+class PersistentDiskImportForm(NetBoxModelImportForm):
+    class Meta:
+        model = PersistentDisk
+        fields = ('name', 'project', 'zone', 'disk_type', 'size_gb', 'status')
+
+
+class GKEClusterImportForm(NetBoxModelImportForm):
+    class Meta:
+        model = GKECluster
+        fields = ('name', 'project', 'location', 'master_version', 'status')
+
+
+class GKENodePoolImportForm(NetBoxModelImportForm):
+    class Meta:
+        model = GKENodePool
+        fields = ('name', 'cluster', 'machine_type', 'disk_size_gb', 'node_count')
+
+
+class ServiceAccountImportForm(NetBoxModelImportForm):
+    class Meta:
+        model = ServiceAccount
+        fields = ('email', 'project', 'display_name', 'disabled')
+
+
+class IAMRoleImportForm(NetBoxModelImportForm):
+    class Meta:
+        model = IAMRole
+        fields = ('name', 'title', 'description', 'stage', 'is_custom')
+
+
+class IAMBindingImportForm(NetBoxModelImportForm):
+    class Meta:
+        model = IAMBinding
+        fields = ('project', 'role', 'member')
+
+
+class CloudFunctionImportForm(NetBoxModelImportForm):
+    class Meta:
+        model = CloudFunction
+        fields = ('name', 'project', 'region', 'runtime', 'entry_point', 'trigger_type', 'status')
+
+
+class CloudRunImportForm(NetBoxModelImportForm):
+    class Meta:
+        model = CloudRun
+        fields = ('name', 'project', 'region', 'image', 'cpu', 'memory', 'status')
+
+
+class PubSubTopicImportForm(NetBoxModelImportForm):
+    class Meta:
+        model = PubSubTopic
+        fields = ('name', 'project')
+
+
+class PubSubSubscriptionImportForm(NetBoxModelImportForm):
+    class Meta:
+        model = PubSubSubscription
+        fields = ('name', 'project', 'topic', 'ack_deadline_seconds')
+
+
+class SecretManagerSecretImportForm(NetBoxModelImportForm):
+    class Meta:
+        model = SecretManagerSecret
+        fields = ('name', 'project', 'replication_type')
+
+
+class CloudDNSZoneImportForm(NetBoxModelImportForm):
+    class Meta:
+        model = CloudDNSZone
+        fields = ('name', 'project', 'dns_name', 'description', 'visibility')
+
+
+class CloudDNSRecordImportForm(NetBoxModelImportForm):
+    class Meta:
+        model = CloudDNSRecord
+        fields = ('name', 'zone', 'record_type', 'ttl')
+
+
+class MemorystoreInstanceImportForm(NetBoxModelImportForm):
+    class Meta:
+        model = MemorystoreInstance
+        fields = ('name', 'project', 'region', 'tier', 'memory_size_gb', 'redis_version', 'status')
+
+
+class NCCHubImportForm(NetBoxModelImportForm):
+    class Meta:
+        model = NCCHub
+        fields = ('name', 'project', 'description')
+
+
+class NCCSpokeImportForm(NetBoxModelImportForm):
+    class Meta:
+        model = NCCSpoke
+        fields = ('name', 'project', 'hub', 'location', 'description', 'spoke_type')
+
+
+class VPNGatewayImportForm(NetBoxModelImportForm):
+    class Meta:
+        model = VPNGateway
+        fields = ('name', 'project', 'network', 'region', 'gateway_type')
+
+
+class ExternalVPNGatewayImportForm(NetBoxModelImportForm):
+    class Meta:
+        model = ExternalVPNGateway
+        fields = ('name', 'project', 'description', 'redundancy_type')
+
+
+class VPNTunnelImportForm(NetBoxModelImportForm):
+    class Meta:
+        model = VPNTunnel
+        fields = ('name', 'project', 'region', 'vpn_gateway', 'peer_ip', 'ike_version', 'status')
+
+
+class InterconnectAttachmentImportForm(NetBoxModelImportForm):
+    class Meta:
+        model = InterconnectAttachment
+        fields = ('name', 'project', 'region', 'router', 'attachment_type', 'bandwidth', 'state')
+
+
+class ServiceAttachmentImportForm(NetBoxModelImportForm):
+    class Meta:
+        model = ServiceAttachment
+        fields = ('name', 'project', 'region', 'connection_preference', 'target_service')
+
+
+class ServiceConnectEndpointImportForm(NetBoxModelImportForm):
+    class Meta:
+        model = ServiceConnectEndpoint
+        fields = ('name', 'project', 'region', 'ip_address', 'target_service_attachment')
+
+
+# ============================================================
+# Filter Forms (missing ones)
+# ============================================================
+
+class InstanceTemplateFilterForm(NetBoxModelFilterSetForm):
+    model = InstanceTemplate
+    project = DynamicModelChoiceField(queryset=GCPProject.objects.all(), required=False)
+    name = forms.CharField(required=False)
+
+
+class InstanceGroupFilterForm(NetBoxModelFilterSetForm):
+    model = InstanceGroup
+    project = DynamicModelChoiceField(queryset=GCPProject.objects.all(), required=False)
+    name = forms.CharField(required=False)
+
+
+class FirewallRuleFilterForm(NetBoxModelFilterSetForm):
+    model = FirewallRule
+    project = DynamicModelChoiceField(queryset=GCPProject.objects.all(), required=False)
+    name = forms.CharField(required=False)
+    direction = forms.CharField(required=False)
+
+
+class CloudRouterFilterForm(NetBoxModelFilterSetForm):
+    model = CloudRouter
+    project = DynamicModelChoiceField(queryset=GCPProject.objects.all(), required=False)
+    name = forms.CharField(required=False)
+    region = forms.CharField(required=False)
+
+
+class CloudNATFilterForm(NetBoxModelFilterSetForm):
+    model = CloudNAT
+    project = DynamicModelChoiceField(queryset=GCPProject.objects.all(), required=False)
+    name = forms.CharField(required=False)
+
+
+class LoadBalancerFilterForm(NetBoxModelFilterSetForm):
+    model = LoadBalancer
+    project = DynamicModelChoiceField(queryset=GCPProject.objects.all(), required=False)
+    name = forms.CharField(required=False)
+    scheme = forms.CharField(required=False)
+
+
+class CloudSpannerInstanceFilterForm(NetBoxModelFilterSetForm):
+    model = CloudSpannerInstance
+    project = DynamicModelChoiceField(queryset=GCPProject.objects.all(), required=False)
+    name = forms.CharField(required=False)
+    status = forms.CharField(required=False)
+
+
+class FirestoreDatabaseFilterForm(NetBoxModelFilterSetForm):
+    model = FirestoreDatabase
+    project = DynamicModelChoiceField(queryset=GCPProject.objects.all(), required=False)
+    name = forms.CharField(required=False)
+
+
+class BigtableInstanceFilterForm(NetBoxModelFilterSetForm):
+    model = BigtableInstance
+    project = DynamicModelChoiceField(queryset=GCPProject.objects.all(), required=False)
+    name = forms.CharField(required=False)
+
+
+class PersistentDiskFilterForm(NetBoxModelFilterSetForm):
+    model = PersistentDisk
+    project = DynamicModelChoiceField(queryset=GCPProject.objects.all(), required=False)
+    name = forms.CharField(required=False)
+    zone = forms.CharField(required=False)
+
+
+class GKENodePoolFilterForm(NetBoxModelFilterSetForm):
+    model = GKENodePool
+    cluster = DynamicModelChoiceField(queryset=GKECluster.objects.all(), required=False)
+    name = forms.CharField(required=False)
+
+
+class IAMRoleFilterForm(NetBoxModelFilterSetForm):
+    model = IAMRole
+    name = forms.CharField(required=False)
+    is_custom = forms.NullBooleanField(required=False)
+
+
+class IAMBindingFilterForm(NetBoxModelFilterSetForm):
+    model = IAMBinding
+    project = DynamicModelChoiceField(queryset=GCPProject.objects.all(), required=False)
+    member = forms.CharField(required=False)
+
+
+class CloudFunctionFilterForm(NetBoxModelFilterSetForm):
+    model = CloudFunction
+    project = DynamicModelChoiceField(queryset=GCPProject.objects.all(), required=False)
+    name = forms.CharField(required=False)
+    region = forms.CharField(required=False)
+
+
+class CloudRunFilterForm(NetBoxModelFilterSetForm):
+    model = CloudRun
+    project = DynamicModelChoiceField(queryset=GCPProject.objects.all(), required=False)
+    name = forms.CharField(required=False)
+    region = forms.CharField(required=False)
+
+
+class PubSubTopicFilterForm(NetBoxModelFilterSetForm):
+    model = PubSubTopic
+    project = DynamicModelChoiceField(queryset=GCPProject.objects.all(), required=False)
+    name = forms.CharField(required=False)
+
+
+class PubSubSubscriptionFilterForm(NetBoxModelFilterSetForm):
+    model = PubSubSubscription
+    project = DynamicModelChoiceField(queryset=GCPProject.objects.all(), required=False)
+    name = forms.CharField(required=False)
+
+
+class SecretManagerSecretFilterForm(NetBoxModelFilterSetForm):
+    model = SecretManagerSecret
+    project = DynamicModelChoiceField(queryset=GCPProject.objects.all(), required=False)
+    name = forms.CharField(required=False)
+
+
+class CloudDNSZoneFilterForm(NetBoxModelFilterSetForm):
+    model = CloudDNSZone
+    project = DynamicModelChoiceField(queryset=GCPProject.objects.all(), required=False)
+    name = forms.CharField(required=False)
+
+
+class CloudDNSRecordFilterForm(NetBoxModelFilterSetForm):
+    model = CloudDNSRecord
+    zone = DynamicModelChoiceField(queryset=CloudDNSZone.objects.all(), required=False)
+    name = forms.CharField(required=False)
+    record_type = forms.CharField(required=False)
+
+
+class MemorystoreInstanceFilterForm(NetBoxModelFilterSetForm):
+    model = MemorystoreInstance
+    project = DynamicModelChoiceField(queryset=GCPProject.objects.all(), required=False)
+    name = forms.CharField(required=False)
+    region = forms.CharField(required=False)
+
+
+class NCCHubFilterForm(NetBoxModelFilterSetForm):
+    model = NCCHub
+    project = DynamicModelChoiceField(queryset=GCPProject.objects.all(), required=False)
+    name = forms.CharField(required=False)
+
+
+class NCCSpokeFilterForm(NetBoxModelFilterSetForm):
+    model = NCCSpoke
+    project = DynamicModelChoiceField(queryset=GCPProject.objects.all(), required=False)
+    name = forms.CharField(required=False)
+
+
+class VPNGatewayFilterForm(NetBoxModelFilterSetForm):
+    model = VPNGateway
+    project = DynamicModelChoiceField(queryset=GCPProject.objects.all(), required=False)
+    name = forms.CharField(required=False)
+    region = forms.CharField(required=False)
+
+
+class ExternalVPNGatewayFilterForm(NetBoxModelFilterSetForm):
+    model = ExternalVPNGateway
+    project = DynamicModelChoiceField(queryset=GCPProject.objects.all(), required=False)
+    name = forms.CharField(required=False)
+
+
+class VPNTunnelFilterForm(NetBoxModelFilterSetForm):
+    model = VPNTunnel
+    project = DynamicModelChoiceField(queryset=GCPProject.objects.all(), required=False)
+    name = forms.CharField(required=False)
+    status = forms.CharField(required=False)
+
+
+class InterconnectAttachmentFilterForm(NetBoxModelFilterSetForm):
+    model = InterconnectAttachment
+    project = DynamicModelChoiceField(queryset=GCPProject.objects.all(), required=False)
+    name = forms.CharField(required=False)
+    region = forms.CharField(required=False)
