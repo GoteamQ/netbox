@@ -41,7 +41,7 @@ RUN NETBOX_CONFIGURATION=netbox.configuration_docker \
     ALLOWED_HOSTS=localhost \
     DB_HOST=localhost \
     REDIS_HOST=localhost \
-    python manage.py collectstatic --no-input
+    python manage.py collectstatic --no-input --verbosity 2
 
 ################################################################################
 # Stage 2: Strip — compile .pyc, remove bloat, collect shared libs
