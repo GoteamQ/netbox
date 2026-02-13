@@ -2,7 +2,11 @@
 {% load i18n %}
 
 {% block tabs %}
-  <ul class="nav nav-tabs" role="presentation">
+  <ul class="nav nav-tabs" role="presentation"
+      hx-boost="true"
+      hx-target="#page-content"
+      hx-select="#page-content"
+      hx-swap="outerHTML show:none">
     <li class="nav-item">
       <a class="nav-link{% if active_tab == 'profile' %} active{% endif %}" href="{% url 'account:profile' %}">{% trans "Profile" %}</a>
     </li>

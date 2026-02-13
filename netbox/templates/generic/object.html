@@ -107,7 +107,11 @@ Context:
 {% endblock controls %}
 
 {% block tabs %}
-  <ul class="nav nav-tabs" role="presentation">
+  <ul class="nav nav-tabs" role="presentation"
+      hx-boost="true"
+      hx-target="#page-content"
+      hx-select="#page-content"
+      hx-swap="outerHTML show:none">
     {# Primary tab #}
     <li class="nav-item">
       <a class="nav-link{% if not tab %} active{% endif %}" href="{{ object.get_absolute_url }}">{{ object|meta:"verbose_name"|bettertitle }}</a>

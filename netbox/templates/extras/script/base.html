@@ -24,7 +24,11 @@
 {% block controls %}{% endblock %}
 
 {% block tabs %}
-  <ul class="nav nav-tabs">
+  <ul class="nav nav-tabs"
+      hx-boost="true"
+      hx-target="#page-content"
+      hx-select="#page-content"
+      hx-swap="outerHTML show:none">
     <li class="nav-item" role="presentation">
       <a class="nav-link{% if not tab %} active{% endif %}{% if not script.is_executable %} disabled{% endif %}" href="{{ script.get_absolute_url }}">{% trans "Script" %}</a>
     </li>
