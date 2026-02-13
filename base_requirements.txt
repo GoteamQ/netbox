@@ -173,3 +173,7 @@ tablib
 # Timezone data (required by django-timezone-field on Python 3.9+)
 # https://github.com/python/tzdata/blob/master/NEWS.md
 tzdata
+
+# Radically simplified static file serving for Django
+# https://github.com/evansd/whitenoise/blob/main/CHANGELOG.rst
+whitenoise
