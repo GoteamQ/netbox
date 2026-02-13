@@ -36,7 +36,8 @@ COPY . .
 
 # Collect static files
 WORKDIR /opt/netbox/netbox
-RUN SECRET_KEY=build-only-key-that-is-at-least-fifty-characters-long-for-validation \
+RUN NETBOX_CONFIGURATION=netbox.configuration_docker \
+    SECRET_KEY=build-only-key-that-is-at-least-fifty-characters-long-for-validation \
     ALLOWED_HOSTS=localhost \
     DB_HOST=localhost \
     REDIS_HOST=localhost \
@@ -118,7 +119,8 @@ COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
-    LD_LIBRARY_PATH=/usr/local/lib
+    LD_LIBRARY_PATH=/usr/local/lib \
+    NETBOX_CONFIGURATION=netbox.configuration_docker
 
 WORKDIR /opt/netbox/netbox
 
