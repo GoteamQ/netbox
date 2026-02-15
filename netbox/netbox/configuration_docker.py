@@ -53,6 +53,8 @@ REDIS = {
         "PASSWORD": get_env("REDIS_PASSWORD", ""),
         "DATABASE": get_env_int("REDIS_TASKS_DB", 0),
         "SSL": get_env_bool("REDIS_SSL", False),
+        "INSECURE_SKIP_TLS_VERIFY": get_env_bool("REDIS_INSECURE_SKIP_TLS_VERIFY", False),
+        "CA_CERT_PATH": get_env("REDIS_CA_CERT_PATH", False),
     },
     "caching": {
         "HOST": get_env("REDIS_HOST", "localhost"),
@@ -61,6 +63,8 @@ REDIS = {
         "PASSWORD": get_env("REDIS_PASSWORD", ""),
         "DATABASE": get_env_int("REDIS_CACHE_DB", 1),
         "SSL": get_env_bool("REDIS_SSL", False),
+        "INSECURE_SKIP_TLS_VERIFY": get_env_bool("REDIS_INSECURE_SKIP_TLS_VERIFY", False),
+        "CA_CERT_PATH": get_env("REDIS_CA_CERT_PATH", False),
     },
 }
 

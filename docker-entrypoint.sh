@@ -33,10 +33,30 @@ def run(args):
     os.execvp(args[0], args)
 
 
+def write_redis_ca_cert():
+    """
+    If REDIS_CA_CERT is set (certificate content from Secret Manager),
+    write it to a file and set REDIS_CA_CERT_PATH so the app can find it.
+    """
+    cert_content = os.environ.get("REDIS_CA_CERT")
+    if not cert_content:
+        return
+
+    cert_path = "/tmp/redis-ca.pem"
+    with open(cert_path, "w") as f:
+        f.write(cert_content)
+    os.chmod(cert_path, 0o600)
+    os.environ["REDIS_CA_CERT_PATH"] = cert_path
+    print(f"Redis CA certificate written to {cert_path}")
+
+
 def main():
     if len(sys.argv) < 2:
         print("Usage: docker-entrypoint.sh <web|worker|migrate> [args...]", file=sys.stderr)
         sys.exit(1)
+
+    # Write Redis CA cert from env var to file before anything else
+    write_redis_ca_cert()
 
     command = sys.argv[1]
 
