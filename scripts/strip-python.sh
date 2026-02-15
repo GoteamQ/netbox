@@ -291,7 +291,6 @@ rm -f "$DYNLOAD"/_tkinter*.so \
       "$DYNLOAD"/readline*.so \
       "$DYNLOAD"/termios*.so \
       "$DYNLOAD"/syslog*.so \
-      "$DYNLOAD"/resource*.so \
       "$DYNLOAD"/_lzma*.so \
       "$DYNLOAD"/_bz2*.so \
       "$DYNLOAD"/cmath*.so \
