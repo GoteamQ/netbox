@@ -401,12 +401,16 @@ if CACHING_REDIS_SENTINELS:
     CACHES['default']['LOCATION'] = f'{CACHING_REDIS_PROTO}://{CACHING_REDIS_SENTINEL_SERVICE}/{CACHING_REDIS_DATABASE}'
     CACHES['default']['OPTIONS']['CLIENT_CLASS'] = 'django_redis.client.SentinelClient'
     CACHES['default']['OPTIONS']['SENTINELS'] = CACHING_REDIS_SENTINELS
-if CACHING_REDIS_SKIP_TLS_VERIFY:
+if REDIS['caching'].get('SSL', False):
+    import ssl as _ssl
+    _caching_ssl_ctx = _ssl.create_default_context()
+    if CACHING_REDIS_SKIP_TLS_VERIFY:
+        _caching_ssl_ctx.check_hostname = False
+        _caching_ssl_ctx.verify_mode = _ssl.CERT_NONE
+    if CACHING_REDIS_CA_CERT_PATH:
+        _caching_ssl_ctx.load_verify_locations(CACHING_REDIS_CA_CERT_PATH)
     CACHES['default']['OPTIONS'].setdefault('CONNECTION_POOL_KWARGS', {})
-    CACHES['default']['OPTIONS']['CONNECTION_POOL_KWARGS']['ssl_cert_reqs'] = False
-if CACHING_REDIS_CA_CERT_PATH:
-    CACHES['default']['OPTIONS'].setdefault('CONNECTION_POOL_KWARGS', {})
-    CACHES['default']['OPTIONS']['CONNECTION_POOL_KWARGS']['ssl_ca_certs'] = CACHING_REDIS_CA_CERT_PATH
+    CACHES['default']['OPTIONS']['CONNECTION_POOL_KWARGS']['ssl'] = _caching_ssl_ctx
 
 
 #
@@ -815,9 +819,16 @@ RQ_PARAMS.update({
     'PASSWORD': TASKS_REDIS_PASSWORD,
     'DEFAULT_TIMEOUT': RQ_DEFAULT_TIMEOUT,
 })
-if TASKS_REDIS_CA_CERT_PATH:
+if TASKS_REDIS_SSL:
+    import ssl as _ssl
+    _tasks_ssl_ctx = _ssl.create_default_context()
+    if TASKS_REDIS_SKIP_TLS_VERIFY:
+        _tasks_ssl_ctx.check_hostname = False
+        _tasks_ssl_ctx.verify_mode = _ssl.CERT_NONE
+    if TASKS_REDIS_CA_CERT_PATH:
+        _tasks_ssl_ctx.load_verify_locations(TASKS_REDIS_CA_CERT_PATH)
     RQ_PARAMS.setdefault('REDIS_CLIENT_KWARGS', {})
-    RQ_PARAMS['REDIS_CLIENT_KWARGS']['ssl_ca_certs'] = TASKS_REDIS_CA_CERT_PATH
+    RQ_PARAMS['REDIS_CLIENT_KWARGS']['ssl'] = _tasks_ssl_ctx
 
 # Define named RQ queues
 RQ_QUEUES = {
