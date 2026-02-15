@@ -1,14 +1,17 @@
+import importlib
 import unittest
 
 from unittest.mock import MagicMock, patch
 from django.test import TestCase
 from gcp.models import GCPProject, GCPOrganization, InstanceGroup, ServiceAttachment, ServiceConnectEndpoint
 
-try:
+# Only skip when the base Google packages are genuinely absent (local dev).
+# If the packages ARE installed but a transitive dependency is broken,
+# let the ImportError propagate so the test fails loudly.
+HAS_GCP_DEPS = importlib.util.find_spec('googleapiclient') is not None
+
+if HAS_GCP_DEPS:
     from gcp.discovery import GCPDiscoveryService
-    HAS_GCP_DEPS = True
-except ImportError:
-    HAS_GCP_DEPS = False
 
 
 @unittest.skipUnless(HAS_GCP_DEPS, 'GCP dependencies (httplib2, google-api-python-client) not installed')

@@ -40,8 +40,8 @@ REMOVE_PACKAGES=(
     text_unidecode
     # pyasn1 modules — large ASN.1 definitions, only needed if doing complex cert parsing
     # (keep pyasn1 base, remove the big modules collection if not needed)
-    # pyparsing — only needed at build time by some packages
-    pyparsing
+    # pyparsing — needed at runtime by httplib2 / google-api-python-client
+    # pyparsing
 )
 for pkg in "${REMOVE_PACKAGES[@]}"; do
     rm -rf "$SITE_PACKAGES"/$pkg "$SITE_PACKAGES"/$pkg-*.dist-info
