@@ -144,7 +144,6 @@ class GCPDiscoveryService:
                 return
 
             self.log(f'Discovering resources in project: {project.project_id}')
-            print(f"DEBUG: [{project.project_id}] Starting discovery", flush=True)
 
             enabled_services = self._get_enabled_services(project.project_id)
 
@@ -155,7 +154,6 @@ class GCPDiscoveryService:
 
             try:
                 if self.organization.discover_networking and is_enabled('compute.googleapis.com'):
-                    print(f"DEBUG: [{project.project_id}] Discovering Networking", flush=True)
                     self.discover_vpc_networks(project)
                     self.discover_subnets(project)
                     self.discover_firewall_rules(project)
@@ -174,14 +172,12 @@ class GCPDiscoveryService:
                         self.discover_ncc_spokes(project)
 
                     if is_enabled('dns.googleapis.com'):
-                        print(f"DEBUG: [{project.project_id}] Discovering DNS", flush=True)
                         self.discover_cloud_dns_zones(project)
 
                     if self.organization.cancel_requested:
                         return
 
                 if self.organization.discover_compute and is_enabled('compute.googleapis.com'):
-                    print(f"DEBUG: [{project.project_id}] Discovering Compute", flush=True)
                     self.discover_compute_instances(project)
                     self.discover_instance_templates(project)
                     self.discover_instance_groups(project)
@@ -190,7 +186,6 @@ class GCPDiscoveryService:
                         return
 
                 if self.organization.discover_databases:
-                    print(f"DEBUG: [{project.project_id}] Discovering Databases", flush=True)
                     if is_enabled('sqladmin.googleapis.com'):
                         self.discover_cloud_sql(project)
                     if is_enabled('spanner.googleapis.com'):
@@ -205,36 +200,28 @@ class GCPDiscoveryService:
                         return
 
                 if self.organization.discover_storage and is_enabled('storage.googleapis.com'):
-                    print(f"DEBUG: [{project.project_id}] Discovering Storage", flush=True)
                     self.discover_storage_buckets(project)
                     if self.organization.cancel_requested:
                         return
 
                 if self.organization.discover_kubernetes and is_enabled('container.googleapis.com'):
-                    print(f"DEBUG: [{project.project_id}] Discovering Kubernetes", flush=True)
                     self.discover_gke_clusters(project)
                     if self.organization.cancel_requested:
                         return
 
                 if self.organization.discover_serverless:
-                    print(f"DEBUG: [{project.project_id}] Discovering Serverless", flush=True)
                     if is_enabled('cloudfunctions.googleapis.com'):
-                        print(f"DEBUG: [{project.project_id}] Discovering Cloud Functions", flush=True)
                         self.discover_cloud_functions(project)
                     if is_enabled('run.googleapis.com'):
-                        print(f"DEBUG: [{project.project_id}] Discovering Cloud Run", flush=True)
                         self.discover_cloud_run(project)
                     if is_enabled('pubsub.googleapis.com'):
-                        print(f"DEBUG: [{project.project_id}] Discovering PubSub", flush=True)
                         self.discover_pubsub(project)
                     if is_enabled('secretmanager.googleapis.com'):
-                        print(f"DEBUG: [{project.project_id}] Discovering Secret Manager", flush=True)
                         self.discover_secret_manager_secrets(project)
                     if self.organization.cancel_requested:
                         return
 
                 if self.organization.discover_iam and is_enabled('iam.googleapis.com'):
-                    print(f"DEBUG: [{project.project_id}] Discovering IAM", flush=True)
                     self.discover_service_accounts(project)
                     self.discover_iam_roles(project)
                     self.discover_iam_policy(project)
@@ -290,7 +277,6 @@ class GCPDiscoveryService:
             return False
 
     def _create_service(self, service_name, version):
-
         # Set timeout to prevent hanging threads
         http = httplib2.Http(timeout=60)
 
@@ -298,7 +284,14 @@ class GCPDiscoveryService:
         if self.credentials:
             http = AuthorizedHttp(self.credentials, http=http)
 
-        return build(service_name, version, http=http, cache_discovery=False)
+        # static_discovery=False: the bundled static discovery JSON docs are stripped from the
+        # Docker image to save ~30 MB.  Force the library to fetch from googleapis.com instead.
+        return build(
+            service_name, version,
+            http=http,
+            cache_discovery=False,
+            static_discovery=False,
+        )
 
     def _normalize_org_id(self):
         org_id = str(self.organization.organization_id).strip()
@@ -1361,16 +1354,13 @@ class GCPDiscoveryService:
         from .models import ServiceAccount
 
         self.log(f'Discovering Service Accounts in {project.project_id}...')
-        print(f"DEBUG: [{project.project_id}] Discovering Service Accounts", flush=True)
 
         try:
             service = self._create_service('iam', 'v1')
             name = f'projects/{project.project_id}'
-            print(f"DEBUG: [{project.project_id}] IAM: Listing service accounts...", flush=True)
             request = service.projects().serviceAccounts().list(name=name)
 
             while request is not None:
-                print(f"DEBUG: [{project.project_id}] IAM: Executing service accounts request...", flush=True)
                 response = request.execute()
 
                 for sa in response.get('accounts', []):
@@ -2081,15 +2071,10 @@ class GCPDiscoveryService:
             service = self._create_service('pubsub', 'v1')
             # Topics
             parent = f'projects/{project.project_id}'
-            print(f"DEBUG: [{project.project_id}] PubSub: Listing topics...", flush=True)
             request = service.projects().topics().list(project=parent)
 
             while request is not None:
-                print(f"DEBUG: [{project.project_id}] PubSub: Executing topics request...", flush=True)
                 response = request.execute()
-                print(
-                    f"DEBUG: [{project.project_id}] PubSub: Found {len(response.get('topics', []))} topics", flush=True
-                )
 
                 for topic in response.get('topics', []):
                     # name: projects/p/topics/t
@@ -2107,22 +2092,14 @@ class GCPDiscoveryService:
                     # self.log(f'{"Created" if created else "Updated"} Topic: {t.name}')
 
                 if 'nextPageToken' in response:
-                    print(f"DEBUG: [{project.project_id}] PubSub: Pagination for topics", flush=True)
                     request = service.projects().topics().list(project=parent, pageToken=response['nextPageToken'])
                 else:
                     request = None
 
-            print(f"DEBUG: [{project.project_id}] PubSub: Listing subscriptions...", flush=True)
             # Subscriptions
             request = service.projects().subscriptions().list(project=parent)
             while request is not None:
-                print(f"DEBUG: [{project.project_id}] PubSub: Executing subscriptions request...", flush=True)
                 response = request.execute()
-                num_subs = len(response.get('subscriptions', []))
-                print(
-                    f"DEBUG: [{project.project_id}] PubSub: Found {num_subs} subscriptions",
-                    flush=True,
-                )
 
                 for sub in response.get('subscriptions', []):
                     name = sub['name'].split('/')[-1]
@@ -2265,15 +2242,12 @@ class GCPDiscoveryService:
         from .models import IAMRole
 
         try:
-            print(f"DEBUG: [{project.project_id}] Discovering IAM Roles", flush=True)
             service = self._create_service('iam', 'v1')
             parent = f'projects/{project.project_id}'
 
             # List custom roles for the project
-            print(f"DEBUG: [{project.project_id}] IAM: Listing roles...", flush=True)
             request = service.projects().roles().list(parent=parent, view='FULL')
             while request:
-                print(f"DEBUG: [{project.project_id}] IAM: Executing roles request...", flush=True)
                 response = request.execute()
                 for role in response.get('roles', []):
                     IAMRole.objects.update_or_create(
@@ -2301,15 +2275,12 @@ class GCPDiscoveryService:
         from .models import IAMBinding, IAMRole
 
         try:
-            print(f"DEBUG: [{project.project_id}] Discovering IAM Policy", flush=True)
             # Use Cloud Resource Manager API to get policy
             service = self._create_service('cloudresourcemanager', 'v1')
             resource = project.project_id
 
-            print(f"DEBUG: [{project.project_id}] IAM: Getting IAM policy...", flush=True)
             policy = service.projects().getIamPolicy(resource=resource).execute()
             bindings = policy.get('bindings', [])
-            print(f"DEBUG: [{project.project_id}] IAMPolicy: Found {len(bindings)} bindings", flush=True)
 
             for binding in bindings:
                 role_name = binding['role']
