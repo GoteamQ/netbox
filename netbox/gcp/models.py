@@ -137,6 +137,7 @@ class ComputeInstance(NetBoxModel):
         ordering = ['name']
         verbose_name = 'Compute Instance'
         verbose_name_plural = 'Compute Instances'
+        unique_together = ['project', 'name']
 
     def __str__(self):
         return self.name
@@ -166,6 +167,7 @@ class InstanceTemplate(NetBoxModel):
         ordering = ['name']
         verbose_name = 'Instance Template'
         verbose_name_plural = 'Instance Templates'
+        unique_together = ['project', 'name']
 
     def __str__(self):
         return self.name
@@ -193,6 +195,7 @@ class InstanceGroup(NetBoxModel):
     class Meta:
         ordering = ['name']
         verbose_name = 'Instance Group'
+        unique_together = ['project', 'name']
         verbose_name_plural = 'Instance Groups'
 
     def __str__(self):
@@ -219,6 +222,7 @@ class VPCNetwork(NetBoxModel):
     class Meta:
         ordering = ['name']
         verbose_name = 'VPC Network'
+        unique_together = ['project', 'name']
         verbose_name_plural = 'VPC Networks'
 
     def __str__(self):
@@ -247,6 +251,7 @@ class Subnet(NetBoxModel):
 
     class Meta:
         ordering = ['name']
+        unique_together = ['project', 'network', 'name']
         verbose_name = 'Subnet'
         verbose_name_plural = 'Subnets'
 
@@ -305,6 +310,7 @@ class FirewallRule(NetBoxModel):
 
     class Meta:
         ordering = ['priority', 'name']
+        unique_together = ['project', 'network', 'name']
         verbose_name = 'Firewall Rule'
         verbose_name_plural = 'Firewall Rules'
 
@@ -336,6 +342,7 @@ class CloudRouter(NetBoxModel):
         ordering = ['name']
         verbose_name = 'Cloud Router'
         verbose_name_plural = 'Cloud Routers'
+        unique_together = ['project', 'network', 'name']
 
     def __str__(self):
         return self.name
@@ -426,6 +433,7 @@ class CloudSQLInstance(NetBoxModel):
         ordering = ['name']
         verbose_name = 'Cloud SQL Instance'
         verbose_name_plural = 'Cloud SQL Instances'
+        unique_together = ['project', 'name']
 
     def __str__(self):
         return self.name
@@ -564,6 +572,7 @@ class PersistentDisk(NetBoxModel):
     class Meta:
         ordering = ['name']
         verbose_name = 'Persistent Disk'
+        unique_together = ['project', 'name']
         verbose_name_plural = 'Persistent Disks'
 
     def __str__(self):
@@ -595,6 +604,7 @@ class GKECluster(NetBoxModel):
 
     class Meta:
         ordering = ['name']
+        unique_together = ['project', 'name']
         verbose_name = 'GKE Cluster'
         verbose_name_plural = 'GKE Clusters'
 
